@@ -14,13 +14,13 @@ func AuthMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		authHeader := c.Request().Header.Get("Authorization")
 		if authHeader == "" {
-			return responses.UnauthorizedResponse(c, "user.error.tokenRequired")
+			return responses.UnauthorizedResponse(c, "auth.error.tokenRequired")
 		}
 
 		// Token usually comes in the format "Bearer <token>"
 		tokenString := strings.TrimPrefix(authHeader, "Bearer ")
 		if tokenString == authHeader { // If the token doesn't start with "Bearer "
-			return responses.UnauthorizedResponse(c, "user.error.tokenInvalid")
+			return responses.UnauthorizedResponse(c, "auth.error.tokenInvalid")
 		}
 
 		// Parse the token
@@ -37,7 +37,7 @@ func AuthMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 
 		if err != nil || !token.Valid {
 			// Token is invalid or expired
-			return responses.ErrorResponse(c, errs.NewUnauthorizedError("user.error.tokenInvalid"))
+			return responses.ErrorResponse(c, errs.NewUnauthorizedError("auth.error.tokenInvalid"))
 		}
 
 		// Optionally: You can store the user data from the token for later use in the request context

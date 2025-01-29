@@ -76,7 +76,7 @@ func (s *UserServiceImpl) Create(request *requests.UserCreateRequest) (models.Us
 
 func (s *UserServiceImpl) Update(userId, authenticatedUserId uint, request *requests.UserUpdateRequest) (*models.User, error) {
 	if !policies.CanUpdateUser(userId, authenticatedUserId) {
-		return nil, errs.NewForbiddenError("user.error.forbidden")
+		return nil, errs.NewForbiddenError("user.error.updateForbidden")
 	}
 
 	user, err := s.userRepo.GetByID(userId)
