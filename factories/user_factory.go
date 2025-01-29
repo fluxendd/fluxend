@@ -57,18 +57,14 @@ func (f *UserFactory) CreateMany(count int, opts ...UserOption) ([]*models.User,
 	return users, nil
 }
 
-func (f *UserFactory) CreateWithUsername(username string) (*models.User, error) {
-	opts := func(user *models.User) {
+func (f *UserFactory) WithUsername(username string) UserOption {
+	return func(user *models.User) {
 		user.Username = username
 	}
-
-	return f.Create(opts)
 }
 
-func (f *UserFactory) CreateWithEmail(email string) (*models.User, error) {
-	opts := func(user *models.User) {
+func (f *UserFactory) WithEmail(email string) UserOption {
+	return func(user *models.User) {
 		user.Email = email
 	}
-
-	return f.Create(opts)
 }
