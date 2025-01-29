@@ -169,6 +169,18 @@ func (r *OrganizationRepository) Delete(organizationId uint) (bool, error) {
 	return rowsAffected == 1, nil
 }
 
+func (r *OrganizationRepository) IsOrganizationUser(organizationId, authenticatedUserId uint) (bool, error) {
+	query := "SELECT EXISTS(SELECT 1 FROM organization_users WHERE organization_id = $1 AND user_id = $2)"
+
+	var exists bool
+	err := r.db.Get(&exists, query, organizationId, authenticatedUserId)
+	if err != nil {
+		return false, fmt.Errorf("could not fetch row: %v", err)
+	}
+
+	return exists, nil
+}
+
 func (r *OrganizationRepository) createOrganizationUser(tx *sqlx.Tx, organizationId, userId uint) error {
 	query := "INSERT INTO organization_users (organization_id, user_id) VALUES ($1, $2)"
 	_, err := tx.Exec(query, organizationId, userId)

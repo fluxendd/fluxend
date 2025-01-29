@@ -1,25 +1,35 @@
 package policies
 
-type OrganizationPolicy interface {
-	CanCreate(authenticatedUserId uint) bool
-	CanUpdate(userID, authenticatedUserId uint) bool
+import (
+	"github.com/samber/do"
+	"myapp/repositories"
+)
+
+type OrganizationPolicy struct {
+	organizationRepo *repositories.OrganizationRepository
 }
 
-type OrganizationPolicyImpl struct {
+func NewOrganizationPolicy(injector *do.Injector) (*OrganizationPolicy, error) {
+	repo := do.MustInvoke[*repositories.OrganizationRepository](injector)
+
+	return &OrganizationPolicy{
+		organizationRepo: repo,
+	}, nil
 }
 
-func NewOrganizationPolicy() OrganizationPolicy {
-	return &OrganizationPolicyImpl{}
-}
-
-func (s *OrganizationPolicyImpl) CanCreate(authenticatedUserId uint) bool {
+func (s *OrganizationPolicy) CanCreate(authenticatedUserId uint) bool {
 	return true
 }
 
-func (s *OrganizationPolicyImpl) CanView(organizationUserId, authenticatedUserId uint) bool {
+func (s *OrganizationPolicy) CanView(organizationUserId, authenticatedUserId uint) bool {
 	return organizationUserId == authenticatedUserId
 }
 
-func (s *OrganizationPolicyImpl) CanUpdate(organizationUserId, authenticatedUserId uint) bool {
-	return organizationUserId == authenticatedUserId
+func (s *OrganizationPolicy) CanUpdate(organizationId, authenticatedUserId uint) bool {
+	isOrganizationUser, err := s.organizationRepo.IsOrganizationUser(organizationId, authenticatedUserId)
+	if err != nil {
+		return false
+	}
+
+	return isOrganizationUser
 }

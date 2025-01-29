@@ -19,12 +19,12 @@ type OrganizationService interface {
 }
 
 type OrganizationServiceImpl struct {
-	organizationPolicy policies.OrganizationPolicy
+	organizationPolicy *policies.OrganizationPolicy
 	organizationRepo   *repositories.OrganizationRepository
 }
 
 func NewOrganizationService(injector *do.Injector) (OrganizationService, error) {
-	policy := policies.NewOrganizationPolicy()
+	policy := do.MustInvoke[*policies.OrganizationPolicy](injector)
 	repo := do.MustInvoke[*repositories.OrganizationRepository](injector)
 
 	return &OrganizationServiceImpl{

@@ -6,6 +6,7 @@ import (
 	"myapp/controllers"
 	"myapp/db"
 	"myapp/factories"
+	"myapp/policies"
 	"myapp/repositories"
 	"myapp/services"
 )
@@ -29,6 +30,9 @@ func InitializeContainer() *do.Injector {
 	do.Provide(injector, factories.NewUserFactory)
 	do.Provide(injector, factories.NewNoteFactory)
 	do.Provide(injector, factories.NewTagFactory)
+
+	// policies
+	do.Provide(injector, policies.NewOrganizationPolicy)
 
 	// Services
 	do.Provide(injector, services.NewUserService)
