@@ -29,10 +29,12 @@ func main() {
 	// controllers
 	userController := do.MustInvoke[*controllers.UserController](container)
 	noteController := do.MustInvoke[*controllers.NoteController](container)
+	organizationController := do.MustInvoke[*controllers.OrganizationController](container)
 
 	// Register routes
 	routes.RegisterUserRoutes(e, userController)
 	routes.RegisterNoteRoutes(e, noteController)
+	routes.RegisterOrganizationRoutes(e, organizationController)
 
 	e.Logger.Fatal(e.Start(":8080"))
 }

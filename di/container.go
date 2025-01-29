@@ -33,7 +33,7 @@ func InitializeContainer() *do.Injector {
 	// Services
 	do.Provide(injector, services.NewUserService)
 	do.Provide(injector, services.NewNoteService)
-	do.Provide(injector, services.OrganizationService)
+	do.Provide(injector, services.NewOrganizationService)
 
 	// Controllers
 	do.Provide(injector, controllers.NewUserController)
