@@ -1,2 +1,2 @@
 # Fluxton
-Smooth Backend As A Service (BaaS)
+Blazing fast futuristic Backend As A Service (BaaS)
