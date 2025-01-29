@@ -9,7 +9,15 @@ import (
 func SeedUsers(container *do.Injector) {
 	userFactory := do.MustInvoke[*factories.UserFactory](container)
 
-	_, err := userFactory.CreateMany(3)
+	_, err := userFactory.Create(
+		userFactory.WithUsername("admin"),
+		userFactory.WithEmail("admin@fluxton.io"),
+	)
+	if err != nil {
+		log.Fatalf("Error creating admin user: %v", err)
+	}
+
+	_, err = userFactory.CreateMany(3)
 	if err != nil {
 		log.Fatalf("Error seeding users: %v", err)
 	}
