@@ -54,12 +54,10 @@ func (f *NoteFactory) CreateMany(count int, opts ...NoteOption) ([]*models.Note,
 	return notes, nil
 }
 
-func (f *NoteFactory) WithTitle(title string) (*models.Note, error) {
-	opts := func(note *models.Note) {
+func (f *NoteFactory) WithTitle(title string) NoteOption {
+	return func(note *models.Note) {
 		note.Title = title
 	}
-
-	return f.Create(opts)
 }
 
 func (f *NoteFactory) WithUserId(userId uint) NoteOption {

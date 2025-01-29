@@ -11,7 +11,7 @@ func SeedUsers(container *do.Injector) {
 
 	_, err := userFactory.Create(
 		userFactory.WithUsername("admin"),
-		userFactory.WithEmail("admin@fluxton.io"),
+		userFactory.WithEmail("admin@fluxton.com"),
 	)
 	if err != nil {
 		log.Fatalf("Error creating admin user: %v", err)

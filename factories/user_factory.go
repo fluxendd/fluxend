@@ -28,7 +28,7 @@ func (f *UserFactory) Create(opts ...UserOption) (*models.User, error) {
 	user := &models.User{
 		Username:  utils.Faker.Internet().User(),
 		Email:     utils.Faker.Internet().Email(),
-		Password:  utils.HashPassword(defaultPassword),
+		Password:  defaultPassword,
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}

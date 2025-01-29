@@ -7,7 +7,7 @@ import (
 )
 
 func RegisterNoteRoutes(e *echo.Echo, noteController *controllers.NoteController) {
-	notesGroup := e.Group("/notes", middleware.AuthMiddleware)
+	notesGroup := e.Group("api/notes", middleware.AuthMiddleware)
 
 	notesGroup.POST("", noteController.Store)
 	notesGroup.GET("", noteController.List)
