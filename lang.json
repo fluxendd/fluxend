@@ -1,0 +1,4 @@
+{
+  "note.error.invalidId": "Invalid note ID provided",
+  "note.error.invalidPayload": "Invalid note payload provided"
+}
