@@ -1,0 +1,41 @@
+package db
+
+import (
+	"fmt"
+	"log"
+	"os"
+
+	"github.com/jmoiron/sqlx"
+	_ "github.com/lib/pq"
+)
+
+var DB *sqlx.DB
+
+func InitDB() {
+	var err error
+	connStr := fmt.Sprintf(
+		"user=%s dbname=%s password=%s host=%s sslmode=%s",
+		os.Getenv("DATABASE_USER"),
+		os.Getenv("DATABASE_NAME"),
+		os.Getenv("DATABASE_PASSWORD"),
+		os.Getenv("DATABASE_HOST"),
+		os.Getenv("DATABASE_SSL_MODE"),
+	)
+
+	DB, err = sqlx.Open("postgres", connStr)
+	if err != nil {
+		log.Fatal("Error opening database: ", err)
+	}
+
+	err = DB.Ping()
+	if err != nil {
+		log.Fatal("Error pinging database: ", err)
+	}
+}
+
+func GetDB() *sqlx.DB {
+	if DB == nil {
+		log.Fatal("Database not initialized. Call InitDB first.")
+	}
+	return DB
+}
