@@ -21,6 +21,7 @@ func InitializeContainer() *do.Injector {
 
 	// Repositories
 	do.Provide(injector, repositories.NewUserRepository)
+	do.Provide(injector, repositories.NewOrganizationRepository)
 	do.Provide(injector, repositories.NewNoteRepository)
 	do.Provide(injector, repositories.NewTagRepository)
 
@@ -32,10 +33,12 @@ func InitializeContainer() *do.Injector {
 	// Services
 	do.Provide(injector, services.NewUserService)
 	do.Provide(injector, services.NewNoteService)
+	do.Provide(injector, services.OrganizationService)
 
 	// Controllers
 	do.Provide(injector, controllers.NewUserController)
 	do.Provide(injector, controllers.NewNoteController)
+	do.Provide(injector, controllers.NewOrganizationController)
 
 	return injector
 }
