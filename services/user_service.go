@@ -107,12 +107,12 @@ func (s *UserServiceImpl) Delete(userId uint) (bool, error) {
 
 func (s *UserServiceImpl) GenerateToken(user *models.User) (string, error) {
 	claims := jwt.MapClaims{
-		"id":       user.ID,
-		"username": user.Username,
-		"email":    user.Email,
-		"status":   user.Status,
-		"exp":      time.Now().Add(time.Hour * 24).Unix(),
-		"iat":      time.Now().Unix(),
+		"exp": time.Now().Add(time.Hour * 24).Unix(),
+		"iat": time.Now().Unix(),
+		"user": models.AuthenticatedUser{
+			ID:     user.ID,
+			RoleID: user.RoleID,
+		},
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)

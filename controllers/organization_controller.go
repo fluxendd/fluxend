@@ -50,7 +50,7 @@ func (nc *OrganizationController) Show(c echo.Context) error {
 
 func (nc *OrganizationController) Store(c echo.Context) error {
 	var request requests.OrganizationCreateRequest
-	authenticatedUserId, _ := utils.NewAuth(c).Id()
+	authenticatedUserUser, _ := utils.NewAuth(c).User()
 
 	if err := c.Bind(&request); err != nil {
 		return responses.BadRequestResponse(c, "organization.error.invalidPayload")
@@ -60,7 +60,7 @@ func (nc *OrganizationController) Store(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	organization, err := nc.organizationService.Create(&request, authenticatedUserId)
+	organization, err := nc.organizationService.Create(&request, authenticatedUserUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
