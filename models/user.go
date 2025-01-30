@@ -33,7 +33,7 @@ type AuthenticatedUser struct {
 }
 
 func (u User) GetFields() string {
-	return fmt.Sprintf("id, username, email, status, role, bio, password, created_at, updated_at")
+	return fmt.Sprintf("id, username, email, status, role_id, bio, password, created_at, updated_at")
 }
 
 func (u User) IsActive() bool {

@@ -5,6 +5,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
 	"myapp/errs"
+	"myapp/models"
 	"myapp/responses"
 	"os"
 	"strings"
@@ -42,7 +43,10 @@ func AuthMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 
 		// Optionally: You can store the user data from the token for later use in the request context
 		// For example, store user ID or role in context for further authorization checks.
-		c.Set("user", claims["user"])
+		c.Set("user", models.AuthenticatedUser{
+			ID:     uint(claims["id"].(float64)),
+			RoleID: int(claims["role_id"].(float64)),
+		})
 
 		// Proceed to the next handler if everything is valid
 		return next(c)
