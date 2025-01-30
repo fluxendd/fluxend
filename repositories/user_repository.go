@@ -99,8 +99,8 @@ func (r *UserRepository) GetByEmail(email string) (models.User, error) {
 }
 
 func (r *UserRepository) Create(user *models.User) (*models.User, error) {
-	query := "INSERT INTO users (username, email, status, password) VALUES ($1, $2, $3, $4) RETURNING id"
-	err := r.db.QueryRowx(query, user.Username, user.Email, models.UserStatusActive, utils.HashPassword(user.Password)).Scan(&user.ID)
+	query := "INSERT INTO users (username, email, status, role_id, password) VALUES ($1, $2, $3, $4, $5) RETURNING id"
+	err := r.db.QueryRowx(query, user.Username, user.Email, models.UserStatusActive, user.RoleID, utils.HashPassword(user.Password)).Scan(&user.ID)
 	if err != nil {
 		return &models.User{}, fmt.Errorf("could not create row: %v", err)
 	}

@@ -4,6 +4,7 @@ import (
 	"github.com/labstack/gommon/log"
 	"github.com/samber/do"
 	"myapp/factories"
+	"myapp/models"
 )
 
 func SeedUsers(container *do.Injector) {
@@ -11,6 +12,7 @@ func SeedUsers(container *do.Injector) {
 
 	_, err := userFactory.Create(
 		userFactory.WithUsername("admin"),
+		userFactory.WithRole(models.UserRoleKing),
 		userFactory.WithEmail("admin@fluxton.com"),
 	)
 	if err != nil {
