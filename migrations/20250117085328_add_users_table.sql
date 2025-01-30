@@ -2,6 +2,7 @@
 -- +goose StatementBegin
 CREATE TABLE users (
    id SERIAL PRIMARY KEY,
+   role_id INT NOT NULL,
    username VARCHAR(255) NOT NULL UNIQUE,
    email VARCHAR(255) NOT NULL UNIQUE,
    status VARCHAR(10) NOT NULL CHECK (status IN ('active', 'inactive')),
@@ -12,6 +13,7 @@ CREATE TABLE users (
 );
 
 CREATE UNIQUE INDEX idx_users_email ON users(email);
+ALTER TABLE users ADD CONSTRAINT fk_users_role_id FOREIGN KEY (role_id) REFERENCES roles(id);
 -- +goose StatementEnd
 
 -- +goose Down

@@ -29,6 +29,7 @@ func (f *UserFactory) Create(opts ...UserOption) (*models.User, error) {
 		Username:  utils.Faker.Internet().User(),
 		Email:     utils.Faker.Internet().Email(),
 		Password:  defaultPassword,
+		RoleID:    models.UserRoleBishop,
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}
@@ -37,12 +38,12 @@ func (f *UserFactory) Create(opts ...UserOption) (*models.User, error) {
 		opt(user)
 	}
 
-	createdNote, err := f.repo.Create(user)
+	createdUser, err := f.repo.Create(user)
 	if err != nil {
 		return nil, err
 	}
 
-	return createdNote, nil
+	return createdUser, nil
 }
 
 func (f *UserFactory) CreateMany(count int, opts ...UserOption) ([]*models.User, error) {
@@ -55,6 +56,12 @@ func (f *UserFactory) CreateMany(count int, opts ...UserOption) ([]*models.User,
 		users = append(users, user)
 	}
 	return users, nil
+}
+
+func (f *UserFactory) WithRole(role int) UserOption {
+	return func(user *models.User) {
+		user.RoleID = role
+	}
 }
 
 func (f *UserFactory) WithUsername(username string) UserOption {
