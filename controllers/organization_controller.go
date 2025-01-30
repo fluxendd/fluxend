@@ -33,14 +33,14 @@ func (nc *OrganizationController) List(c echo.Context) error {
 }
 
 func (nc *OrganizationController) Show(c echo.Context) error {
-	authenticatedUserId, _ := utils.NewAuth(c).Id()
+	authenticatedUser, _ := utils.NewAuth(c).User()
 
 	id, err := utils.GetUintPathParam(c, "id", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	organization, err := nc.organizationService.GetByID(id, authenticatedUserId)
+	organization, err := nc.organizationService.GetByID(id, authenticatedUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -50,7 +50,7 @@ func (nc *OrganizationController) Show(c echo.Context) error {
 
 func (nc *OrganizationController) Store(c echo.Context) error {
 	var request requests.OrganizationCreateRequest
-	authenticatedUserUser, _ := utils.NewAuth(c).User()
+	authenticatedUser, _ := utils.NewAuth(c).User()
 
 	if err := c.Bind(&request); err != nil {
 		return responses.BadRequestResponse(c, "organization.error.invalidPayload")
@@ -60,7 +60,7 @@ func (nc *OrganizationController) Store(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	organization, err := nc.organizationService.Create(&request, authenticatedUserUser)
+	organization, err := nc.organizationService.Create(&request, authenticatedUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -70,7 +70,7 @@ func (nc *OrganizationController) Store(c echo.Context) error {
 
 func (nc *OrganizationController) Update(c echo.Context) error {
 	var request requests.OrganizationCreateRequest
-	authenticatedUserId, _ := utils.NewAuth(c).Id()
+	authenticatedUser, _ := utils.NewAuth(c).User()
 
 	id, err := utils.GetUintPathParam(c, "id", true)
 	if err != nil {
@@ -81,7 +81,7 @@ func (nc *OrganizationController) Update(c echo.Context) error {
 		return responses.BadRequestResponse(c, "organization.error.invalidPayload")
 	}
 
-	updatedOrganization, err := nc.organizationService.Update(id, authenticatedUserId, &request)
+	updatedOrganization, err := nc.organizationService.Update(id, authenticatedUser, &request)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -90,13 +90,14 @@ func (nc *OrganizationController) Update(c echo.Context) error {
 }
 
 func (nc *OrganizationController) Delete(c echo.Context) error {
-	authenticatedUserId, _ := utils.NewAuth(c).Id()
+	authenticatedUser, _ := utils.NewAuth(c).User()
+
 	id, err := utils.GetUintPathParam(c, "id", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	if _, err := nc.organizationService.Delete(id, authenticatedUserId); err != nil {
+	if _, err := nc.organizationService.Delete(id, authenticatedUser); err != nil {
 		return responses.ErrorResponse(c, err)
 	}
 

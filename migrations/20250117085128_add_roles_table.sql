@@ -8,10 +8,14 @@ CREATE TABLE roles (
 );
 
 INSERT INTO roles (name) VALUES
-  ('king'), /* Super admin: and can do anything. Can create/edit/delete any org or project */
-  ('bishop'), /* Admin: can create/edit/delete own orgs and projects  */
-  ('lord'), /* Editor: Can create/edit/delete projects under an org */
-  ('peasant'); /* Explorer: readonly access to everything under an org */
+/* Can do everything */
+  ('king'),
+/* can CRUD own organizations and projects underneath  */
+  ('bishop'),
+/* Editor: can CRUD projects underneath org he is part of but cannot modify org */
+  ('lord'),
+/* Explorer: can view projects underneath org he is part of */
+  ('peasant');
 
 -- +goose StatementEnd
 

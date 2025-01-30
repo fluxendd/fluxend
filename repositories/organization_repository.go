@@ -23,16 +23,17 @@ func NewOrganizationRepository(injector *do.Injector) (*OrganizationRepository, 
 
 func (r *OrganizationRepository) ListForUser(paginationParams utils.PaginationParams, authenticatedUserId uint) ([]models.Organization, error) {
 	offset := (paginationParams.Page - 1) * paginationParams.Limit
+	modelSkeleton := models.Organization{}
 
 	query := `
 		SELECT 
 			%s 
 		FROM 
-			organizations org
+			organizations
 		JOIN 
-			organization_users org_user ON org.id = org_user.organization_id
+			organization_users ON organizations.id = organization_users.organization_id
 		WHERE 
-			org_user.user_id = :user_id
+			organization_users.user_id = :user_id
 		ORDER BY 
 			:sort DESC
 		LIMIT 
@@ -42,7 +43,7 @@ func (r *OrganizationRepository) ListForUser(paginationParams utils.PaginationPa
 
 	`
 
-	query = fmt.Sprintf(query, models.Organization{}.GetFields())
+	query = fmt.Sprintf(query, modelSkeleton.GetFieldsWithAlias(modelSkeleton.GetTableName()))
 
 	params := map[string]interface{}{
 		"user_id": authenticatedUserId,

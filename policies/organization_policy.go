@@ -19,15 +19,24 @@ func NewOrganizationPolicy(injector *do.Injector) (*OrganizationPolicy, error) {
 }
 
 func (s *OrganizationPolicy) CanCreate(authenticatedUser models.AuthenticatedUser) bool {
-	return authenticatedUser.RoleID == models.UserRoleKing || authenticatedUser.RoleID == models.UserRoleBishop
+	return authenticatedUser.IsBishopOrMore()
 }
 
-func (s *OrganizationPolicy) CanView(organizationUserId, authenticatedUserId uint) bool {
-	return organizationUserId == authenticatedUserId
+func (s *OrganizationPolicy) CanView(organizationId uint, authenticatedUser models.AuthenticatedUser) bool {
+	isOrganizationUser, err := s.organizationRepo.IsOrganizationUser(organizationId, authenticatedUser.ID)
+	if err != nil {
+		return false
+	}
+
+	return isOrganizationUser
 }
 
-func (s *OrganizationPolicy) CanUpdate(organizationId, authenticatedUserId uint) bool {
-	isOrganizationUser, err := s.organizationRepo.IsOrganizationUser(organizationId, authenticatedUserId)
+func (s *OrganizationPolicy) CanUpdate(organizationId uint, authenticatedUser models.AuthenticatedUser) bool {
+	if !authenticatedUser.IsBishopOrMore() {
+		return false
+	}
+
+	isOrganizationUser, err := s.organizationRepo.IsOrganizationUser(organizationId, authenticatedUser.ID)
 	if err != nil {
 		return false
 	}
