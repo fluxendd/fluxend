@@ -2,6 +2,7 @@ package policies
 
 import (
 	"github.com/samber/do"
+	"myapp/models"
 	"myapp/repositories"
 )
 
@@ -17,8 +18,8 @@ func NewOrganizationPolicy(injector *do.Injector) (*OrganizationPolicy, error) {
 	}, nil
 }
 
-func (s *OrganizationPolicy) CanCreate(authenticatedUserId uint) bool {
-	return true
+func (s *OrganizationPolicy) CanCreate(authenticatedUser models.AuthenticatedUser) bool {
+	return authenticatedUser.RoleID == models.UserRoleKing || authenticatedUser.RoleID == models.UserRoleBishop
 }
 
 func (s *OrganizationPolicy) CanView(organizationUserId, authenticatedUserId uint) bool {

@@ -27,6 +27,11 @@ type User struct {
 	UpdatedAt time.Time `db:"updated_at"`
 }
 
+type AuthenticatedUser struct {
+	ID     uint
+	RoleID int
+}
+
 func (u User) GetFields() string {
 	return fmt.Sprintf("id, username, email, status, role, bio, password, created_at, updated_at")
 }

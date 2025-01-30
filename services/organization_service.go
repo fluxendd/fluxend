@@ -13,7 +13,7 @@ import (
 type OrganizationService interface {
 	List(paginationParams utils.PaginationParams, authenticatedUserId uint) ([]models.Organization, error)
 	GetByID(id, authenticatedUserId uint) (models.Organization, error)
-	Create(request *requests.OrganizationCreateRequest, authenticatedUserId uint) (models.Organization, error)
+	Create(request *requests.OrganizationCreateRequest, authenticatedUser models.AuthenticatedUser) (models.Organization, error)
 	Update(organizationId, authenticatedUserId uint, request *requests.OrganizationCreateRequest) (*models.Organization, error)
 	Delete(organizationId, authenticatedUserId uint) (bool, error)
 }
@@ -41,8 +41,8 @@ func (s *OrganizationServiceImpl) GetByID(id, authenticatedUserId uint) (models.
 	return s.organizationRepo.GetByIDForUser(id, authenticatedUserId)
 }
 
-func (s *OrganizationServiceImpl) Create(request *requests.OrganizationCreateRequest, authenticatedUserId uint) (models.Organization, error) {
-	if !s.organizationPolicy.CanCreate(authenticatedUserId) {
+func (s *OrganizationServiceImpl) Create(request *requests.OrganizationCreateRequest, authenticatedUser models.AuthenticatedUser) (models.Organization, error) {
+	if !s.organizationPolicy.CanCreate(authenticatedUser) {
 		return models.Organization{}, errs.NewForbiddenError("organization.error.createForbidden")
 	}
 
@@ -50,7 +50,7 @@ func (s *OrganizationServiceImpl) Create(request *requests.OrganizationCreateReq
 		Name: request.Name,
 	}
 
-	_, err := s.organizationRepo.Create(&organization, authenticatedUserId)
+	_, err := s.organizationRepo.Create(&organization, authenticatedUser.ID)
 	if err != nil {
 		return models.Organization{}, err
 	}

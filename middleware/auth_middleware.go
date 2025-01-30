@@ -42,9 +42,7 @@ func AuthMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 
 		// Optionally: You can store the user data from the token for later use in the request context
 		// For example, store user ID or role in context for further authorization checks.
-		// c.Set("user", claims)
-		c.Set("id", claims["id"])
-		c.Set("email", claims["email"])
+		c.Set("user", claims["user"])
 
 		// Proceed to the next handler if everything is valid
 		return next(c)
