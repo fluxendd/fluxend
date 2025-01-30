@@ -47,3 +47,31 @@ func (u User) GetRoles() []int {
 func (u User) IsKing() bool {
 	return u.RoleID == UserRoleKing
 }
+
+func (u User) IsBishopOrMore() bool {
+	return u.RoleID <= UserRoleBishop
+}
+
+func (u User) IsLordOrMore() bool {
+	return u.RoleID <= UserRoleLord
+}
+
+func (u User) IsPeasantOrMore() bool {
+	return u.RoleID <= UserRolePeasant
+}
+
+func (au AuthenticatedUser) IsKing() bool {
+	return au.RoleID == UserRoleKing
+}
+
+func (au AuthenticatedUser) IsBishopOrMore() bool {
+	return au.RoleID <= UserRoleBishop
+}
+
+func (au AuthenticatedUser) IsLordOrMore() bool {
+	return au.RoleID <= UserRoleLord
+}
+
+func (au AuthenticatedUser) IsPeasantOrMore() bool {
+	return au.RoleID <= UserRolePeasant
+}

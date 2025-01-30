@@ -12,10 +12,10 @@ import (
 
 type OrganizationService interface {
 	List(paginationParams utils.PaginationParams, authenticatedUserId uint) ([]models.Organization, error)
-	GetByID(id, authenticatedUserId uint) (models.Organization, error)
+	GetByID(organizationId uint, authenticatedUser models.AuthenticatedUser) (models.Organization, error)
 	Create(request *requests.OrganizationCreateRequest, authenticatedUser models.AuthenticatedUser) (models.Organization, error)
-	Update(organizationId, authenticatedUserId uint, request *requests.OrganizationCreateRequest) (*models.Organization, error)
-	Delete(organizationId, authenticatedUserId uint) (bool, error)
+	Update(organizationId uint, authenticatedUser models.AuthenticatedUser, request *requests.OrganizationCreateRequest) (*models.Organization, error)
+	Delete(organizationId uint, authenticatedUser models.AuthenticatedUser) (bool, error)
 }
 
 type OrganizationServiceImpl struct {
@@ -37,8 +37,12 @@ func (s *OrganizationServiceImpl) List(paginationParams utils.PaginationParams, 
 	return s.organizationRepo.ListForUser(paginationParams, authenticatedUserId)
 }
 
-func (s *OrganizationServiceImpl) GetByID(id, authenticatedUserId uint) (models.Organization, error) {
-	return s.organizationRepo.GetByIDForUser(id, authenticatedUserId)
+func (s *OrganizationServiceImpl) GetByID(organizationId uint, authenticatedUser models.AuthenticatedUser) (models.Organization, error) {
+	if !s.organizationPolicy.CanView(organizationId, authenticatedUser) {
+		return models.Organization{}, errs.NewForbiddenError("organization.error.viewForbidden")
+	}
+
+	return s.organizationRepo.GetByIDForUser(organizationId, authenticatedUser.ID)
 }
 
 func (s *OrganizationServiceImpl) Create(request *requests.OrganizationCreateRequest, authenticatedUser models.AuthenticatedUser) (models.Organization, error) {
@@ -58,14 +62,14 @@ func (s *OrganizationServiceImpl) Create(request *requests.OrganizationCreateReq
 	return organization, nil
 }
 
-func (s *OrganizationServiceImpl) Update(organizationId, authenticatedUserId uint, request *requests.OrganizationCreateRequest) (*models.Organization, error) {
-	organization, err := s.organizationRepo.GetByIDForUser(organizationId, authenticatedUserId)
-	if err != nil {
-		return nil, err
+func (s *OrganizationServiceImpl) Update(organizationId uint, authenticatedUser models.AuthenticatedUser, request *requests.OrganizationCreateRequest) (*models.Organization, error) {
+	if !s.organizationPolicy.CanUpdate(organizationId, authenticatedUser) {
+		return &models.Organization{}, errs.NewForbiddenError("organization.error.updateForbidden")
 	}
 
-	if !s.organizationPolicy.CanUpdate(organization.ID, authenticatedUserId) {
-		return &models.Organization{}, errs.NewForbiddenError("organization.error.updateForbidden")
+	organization, err := s.organizationRepo.GetByIDForUser(organizationId, authenticatedUser.ID)
+	if err != nil {
+		return nil, err
 	}
 
 	err = utils.PopulateModel(&organization, request)
@@ -76,14 +80,9 @@ func (s *OrganizationServiceImpl) Update(organizationId, authenticatedUserId uin
 	return s.organizationRepo.Update(organizationId, &organization)
 }
 
-func (s *OrganizationServiceImpl) Delete(organizationId, authenticatedUserId uint) (bool, error) {
-	organization, err := s.organizationRepo.GetByIDForUser(organizationId, authenticatedUserId)
-	if err != nil {
-		return false, err
-	}
-
-	if !s.organizationPolicy.CanUpdate(organization.ID, authenticatedUserId) {
-		return false, errs.NewForbiddenError("organization.error.deleteForbidden")
+func (s *OrganizationServiceImpl) Delete(organizationId uint, authenticatedUser models.AuthenticatedUser) (bool, error) {
+	if !s.organizationPolicy.CanUpdate(organizationId, authenticatedUser) {
+		return false, errs.NewForbiddenError("organization.error.updateForbidden")
 	}
 
 	return s.organizationRepo.Delete(organizationId)

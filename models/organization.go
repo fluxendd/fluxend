@@ -1,7 +1,7 @@
 package models
 
 import (
-	"fmt"
+	"strings"
 	"time"
 )
 
@@ -12,6 +12,19 @@ type Organization struct {
 	UpdatedAt time.Time `db:"updated_at"`
 }
 
+func (u Organization) GetTableName() string {
+	return "organizations"
+}
+
 func (u Organization) GetFields() string {
-	return fmt.Sprintf("id, name, created_at, updated_at")
+	return "id, name, created_at, updated_at"
+}
+
+func (u Organization) GetFieldsWithAlias(alias string) string {
+	fields := strings.Split(u.GetFields(), ", ")
+	for i, field := range fields {
+		fields[i] = alias + "." + field
+	}
+
+	return strings.Join(fields, ", ")
 }
