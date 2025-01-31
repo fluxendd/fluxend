@@ -17,3 +17,6 @@ run: ## Run the project
 
 build: ## Build the project
 	@go build -o bin/main cmd/main.go
+
+lint: ## Run linter
+	@golangci-lint run

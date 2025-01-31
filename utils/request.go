@@ -51,7 +51,7 @@ func ExtractPaginationParams(c echo.Context) PaginationParams {
 
 func GetUintQueryParam(c echo.Context, name string, required bool) (uint, error) {
 	if required && c.QueryParam(name) == "" {
-		return 0, errors.New(fmt.Sprintf("query parameter [%s] is required", name))
+		return 0, fmt.Errorf("query parameter [%s] is required", name)
 	}
 
 	return ConvertStringToUint(c.QueryParam(name))
@@ -59,7 +59,7 @@ func GetUintQueryParam(c echo.Context, name string, required bool) (uint, error)
 
 func GetUintPathParam(c echo.Context, name string, required bool) (uint, error) {
 	if required && c.Param(name) == "" {
-		return 0, errors.New(fmt.Sprintf("path parameter [%s] is required", name))
+		return 0, fmt.Errorf("path parameter [%s] is required", name)
 	}
 
 	return ConvertStringToUint(c.Param(name))
