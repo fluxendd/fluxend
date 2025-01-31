@@ -20,7 +20,7 @@ func NewTableController(injector *do.Injector) (*TableController, error) {
 	return &TableController{tableService: tableService}, nil
 }
 
-/*func (pc *TableController) List(c echo.Context) error {
+func (pc *TableController) List(c echo.Context) error {
 	var request requests.DefaultRequest
 	authenticatedUserId, _ := utils.NewAuth(c).Id()
 
@@ -28,13 +28,18 @@ func NewTableController(injector *do.Injector) (*TableController, error) {
 		return responses.UnprocessableResponse(c, err)
 	}
 
+	projectID, err := utils.GetUintPathParam(c, "projectID", true)
+	if err != nil {
+		return responses.BadRequestResponse(c, err.Error())
+	}
+
 	paginationParams := utils.ExtractPaginationParams(c)
-	projects, err := pc.tableService.List(paginationParams, request.OrganizationID, authenticatedUserId)
+	tables, err := pc.tableService.List(paginationParams, request.OrganizationID, projectID, authenticatedUserId)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
 
-	return responses.SuccessResponse(c, resources.ProjectResourceCollection(projects))
+	return responses.SuccessResponse(c, resources.TableResourceCollection(tables))
 }
 
 func (pc *TableController) Show(c echo.Context) error {
@@ -45,18 +50,18 @@ func (pc *TableController) Show(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	id, err := utils.GetUintPathParam(c, "id", true)
+	tableID, err := utils.GetUintPathParam(c, "tableID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	project, err := pc.tableService.GetByID(id, request.OrganizationID, authenticatedUser)
+	table, err := pc.tableService.GetByID(tableID, request.OrganizationID, authenticatedUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
 
-	return responses.SuccessResponse(c, resources.ProjectResource(&project))
-}*/
+	return responses.SuccessResponse(c, resources.TableResource(&table))
+}
 
 func (pc *TableController) Store(c echo.Context) error {
 	var request requests.TableCreateRequest

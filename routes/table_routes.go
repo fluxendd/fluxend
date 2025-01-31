@@ -10,8 +10,9 @@ func RegisterTableRoutes(e *echo.Echo, TableController *controllers.TableControl
 	tablesGroup := e.Group("api/projects/:projectID/tables", middleware.AuthMiddleware)
 
 	tablesGroup.POST("", TableController.Store)
-	/*tablesGroup.GET("", TableController.List)
+	tablesGroup.GET("", TableController.List)
 	tablesGroup.GET("/:tableID", TableController.Show)
-	tablesGroup.PUT("/:tableID", TableController.Update)
-	tablesGroup.DELETE("/:tableID", TableController.Delete)*/
+	/*
+		tablesGroup.PUT("/:tableID", TableController.Update)
+		tablesGroup.DELETE("/:tableID", TableController.Delete)*/
 }

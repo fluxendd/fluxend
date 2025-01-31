@@ -6,6 +6,8 @@ import (
 	"fluxton/policies"
 	"fluxton/repositories"
 	"fluxton/requests"
+	"fluxton/utils"
+
 	//"fluxton/utils"
 	//"github.com/google/uuid"
 	"github.com/samber/do"
@@ -13,8 +15,8 @@ import (
 )
 
 type TableService interface {
-	//List(paginationParams utils.PaginationParams, organizationId, authenticatedUserId uint) ([]models.Table, error)
-	//GetByID(tableId, organizationId uint, authenticatedUser models.AuthenticatedUser) (models.Table, error)
+	List(paginationParams utils.PaginationParams, organizationId, projectId, authenticatedUserId uint) ([]models.Table, error)
+	GetByID(tableId, organizationId uint, authenticatedUser models.AuthenticatedUser) (models.Table, error)
 	Create(request *requests.TableCreateRequest, projectID uint, authenticatedUser models.AuthenticatedUser) (models.Table, error)
 	//Update(tableId uint, authenticatedUser models.AuthenticatedUser, request *requests.TableCreateRequest) (*models.Table, error)
 	Delete(tableId uint, authenticatedUser models.AuthenticatedUser) (bool, error)
@@ -41,12 +43,12 @@ func NewTableService(injector *do.Injector) (TableService, error) {
 	}, nil
 }
 
-/*func (s *TableServiceImpl) List(paginationParams utils.PaginationParams, organizationId, authenticatedUserId uint) ([]models.Table, error) {
+func (s *TableServiceImpl) List(paginationParams utils.PaginationParams, organizationId, projectId, authenticatedUserId uint) ([]models.Table, error) {
 	if !s.projectPolicy.CanList(organizationId, authenticatedUserId) {
 		return []models.Table{}, errs.NewForbiddenError("project.error.listForbidden")
 	}
 
-	return s.projectRepo.ListForUser(paginationParams, authenticatedUserId)
+	return s.coreTableRepo.ListForProject(paginationParams, projectId)
 }
 
 func (s *TableServiceImpl) GetByID(tableId, organizationId uint, authenticatedUser models.AuthenticatedUser) (models.Table, error) {
@@ -54,8 +56,8 @@ func (s *TableServiceImpl) GetByID(tableId, organizationId uint, authenticatedUs
 		return models.Table{}, errs.NewForbiddenError("project.error.viewForbidden")
 	}
 
-	return s.projectRepo.GetByID(tableId)
-}*/
+	return s.coreTableRepo.GetByID(tableId)
+}
 
 func (s *TableServiceImpl) Create(request *requests.TableCreateRequest, projectID uint, authenticatedUser models.AuthenticatedUser) (models.Table, error) {
 	if !s.projectPolicy.CanCreate(request.OrganizationID, authenticatedUser) {

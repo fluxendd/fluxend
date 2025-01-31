@@ -11,7 +11,7 @@ type Table struct {
 	ID        uint               `db:"id"`
 	ProjectID uint               `db:"project_id"`
 	Name      string             `db:"name"`
-	Fields    []types.TableField `db:"fields"`
+	Fields    []types.TableField `db:"fields" json:"fields"`
 	CreatedAt time.Time          `db:"created_at"`
 	UpdatedAt time.Time          `db:"updated_at"`
 }

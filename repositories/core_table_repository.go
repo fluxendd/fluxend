@@ -22,19 +22,17 @@ func NewCoreTableRepository(injector *do.Injector) (*CoreTableRepository, error)
 	return &CoreTableRepository{db: db}, nil
 }
 
-func (r *CoreTableRepository) ListForUser(paginationParams utils.PaginationParams, authenticatedUserId uint) ([]models.Project, error) {
+func (r *CoreTableRepository) ListForProject(paginationParams utils.PaginationParams, projectID uint) ([]models.Table, error) {
 	offset := (paginationParams.Page - 1) * paginationParams.Limit
-	modelSkeleton := models.Project{}
+	modelSkeleton := models.Table{}
 
 	query := `
 		SELECT 
 			%s 
 		FROM 
-			projects
-		JOIN 
-			organization_users ON projects.organization_id = organization_users.organization_id
+			tables
 		WHERE 
-			organization_users.user_id = :user_id
+			project_id = :project_id
 		ORDER BY 
 			:sort DESC
 		LIMIT 
@@ -47,10 +45,10 @@ func (r *CoreTableRepository) ListForUser(paginationParams utils.PaginationParam
 	query = fmt.Sprintf(query, modelSkeleton.GetFieldsWithAlias(modelSkeleton.GetTableName()))
 
 	params := map[string]interface{}{
-		"user_id": authenticatedUserId,
-		"sort":    paginationParams.Sort,
-		"limit":   paginationParams.Limit,
-		"offset":  offset,
+		"project_id": projectID,
+		"sort":       paginationParams.Sort,
+		"limit":      paginationParams.Limit,
+		"offset":     offset,
 	}
 
 	rows, err := r.db.NamedQuery(query, params)
@@ -59,9 +57,9 @@ func (r *CoreTableRepository) ListForUser(paginationParams utils.PaginationParam
 	}
 	defer rows.Close()
 
-	var projects []models.Project
+	var projects []models.Table
 	for rows.Next() {
-		var organization models.Project
+		var organization models.Table
 		if err := rows.StructScan(&organization); err != nil {
 			return nil, fmt.Errorf("could not scan row: %v", err)
 		}
@@ -75,25 +73,25 @@ func (r *CoreTableRepository) ListForUser(paginationParams utils.PaginationParam
 	return projects, nil
 }
 
-func (r *CoreTableRepository) GetByID(id uint) (models.Project, error) {
-	query := "SELECT %s FROM projects WHERE id = $1"
-	query = fmt.Sprintf(query, models.Project{}.GetFields())
+func (r *CoreTableRepository) GetByID(id uint) (models.Table, error) {
+	query := "SELECT %s FROM tables WHERE id = $1"
+	query = fmt.Sprintf(query, models.Table{}.GetFields())
 
-	var project models.Project
+	var project models.Table
 	err := r.db.Get(&project, query, id)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return models.Project{}, errs.NewNotFoundError("project.error.notFound")
+			return models.Table{}, errs.NewNotFoundError("table.error.notFound")
 		}
 
-		return models.Project{}, fmt.Errorf("could not fetch row: %v", err)
+		return models.Table{}, fmt.Errorf("could not fetch row: %v", err)
 	}
 
 	return project, nil
 }
 
 func (r *CoreTableRepository) ExistsByID(id uint) (bool, error) {
-	query := "SELECT EXISTS(SELECT 1 FROM projects WHERE id = $1)"
+	query := "SELECT EXISTS(SELECT 1 FROM tables WHERE id = $1)"
 
 	var exists bool
 	err := r.db.Get(&exists, query, id)
@@ -104,11 +102,11 @@ func (r *CoreTableRepository) ExistsByID(id uint) (bool, error) {
 	return exists, nil
 }
 
-func (r *CoreTableRepository) ExistsByNameForProject(name string, projectId uint) (bool, error) {
+func (r *CoreTableRepository) ExistsByNameForProject(name string, tableID uint) (bool, error) {
 	query := "SELECT EXISTS(SELECT 1 FROM tables WHERE name = $1 AND project_Id = $2)"
 
 	var exists bool
-	err := r.db.Get(&exists, query, name, projectId)
+	err := r.db.Get(&exists, query, name, tableID)
 	if err != nil {
 		return false, fmt.Errorf("could not fetch row: %v", err)
 	}
@@ -131,31 +129,31 @@ func (r *CoreTableRepository) Create(table *models.Table) (*models.Table, error)
 	return table, nil
 }
 
-func (r *CoreTableRepository) Update(id uint, project *models.Project) (*models.Project, error) {
-	project.UpdatedAt = time.Now()
-	project.ID = id
+func (r *CoreTableRepository) Update(id uint, table *models.Table) (*models.Table, error) {
+	table.UpdatedAt = time.Now()
+	table.ID = id
 
 	query := `
-		UPDATE projects 
-		SET name = :name, updated_at = :updated_at 
+		UPDATE tables 
+		SET name = :name, fields = :fields, updated_at = :updated_at 
 		WHERE id = :id`
 
-	res, err := r.db.NamedExec(query, project)
+	res, err := r.db.NamedExec(query, table)
 	if err != nil {
-		return &models.Project{}, fmt.Errorf("could not update row: %v", err)
+		return &models.Table{}, fmt.Errorf("could not update row: %v", err)
 	}
 
 	_, err = res.RowsAffected()
 	if err != nil {
-		return &models.Project{}, fmt.Errorf("could not determine affected rows: %v", err)
+		return &models.Table{}, fmt.Errorf("could not determine affected rows: %v", err)
 	}
 
-	return project, nil
+	return table, nil
 }
 
-func (r *CoreTableRepository) Delete(projectId uint) (bool, error) {
+func (r *CoreTableRepository) Delete(tableID uint) (bool, error) {
 	query := "DELETE FROM projects WHERE id = $1"
-	res, err := r.db.Exec(query, projectId)
+	res, err := r.db.Exec(query, tableID)
 	if err != nil {
 		return false, fmt.Errorf("could not delete row: %v", err)
 	}
