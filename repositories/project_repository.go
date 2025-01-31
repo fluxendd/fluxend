@@ -32,7 +32,7 @@ func (r *ProjectRepository) ListForUser(paginationParams utils.PaginationParams,
 		FROM 
 			projects
 		JOIN 
-			organization_users ON projects.id = organization_users.organization_id
+			organization_users ON projects.organization_id = organization_users.organization_id
 		WHERE 
 			organization_users.user_id = :user_id
 		ORDER BY 
@@ -79,17 +79,17 @@ func (r *ProjectRepository) GetByIDForUser(id, authenticatedUserId uint) (models
 	query := "SELECT %s FROM projects WHERE id = $1"
 	query = fmt.Sprintf(query, models.Project{}.GetFields())
 
-	var organization models.Project
-	err := r.db.Get(&organization, query, id)
+	var project models.Project
+	err := r.db.Get(&project, query, id)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return models.Project{}, errs.NewNotFoundError("organization.error.notFound")
+			return models.Project{}, errs.NewNotFoundError("project.error.notFound")
 		}
 
 		return models.Project{}, fmt.Errorf("could not fetch row: %v", err)
 	}
 
-	return organization, nil
+	return project, nil
 }
 
 func (r *ProjectRepository) ExistsByID(id uint) (bool, error) {
@@ -104,11 +104,11 @@ func (r *ProjectRepository) ExistsByID(id uint) (bool, error) {
 	return exists, nil
 }
 
-func (r *ProjectRepository) ExistsByName(name string) (bool, error) {
-	query := "SELECT EXISTS(SELECT 1 FROM projects WHERE name = $1)"
+func (r *ProjectRepository) ExistsByNameForOrganization(name string, organizationId uint) (bool, error) {
+	query := "SELECT EXISTS(SELECT 1 FROM projects WHERE name = $1 AND organization_id = $2)"
 
 	var exists bool
-	err := r.db.Get(&exists, query, name)
+	err := r.db.Get(&exists, query, name, organizationId)
 	if err != nil {
 		return false, fmt.Errorf("could not fetch row: %v", err)
 	}
@@ -122,7 +122,6 @@ func (r *ProjectRepository) Create(project *models.Project) (*models.Project, er
 		return nil, fmt.Errorf("could not begin transaction: %v", err)
 	}
 
-	// Insert into projects table
 	query := "INSERT INTO projects (name, db_name, organization_id) VALUES ($1, $2, $3) RETURNING id"
 	err = tx.QueryRowx(query, project.Name, project.DBName, project.OrganizationID).Scan(&project.ID)
 	if err != nil {
@@ -130,14 +129,6 @@ func (r *ProjectRepository) Create(project *models.Project) (*models.Project, er
 
 		return nil, fmt.Errorf("could not create project: %v", err)
 	}
-
-	// Insert into project_users pivot table
-	/*err = r.createOrganizationUser(tx, project.ID, authenticatedUserId)
-	if err != nil {
-		tx.Rollback()
-
-		return nil, fmt.Errorf("could not insert into pivot table: %v", err)
-	}*/
 
 	// Commit transaction
 	if err = tx.Commit(); err != nil {
@@ -147,16 +138,16 @@ func (r *ProjectRepository) Create(project *models.Project) (*models.Project, er
 	return project, nil
 }
 
-func (r *ProjectRepository) Update(id uint, organization *models.Project) (*models.Project, error) {
-	organization.UpdatedAt = time.Now()
-	organization.ID = id
+func (r *ProjectRepository) Update(id uint, project *models.Project) (*models.Project, error) {
+	project.UpdatedAt = time.Now()
+	project.ID = id
 
 	query := `
 		UPDATE projects 
 		SET name = :name, updated_at = :updated_at 
 		WHERE id = :id`
 
-	res, err := r.db.NamedExec(query, organization)
+	res, err := r.db.NamedExec(query, project)
 	if err != nil {
 		return &models.Project{}, fmt.Errorf("could not update row: %v", err)
 	}
@@ -166,12 +157,12 @@ func (r *ProjectRepository) Update(id uint, organization *models.Project) (*mode
 		return &models.Project{}, fmt.Errorf("could not determine affected rows: %v", err)
 	}
 
-	return organization, nil
+	return project, nil
 }
 
-func (r *ProjectRepository) Delete(organizationId uint) (bool, error) {
+func (r *ProjectRepository) Delete(projectId uint) (bool, error) {
 	query := "DELETE FROM projects WHERE id = $1"
-	res, err := r.db.Exec(query, organizationId)
+	res, err := r.db.Exec(query, projectId)
 	if err != nil {
 		return false, fmt.Errorf("could not delete row: %v", err)
 	}
@@ -182,26 +173,4 @@ func (r *ProjectRepository) Delete(organizationId uint) (bool, error) {
 	}
 
 	return rowsAffected == 1, nil
-}
-
-func (r *ProjectRepository) IsOrganizationUser(organizationId, authenticatedUserId uint) (bool, error) {
-	query := "SELECT EXISTS(SELECT 1 FROM organization_users WHERE organization_id = $1 AND user_id = $2)"
-
-	var exists bool
-	err := r.db.Get(&exists, query, organizationId, authenticatedUserId)
-	if err != nil {
-		return false, fmt.Errorf("could not fetch row: %v", err)
-	}
-
-	return exists, nil
-}
-
-func (r *ProjectRepository) createOrganizationUser(tx *sqlx.Tx, organizationId, userId uint) error {
-	query := "INSERT INTO organization_users (organization_id, user_id) VALUES ($1, $2)"
-	_, err := tx.Exec(query, organizationId, userId)
-	if err != nil {
-		return fmt.Errorf("could not insert into pivot table: %v", err)
-	}
-
-	return nil
 }

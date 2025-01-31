@@ -55,13 +55,9 @@ func (s *ProjectServiceImpl) Create(request *requests.ProjectCreateRequest, auth
 		return models.Project{}, errs.NewForbiddenError("project.error.createForbidden")
 	}
 
-	exists, err := s.projectRepo.ExistsByName(request.Name)
+	err := s.validateNameForDuplication(request.Name, request.OrganizationID)
 	if err != nil {
 		return models.Project{}, err
-	}
-
-	if exists {
-		return models.Project{}, errs.NewUnprocessableError("project.error.duplicateName")
 	}
 
 	project := models.Project{
@@ -84,18 +80,24 @@ func (s *ProjectServiceImpl) Create(request *requests.ProjectCreateRequest, auth
 }
 
 func (s *ProjectServiceImpl) Update(projectId uint, authenticatedUser models.AuthenticatedUser, request *requests.ProjectCreateRequest) (*models.Project, error) {
-	if !s.projectPolicy.CanUpdate(projectId, authenticatedUser) {
-		return &models.Project{}, errs.NewForbiddenError("project.error.updateForbidden")
-	}
-
 	project, err := s.projectRepo.GetByIDForUser(projectId, authenticatedUser.ID)
 	if err != nil {
 		return nil, err
 	}
 
+	if !s.projectPolicy.CanUpdate(projectId, authenticatedUser) {
+		return &models.Project{}, errs.NewForbiddenError("project.error.updateForbidden")
+	}
+
+	project.OrganizationID = request.OrganizationID
 	err = utils.PopulateModel(&project, request)
 	if err != nil {
 		return nil, err
+	}
+
+	err = s.validateNameForDuplication(request.Name, request.OrganizationID)
+	if err != nil {
+		return &models.Project{}, err
 	}
 
 	return s.projectRepo.Update(projectId, &project)
@@ -111,4 +113,17 @@ func (s *ProjectServiceImpl) Delete(projectId uint, authenticatedUser models.Aut
 
 func (s *ProjectServiceImpl) generateDBName() string {
 	return strings.ReplaceAll(strings.ToLower(uuid.New().String()), "-", "")
+}
+
+func (s *ProjectServiceImpl) validateNameForDuplication(name string, organizationId uint) error {
+	exists, err := s.projectRepo.ExistsByNameForOrganization(name, organizationId)
+	if err != nil {
+		return err
+	}
+
+	if exists {
+		return errs.NewUnprocessableError("project.error.duplicateName")
+	}
+
+	return nil
 }
