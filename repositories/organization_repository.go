@@ -110,19 +110,25 @@ func (r *OrganizationRepository) Create(organization *models.Organization, authe
 
 	// Insert into organizations table
 	query := "INSERT INTO organizations (name) VALUES ($1) RETURNING id"
-	err = tx.QueryRowx(query, organization.Name).Scan(&organization.ID)
-	if err != nil {
-		tx.Rollback()
+	queryErr := tx.QueryRowx(query, organization.Name).Scan(&organization.ID)
+	if queryErr != nil {
+		err := tx.Rollback()
+		if err != nil {
+			return nil, err
+		}
 
-		return nil, fmt.Errorf("could not create organization: %v", err)
+		return nil, fmt.Errorf("could not create organization: %v", queryErr)
 	}
 
 	// Insert into organization_users pivot table
-	err = r.createOrganizationUser(tx, organization.ID, authenticatedUserId)
-	if err != nil {
-		tx.Rollback()
+	queryErr = r.createOrganizationUser(tx, organization.ID, authenticatedUserId)
+	if queryErr != nil {
+		err := tx.Rollback()
+		if err != nil {
+			return nil, err
+		}
 
-		return nil, fmt.Errorf("could not insert into pivot table: %v", err)
+		return nil, fmt.Errorf("could not insert into pivot table: %v", queryErr)
 	}
 
 	// Commit transaction
