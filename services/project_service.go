@@ -1,6 +1,7 @@
 package services
 
 import (
+	"github.com/google/uuid"
 	"github.com/samber/do"
 	"myapp/errs"
 	"myapp/models"
@@ -46,15 +47,26 @@ func (s *ProjectServiceImpl) GetByID(projectId uint, authenticatedUser models.Au
 }
 
 func (s *ProjectServiceImpl) Create(request *requests.ProjectCreateRequest, authenticatedUser models.AuthenticatedUser) (models.Project, error) {
-	if !s.projectPolicy.CanCreate(authenticatedUser) {
+	if !s.projectPolicy.CanCreate(request.OrganizationID, authenticatedUser) {
 		return models.Project{}, errs.NewForbiddenError("project.error.createForbidden")
 	}
 
-	project := models.Project{
-		Name: request.Name,
+	exists, err := s.projectRepo.ExistsByName(request.Name)
+	if err != nil {
+		return models.Project{}, err
 	}
 
-	_, err := s.projectRepo.Create(&project, authenticatedUser.ID)
+	if exists {
+		return models.Project{}, errs.NewUnprocessableError("project.error.duplicateName")
+	}
+
+	project := models.Project{
+		Name:           request.Name,
+		OrganizationID: request.OrganizationID,
+		DBName:         s.generateDBName(),
+	}
+
+	_, err = s.projectRepo.Create(&project)
 	if err != nil {
 		return models.Project{}, err
 	}
@@ -86,4 +98,8 @@ func (s *ProjectServiceImpl) Delete(projectId uint, authenticatedUser models.Aut
 	}
 
 	return s.projectRepo.Delete(projectId)
+}
+
+func (s *ProjectServiceImpl) generateDBName() string {
+	return uuid.New().String()
 }
