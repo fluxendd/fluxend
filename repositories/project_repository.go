@@ -123,11 +123,14 @@ func (r *ProjectRepository) Create(project *models.Project) (*models.Project, er
 	}
 
 	query := "INSERT INTO projects (name, db_name, organization_id) VALUES ($1, $2, $3) RETURNING id"
-	err = tx.QueryRowx(query, project.Name, project.DBName, project.OrganizationID).Scan(&project.ID)
-	if err != nil {
-		tx.Rollback()
+	queryErr := tx.QueryRowx(query, project.Name, project.DBName, project.OrganizationID).Scan(&project.ID)
+	if queryErr != nil {
+		err := tx.Rollback()
+		if err != nil {
+			return nil, err
+		}
 
-		return nil, fmt.Errorf("could not create project: %v", err)
+		return nil, fmt.Errorf("could not create project: %v", queryErr)
 	}
 
 	// Commit transaction
