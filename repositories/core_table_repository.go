@@ -104,11 +104,11 @@ func (r *CoreTableRepository) ExistsByID(id uint) (bool, error) {
 	return exists, nil
 }
 
-func (r *CoreTableRepository) ExistsByNameForOrganization(name string, organizationId uint) (bool, error) {
-	query := "SELECT EXISTS(SELECT 1 FROM projects WHERE name = $1 AND organization_id = $2)"
+func (r *CoreTableRepository) ExistsByNameForProject(name string, projectId uint) (bool, error) {
+	query := "SELECT EXISTS(SELECT 1 FROM tables WHERE name = $1 AND project_Id = $2)"
 
 	var exists bool
-	err := r.db.Get(&exists, query, name, organizationId)
+	err := r.db.Get(&exists, query, name, projectId)
 	if err != nil {
 		return false, fmt.Errorf("could not fetch row: %v", err)
 	}
