@@ -31,6 +31,15 @@ func (s *ProjectPolicy) CanCreate(organizationId uint, authenticatedUser models.
 	return isOrganizationUser
 }
 
+func (s *ProjectPolicy) CanList(organizationId uint, authenticatedUserId uint) bool {
+	isOrganizationUser, err := s.organizationRepo.IsOrganizationUser(organizationId, authenticatedUserId)
+	if err != nil {
+		return false
+	}
+
+	return isOrganizationUser
+}
+
 func (s *ProjectPolicy) CanView(organizationId uint, authenticatedUser models.AuthenticatedUser) bool {
 	isOrganizationUser, err := s.organizationRepo.IsOrganizationUser(organizationId, authenticatedUser.ID)
 	if err != nil {

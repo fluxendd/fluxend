@@ -21,10 +21,15 @@ func NewProjectController(injector *do.Injector) (*ProjectController, error) {
 }
 
 func (pc *ProjectController) List(c echo.Context) error {
+	var request requests.ProjectDefaultRequest
 	authenticatedUserId, _ := utils.NewAuth(c).Id()
 
+	if err := request.BindAndValidate(c); err != nil {
+		return responses.UnprocessableResponse(c, err)
+	}
+
 	paginationParams := utils.ExtractPaginationParams(c)
-	projects, err := pc.projectService.List(paginationParams, authenticatedUserId)
+	projects, err := pc.projectService.List(paginationParams, request.OrganizationID, authenticatedUserId)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -33,14 +38,19 @@ func (pc *ProjectController) List(c echo.Context) error {
 }
 
 func (pc *ProjectController) Show(c echo.Context) error {
+	var request requests.ProjectDefaultRequest
 	authenticatedUser, _ := utils.NewAuth(c).User()
+
+	if err := request.BindAndValidate(c); err != nil {
+		return responses.UnprocessableResponse(c, err)
+	}
 
 	id, err := utils.GetUintPathParam(c, "id", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	project, err := pc.projectService.GetByID(id, authenticatedUser)
+	project, err := pc.projectService.GetByID(id, request.OrganizationID, authenticatedUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -86,7 +96,12 @@ func (pc *ProjectController) Update(c echo.Context) error {
 }
 
 func (pc *ProjectController) Delete(c echo.Context) error {
+	var request requests.ProjectDefaultRequest
 	authenticatedUser, _ := utils.NewAuth(c).User()
+
+	if err := request.BindAndValidate(c); err != nil {
+		return responses.UnprocessableResponse(c, err)
+	}
 
 	id, err := utils.GetUintPathParam(c, "id", true)
 	if err != nil {

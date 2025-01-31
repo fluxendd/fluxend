@@ -23,6 +23,8 @@ func (r *ProjectCreateRequest) BindAndValidate(c echo.Context) []string {
 
 	r.OrganizationID = organizationID
 
+	utils.Dump(r)
+
 	err = validation.ValidateStruct(r,
 		validation.Field(&r.Name, validation.Required.Error("Name is required"), validation.Length(3, 100).Error("Name must be between 3 and 100 characters")),
 	)

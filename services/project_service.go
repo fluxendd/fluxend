@@ -13,8 +13,8 @@ import (
 )
 
 type ProjectService interface {
-	List(paginationParams utils.PaginationParams, authenticatedUserId uint) ([]models.Project, error)
-	GetByID(projectId uint, authenticatedUser models.AuthenticatedUser) (models.Project, error)
+	List(paginationParams utils.PaginationParams, organizationId, authenticatedUserId uint) ([]models.Project, error)
+	GetByID(projectId, organizationId uint, authenticatedUser models.AuthenticatedUser) (models.Project, error)
 	Create(request *requests.ProjectCreateRequest, authenticatedUser models.AuthenticatedUser) (models.Project, error)
 	Update(projectId uint, authenticatedUser models.AuthenticatedUser, request *requests.ProjectCreateRequest) (*models.Project, error)
 	Delete(projectId uint, authenticatedUser models.AuthenticatedUser) (bool, error)
@@ -38,12 +38,16 @@ func NewProjectService(injector *do.Injector) (ProjectService, error) {
 	}, nil
 }
 
-func (s *ProjectServiceImpl) List(paginationParams utils.PaginationParams, authenticatedUserId uint) ([]models.Project, error) {
+func (s *ProjectServiceImpl) List(paginationParams utils.PaginationParams, organizationId, authenticatedUserId uint) ([]models.Project, error) {
+	if !s.projectPolicy.CanList(organizationId, authenticatedUserId) {
+		return []models.Project{}, errs.NewForbiddenError("project.error.listForbidden")
+	}
+
 	return s.projectRepo.ListForUser(paginationParams, authenticatedUserId)
 }
 
-func (s *ProjectServiceImpl) GetByID(projectId uint, authenticatedUser models.AuthenticatedUser) (models.Project, error) {
-	if !s.projectPolicy.CanView(projectId, authenticatedUser) {
+func (s *ProjectServiceImpl) GetByID(projectId, organizationId uint, authenticatedUser models.AuthenticatedUser) (models.Project, error) {
+	if !s.projectPolicy.CanView(organizationId, authenticatedUser) {
 		return models.Project{}, errs.NewForbiddenError("project.error.viewForbidden")
 	}
 
