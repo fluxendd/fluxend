@@ -19,7 +19,7 @@ func (u Project) GetTableName() string {
 }
 
 func (u Project) GetFields() string {
-	return "id, name, db_name, created_at, updated_at"
+	return "id, organization_id, name, db_name, created_at, updated_at"
 }
 
 func (u Project) GetFieldsWithAlias(alias string) string {
