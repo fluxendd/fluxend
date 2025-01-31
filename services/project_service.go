@@ -9,6 +9,7 @@ import (
 	"myapp/repositories"
 	"myapp/requests"
 	"myapp/utils"
+	"strings"
 )
 
 type ProjectService interface {
@@ -21,16 +22,19 @@ type ProjectService interface {
 
 type ProjectServiceImpl struct {
 	projectPolicy *policies.ProjectPolicy
+	databaseRepo  *repositories.DatabaseRepository
 	projectRepo   *repositories.ProjectRepository
 }
 
 func NewProjectService(injector *do.Injector) (ProjectService, error) {
 	policy := do.MustInvoke[*policies.ProjectPolicy](injector)
-	repo := do.MustInvoke[*repositories.ProjectRepository](injector)
+	databaseRepo := do.MustInvoke[*repositories.DatabaseRepository](injector)
+	projectRepo := do.MustInvoke[*repositories.ProjectRepository](injector)
 
 	return &ProjectServiceImpl{
 		projectPolicy: policy,
-		projectRepo:   repo,
+		databaseRepo:  databaseRepo,
+		projectRepo:   projectRepo,
 	}, nil
 }
 
@@ -71,6 +75,11 @@ func (s *ProjectServiceImpl) Create(request *requests.ProjectCreateRequest, auth
 		return models.Project{}, err
 	}
 
+	err = s.databaseRepo.Create(project.DBName)
+	if err != nil {
+		return models.Project{}, err
+	}
+
 	return project, nil
 }
 
@@ -101,5 +110,5 @@ func (s *ProjectServiceImpl) Delete(projectId uint, authenticatedUser models.Aut
 }
 
 func (s *ProjectServiceImpl) generateDBName() string {
-	return uuid.New().String()
+	return strings.ReplaceAll(strings.ToLower(uuid.New().String()), "-", "")
 }
