@@ -10,17 +10,17 @@ import (
 	"github.com/samber/do"
 )
 
-type ProjectController struct {
-	projectService services.ProjectService
+type TableController struct {
+	tableService services.TableService
 }
 
-func NewProjectController(injector *do.Injector) (*ProjectController, error) {
-	projectService := do.MustInvoke[services.ProjectService](injector)
+func NewTableController(injector *do.Injector) (*TableController, error) {
+	tableService := do.MustInvoke[services.TableService](injector)
 
-	return &ProjectController{projectService: projectService}, nil
+	return &TableController{tableService: tableService}, nil
 }
 
-func (pc *ProjectController) List(c echo.Context) error {
+/*func (pc *TableController) List(c echo.Context) error {
 	var request requests.DefaultRequest
 	authenticatedUserId, _ := utils.NewAuth(c).Id()
 
@@ -29,7 +29,7 @@ func (pc *ProjectController) List(c echo.Context) error {
 	}
 
 	paginationParams := utils.ExtractPaginationParams(c)
-	projects, err := pc.projectService.List(paginationParams, request.OrganizationID, authenticatedUserId)
+	projects, err := pc.tableService.List(paginationParams, request.OrganizationID, authenticatedUserId)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -37,7 +37,7 @@ func (pc *ProjectController) List(c echo.Context) error {
 	return responses.SuccessResponse(c, resources.ProjectResourceCollection(projects))
 }
 
-func (pc *ProjectController) Show(c echo.Context) error {
+func (pc *TableController) Show(c echo.Context) error {
 	var request requests.DefaultRequest
 	authenticatedUser, _ := utils.NewAuth(c).User()
 
@@ -50,31 +50,36 @@ func (pc *ProjectController) Show(c echo.Context) error {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	project, err := pc.projectService.GetByID(id, request.OrganizationID, authenticatedUser)
+	project, err := pc.tableService.GetByID(id, request.OrganizationID, authenticatedUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
 
 	return responses.SuccessResponse(c, resources.ProjectResource(&project))
-}
+}*/
 
-func (pc *ProjectController) Store(c echo.Context) error {
-	var request requests.ProjectCreateRequest
+func (pc *TableController) Store(c echo.Context) error {
+	var request requests.TableCreateRequest
 	authenticatedUser, _ := utils.NewAuth(c).User()
 
 	if err := request.BindAndValidate(c); err != nil {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	project, err := pc.projectService.Create(&request, authenticatedUser)
+	projectID, err := utils.GetUintPathParam(c, "projectID", true)
+	if err != nil {
+		return responses.BadRequestResponse(c, err.Error())
+	}
+
+	table, err := pc.tableService.Create(&request, projectID, authenticatedUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
 
-	return responses.CreatedResponse(c, resources.ProjectResource(&project))
+	return responses.CreatedResponse(c, resources.TableResource(&table))
 }
 
-func (pc *ProjectController) Update(c echo.Context) error {
+/*func (pc *TableController) Update(c echo.Context) error {
 	var request requests.ProjectCreateRequest
 	authenticatedUser, _ := utils.NewAuth(c).User()
 
@@ -87,7 +92,7 @@ func (pc *ProjectController) Update(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	updatedOrganization, err := pc.projectService.Update(id, authenticatedUser, &request)
+	updatedOrganization, err := pc.tableService.Update(id, authenticatedUser, &request)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -95,7 +100,7 @@ func (pc *ProjectController) Update(c echo.Context) error {
 	return responses.SuccessResponse(c, resources.ProjectResource(updatedOrganization))
 }
 
-func (pc *ProjectController) Delete(c echo.Context) error {
+func (pc *TableController) Delete(c echo.Context) error {
 	var request requests.DefaultRequest
 	authenticatedUser, _ := utils.NewAuth(c).User()
 
@@ -108,9 +113,10 @@ func (pc *ProjectController) Delete(c echo.Context) error {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	if _, err := pc.projectService.Delete(id, authenticatedUser); err != nil {
+	if _, err := pc.tableService.Delete(id, authenticatedUser); err != nil {
 		return responses.ErrorResponse(c, err)
 	}
 
 	return responses.DeletedResponse(c, nil)
 }
+*/

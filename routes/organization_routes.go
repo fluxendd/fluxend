@@ -7,11 +7,11 @@ import (
 )
 
 func RegisterOrganizationRoutes(e *echo.Echo, organizationController *controllers.OrganizationController) {
-	notesGroup := e.Group("api/organizations", middleware.AuthMiddleware)
+	organizationsGroup := e.Group("api/organizations", middleware.AuthMiddleware)
 
-	notesGroup.POST("", organizationController.Store)
-	notesGroup.GET("", organizationController.List)
-	notesGroup.GET("/:id", organizationController.Show)
-	notesGroup.PUT("/:id", organizationController.Update)
-	notesGroup.DELETE("/:id", organizationController.Delete)
+	organizationsGroup.POST("", organizationController.Store)
+	organizationsGroup.GET("", organizationController.List)
+	organizationsGroup.GET("/:id", organizationController.Show)
+	organizationsGroup.PUT("/:id", organizationController.Update)
+	organizationsGroup.DELETE("/:id", organizationController.Delete)
 }

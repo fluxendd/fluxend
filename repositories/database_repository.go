@@ -17,7 +17,7 @@ func NewDatabaseRepository(injector *do.Injector) (*DatabaseRepository, error) {
 }
 
 func (r *DatabaseRepository) Create(name string) error {
-	_, err := r.db.Exec(fmt.Sprintf("CREATE DATABASE %s", name))
+	_, err := r.db.Exec(fmt.Sprintf(`CREATE DATABASE "%s"`, name))
 	if err != nil {
 		return err
 	}
@@ -26,7 +26,7 @@ func (r *DatabaseRepository) Create(name string) error {
 }
 
 func (r *DatabaseRepository) DropIfExists(name string) error {
-	_, err := r.db.Exec(fmt.Sprintf("DROP DATABASE IF EXISTS %s", name))
+	_, err := r.db.Exec(fmt.Sprintf(`DROP DATABASE IF EXISTS "%s"`, name))
 	if err != nil {
 		return err
 	}
@@ -69,5 +69,5 @@ func (r *DatabaseRepository) Exists(name string) (bool, error) {
 }
 
 func (r *DatabaseRepository) Connect(name string) (*sqlx.DB, error) {
-	return sqlx.Connect("postgres", fmt.Sprintf("dbname=%s", name))
+	return sqlx.Connect("postgres", fmt.Sprintf("dbname=%s sslmode=disable", name))
 }
