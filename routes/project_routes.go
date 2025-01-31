@@ -7,11 +7,11 @@ import (
 )
 
 func RegisterProjectRoutes(e *echo.Echo, ProjectController *controllers.ProjectController) {
-	notesGroup := e.Group("api/projects", middleware.AuthMiddleware)
+	projectsGroup := e.Group("api/projects", middleware.AuthMiddleware)
 
-	notesGroup.POST("", ProjectController.Store)
-	notesGroup.GET("", ProjectController.List)
-	notesGroup.GET("/:id", ProjectController.Show)
-	notesGroup.PUT("/:id", ProjectController.Update)
-	notesGroup.DELETE("/:id", ProjectController.Delete)
+	projectsGroup.POST("", ProjectController.Store)
+	projectsGroup.GET("", ProjectController.List)
+	projectsGroup.GET("/:id", ProjectController.Show)
+	projectsGroup.PUT("/:id", ProjectController.Update)
+	projectsGroup.DELETE("/:id", ProjectController.Delete)
 }
