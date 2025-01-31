@@ -75,7 +75,7 @@ func (r *ProjectRepository) ListForUser(paginationParams utils.PaginationParams,
 	return projects, nil
 }
 
-func (r *ProjectRepository) GetByIDForUser(id, authenticatedUserId uint) (models.Project, error) {
+func (r *ProjectRepository) GetByID(id uint) (models.Project, error) {
 	query := "SELECT %s FROM projects WHERE id = $1"
 	query = fmt.Sprintf(query, models.Project{}.GetFields())
 
