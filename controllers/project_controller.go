@@ -20,11 +20,11 @@ func NewProjectController(injector *do.Injector) (*ProjectController, error) {
 	return &ProjectController{projectService: projectService}, nil
 }
 
-func (nc *ProjectController) List(c echo.Context) error {
+func (pc *ProjectController) List(c echo.Context) error {
 	authenticatedUserId, _ := utils.NewAuth(c).Id()
 
 	paginationParams := utils.ExtractPaginationParams(c)
-	projects, err := nc.projectService.List(paginationParams, authenticatedUserId)
+	projects, err := pc.projectService.List(paginationParams, authenticatedUserId)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -32,7 +32,7 @@ func (nc *ProjectController) List(c echo.Context) error {
 	return responses.SuccessResponse(c, resources.ProjectResourceCollection(projects))
 }
 
-func (nc *ProjectController) Show(c echo.Context) error {
+func (pc *ProjectController) Show(c echo.Context) error {
 	authenticatedUser, _ := utils.NewAuth(c).User()
 
 	id, err := utils.GetUintPathParam(c, "id", true)
@@ -40,7 +40,7 @@ func (nc *ProjectController) Show(c echo.Context) error {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	project, err := nc.projectService.GetByID(id, authenticatedUser)
+	project, err := pc.projectService.GetByID(id, authenticatedUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -48,7 +48,7 @@ func (nc *ProjectController) Show(c echo.Context) error {
 	return responses.SuccessResponse(c, resources.ProjectResource(&project))
 }
 
-func (nc *ProjectController) Store(c echo.Context) error {
+func (pc *ProjectController) Store(c echo.Context) error {
 	var request requests.ProjectCreateRequest
 	authenticatedUser, _ := utils.NewAuth(c).User()
 
@@ -56,7 +56,7 @@ func (nc *ProjectController) Store(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	project, err := nc.projectService.Create(&request, authenticatedUser)
+	project, err := pc.projectService.Create(&request, authenticatedUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -64,7 +64,7 @@ func (nc *ProjectController) Store(c echo.Context) error {
 	return responses.CreatedResponse(c, resources.ProjectResource(&project))
 }
 
-func (nc *ProjectController) Update(c echo.Context) error {
+func (pc *ProjectController) Update(c echo.Context) error {
 	var request requests.ProjectCreateRequest
 	authenticatedUser, _ := utils.NewAuth(c).User()
 
@@ -73,11 +73,11 @@ func (nc *ProjectController) Update(c echo.Context) error {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	if err := c.Bind(&request); err != nil {
-		return responses.BadRequestResponse(c, "project.error.invalidPayload")
+	if err := request.BindAndValidate(c); err != nil {
+		return responses.UnprocessableResponse(c, err)
 	}
 
-	updatedOrganization, err := nc.projectService.Update(id, authenticatedUser, &request)
+	updatedOrganization, err := pc.projectService.Update(id, authenticatedUser, &request)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -85,7 +85,7 @@ func (nc *ProjectController) Update(c echo.Context) error {
 	return responses.SuccessResponse(c, resources.ProjectResource(updatedOrganization))
 }
 
-func (nc *ProjectController) Delete(c echo.Context) error {
+func (pc *ProjectController) Delete(c echo.Context) error {
 	authenticatedUser, _ := utils.NewAuth(c).User()
 
 	id, err := utils.GetUintPathParam(c, "id", true)
@@ -93,7 +93,7 @@ func (nc *ProjectController) Delete(c echo.Context) error {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	if _, err := nc.projectService.Delete(id, authenticatedUser); err != nil {
+	if _, err := pc.projectService.Delete(id, authenticatedUser); err != nil {
 		return responses.ErrorResponse(c, err)
 	}
 
