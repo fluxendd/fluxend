@@ -62,7 +62,7 @@ func (s *TableServiceImpl) Create(request *requests.TableCreateRequest, projectI
 		return models.Table{}, errs.NewForbiddenError("table.error.createForbidden")
 	}
 
-	err := s.validateNameForDuplication(request.Name, request.OrganizationID)
+	err := s.validateNameForDuplication(request.Name, projectID)
 	if err != nil {
 		return models.Table{}, err
 	}
@@ -130,14 +130,14 @@ func (s *TableServiceImpl) Delete(tableId uint, authenticatedUser models.Authent
 	return s.projectRepo.Delete(tableId)
 }
 
-func (s *TableServiceImpl) validateNameForDuplication(name string, organizationId uint) error {
-	exists, err := s.projectRepo.ExistsByNameForOrganization(name, organizationId)
+func (s *TableServiceImpl) validateNameForDuplication(name string, projectId uint) error {
+	exists, err := s.coreTableRepo.ExistsByNameForProject(name, projectId)
 	if err != nil {
 		return err
 	}
 
 	if exists {
-		return errs.NewUnprocessableError("project.error.duplicateName")
+		return errs.NewUnprocessableError("table.error.duplicateName")
 	}
 
 	return nil
