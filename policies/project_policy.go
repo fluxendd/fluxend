@@ -18,8 +18,17 @@ func NewProjectPolicy(injector *do.Injector) (*ProjectPolicy, error) {
 	}, nil
 }
 
-func (s *ProjectPolicy) CanCreate(authenticatedUser models.AuthenticatedUser) bool {
-	return authenticatedUser.IsBishopOrMore()
+func (s *ProjectPolicy) CanCreate(organizationId uint, authenticatedUser models.AuthenticatedUser) bool {
+	if !authenticatedUser.IsLordOrMore() {
+		return false
+	}
+
+	isOrganizationUser, err := s.organizationRepo.IsOrganizationUser(organizationId, authenticatedUser.ID)
+	if err != nil {
+		return false
+	}
+
+	return isOrganizationUser
 }
 
 func (s *ProjectPolicy) CanView(organizationId uint, authenticatedUser models.AuthenticatedUser) bool {
@@ -32,7 +41,7 @@ func (s *ProjectPolicy) CanView(organizationId uint, authenticatedUser models.Au
 }
 
 func (s *ProjectPolicy) CanUpdate(organizationId uint, authenticatedUser models.AuthenticatedUser) bool {
-	if !authenticatedUser.IsBishopOrMore() {
+	if !authenticatedUser.IsLordOrMore() {
 		return false
 	}
 

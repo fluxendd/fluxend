@@ -38,11 +38,16 @@ func (s *OrganizationServiceImpl) List(paginationParams utils.PaginationParams, 
 }
 
 func (s *OrganizationServiceImpl) GetByID(organizationId uint, authenticatedUser models.AuthenticatedUser) (models.Organization, error) {
+	organization, err := s.organizationRepo.GetByIDForUser(organizationId, authenticatedUser.ID)
+	if err != nil {
+		return models.Organization{}, err
+	}
+
 	if !s.organizationPolicy.CanView(organizationId, authenticatedUser) {
 		return models.Organization{}, errs.NewForbiddenError("organization.error.viewForbidden")
 	}
 
-	return s.organizationRepo.GetByIDForUser(organizationId, authenticatedUser.ID)
+	return organization, nil
 }
 
 func (s *OrganizationServiceImpl) Create(request *requests.OrganizationCreateRequest, authenticatedUser models.AuthenticatedUser) (models.Organization, error) {
@@ -63,13 +68,13 @@ func (s *OrganizationServiceImpl) Create(request *requests.OrganizationCreateReq
 }
 
 func (s *OrganizationServiceImpl) Update(organizationId uint, authenticatedUser models.AuthenticatedUser, request *requests.OrganizationCreateRequest) (*models.Organization, error) {
-	if !s.organizationPolicy.CanUpdate(organizationId, authenticatedUser) {
-		return &models.Organization{}, errs.NewForbiddenError("organization.error.updateForbidden")
-	}
-
 	organization, err := s.organizationRepo.GetByIDForUser(organizationId, authenticatedUser.ID)
 	if err != nil {
 		return nil, err
+	}
+
+	if !s.organizationPolicy.CanUpdate(organizationId, authenticatedUser) {
+		return &models.Organization{}, errs.NewForbiddenError("organization.error.updateForbidden")
 	}
 
 	err = utils.PopulateModel(&organization, request)
@@ -81,6 +86,11 @@ func (s *OrganizationServiceImpl) Update(organizationId uint, authenticatedUser 
 }
 
 func (s *OrganizationServiceImpl) Delete(organizationId uint, authenticatedUser models.AuthenticatedUser) (bool, error) {
+	_, err := s.organizationRepo.GetByIDForUser(organizationId, authenticatedUser.ID)
+	if err != nil {
+		return false, err
+	}
+
 	if !s.organizationPolicy.CanUpdate(organizationId, authenticatedUser) {
 		return false, errs.NewForbiddenError("organization.error.updateForbidden")
 	}

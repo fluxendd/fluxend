@@ -52,11 +52,7 @@ func (nc *ProjectController) Store(c echo.Context) error {
 	var request requests.ProjectCreateRequest
 	authenticatedUser, _ := utils.NewAuth(c).User()
 
-	if err := c.Bind(&request); err != nil {
-		return responses.BadRequestResponse(c, "project.error.invalidPayload")
-	}
-
-	if err := request.Validate(); err != nil {
+	if err := request.BindAndValidate(c); err != nil {
 		return responses.UnprocessableResponse(c, err)
 	}
 

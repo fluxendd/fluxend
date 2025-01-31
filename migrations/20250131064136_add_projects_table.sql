@@ -10,6 +10,7 @@ CREATE TABLE projects (
 );
 
 ALTER TABLE projects ADD CONSTRAINT fk_organization_id FOREIGN KEY (organization_id) REFERENCES organizations(id);
+CREATE UNIQUE INDEX idx_projects_name_organization_id ON projects (name, organization_id);
 -- +goose StatementEnd
 
 -- +goose Down
