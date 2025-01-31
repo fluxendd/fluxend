@@ -51,7 +51,7 @@ func (s *ProjectServiceImpl) GetByID(projectId, organizationId uint, authenticat
 		return models.Project{}, errs.NewForbiddenError("project.error.viewForbidden")
 	}
 
-	return s.projectRepo.GetByIDForUser(projectId, authenticatedUser.ID)
+	return s.projectRepo.GetByID(projectId, authenticatedUser.ID)
 }
 
 func (s *ProjectServiceImpl) Create(request *requests.ProjectCreateRequest, authenticatedUser models.AuthenticatedUser) (models.Project, error) {
@@ -84,7 +84,7 @@ func (s *ProjectServiceImpl) Create(request *requests.ProjectCreateRequest, auth
 }
 
 func (s *ProjectServiceImpl) Update(projectId uint, authenticatedUser models.AuthenticatedUser, request *requests.ProjectCreateRequest) (*models.Project, error) {
-	project, err := s.projectRepo.GetByIDForUser(projectId, authenticatedUser.ID)
+	project, err := s.projectRepo.GetByID(projectId, authenticatedUser.ID)
 	if err != nil {
 		return nil, err
 	}

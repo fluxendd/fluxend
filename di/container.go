@@ -41,6 +41,7 @@ func InitializeContainer() *do.Injector {
 	// Services
 	do.Provide(injector, services.NewUserService)
 	do.Provide(injector, services.NewNoteService)
+	do.Provide(injector, services.NewConnectionService)
 	do.Provide(injector, services.NewOrganizationService)
 	do.Provide(injector, services.NewProjectService)
 
