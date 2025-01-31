@@ -1,14 +1,14 @@
 package main
 
 import (
+	"fluxton/controllers"
+	"fluxton/di"
+	"fluxton/routes"
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/gommon/log"
 	"github.com/samber/do"
-	"myapp/controllers"
-	"myapp/di"
-	"myapp/routes"
 )
 
 func main() {

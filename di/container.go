@@ -1,14 +1,14 @@
 package di
 
 import (
+	"fluxton/controllers"
+	"fluxton/db"
+	"fluxton/factories"
+	"fluxton/policies"
+	"fluxton/repositories"
+	"fluxton/services"
 	"github.com/jmoiron/sqlx"
 	"github.com/samber/do"
-	"myapp/controllers"
-	"myapp/db"
-	"myapp/factories"
-	"myapp/policies"
-	"myapp/repositories"
-	"myapp/services"
 )
 
 func InitializeContainer() *do.Injector {

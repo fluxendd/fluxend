@@ -1,8 +1,8 @@
 package requests
 
 import (
+	"fluxton/utils"
 	"github.com/labstack/echo/v4"
-	"myapp/utils"
 )
 
 type ProjectDefaultRequest struct {

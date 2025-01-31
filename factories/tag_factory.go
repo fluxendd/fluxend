@@ -1,12 +1,12 @@
 package factories
 
 import (
+	"fluxton/utils"
 	"github.com/samber/do"
-	"myapp/utils"
 	"time"
 
-	"myapp/models"
-	"myapp/repositories"
+	"fluxton/models"
+	"fluxton/repositories"
 )
 
 type TagOption func(*models.Tag)

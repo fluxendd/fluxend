@@ -1,9 +1,9 @@
 package routes
 
 import (
+	"fluxton/controllers"
+	"fluxton/middleware"
 	"github.com/labstack/echo/v4"
-	"myapp/controllers"
-	"myapp/middleware"
 )
 
 func RegisterOrganizationRoutes(e *echo.Echo, organizationController *controllers.OrganizationController) {

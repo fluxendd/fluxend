@@ -1,9 +1,9 @@
 package services
 
 import (
+	"fluxton/repositories"
 	"github.com/jmoiron/sqlx"
 	"github.com/samber/do"
-	"myapp/repositories"
 )
 
 type ConnectionService interface {

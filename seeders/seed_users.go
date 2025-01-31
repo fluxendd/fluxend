@@ -1,10 +1,10 @@
 package seeders
 
 import (
+	"fluxton/factories"
+	"fluxton/models"
 	"github.com/labstack/gommon/log"
 	"github.com/samber/do"
-	"myapp/factories"
-	"myapp/models"
 )
 
 func SeedUsers(container *do.Injector) {

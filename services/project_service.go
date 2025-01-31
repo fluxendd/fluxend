@@ -1,14 +1,14 @@
 package services
 
 import (
+	"fluxton/errs"
+	"fluxton/models"
+	"fluxton/policies"
+	"fluxton/repositories"
+	"fluxton/requests"
+	"fluxton/utils"
 	"github.com/google/uuid"
 	"github.com/samber/do"
-	"myapp/errs"
-	"myapp/models"
-	"myapp/policies"
-	"myapp/repositories"
-	"myapp/requests"
-	"myapp/utils"
 	"strings"
 )
 

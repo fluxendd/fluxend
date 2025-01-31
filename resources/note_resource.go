@@ -1,6 +1,6 @@
 package resources
 
-import "myapp/models"
+import "fluxton/models"
 
 type NoteResponse struct {
 	ID        uint   `json:"id"`
