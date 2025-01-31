@@ -23,6 +23,7 @@ func InitializeContainer() *do.Injector {
 	// Repositories
 	do.Provide(injector, repositories.NewUserRepository)
 	do.Provide(injector, repositories.NewDatabaseRepository)
+	do.Provide(injector, repositories.NewTableRepository)
 	do.Provide(injector, repositories.NewOrganizationRepository)
 	do.Provide(injector, repositories.NewProjectRepository)
 	do.Provide(injector, repositories.NewNoteRepository)
