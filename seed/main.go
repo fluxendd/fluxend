@@ -1,11 +1,11 @@
 package main
 
 import (
+	"fluxton/di"
+	"fluxton/seeders"
 	"github.com/joho/godotenv"
 	"github.com/labstack/gommon/log"
 	"github.com/samber/do"
-	"myapp/di"
-	"myapp/seeders"
 )
 
 func main() {

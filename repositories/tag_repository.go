@@ -1,10 +1,10 @@
 package repositories
 
 import (
+	"fluxton/models"
 	"fmt"
 	"github.com/jmoiron/sqlx"
 	"github.com/samber/do"
-	"myapp/models"
 )
 
 type TagRepository struct {

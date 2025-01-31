@@ -1,12 +1,12 @@
 package middleware
 
 import (
+	"fluxton/errs"
+	"fluxton/models"
+	"fluxton/responses"
 	"fmt"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
-	"myapp/errs"
-	"myapp/models"
-	"myapp/responses"
 	"os"
 	"strings"
 )

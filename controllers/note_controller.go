@@ -1,13 +1,13 @@
 package controllers
 
 import (
+	"fluxton/requests"
+	"fluxton/resources"
+	"fluxton/responses"
+	"fluxton/services"
+	"fluxton/utils"
 	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
-	"myapp/requests"
-	"myapp/resources"
-	"myapp/responses"
-	"myapp/services"
-	"myapp/utils"
 )
 
 type NoteController struct {

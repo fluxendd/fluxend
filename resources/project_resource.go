@@ -1,6 +1,6 @@
 package resources
 
-import "myapp/models"
+import "fluxton/models"
 
 type ProjectResponse struct {
 	ID             uint   `json:"id"`

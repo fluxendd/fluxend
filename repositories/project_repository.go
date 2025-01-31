@@ -3,12 +3,12 @@ package repositories
 import (
 	"database/sql"
 	"errors"
+	"fluxton/errs"
+	"fluxton/models"
+	"fluxton/utils"
 	"fmt"
 	"github.com/jmoiron/sqlx"
 	"github.com/samber/do"
-	"myapp/errs"
-	"myapp/models"
-	"myapp/utils"
 	"time"
 )
 

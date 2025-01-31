@@ -1,9 +1,9 @@
 package seeders
 
 import (
+	"fluxton/factories"
 	"github.com/labstack/gommon/log"
 	"github.com/samber/do"
-	"myapp/factories"
 )
 
 func SeedTags(container *do.Injector) {

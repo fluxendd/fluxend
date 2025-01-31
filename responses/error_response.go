@@ -2,8 +2,8 @@ package responses
 
 import (
 	"errors"
+	"fluxton/errs"
 	"github.com/labstack/echo/v4"
-	"myapp/errs"
 )
 
 func ErrorResponse(c echo.Context, err error) error {

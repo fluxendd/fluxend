@@ -2,8 +2,8 @@ package utils
 
 import (
 	"errors"
+	"fluxton/models"
 	"github.com/labstack/echo/v4"
-	"myapp/models"
 )
 
 type Auth struct {

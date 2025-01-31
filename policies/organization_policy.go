@@ -1,9 +1,9 @@
 package policies
 
 import (
+	"fluxton/models"
+	"fluxton/repositories"
 	"github.com/samber/do"
-	"myapp/models"
-	"myapp/repositories"
 )
 
 type OrganizationPolicy struct {
