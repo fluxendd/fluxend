@@ -8,10 +8,7 @@ import (
 	"fluxton/requests"
 	"fluxton/utils"
 
-	//"fluxton/utils"
-	//"github.com/google/uuid"
 	"github.com/samber/do"
-	//"strings"
 )
 
 type TableService interface {
@@ -19,7 +16,7 @@ type TableService interface {
 	GetByID(tableID, organizationID uint, authenticatedUser models.AuthenticatedUser) (models.Table, error)
 	Create(request *requests.TableCreateRequest, projectID uint, authenticatedUser models.AuthenticatedUser) (models.Table, error)
 	Rename(tableID, projectID uint, authenticatedUser models.AuthenticatedUser, request *requests.TableRenameRequest) (models.Table, error)
-	Delete(tableID uint, authenticatedUser models.AuthenticatedUser) (bool, error)
+	Delete(tableID, organizationID, projectID uint, authenticatedUser models.AuthenticatedUser) (bool, error)
 }
 
 type TableServiceImpl struct {
@@ -60,11 +57,20 @@ func (s *TableServiceImpl) GetByID(tableID, organizationID uint, authenticatedUs
 }
 
 func (s *TableServiceImpl) Create(request *requests.TableCreateRequest, projectID uint, authenticatedUser models.AuthenticatedUser) (models.Table, error) {
+	exists, err := s.projectRepo.ExistsByID(projectID)
+	if err != nil {
+		return models.Table{}, err
+	}
+
+	if !exists {
+		return models.Table{}, errs.NewNotFoundError("project.error.notFound")
+	}
+
 	if !s.projectPolicy.CanCreate(request.OrganizationID, authenticatedUser) {
 		return models.Table{}, errs.NewForbiddenError("table.error.createForbidden")
 	}
 
-	err := s.validateNameForDuplication(request.Name, projectID)
+	err = s.validateNameForDuplication(request.Name, projectID)
 	if err != nil {
 		return models.Table{}, err
 	}
@@ -122,9 +128,27 @@ func (s *TableServiceImpl) Rename(tableID, projectID uint, authenticatedUser mod
 	return s.coreTableRepo.Rename(tableID, request.Name)
 }
 
-func (s *TableServiceImpl) Delete(tableID uint, authenticatedUser models.AuthenticatedUser) (bool, error) {
-	if !s.projectPolicy.CanUpdate(tableID, authenticatedUser) {
+func (s *TableServiceImpl) Delete(tableID, organizationID, projectID uint, authenticatedUser models.AuthenticatedUser) (bool, error) {
+	exists, err := s.projectRepo.ExistsByID(projectID)
+	if err != nil {
+		return false, err
+	}
+
+	if !exists {
+		return false, errs.NewNotFoundError("project.error.notFound")
+	}
+
+	if !s.projectPolicy.CanUpdate(organizationID, authenticatedUser) {
 		return false, errs.NewForbiddenError("project.error.updateForbidden")
+	}
+
+	tableExists, err := s.coreTableRepo.ExistsByID(tableID)
+	if err != nil {
+		return false, err
+	}
+
+	if !tableExists {
+		return false, errs.NewNotFoundError("table.error.notFound")
 	}
 
 	return s.coreTableRepo.Delete(tableID)
