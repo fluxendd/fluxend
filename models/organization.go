@@ -16,15 +16,15 @@ func (u Organization) GetTableName() string {
 	return "organizations"
 }
 
-func (u Organization) GetFields() string {
+func (u Organization) GetColumns() string {
 	return "id, name, created_at, updated_at"
 }
 
-func (u Organization) GetFieldsWithAlias(alias string) string {
-	fields := strings.Split(u.GetFields(), ", ")
-	for i, field := range fields {
-		fields[i] = alias + "." + field
+func (u Organization) GetColumnsWithAlias(alias string) string {
+	columns := strings.Split(u.GetColumns(), ", ")
+	for i, column := range columns {
+		columns[i] = alias + "." + column
 	}
 
-	return strings.Join(fields, ", ")
+	return strings.Join(columns, ", ")
 }

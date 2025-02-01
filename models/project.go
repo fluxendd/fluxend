@@ -18,15 +18,15 @@ func (u Project) GetTableName() string {
 	return "projects"
 }
 
-func (u Project) GetFields() string {
+func (u Project) GetColumns() string {
 	return "id, organization_id, name, db_name, created_at, updated_at"
 }
 
-func (u Project) GetFieldsWithAlias(alias string) string {
-	fields := strings.Split(u.GetFields(), ", ")
-	for i, field := range fields {
-		fields[i] = alias + "." + field
+func (u Project) GetColumnsWithAlias(alias string) string {
+	columns := strings.Split(u.GetColumns(), ", ")
+	for i, field := range columns {
+		columns[i] = alias + "." + field
 	}
 
-	return strings.Join(fields, ", ")
+	return strings.Join(columns, ", ")
 }

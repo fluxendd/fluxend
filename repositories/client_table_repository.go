@@ -14,26 +14,26 @@ func NewClientTableRepository(connection *sqlx.DB) (*ClientTableRepository, erro
 	return &ClientTableRepository{connection: connection}, nil
 }
 
-func (r *ClientTableRepository) Create(name string, fields []types.TableField) error {
+func (r *ClientTableRepository) Create(name string, columns []types.TableColumn) error {
 	query := "CREATE TABLE " + name + " ("
 
-	for _, field := range fields {
-		query += field.Name + " " + field.Type
+	for _, column := range columns {
+		query += column.Name + " " + column.Type
 
-		if field.Primary {
+		if column.Primary {
 			query += " PRIMARY KEY"
 		}
 
-		if field.Unique {
+		if column.Unique {
 			query += " UNIQUE"
 		}
 
-		if field.NotNull {
+		if column.NotNull {
 			query += " NOT NULL"
 		}
 
-		if field.Default != "" {
-			query += " DEFAULT " + field.Default
+		if column.Default != "" {
+			query += " DEFAULT " + column.Default
 		}
 
 		query += ", "

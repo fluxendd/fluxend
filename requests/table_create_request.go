@@ -10,9 +10,9 @@ import (
 )
 
 type TableCreateRequest struct {
-	Name           string             `json:"name"`
-	OrganizationID uint               `json:"-"`
-	Fields         []types.TableField `json:"fields"`
+	Name           string              `json:"name"`
+	OrganizationID uint                `json:"-"`
+	Columns        []types.TableColumn `json:"columns"`
 }
 
 var (
@@ -57,10 +57,10 @@ func (r *TableCreateRequest) BindAndValidate(c echo.Context) []string {
 
 	var errors []string
 
-	// Validate base request fields
+	// Validate base request columns
 	err = validation.ValidateStruct(r,
 		validation.Field(&r.Name, validation.Required.Error("Name is required"), validation.Length(3, 100).Error("Name must be between 3 and 100 characters")),
-		validation.Field(&r.Fields, validation.Required.Error("Fields are required")),
+		validation.Field(&r.Columns, validation.Required.Error("Columns are required")),
 	)
 
 	if err != nil {
@@ -78,24 +78,24 @@ func (r *TableCreateRequest) BindAndValidate(c echo.Context) []string {
 		errors = append(errors, fmt.Sprintf("Table name '%s' is not allowed", r.Name))
 	}
 
-	// Validate fields
-	for _, field := range r.Fields {
-		if field.Name == "" {
+	// Validate column
+	for _, column := range r.Columns {
+		if column.Name == "" {
 			errors = append(errors, "Field name is required")
 		}
 
-		if field.Type == "" {
-			errors = append(errors, fmt.Sprintf("Field type is required for field %s", field.Name))
+		if column.Type == "" {
+			errors = append(errors, fmt.Sprintf("Field type is required for column %s", column.Name))
 		}
 
-		// Check for reserved field names
-		if reservedFieldNames[strings.ToLower(field.Name)] {
-			errors = append(errors, fmt.Sprintf("Field name '%s' is reserved and cannot be used", field.Name))
+		// Check for reserved column names
+		if reservedFieldNames[strings.ToLower(column.Name)] {
+			errors = append(errors, fmt.Sprintf("Field name '%s' is reserved and cannot be used", column.Name))
 		}
 
-		// Check for valid field types
-		if !allowedFieldTypes[strings.ToLower(field.Type)] {
-			errors = append(errors, fmt.Sprintf("Field type '%s' is not allowed", field.Type))
+		// Check for valid column types
+		if !allowedFieldTypes[strings.ToLower(column.Type)] {
+			errors = append(errors, fmt.Sprintf("Field type '%s' is not allowed", column.Type))
 		}
 	}
 

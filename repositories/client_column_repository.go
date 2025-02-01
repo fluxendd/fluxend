@@ -24,7 +24,7 @@ func (r *ClientColumnRepository) List(name string) ([]string, error) {
 	return columns, nil
 }
 
-func (r *ClientColumnRepository) Create(name string, field types.TableField) (bool, error) {
+func (r *ClientColumnRepository) Create(name string, field types.TableColumn) (bool, error) {
 	query := fmt.Sprintf("ALTER TABLE %s ADD COLUMN %s %s", name, field.Name, field.Type)
 	_, err := r.connection.Exec(query)
 	if err != nil {
@@ -34,7 +34,7 @@ func (r *ClientColumnRepository) Create(name string, field types.TableField) (bo
 	return true, nil
 }
 
-func (r *ClientColumnRepository) Update(name string, field types.TableField) (bool, error) {
+func (r *ClientColumnRepository) Update(name string, field types.TableColumn) (bool, error) {
 	query := fmt.Sprintf("ALTER TABLE %s ALTER COLUMN %s TYPE %s", name, field.Name, field.Type)
 	_, err := r.connection.Exec(query)
 	if err != nil {
