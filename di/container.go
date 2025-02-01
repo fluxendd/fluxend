@@ -45,6 +45,7 @@ func InitializeContainer() *do.Injector {
 	do.Provide(injector, services.NewOrganizationService)
 	do.Provide(injector, services.NewProjectService)
 	do.Provide(injector, services.NewTableService)
+	do.Provide(injector, services.NewColumnService)
 
 	// Controllers
 	do.Provide(injector, controllers.NewUserController)
@@ -52,6 +53,7 @@ func InitializeContainer() *do.Injector {
 	do.Provide(injector, controllers.NewOrganizationController)
 	do.Provide(injector, controllers.NewProjectController)
 	do.Provide(injector, controllers.NewTableController)
+	do.Provide(injector, controllers.NewColumnController)
 
 	return injector
 }
