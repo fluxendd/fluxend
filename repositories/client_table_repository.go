@@ -69,7 +69,7 @@ func (r *ClientTableRepository) Exists(name string) (bool, error) {
 	return count > 0, nil
 }
 
-func (r *ClientTableRepository) Drop(name string) error {
+func (r *ClientTableRepository) DropIfExists(name string) error {
 	_, err := r.connection.Exec("DROP TABLE IF EXISTS " + name)
 	if err != nil {
 		return err

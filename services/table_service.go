@@ -145,7 +145,7 @@ func (s *TableServiceImpl) Delete(tableID, organizationID, projectID uint, authe
 		return false, err
 	}
 
-	err = clientTableRepo.Drop(table.Name)
+	err = clientTableRepo.DropIfExists(table.Name)
 	if err != nil {
 		return false, err
 	}
