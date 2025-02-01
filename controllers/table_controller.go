@@ -118,12 +118,17 @@ func (pc *TableController) Delete(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
+	projectID, err := utils.GetUintPathParam(c, "projectID", true)
+	if err != nil {
+		return responses.BadRequestResponse(c, err.Error())
+	}
+
 	tableID, err := utils.GetUintPathParam(c, "tableID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	if _, err := pc.tableService.Delete(tableID, authenticatedUser); err != nil {
+	if _, err := pc.tableService.Delete(tableID, request.OrganizationID, projectID, authenticatedUser); err != nil {
 		return responses.ErrorResponse(c, err)
 	}
 

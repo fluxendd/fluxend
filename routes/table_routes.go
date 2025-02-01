@@ -13,6 +13,5 @@ func RegisterTableRoutes(e *echo.Echo, TableController *controllers.TableControl
 	tablesGroup.GET("", TableController.List)
 	tablesGroup.GET("/:tableID", TableController.Show)
 	tablesGroup.PUT("/:tableID", TableController.Rename)
-	/*
-		tablesGroup.DELETE("/:tableID", TableController.Delete)*/
+	tablesGroup.DELETE("/:tableID", TableController.Delete)
 }
