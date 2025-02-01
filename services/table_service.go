@@ -15,11 +15,11 @@ import (
 )
 
 type TableService interface {
-	List(paginationParams utils.PaginationParams, organizationId, projectId, authenticatedUserId uint) ([]models.Table, error)
-	GetByID(tableId, organizationId uint, authenticatedUser models.AuthenticatedUser) (models.Table, error)
+	List(paginationParams utils.PaginationParams, organizationID, projectID, authenticatedUserID uint) ([]models.Table, error)
+	GetByID(tableID, organizationID uint, authenticatedUser models.AuthenticatedUser) (models.Table, error)
 	Create(request *requests.TableCreateRequest, projectID uint, authenticatedUser models.AuthenticatedUser) (models.Table, error)
-	//Update(tableId uint, authenticatedUser models.AuthenticatedUser, request *requests.TableCreateRequest) (*models.Table, error)
-	Delete(tableId uint, authenticatedUser models.AuthenticatedUser) (bool, error)
+	Rename(tableID, projectID uint, authenticatedUser models.AuthenticatedUser, request *requests.TableRenameRequest) (models.Table, error)
+	Delete(tableID uint, authenticatedUser models.AuthenticatedUser) (bool, error)
 }
 
 type TableServiceImpl struct {
@@ -43,20 +43,20 @@ func NewTableService(injector *do.Injector) (TableService, error) {
 	}, nil
 }
 
-func (s *TableServiceImpl) List(paginationParams utils.PaginationParams, organizationId, projectId, authenticatedUserId uint) ([]models.Table, error) {
-	if !s.projectPolicy.CanList(organizationId, authenticatedUserId) {
+func (s *TableServiceImpl) List(paginationParams utils.PaginationParams, organizationID, projectID, authenticatedUserID uint) ([]models.Table, error) {
+	if !s.projectPolicy.CanList(organizationID, authenticatedUserID) {
 		return []models.Table{}, errs.NewForbiddenError("project.error.listForbidden")
 	}
 
-	return s.coreTableRepo.ListForProject(paginationParams, projectId)
+	return s.coreTableRepo.ListForProject(paginationParams, projectID)
 }
 
-func (s *TableServiceImpl) GetByID(tableId, organizationId uint, authenticatedUser models.AuthenticatedUser) (models.Table, error) {
-	if !s.projectPolicy.CanView(organizationId, authenticatedUser) {
+func (s *TableServiceImpl) GetByID(tableID, organizationID uint, authenticatedUser models.AuthenticatedUser) (models.Table, error) {
+	if !s.projectPolicy.CanView(organizationID, authenticatedUser) {
 		return models.Table{}, errs.NewForbiddenError("project.error.viewForbidden")
 	}
 
-	return s.coreTableRepo.GetByID(tableId)
+	return s.coreTableRepo.GetByID(tableID)
 }
 
 func (s *TableServiceImpl) Create(request *requests.TableCreateRequest, projectID uint, authenticatedUser models.AuthenticatedUser) (models.Table, error) {
@@ -100,40 +100,38 @@ func (s *TableServiceImpl) Create(request *requests.TableCreateRequest, projectI
 	return table, nil
 }
 
-/*func (s *TableServiceImpl) Update(tableId uint, authenticatedUser models.AuthenticatedUser, request *requests.TableCreateRequest) (*models.Table, error) {
-	project, err := s.projectRepo.GetByID(tableId)
+func (s *TableServiceImpl) Rename(tableID, projectID uint, authenticatedUser models.AuthenticatedUser, request *requests.TableRenameRequest) (models.Table, error) {
+	exists, err := s.projectRepo.ExistsByID(projectID)
 	if err != nil {
-		return nil, err
+		return models.Table{}, err
 	}
 
-	if !s.projectPolicy.CanUpdate(tableId, authenticatedUser) {
-		return &models.Table{}, errs.NewForbiddenError("project.error.updateForbidden")
+	if !exists {
+		return models.Table{}, errs.NewNotFoundError("project.error.notFound")
 	}
 
-	project.OrganizationID = request.OrganizationID
-	err = utils.PopulateModel(&project, request)
+	if !s.projectPolicy.CanUpdate(request.OrganizationID, authenticatedUser) {
+		return models.Table{}, errs.NewForbiddenError("project.error.updateForbidden")
+	}
+
+	err = s.validateNameForDuplication(request.Name, projectID)
 	if err != nil {
-		return nil, err
+		return models.Table{}, err
 	}
 
-	err = s.validateNameForDuplication(request.Name, request.OrganizationID)
-	if err != nil {
-		return &models.Table{}, err
-	}
+	return s.coreTableRepo.Rename(tableID, request.Name)
+}
 
-	return s.projectRepo.Update(tableId, &project)
-}*/
-
-func (s *TableServiceImpl) Delete(tableId uint, authenticatedUser models.AuthenticatedUser) (bool, error) {
-	if !s.projectPolicy.CanUpdate(tableId, authenticatedUser) {
+func (s *TableServiceImpl) Delete(tableID uint, authenticatedUser models.AuthenticatedUser) (bool, error) {
+	if !s.projectPolicy.CanUpdate(tableID, authenticatedUser) {
 		return false, errs.NewForbiddenError("project.error.updateForbidden")
 	}
 
-	return s.projectRepo.Delete(tableId)
+	return s.coreTableRepo.Delete(tableID)
 }
 
-func (s *TableServiceImpl) validateNameForDuplication(name string, projectId uint) error {
-	exists, err := s.coreTableRepo.ExistsByNameForProject(name, projectId)
+func (s *TableServiceImpl) validateNameForDuplication(name string, projectID uint) error {
+	exists, err := s.coreTableRepo.ExistsByNameForProject(name, projectID)
 	if err != nil {
 		return err
 	}
