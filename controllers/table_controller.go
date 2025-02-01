@@ -84,11 +84,16 @@ func (pc *TableController) Store(c echo.Context) error {
 	return responses.CreatedResponse(c, resources.TableResource(&table))
 }
 
-/*func (pc *TableController) Update(c echo.Context) error {
-	var request requests.ProjectCreateRequest
+func (pc *TableController) Rename(c echo.Context) error {
+	var request requests.TableRenameRequest
 	authenticatedUser, _ := utils.NewAuth(c).User()
 
-	id, err := utils.GetUintPathParam(c, "id", true)
+	projectID, err := utils.GetUintPathParam(c, "projectID", true)
+	if err != nil {
+		return responses.BadRequestResponse(c, err.Error())
+	}
+
+	tableID, err := utils.GetUintPathParam(c, "tableID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
@@ -97,12 +102,12 @@ func (pc *TableController) Store(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	updatedOrganization, err := pc.tableService.Update(id, authenticatedUser, &request)
+	renamedTable, err := pc.tableService.Rename(tableID, projectID, authenticatedUser, &request)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
 
-	return responses.SuccessResponse(c, resources.ProjectResource(updatedOrganization))
+	return responses.SuccessResponse(c, resources.TableResource(&renamedTable))
 }
 
 func (pc *TableController) Delete(c echo.Context) error {
@@ -113,15 +118,14 @@ func (pc *TableController) Delete(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	id, err := utils.GetUintPathParam(c, "id", true)
+	tableID, err := utils.GetUintPathParam(c, "tableID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	if _, err := pc.tableService.Delete(id, authenticatedUser); err != nil {
+	if _, err := pc.tableService.Delete(tableID, authenticatedUser); err != nil {
 		return responses.ErrorResponse(c, err)
 	}
 
 	return responses.DeletedResponse(c, nil)
 }
-*/

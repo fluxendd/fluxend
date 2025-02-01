@@ -18,12 +18,12 @@ func NewProjectPolicy(injector *do.Injector) (*ProjectPolicy, error) {
 	}, nil
 }
 
-func (s *ProjectPolicy) CanCreate(organizationId uint, authenticatedUser models.AuthenticatedUser) bool {
+func (s *ProjectPolicy) CanCreate(organizationID uint, authenticatedUser models.AuthenticatedUser) bool {
 	if !authenticatedUser.IsLordOrMore() {
 		return false
 	}
 
-	isOrganizationUser, err := s.organizationRepo.IsOrganizationUser(organizationId, authenticatedUser.ID)
+	isOrganizationUser, err := s.organizationRepo.IsOrganizationUser(organizationID, authenticatedUser.ID)
 	if err != nil {
 		return false
 	}
@@ -31,8 +31,8 @@ func (s *ProjectPolicy) CanCreate(organizationId uint, authenticatedUser models.
 	return isOrganizationUser
 }
 
-func (s *ProjectPolicy) CanList(organizationId uint, authenticatedUserId uint) bool {
-	isOrganizationUser, err := s.organizationRepo.IsOrganizationUser(organizationId, authenticatedUserId)
+func (s *ProjectPolicy) CanList(organizationID uint, authenticatedUserId uint) bool {
+	isOrganizationUser, err := s.organizationRepo.IsOrganizationUser(organizationID, authenticatedUserId)
 	if err != nil {
 		return false
 	}
@@ -40,8 +40,8 @@ func (s *ProjectPolicy) CanList(organizationId uint, authenticatedUserId uint) b
 	return isOrganizationUser
 }
 
-func (s *ProjectPolicy) CanView(organizationId uint, authenticatedUser models.AuthenticatedUser) bool {
-	isOrganizationUser, err := s.organizationRepo.IsOrganizationUser(organizationId, authenticatedUser.ID)
+func (s *ProjectPolicy) CanView(organizationID uint, authenticatedUser models.AuthenticatedUser) bool {
+	isOrganizationUser, err := s.organizationRepo.IsOrganizationUser(organizationID, authenticatedUser.ID)
 	if err != nil {
 		return false
 	}
@@ -49,12 +49,12 @@ func (s *ProjectPolicy) CanView(organizationId uint, authenticatedUser models.Au
 	return isOrganizationUser
 }
 
-func (s *ProjectPolicy) CanUpdate(organizationId uint, authenticatedUser models.AuthenticatedUser) bool {
+func (s *ProjectPolicy) CanUpdate(organizationID uint, authenticatedUser models.AuthenticatedUser) bool {
 	if !authenticatedUser.IsLordOrMore() {
 		return false
 	}
 
-	isOrganizationUser, err := s.organizationRepo.IsOrganizationUser(organizationId, authenticatedUser.ID)
+	isOrganizationUser, err := s.organizationRepo.IsOrganizationUser(organizationID, authenticatedUser.ID)
 	if err != nil {
 		return false
 	}

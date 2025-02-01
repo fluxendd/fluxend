@@ -130,26 +130,18 @@ func (r *CoreTableRepository) Create(table *models.Table) (*models.Table, error)
 	return table, nil
 }
 
-func (r *CoreTableRepository) Update(id uint, table *models.Table) (*models.Table, error) {
-	table.ID = id
-	table.UpdatedAt = time.Now()
-
-	fieldsJSON, err := table.MarshalJSONFields()
-	if err != nil {
-		return nil, fmt.Errorf("could not marshal fields: %v", err)
-	}
-
+func (r *CoreTableRepository) Rename(tableID uint, name string) (models.Table, error) {
 	query := `
 		UPDATE tables 
-		SET name = $1, fields = $2, updated_at = $3 
-		WHERE id = $4`
+		SET name = $1, updated_at = $2 
+		WHERE id = $3`
 
-	_, queryErr := r.db.Exec(query, table.Name, fieldsJSON, table.UpdatedAt, id)
+	_, queryErr := r.db.Exec(query, name, time.Now(), tableID)
 	if queryErr != nil {
-		return nil, fmt.Errorf("could not update table: %v", queryErr)
+		return models.Table{}, fmt.Errorf("could not update table: %v", queryErr)
 	}
 
-	return table, nil
+	return r.GetByID(tableID)
 }
 
 func (r *CoreTableRepository) Delete(tableID uint) (bool, error) {
