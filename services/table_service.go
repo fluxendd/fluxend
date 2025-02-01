@@ -91,12 +91,7 @@ func (s *TableServiceImpl) Create(request *requests.TableCreateRequest, projectI
 		return models.Table{}, err
 	}
 
-	clientDatabaseConnection, err := s.databaseRepo.Connect(project.DBName)
-	if err != nil {
-		return models.Table{}, err
-	}
-
-	clientTableRepo, err := repositories.NewClientTableRepository(clientDatabaseConnection)
+	clientTableRepo, err := s.getClientTableRepo(project.DBName)
 	if err != nil {
 		return models.Table{}, err
 	}
@@ -126,12 +121,7 @@ func (s *TableServiceImpl) Rename(tableID, projectID uint, authenticatedUser mod
 		return models.Table{}, err
 	}
 
-	clientDatabaseConnection, err := s.databaseRepo.Connect(project.DBName)
-	if err != nil {
-		return models.Table{}, err
-	}
-
-	clientTableRepo, err := repositories.NewClientTableRepository(clientDatabaseConnection)
+	clientTableRepo, err := s.getClientTableRepo(project.DBName)
 	if err != nil {
 		return models.Table{}, err
 	}
@@ -159,12 +149,7 @@ func (s *TableServiceImpl) Delete(tableID, organizationID, projectID uint, authe
 		return false, err
 	}
 
-	clientDatabaseConnection, err := s.databaseRepo.Connect(project.DBName)
-	if err != nil {
-		return false, err
-	}
-
-	clientTableRepo, err := repositories.NewClientTableRepository(clientDatabaseConnection)
+	clientTableRepo, err := s.getClientTableRepo(project.DBName)
 	if err != nil {
 		return false, err
 	}
@@ -188,4 +173,18 @@ func (s *TableServiceImpl) validateNameForDuplication(name string, projectID uin
 	}
 
 	return nil
+}
+
+func (s *TableServiceImpl) getClientTableRepo(databaseName string) (*repositories.ClientTableRepository, error) {
+	clientDatabaseConnection, err := s.databaseRepo.Connect(databaseName)
+	if err != nil {
+		return nil, err
+	}
+
+	clientTableRepo, err := repositories.NewClientTableRepository(clientDatabaseConnection)
+	if err != nil {
+		return nil, err
+	}
+
+	return clientTableRepo, nil
 }
