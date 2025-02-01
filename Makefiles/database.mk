@@ -1,3 +1,5 @@
+.PHONY: migrate-create migrate-up migrate-down migrate-status migrate-reset migrate-redo migrate-fresh seed seed-fresh
+
 migrate-create: ## Create a new database migration
 	@read -p "Enter migration name: " name; \
 	goose -dir migrations create $$name sql
@@ -22,7 +24,7 @@ migrate-fresh: ## Rollback all migrations and run them again
 	make migrate-up
 
 seed: ## Seed the database
-	@go run cmd/seed.go
+	@go run seed/main.go
 
 seed-fresh: ## Seed the database with fresh data
 	make migrate-fresh
