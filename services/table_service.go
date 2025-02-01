@@ -57,13 +57,9 @@ func (s *TableServiceImpl) GetByID(tableID, organizationID uint, authenticatedUs
 }
 
 func (s *TableServiceImpl) Create(request *requests.TableCreateRequest, projectID uint, authenticatedUser models.AuthenticatedUser) (models.Table, error) {
-	exists, err := s.projectRepo.ExistsByID(projectID)
+	project, err := s.projectRepo.GetByID(projectID)
 	if err != nil {
 		return models.Table{}, err
-	}
-
-	if !exists {
-		return models.Table{}, errs.NewNotFoundError("project.error.notFound")
 	}
 
 	if !s.projectPolicy.CanCreate(request.OrganizationID, authenticatedUser) {
@@ -71,11 +67,6 @@ func (s *TableServiceImpl) Create(request *requests.TableCreateRequest, projectI
 	}
 
 	err = s.validateNameForDuplication(request.Name, projectID)
-	if err != nil {
-		return models.Table{}, err
-	}
-
-	project, err := s.projectRepo.GetByID(projectID)
 	if err != nil {
 		return models.Table{}, err
 	}
