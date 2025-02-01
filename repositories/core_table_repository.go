@@ -57,37 +57,38 @@ func (r *CoreTableRepository) ListForProject(paginationParams utils.PaginationPa
 	}
 	defer rows.Close()
 
-	var projects []models.Table
+	var tables []models.Table
 	for rows.Next() {
-		var organization models.Table
-		if err := rows.StructScan(&organization); err != nil {
+		var table models.Table
+		if err := rows.StructScan(&table); err != nil {
 			return nil, fmt.Errorf("could not scan row: %v", err)
 		}
-		projects = append(projects, organization)
+		tables = append(tables, table)
 	}
 
 	if err := rows.Err(); err != nil {
 		return nil, fmt.Errorf("could not iterate over rows: %v", err)
 	}
 
-	return projects, nil
+	return tables, nil
 }
 
 func (r *CoreTableRepository) GetByID(id uint) (models.Table, error) {
 	query := "SELECT %s FROM tables WHERE id = $1"
 	query = fmt.Sprintf(query, models.Table{}.GetFields())
 
-	var project models.Table
-	err := r.db.Get(&project, query, id)
+	var table models.Table
+	row := r.db.QueryRow(query, id)
+
+	err := row.Scan(&table.ID, &table.ProjectID, &table.Name, &table.Fields, &table.CreatedAt, &table.UpdatedAt)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return models.Table{}, errs.NewNotFoundError("table.error.notFound")
 		}
-
 		return models.Table{}, fmt.Errorf("could not fetch row: %v", err)
 	}
 
-	return project, nil
+	return table, nil
 }
 
 func (r *CoreTableRepository) ExistsByID(id uint) (bool, error) {
@@ -130,29 +131,29 @@ func (r *CoreTableRepository) Create(table *models.Table) (*models.Table, error)
 }
 
 func (r *CoreTableRepository) Update(id uint, table *models.Table) (*models.Table, error) {
-	table.UpdatedAt = time.Now()
 	table.ID = id
+	table.UpdatedAt = time.Now()
+
+	fieldsJSON, err := table.MarshalJSONFields()
+	if err != nil {
+		return nil, fmt.Errorf("could not marshal fields: %v", err)
+	}
 
 	query := `
 		UPDATE tables 
-		SET name = :name, fields = :fields, updated_at = :updated_at 
-		WHERE id = :id`
+		SET name = $1, fields = $2, updated_at = $3 
+		WHERE id = $4`
 
-	res, err := r.db.NamedExec(query, table)
-	if err != nil {
-		return &models.Table{}, fmt.Errorf("could not update row: %v", err)
-	}
-
-	_, err = res.RowsAffected()
-	if err != nil {
-		return &models.Table{}, fmt.Errorf("could not determine affected rows: %v", err)
+	_, queryErr := r.db.Exec(query, table.Name, fieldsJSON, table.UpdatedAt, id)
+	if queryErr != nil {
+		return nil, fmt.Errorf("could not update table: %v", queryErr)
 	}
 
 	return table, nil
 }
 
 func (r *CoreTableRepository) Delete(tableID uint) (bool, error) {
-	query := "DELETE FROM projects WHERE id = $1"
+	query := "DELETE FROM tables WHERE id = $1"
 	res, err := r.db.Exec(query, tableID)
 	if err != nil {
 		return false, fmt.Errorf("could not delete row: %v", err)

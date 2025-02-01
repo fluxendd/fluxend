@@ -3,17 +3,20 @@ package models
 import (
 	"encoding/json"
 	"fluxton/types"
+	"fmt"
 	"strings"
 	"time"
 )
 
+type JSONFields []types.TableField // important for reading from db
+
 type Table struct {
-	ID        uint               `db:"id"`
-	ProjectID uint               `db:"project_id"`
-	Name      string             `db:"name"`
-	Fields    []types.TableField `db:"fields" json:"fields"`
-	CreatedAt time.Time          `db:"created_at"`
-	UpdatedAt time.Time          `db:"updated_at"`
+	ID        uint       `db:"id"`
+	ProjectID uint       `db:"project_id"`
+	Name      string     `db:"name"`
+	Fields    JSONFields `db:"fields" json:"fields"`
+	CreatedAt time.Time  `db:"created_at"`
+	UpdatedAt time.Time  `db:"updated_at"`
 }
 
 func (u Table) GetTableName() string {
@@ -39,4 +42,12 @@ func (t Table) MarshalJSONFields() ([]byte, error) {
 
 func (t Table) UnmarshalJSONFields(data []byte) error {
 	return json.Unmarshal(data, &t.Fields)
+}
+
+func (j *JSONFields) Scan(value interface{}) error {
+	byteData, ok := value.([]byte)
+	if !ok {
+		return fmt.Errorf("cannot convert database value to []byte")
+	}
+	return json.Unmarshal(byteData, j)
 }
