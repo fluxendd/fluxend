@@ -74,7 +74,7 @@ func (s *TableServiceImpl) Create(request *requests.TableCreateRequest, projectI
 	table := models.Table{
 		Name:      request.Name,
 		ProjectID: projectID,
-		Fields:    request.Fields,
+		Columns:   request.Columns,
 	}
 
 	_, err = s.coreTableRepo.Create(&table)
@@ -87,7 +87,10 @@ func (s *TableServiceImpl) Create(request *requests.TableCreateRequest, projectI
 		return models.Table{}, err
 	}
 
-	err = clientTableRepo.Create(table.Name, table.Fields)
+	err = clientTableRepo.Create(table.Name, table.Columns)
+	if err != nil {
+		return models.Table{}, err
+	}
 
 	return table, nil
 }

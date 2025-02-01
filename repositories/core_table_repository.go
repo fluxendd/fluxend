@@ -42,7 +42,7 @@ func (r *CoreTableRepository) ListForProject(paginationParams utils.PaginationPa
 
 	`
 
-	query = fmt.Sprintf(query, modelSkeleton.GetFieldsWithAlias(modelSkeleton.GetTableName()))
+	query = fmt.Sprintf(query, modelSkeleton.GetColumnsWithAlias(modelSkeleton.GetTableName()))
 
 	params := map[string]interface{}{
 		"project_id": projectID,
@@ -75,12 +75,12 @@ func (r *CoreTableRepository) ListForProject(paginationParams utils.PaginationPa
 
 func (r *CoreTableRepository) GetByID(id uint) (models.Table, error) {
 	query := "SELECT %s FROM tables WHERE id = $1"
-	query = fmt.Sprintf(query, models.Table{}.GetFields())
+	query = fmt.Sprintf(query, models.Table{}.GetColumns())
 
 	var table models.Table
 	row := r.db.QueryRow(query, id)
 
-	err := row.Scan(&table.ID, &table.ProjectID, &table.Name, &table.Fields, &table.CreatedAt, &table.UpdatedAt)
+	err := row.Scan(&table.ID, &table.ProjectID, &table.Name, &table.Columns, &table.CreatedAt, &table.UpdatedAt)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return models.Table{}, errs.NewNotFoundError("table.error.notFound")
@@ -116,13 +116,13 @@ func (r *CoreTableRepository) ExistsByNameForProject(name string, tableID uint) 
 }
 
 func (r *CoreTableRepository) Create(table *models.Table) (*models.Table, error) {
-	fieldsJSON, err := table.MarshalJSONFields()
+	columnsJSON, err := table.MarshalJSONColumns()
 	if err != nil {
-		return nil, fmt.Errorf("could not marshal fields: %v", err)
+		return nil, fmt.Errorf("could not marshal columns: %v", err)
 	}
 
-	query := "INSERT INTO tables (name, project_id, fields) VALUES ($1, $2, $3) RETURNING id"
-	queryErr := r.db.QueryRowx(query, table.Name, table.ProjectID, fieldsJSON).Scan(&table.ID)
+	query := "INSERT INTO tables (name, project_id, columns) VALUES ($1, $2, $3) RETURNING id"
+	queryErr := r.db.QueryRowx(query, table.Name, table.ProjectID, columnsJSON).Scan(&table.ID)
 	if queryErr != nil {
 		return nil, fmt.Errorf("could not create table: %v", queryErr)
 	}

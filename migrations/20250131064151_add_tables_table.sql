@@ -4,7 +4,7 @@ CREATE TABLE tables (
     id SERIAL PRIMARY KEY,
     project_id INT NOT NULL,
     name VARCHAR(255) NOT NULL,
-    fields JSONB NOT NULL,
+    columns JSONB NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

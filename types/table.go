@@ -1,6 +1,6 @@
 package types
 
-type TableField struct {
+type TableColumn struct {
 	Name    string
 	Type    string
 	Primary bool

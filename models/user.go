@@ -31,7 +31,7 @@ type AuthenticatedUser struct {
 	RoleID int
 }
 
-func (u User) GetFields() string {
+func (u User) GetColumns() string {
 	return "id, username, email, status, role_id, bio, password, created_at, updated_at"
 }
 

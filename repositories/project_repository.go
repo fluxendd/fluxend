@@ -44,7 +44,7 @@ func (r *ProjectRepository) ListForUser(paginationParams utils.PaginationParams,
 
 	`
 
-	query = fmt.Sprintf(query, modelSkeleton.GetFieldsWithAlias(modelSkeleton.GetTableName()))
+	query = fmt.Sprintf(query, modelSkeleton.GetColumnsWithAlias(modelSkeleton.GetTableName()))
 
 	params := map[string]interface{}{
 		"user_id": authenticatedUserId,
@@ -77,7 +77,7 @@ func (r *ProjectRepository) ListForUser(paginationParams utils.PaginationParams,
 
 func (r *ProjectRepository) GetByID(id uint) (models.Project, error) {
 	query := "SELECT %s FROM projects WHERE id = $1"
-	query = fmt.Sprintf(query, models.Project{}.GetFields())
+	query = fmt.Sprintf(query, models.Project{}.GetColumns())
 
 	var project models.Project
 	err := r.db.Get(&project, query, id)

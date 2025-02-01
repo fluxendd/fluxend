@@ -43,7 +43,7 @@ func (r *OrganizationRepository) ListForUser(paginationParams utils.PaginationPa
 
 	`
 
-	query = fmt.Sprintf(query, modelSkeleton.GetFieldsWithAlias(modelSkeleton.GetTableName()))
+	query = fmt.Sprintf(query, modelSkeleton.GetColumnsWithAlias(modelSkeleton.GetTableName()))
 
 	params := map[string]interface{}{
 		"user_id": authenticatedUserId,
@@ -76,7 +76,7 @@ func (r *OrganizationRepository) ListForUser(paginationParams utils.PaginationPa
 
 func (r *OrganizationRepository) GetByIDForUser(id, authenticatedUserId uint) (models.Organization, error) {
 	query := "SELECT %s FROM organizations WHERE id = $1"
-	query = fmt.Sprintf(query, models.Organization{}.GetFields())
+	query = fmt.Sprintf(query, models.Organization{}.GetColumns())
 
 	var organization models.Organization
 	err := r.db.Get(&organization, query, id)
