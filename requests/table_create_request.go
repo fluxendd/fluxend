@@ -60,7 +60,7 @@ func (r *TableCreateRequest) BindAndValidate(c echo.Context) []string {
 	// Validate base request columns
 	err = validation.ValidateStruct(r,
 		validation.Field(&r.Name, validation.Required.Error("Name is required"), validation.Length(3, 100).Error("Name must be between 3 and 100 characters")),
-		validation.Field(&r.Columns, validation.Required.Error("Columns are required")),
+		validation.Field(&r.Columns, validation.Required.Error("Fields are required")),
 	)
 
 	if err != nil {
@@ -78,7 +78,7 @@ func (r *TableCreateRequest) BindAndValidate(c echo.Context) []string {
 		errors = append(errors, fmt.Sprintf("Table name '%s' is not allowed", r.Name))
 	}
 
-	// Validate column
+	// Validate columns
 	for _, column := range r.Columns {
 		if column.Name == "" {
 			errors = append(errors, "Field name is required")

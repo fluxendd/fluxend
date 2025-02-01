@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fluxton/errs"
 	"fluxton/models"
+	"fluxton/types"
 	"fluxton/utils"
 	"fmt"
 	"github.com/jmoiron/sqlx"
@@ -73,6 +74,23 @@ func (r *CoreTableRepository) ListForProject(paginationParams utils.PaginationPa
 	return tables, nil
 }
 
+func (r *CoreTableRepository) ListColumns(tableID uint) ([]types.TableColumn, error) {
+	query := "SELECT columns FROM tables WHERE id = $1"
+
+	var columnsJSON models.JSONColumns
+	row := r.db.QueryRow(query, tableID)
+
+	err := row.Scan(&columnsJSON)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, errs.NewNotFoundError("table.error.notFound")
+		}
+		return nil, fmt.Errorf("could not fetch row: %v", err)
+	}
+
+	return columnsJSON, nil
+}
+
 func (r *CoreTableRepository) GetByID(id uint) (models.Table, error) {
 	query := "SELECT %s FROM tables WHERE id = $1"
 	query = fmt.Sprintf(query, models.Table{}.GetColumns())
@@ -115,6 +133,35 @@ func (r *CoreTableRepository) ExistsByNameForProject(name string, tableID uint) 
 	return exists, nil
 }
 
+func (r *CoreTableRepository) HasColumn(column string, tableID uint) (bool, error) {
+	query := `
+		SELECT EXISTS (
+			SELECT 1
+			FROM tables
+			WHERE id = $1
+			AND EXISTS (
+				SELECT 1
+				FROM jsonb_array_elements(columns) AS col
+				WHERE col->>'Name' = $2
+			)
+		) AS column_exists
+	`
+
+	utils.Dump(query)
+	utils.Dump(column)
+
+	var columnExists bool
+	err := r.db.QueryRow(query, tableID, column).Scan(&columnExists)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return false, errs.NewNotFoundError("table.error.notFound")
+		}
+		return false, fmt.Errorf("could not fetch row: %v", err)
+	}
+
+	return columnExists, nil
+}
+
 func (r *CoreTableRepository) Create(table *models.Table) (*models.Table, error) {
 	columnsJSON, err := table.MarshalJSONColumns()
 	if err != nil {
@@ -125,6 +172,27 @@ func (r *CoreTableRepository) Create(table *models.Table) (*models.Table, error)
 	queryErr := r.db.QueryRowx(query, table.Name, table.ProjectID, columnsJSON).Scan(&table.ID)
 	if queryErr != nil {
 		return nil, fmt.Errorf("could not create table: %v", queryErr)
+	}
+
+	return table, nil
+}
+
+func (r *CoreTableRepository) Update(table *models.Table) (*models.Table, error) {
+	columnsJSON, err := table.MarshalJSONColumns()
+	if err != nil {
+		return nil, fmt.Errorf("could not marshal columns: %v", err)
+	}
+
+	query := `
+		UPDATE tables 
+		SET name = $1, columns = $2, updated_at = $3 
+		WHERE id = $4
+		RETURNING id
+	`
+
+	queryErr := r.db.QueryRow(query, table.Name, columnsJSON, time.Now(), table.ID).Scan(&table.ID)
+	if queryErr != nil {
+		return nil, fmt.Errorf("could not update table: %v", queryErr)
 	}
 
 	return table, nil
