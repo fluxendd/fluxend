@@ -107,13 +107,9 @@ func (s *TableServiceImpl) Create(request *requests.TableCreateRequest, projectI
 }
 
 func (s *TableServiceImpl) Rename(tableID, projectID uint, authenticatedUser models.AuthenticatedUser, request *requests.TableRenameRequest) (models.Table, error) {
-	exists, err := s.projectRepo.ExistsByID(projectID)
+	project, err := s.projectRepo.GetByID(projectID)
 	if err != nil {
 		return models.Table{}, err
-	}
-
-	if !exists {
-		return models.Table{}, errs.NewNotFoundError("project.error.notFound")
 	}
 
 	if !s.projectPolicy.CanUpdate(request.OrganizationID, authenticatedUser) {
@@ -125,30 +121,57 @@ func (s *TableServiceImpl) Rename(tableID, projectID uint, authenticatedUser mod
 		return models.Table{}, err
 	}
 
+	table, err := s.coreTableRepo.GetByID(tableID)
+	if err != nil {
+		return models.Table{}, err
+	}
+
+	clientDatabaseConnection, err := s.databaseRepo.Connect(project.DBName)
+	if err != nil {
+		return models.Table{}, err
+	}
+
+	clientTableRepo, err := repositories.NewClientTableRepository(clientDatabaseConnection)
+	if err != nil {
+		return models.Table{}, err
+	}
+
+	err = clientTableRepo.Rename(table.Name, request.Name)
+	if err != nil {
+		return models.Table{}, err
+	}
+
 	return s.coreTableRepo.Rename(tableID, request.Name)
 }
 
 func (s *TableServiceImpl) Delete(tableID, organizationID, projectID uint, authenticatedUser models.AuthenticatedUser) (bool, error) {
-	exists, err := s.projectRepo.ExistsByID(projectID)
+	project, err := s.projectRepo.GetByID(projectID)
 	if err != nil {
 		return false, err
-	}
-
-	if !exists {
-		return false, errs.NewNotFoundError("project.error.notFound")
 	}
 
 	if !s.projectPolicy.CanUpdate(organizationID, authenticatedUser) {
 		return false, errs.NewForbiddenError("project.error.updateForbidden")
 	}
 
-	tableExists, err := s.coreTableRepo.ExistsByID(tableID)
+	table, err := s.coreTableRepo.GetByID(tableID)
 	if err != nil {
 		return false, err
 	}
 
-	if !tableExists {
-		return false, errs.NewNotFoundError("table.error.notFound")
+	clientDatabaseConnection, err := s.databaseRepo.Connect(project.DBName)
+	if err != nil {
+		return false, err
+	}
+
+	clientTableRepo, err := repositories.NewClientTableRepository(clientDatabaseConnection)
+	if err != nil {
+		return false, err
+	}
+
+	err = clientTableRepo.Drop(table.Name)
+	if err != nil {
+		return false, err
 	}
 
 	return s.coreTableRepo.Delete(tableID)
