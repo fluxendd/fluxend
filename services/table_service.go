@@ -77,7 +77,7 @@ func (s *TableServiceImpl) Create(request *requests.TableCreateRequest, projectI
 		Columns:   request.Columns,
 	}
 
-	_, err = s.coreTableRepo.Create(&table)
+	_, err = s.coreTableRepo.Create(&table, authenticatedUser.ID)
 	if err != nil {
 		return models.Table{}, err
 	}
@@ -125,7 +125,7 @@ func (s *TableServiceImpl) Rename(tableID, projectID uint, authenticatedUser mod
 		return models.Table{}, err
 	}
 
-	return s.coreTableRepo.Rename(tableID, request.Name)
+	return s.coreTableRepo.Rename(tableID, request.Name, authenticatedUser.ID)
 }
 
 func (s *TableServiceImpl) Delete(tableID, organizationID, projectID uint, authenticatedUser models.AuthenticatedUser) (bool, error) {
