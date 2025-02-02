@@ -10,33 +10,33 @@ import (
 )
 
 type ColumnService interface {
-	Create(request *requests.ColumnCreateRequest, projectID, tableID uint, authenticatedUser models.AuthenticatedUser) (models.Table, error)
-	Alter(tableID, projectID uint, authenticatedUser models.AuthenticatedUser, request *requests.TableRenameRequest) (models.Table, error)
-	Delete(tableID, organizationID, projectID uint, authenticatedUser models.AuthenticatedUser) (bool, error)
+	Create(projectID, tableID uint, request *requests.ColumnCreateRequest, authenticatedUser models.AuthenticatedUser) (models.Table, error)
+	Alter(tableID, projectID uint, request *requests.ColumnUpdateRequest, authenticatedUser models.AuthenticatedUser) (*models.Table, error)
+	Delete(tableID, organizationID, projectID uint, request *requests.ColumnDeleteRequest, authenticatedUser models.AuthenticatedUser) (bool, error)
 }
 
 type ColumnServiceImpl struct {
-	projectPolicy *policies.ProjectPolicy
-	databaseRepo  *repositories.DatabaseRepository
-	projectRepo   *repositories.ProjectRepository
-	coreTableRepo *repositories.CoreTableRepository
+	connectionService ConnectionService
+	projectPolicy     *policies.ProjectPolicy
+	projectRepo       *repositories.ProjectRepository
+	coreTableRepo     *repositories.CoreTableRepository
 }
 
 func NewColumnService(injector *do.Injector) (ColumnService, error) {
+	connectionService := do.MustInvoke[ConnectionService](injector)
 	policy := do.MustInvoke[*policies.ProjectPolicy](injector)
-	databaseRepo := do.MustInvoke[*repositories.DatabaseRepository](injector)
 	projectRepo := do.MustInvoke[*repositories.ProjectRepository](injector)
 	coreTableRepo := do.MustInvoke[*repositories.CoreTableRepository](injector)
 
 	return &ColumnServiceImpl{
-		projectPolicy: policy,
-		databaseRepo:  databaseRepo,
-		projectRepo:   projectRepo,
-		coreTableRepo: coreTableRepo,
+		projectPolicy:     policy,
+		connectionService: connectionService,
+		projectRepo:       projectRepo,
+		coreTableRepo:     coreTableRepo,
 	}, nil
 }
 
-func (s *ColumnServiceImpl) Create(request *requests.ColumnCreateRequest, projectID, tableID uint, authenticatedUser models.AuthenticatedUser) (models.Table, error) {
+func (s *ColumnServiceImpl) Create(projectID, tableID uint, request *requests.ColumnCreateRequest, authenticatedUser models.AuthenticatedUser) (models.Table, error) {
 	project, err := s.projectRepo.GetByID(projectID)
 	if err != nil {
 		return models.Table{}, err
@@ -63,12 +63,12 @@ func (s *ColumnServiceImpl) Create(request *requests.ColumnCreateRequest, projec
 		return models.Table{}, err
 	}
 
-	clientColumnRepo, err := s.getClientColumnRepo(project.DBName)
+	clientColumnRepo, err := s.connectionService.GetClientColumnRepo(project.DBName)
 	if err != nil {
 		return models.Table{}, err
 	}
 
-	_, err = clientColumnRepo.Create(table.Name, request.Column)
+	err = clientColumnRepo.Create(table.Name, request.Column)
 	if err != nil {
 		return models.Table{}, err
 	}
@@ -76,40 +76,47 @@ func (s *ColumnServiceImpl) Create(request *requests.ColumnCreateRequest, projec
 	return table, nil
 }
 
-func (s *ColumnServiceImpl) Alter(tableID, projectID uint, authenticatedUser models.AuthenticatedUser, request *requests.TableRenameRequest) (models.Table, error) {
+func (s *ColumnServiceImpl) Alter(tableID, projectID uint, request *requests.ColumnUpdateRequest, authenticatedUser models.AuthenticatedUser) (*models.Table, error) {
 	project, err := s.projectRepo.GetByID(projectID)
 	if err != nil {
-		return models.Table{}, err
+		return &models.Table{}, err
 	}
 
 	if !s.projectPolicy.CanUpdate(request.OrganizationID, authenticatedUser) {
-		return models.Table{}, errs.NewForbiddenError("project.error.updateForbidden")
+		return &models.Table{}, errs.NewForbiddenError("project.error.updateForbidden")
 	}
 
-	err = s.validateNameForDuplication(request.Name, projectID)
+	err = s.validateNameForDuplication(request.Column.Name, projectID)
 	if err != nil {
-		return models.Table{}, err
+		return &models.Table{}, err
 	}
 
 	table, err := s.coreTableRepo.GetByID(tableID)
 	if err != nil {
-		return models.Table{}, err
+		return &models.Table{}, err
 	}
 
-	clientTableRepo, err := s.getClientTableRepo(project.DBName)
+	for i, column := range table.Columns {
+		if column.Name == request.Name {
+			table.Columns[i] = request.Column
+			break
+		}
+	}
+
+	clientColumnRepo, err := s.connectionService.GetClientColumnRepo(project.DBName)
 	if err != nil {
-		return models.Table{}, err
+		return &models.Table{}, err
 	}
 
-	err = clientTableRepo.Rename(table.Name, request.Name)
+	err = clientColumnRepo.Update(table.Name, request.Column)
 	if err != nil {
-		return models.Table{}, err
+		return &models.Table{}, err
 	}
 
-	return s.coreTableRepo.Rename(tableID, request.Name)
+	return s.coreTableRepo.Update(&table)
 }
 
-func (s *ColumnServiceImpl) Delete(tableID, organizationID, projectID uint, authenticatedUser models.AuthenticatedUser) (bool, error) {
+func (s *ColumnServiceImpl) Delete(tableID, organizationID, projectID uint, request *requests.ColumnDeleteRequest, authenticatedUser models.AuthenticatedUser) (bool, error) {
 	project, err := s.projectRepo.GetByID(projectID)
 	if err != nil {
 		return false, err
@@ -124,17 +131,27 @@ func (s *ColumnServiceImpl) Delete(tableID, organizationID, projectID uint, auth
 		return false, err
 	}
 
-	clientTableRepo, err := s.getClientTableRepo(project.DBName)
+	for i, column := range table.Columns {
+		if column.Name == request.Name {
+			// Remove column from slice
+			table.Columns = append(table.Columns[:i], table.Columns[i+1:]...)
+			break
+		}
+	}
+
+	clientColumnRepo, err := s.connectionService.GetClientColumnRepo(project.DBName)
 	if err != nil {
 		return false, err
 	}
 
-	err = clientTableRepo.DropIfExists(table.Name)
+	err = clientColumnRepo.Drop(table.Name, request.Name)
 	if err != nil {
 		return false, err
 	}
 
-	return s.coreTableRepo.Delete(tableID)
+	_, err = s.coreTableRepo.Update(&table)
+
+	return err == nil, err
 }
 
 func (s *ColumnServiceImpl) validateNameForDuplication(name string, tableID uint) error {
@@ -148,32 +165,4 @@ func (s *ColumnServiceImpl) validateNameForDuplication(name string, tableID uint
 	}
 
 	return nil
-}
-
-func (s *ColumnServiceImpl) getClientTableRepo(databaseName string) (*repositories.ClientTableRepository, error) {
-	clientDatabaseConnection, err := s.databaseRepo.Connect(databaseName)
-	if err != nil {
-		return nil, err
-	}
-
-	clientTableRepo, err := repositories.NewClientTableRepository(clientDatabaseConnection)
-	if err != nil {
-		return nil, err
-	}
-
-	return clientTableRepo, nil
-}
-
-func (s *ColumnServiceImpl) getClientColumnRepo(databaseName string) (*repositories.ClientColumnRepository, error) {
-	clientDatabaseConnection, err := s.databaseRepo.Connect(databaseName)
-	if err != nil {
-		return nil, err
-	}
-
-	clientColumnRepo, err := repositories.NewClientColumnRepository(clientDatabaseConnection)
-	if err != nil {
-		return nil, err
-	}
-
-	return clientColumnRepo, nil
 }
