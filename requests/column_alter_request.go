@@ -2,16 +2,18 @@ package requests
 
 import (
 	"fluxton/utils"
+	"fmt"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/labstack/echo/v4"
+	"strings"
 )
 
-type ColumnDeleteRequest struct {
-	Name           string `json:"name"`
+type ColumnAlterRequest struct {
+	Type           string `json:"type"`
 	OrganizationID uint   `json:"-"`
 }
 
-func (r *ColumnDeleteRequest) BindAndValidate(c echo.Context) []string {
+func (r *ColumnAlterRequest) BindAndValidate(c echo.Context) []string {
 	if err := c.Bind(r); err != nil {
 		return []string{"Invalid request payload"}
 	}
@@ -27,7 +29,7 @@ func (r *ColumnDeleteRequest) BindAndValidate(c echo.Context) []string {
 
 	// Validate base request columns
 	err = validation.ValidateStruct(r,
-		validation.Field(&r.Name, validation.Required.Error("name: name of column is required")),
+		validation.Field(&r.Type, validation.Required.Error("New type is required for column")),
 	)
 
 	if err != nil {
@@ -38,6 +40,11 @@ func (r *ColumnDeleteRequest) BindAndValidate(c echo.Context) []string {
 		}
 
 		return errors
+	}
+
+	// Check for valid column types
+	if !allowedFieldTypes[strings.ToLower(r.Type)] {
+		errors = append(errors, fmt.Sprintf("Column type '%s' is not allowed", r.Type))
 	}
 
 	return errors

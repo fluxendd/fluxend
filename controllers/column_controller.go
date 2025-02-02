@@ -47,7 +47,7 @@ func (pc *ColumnController) Store(c echo.Context) error {
 }
 
 func (pc *ColumnController) Alter(c echo.Context) error {
-	var request requests.ColumnUpdateRequest
+	var request requests.ColumnAlterRequest
 	authenticatedUser, _ := utils.NewAuth(c).User()
 
 	projectID, err := utils.GetUintPathParam(c, "projectID", true)
@@ -60,11 +60,13 @@ func (pc *ColumnController) Alter(c echo.Context) error {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
+	columnName := c.Param("columnName")
+
 	if err := request.BindAndValidate(c); err != nil {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	renamedTable, err := pc.columnService.Alter(tableID, projectID, &request, authenticatedUser)
+	renamedTable, err := pc.columnService.Alter(columnName, tableID, projectID, &request, authenticatedUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -73,7 +75,7 @@ func (pc *ColumnController) Alter(c echo.Context) error {
 }
 
 func (pc *ColumnController) Delete(c echo.Context) error {
-	var request requests.ColumnDeleteRequest
+	var request requests.DefaultRequest
 	authenticatedUser, _ := utils.NewAuth(c).User()
 
 	if err := request.BindAndValidate(c); err != nil {
@@ -90,7 +92,9 @@ func (pc *ColumnController) Delete(c echo.Context) error {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	if _, err := pc.columnService.Delete(tableID, request.OrganizationID, projectID, &request, authenticatedUser); err != nil {
+	columnName := c.Param("columnName")
+
+	if _, err := pc.columnService.Delete(columnName, tableID, request.OrganizationID, projectID, authenticatedUser); err != nil {
 		return responses.ErrorResponse(c, err)
 	}
 

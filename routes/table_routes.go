@@ -18,6 +18,6 @@ func RegisterTableRoutes(e *echo.Echo, TableController *controllers.TableControl
 
 	// column routes
 	tablesGroup.POST("/:tableID/columns", ColumnController.Store)
-	tablesGroup.PUT("/:tableID/columns/:columnID", ColumnController.Alter)
-	tablesGroup.DELETE("/:tableID/columns/:columnID", ColumnController.Delete)
+	tablesGroup.PUT("/:tableID/columns/:columnName", ColumnController.Alter)
+	tablesGroup.DELETE("/:tableID/columns/:columnName", ColumnController.Delete)
 }

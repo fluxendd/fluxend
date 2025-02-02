@@ -34,8 +34,8 @@ func (r *ClientColumnRepository) Create(tableName string, field types.TableColum
 	return nil
 }
 
-func (r *ClientColumnRepository) Update(tableName string, field types.TableColumn) error {
-	query := fmt.Sprintf("ALTER TABLE %s ALTER COLUMN %s TYPE %s", tableName, field.Name, field.Type)
+func (r *ClientColumnRepository) Alter(tableName, columnName, columnType string) error {
+	query := fmt.Sprintf("ALTER TABLE %s ALTER COLUMN %s TYPE %s", tableName, columnName, columnType)
 	_, err := r.connection.Exec(query)
 	if err != nil {
 		return err
