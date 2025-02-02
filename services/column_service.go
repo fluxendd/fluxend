@@ -12,6 +12,7 @@ import (
 type ColumnService interface {
 	Create(projectID, tableID uint, request *requests.ColumnCreateRequest, authenticatedUser models.AuthenticatedUser) (models.Table, error)
 	Alter(columnName string, tableID, projectID uint, request *requests.ColumnAlterRequest, authenticatedUser models.AuthenticatedUser) (*models.Table, error)
+	Rename(columnName string, tableID, projectID uint, request *requests.ColumnRenameRequest, authenticatedUser models.AuthenticatedUser) (*models.Table, error)
 	Delete(columnName string, tableID, organizationID, projectID uint, authenticatedUser models.AuthenticatedUser) (bool, error)
 }
 
@@ -86,6 +87,15 @@ func (s *ColumnServiceImpl) Alter(columnName string, tableID, projectID uint, re
 		return &models.Table{}, errs.NewForbiddenError("project.error.updateForbidden")
 	}
 
+	columnExists, err := s.coreTableRepo.HasColumn(columnName, tableID)
+	if err != nil {
+		return &models.Table{}, err
+	}
+
+	if !columnExists {
+		return &models.Table{}, errs.NewNotFoundError("column.error.notFound")
+	}
+
 	table, err := s.coreTableRepo.GetByID(tableID)
 	if err != nil {
 		return &models.Table{}, err
@@ -104,6 +114,50 @@ func (s *ColumnServiceImpl) Alter(columnName string, tableID, projectID uint, re
 	}
 
 	err = clientColumnRepo.Alter(table.Name, columnName, request.Type)
+	if err != nil {
+		return &models.Table{}, err
+	}
+
+	return s.coreTableRepo.Update(&table)
+}
+
+func (s *ColumnServiceImpl) Rename(columnName string, tableID, projectID uint, request *requests.ColumnRenameRequest, authenticatedUser models.AuthenticatedUser) (*models.Table, error) {
+	project, err := s.projectRepo.GetByID(projectID)
+	if err != nil {
+		return &models.Table{}, err
+	}
+
+	if !s.projectPolicy.CanUpdate(request.OrganizationID, authenticatedUser) {
+		return &models.Table{}, errs.NewForbiddenError("project.error.updateForbidden")
+	}
+
+	columnExists, err := s.coreTableRepo.HasColumn(columnName, tableID)
+	if err != nil {
+		return &models.Table{}, err
+	}
+
+	if !columnExists {
+		return &models.Table{}, errs.NewNotFoundError("column.error.notFound")
+	}
+
+	table, err := s.coreTableRepo.GetByID(tableID)
+	if err != nil {
+		return &models.Table{}, err
+	}
+
+	for i, column := range table.Columns {
+		if column.Name == columnName {
+			table.Columns[i].Name = request.Name
+			break
+		}
+	}
+
+	clientColumnRepo, err := s.connectionService.GetClientColumnRepo(project.DBName)
+	if err != nil {
+		return &models.Table{}, err
+	}
+
+	err = clientColumnRepo.Rename(table.Name, columnName, request.Name)
 	if err != nil {
 		return &models.Table{}, err
 	}
