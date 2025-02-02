@@ -28,12 +28,7 @@ func (pc *ColumnController) Store(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	projectID, err := utils.GetUintPathParam(c, "projectID", true)
-	if err != nil {
-		return responses.BadRequestResponse(c, err.Error())
-	}
-
-	tableID, err := utils.GetUintPathParam(c, "tableID", true)
+	projectID, tableID, _, err := pc.parseRequest(c)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
@@ -50,17 +45,10 @@ func (pc *ColumnController) Alter(c echo.Context) error {
 	var request requests.ColumnAlterRequest
 	authenticatedUser, _ := utils.NewAuth(c).User()
 
-	projectID, err := utils.GetUintPathParam(c, "projectID", true)
+	projectID, tableID, columnName, err := pc.parseRequest(c)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
-
-	tableID, err := utils.GetUintPathParam(c, "tableID", true)
-	if err != nil {
-		return responses.BadRequestResponse(c, err.Error())
-	}
-
-	columnName := c.Param("columnName")
 
 	if err := request.BindAndValidate(c); err != nil {
 		return responses.UnprocessableResponse(c, err)
@@ -78,17 +66,10 @@ func (pc *ColumnController) Rename(c echo.Context) error {
 	var request requests.ColumnRenameRequest
 	authenticatedUser, _ := utils.NewAuth(c).User()
 
-	projectID, err := utils.GetUintPathParam(c, "projectID", true)
+	projectID, tableID, columnName, err := pc.parseRequest(c)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
-
-	tableID, err := utils.GetUintPathParam(c, "tableID", true)
-	if err != nil {
-		return responses.BadRequestResponse(c, err.Error())
-	}
-
-	columnName := c.Param("columnName")
 
 	if err := request.BindAndValidate(c); err != nil {
 		return responses.UnprocessableResponse(c, err)
@@ -110,21 +91,30 @@ func (pc *ColumnController) Delete(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	projectID, err := utils.GetUintPathParam(c, "projectID", true)
+	projectID, tableID, columnName, err := pc.parseRequest(c)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
-
-	tableID, err := utils.GetUintPathParam(c, "tableID", true)
-	if err != nil {
-		return responses.BadRequestResponse(c, err.Error())
-	}
-
-	columnName := c.Param("columnName")
 
 	if _, err := pc.columnService.Delete(columnName, tableID, request.OrganizationID, projectID, authenticatedUser); err != nil {
 		return responses.ErrorResponse(c, err)
 	}
 
 	return responses.DeletedResponse(c, nil)
+}
+
+func (pc *ColumnController) parseRequest(c echo.Context) (uint, uint, string, error) {
+	projectID, err := utils.GetUintPathParam(c, "projectID", true)
+	if err != nil {
+		return 0, 0, "", err
+	}
+
+	tableID, err := utils.GetUintPathParam(c, "tableID", true)
+	if err != nil {
+		return 0, 0, "", err
+	}
+
+	columnName := c.Param("columnName")
+
+	return projectID, tableID, columnName, nil
 }
