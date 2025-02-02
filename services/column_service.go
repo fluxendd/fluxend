@@ -11,8 +11,8 @@ import (
 
 type ColumnService interface {
 	Create(projectID, tableID uint, request *requests.ColumnCreateRequest, authenticatedUser models.AuthenticatedUser) (models.Table, error)
-	Alter(tableID, projectID uint, request *requests.ColumnUpdateRequest, authenticatedUser models.AuthenticatedUser) (*models.Table, error)
-	Delete(tableID, organizationID, projectID uint, request *requests.ColumnDeleteRequest, authenticatedUser models.AuthenticatedUser) (bool, error)
+	Alter(columnName string, tableID, projectID uint, request *requests.ColumnAlterRequest, authenticatedUser models.AuthenticatedUser) (*models.Table, error)
+	Delete(columnName string, tableID, organizationID, projectID uint, authenticatedUser models.AuthenticatedUser) (bool, error)
 }
 
 type ColumnServiceImpl struct {
@@ -76,7 +76,7 @@ func (s *ColumnServiceImpl) Create(projectID, tableID uint, request *requests.Co
 	return table, nil
 }
 
-func (s *ColumnServiceImpl) Alter(tableID, projectID uint, request *requests.ColumnUpdateRequest, authenticatedUser models.AuthenticatedUser) (*models.Table, error) {
+func (s *ColumnServiceImpl) Alter(columnName string, tableID, projectID uint, request *requests.ColumnAlterRequest, authenticatedUser models.AuthenticatedUser) (*models.Table, error) {
 	project, err := s.projectRepo.GetByID(projectID)
 	if err != nil {
 		return &models.Table{}, err
@@ -86,19 +86,14 @@ func (s *ColumnServiceImpl) Alter(tableID, projectID uint, request *requests.Col
 		return &models.Table{}, errs.NewForbiddenError("project.error.updateForbidden")
 	}
 
-	err = s.validateNameForDuplication(request.Column.Name, projectID)
-	if err != nil {
-		return &models.Table{}, err
-	}
-
 	table, err := s.coreTableRepo.GetByID(tableID)
 	if err != nil {
 		return &models.Table{}, err
 	}
 
 	for i, column := range table.Columns {
-		if column.Name == request.Name {
-			table.Columns[i] = request.Column
+		if column.Name == columnName {
+			table.Columns[i].Type = request.Type
 			break
 		}
 	}
@@ -108,7 +103,7 @@ func (s *ColumnServiceImpl) Alter(tableID, projectID uint, request *requests.Col
 		return &models.Table{}, err
 	}
 
-	err = clientColumnRepo.Update(table.Name, request.Column)
+	err = clientColumnRepo.Alter(table.Name, columnName, request.Type)
 	if err != nil {
 		return &models.Table{}, err
 	}
@@ -116,7 +111,7 @@ func (s *ColumnServiceImpl) Alter(tableID, projectID uint, request *requests.Col
 	return s.coreTableRepo.Update(&table)
 }
 
-func (s *ColumnServiceImpl) Delete(tableID, organizationID, projectID uint, request *requests.ColumnDeleteRequest, authenticatedUser models.AuthenticatedUser) (bool, error) {
+func (s *ColumnServiceImpl) Delete(columnName string, tableID, organizationID, projectID uint, authenticatedUser models.AuthenticatedUser) (bool, error) {
 	project, err := s.projectRepo.GetByID(projectID)
 	if err != nil {
 		return false, err
@@ -132,7 +127,7 @@ func (s *ColumnServiceImpl) Delete(tableID, organizationID, projectID uint, requ
 	}
 
 	for i, column := range table.Columns {
-		if column.Name == request.Name {
+		if column.Name == columnName {
 			// Remove column from slice
 			table.Columns = append(table.Columns[:i], table.Columns[i+1:]...)
 			break
@@ -144,7 +139,7 @@ func (s *ColumnServiceImpl) Delete(tableID, organizationID, projectID uint, requ
 		return false, err
 	}
 
-	err = clientColumnRepo.Drop(table.Name, request.Name)
+	err = clientColumnRepo.Drop(table.Name, columnName)
 	if err != nil {
 		return false, err
 	}
