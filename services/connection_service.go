@@ -9,6 +9,8 @@ import (
 type ConnectionService interface {
 	ConnectByDatabaseName(name string) (*sqlx.DB, error)
 	ConnectByProjectID(projectID uint) (*sqlx.DB, error)
+	GetClientTableRepo(databaseName string) (*repositories.ClientTableRepository, error)
+	GetClientColumnRepo(databaseName string) (*repositories.ClientColumnRepository, error)
 }
 
 type ConnectionServiceImpl struct {
@@ -37,4 +39,32 @@ func (s *ConnectionServiceImpl) ConnectByProjectID(projectID uint) (*sqlx.DB, er
 	}
 
 	return s.databaseRepo.Connect(project.DBName)
+}
+
+func (s *ConnectionServiceImpl) GetClientTableRepo(databaseName string) (*repositories.ClientTableRepository, error) {
+	clientDatabaseConnection, err := s.databaseRepo.Connect(databaseName)
+	if err != nil {
+		return nil, err
+	}
+
+	clientTableRepo, err := repositories.NewClientTableRepository(clientDatabaseConnection)
+	if err != nil {
+		return nil, err
+	}
+
+	return clientTableRepo, nil
+}
+
+func (s *ConnectionServiceImpl) GetClientColumnRepo(databaseName string) (*repositories.ClientColumnRepository, error) {
+	clientDatabaseConnection, err := s.databaseRepo.Connect(databaseName)
+	if err != nil {
+		return nil, err
+	}
+
+	clientColumnRepo, err := repositories.NewClientColumnRepository(clientDatabaseConnection)
+	if err != nil {
+		return nil, err
+	}
+
+	return clientColumnRepo, nil
 }
