@@ -74,6 +74,34 @@ func (pc *ColumnController) Alter(c echo.Context) error {
 	return responses.SuccessResponse(c, resources.TableResource(renamedTable))
 }
 
+func (pc *ColumnController) Rename(c echo.Context) error {
+	var request requests.ColumnRenameRequest
+	authenticatedUser, _ := utils.NewAuth(c).User()
+
+	projectID, err := utils.GetUintPathParam(c, "projectID", true)
+	if err != nil {
+		return responses.BadRequestResponse(c, err.Error())
+	}
+
+	tableID, err := utils.GetUintPathParam(c, "tableID", true)
+	if err != nil {
+		return responses.BadRequestResponse(c, err.Error())
+	}
+
+	columnName := c.Param("columnName")
+
+	if err := request.BindAndValidate(c); err != nil {
+		return responses.UnprocessableResponse(c, err)
+	}
+
+	renamedTable, err := pc.columnService.Rename(columnName, tableID, projectID, &request, authenticatedUser)
+	if err != nil {
+		return responses.ErrorResponse(c, err)
+	}
+
+	return responses.SuccessResponse(c, resources.TableResource(renamedTable))
+}
+
 func (pc *ColumnController) Delete(c echo.Context) error {
 	var request requests.DefaultRequest
 	authenticatedUser, _ := utils.NewAuth(c).User()
