@@ -147,9 +147,6 @@ func (r *CoreTableRepository) HasColumn(column string, tableID uint) (bool, erro
 		) AS column_exists
 	`
 
-	utils.Dump(query)
-	utils.Dump(column)
-
 	var columnExists bool
 	err := r.db.QueryRow(query, tableID, column).Scan(&columnExists)
 	if err != nil {

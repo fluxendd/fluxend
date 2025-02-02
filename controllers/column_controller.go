@@ -38,7 +38,7 @@ func (pc *ColumnController) Store(c echo.Context) error {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	table, err := pc.columnService.Create(&request, projectID, tableID, authenticatedUser)
+	table, err := pc.columnService.Create(projectID, tableID, &request, authenticatedUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -47,7 +47,7 @@ func (pc *ColumnController) Store(c echo.Context) error {
 }
 
 func (pc *ColumnController) Alter(c echo.Context) error {
-	var request requests.TableRenameRequest
+	var request requests.ColumnUpdateRequest
 	authenticatedUser, _ := utils.NewAuth(c).User()
 
 	projectID, err := utils.GetUintPathParam(c, "projectID", true)
@@ -64,16 +64,16 @@ func (pc *ColumnController) Alter(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	renamedTable, err := pc.columnService.Alter(tableID, projectID, authenticatedUser, &request)
+	renamedTable, err := pc.columnService.Alter(tableID, projectID, &request, authenticatedUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
 
-	return responses.SuccessResponse(c, resources.TableResource(&renamedTable))
+	return responses.SuccessResponse(c, resources.TableResource(renamedTable))
 }
 
 func (pc *ColumnController) Delete(c echo.Context) error {
-	var request requests.DefaultRequest
+	var request requests.ColumnDeleteRequest
 	authenticatedUser, _ := utils.NewAuth(c).User()
 
 	if err := request.BindAndValidate(c); err != nil {
@@ -90,7 +90,7 @@ func (pc *ColumnController) Delete(c echo.Context) error {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	if _, err := pc.columnService.Delete(tableID, request.OrganizationID, projectID, authenticatedUser); err != nil {
+	if _, err := pc.columnService.Delete(tableID, request.OrganizationID, projectID, &request, authenticatedUser); err != nil {
 		return responses.ErrorResponse(c, err)
 	}
 
