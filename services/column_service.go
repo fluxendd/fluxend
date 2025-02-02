@@ -58,8 +58,9 @@ func (s *ColumnServiceImpl) Create(projectID, tableID uint, request *requests.Co
 	}
 
 	table.Columns = append(table.Columns, request.Column)
+	table.UpdatedBy = authenticatedUser.ID
 
-	_, err = s.coreTableRepo.Update(&table, authenticatedUser.ID)
+	_, err = s.coreTableRepo.Update(&table)
 	if err != nil {
 		return models.Table{}, err
 	}
@@ -101,6 +102,8 @@ func (s *ColumnServiceImpl) Alter(columnName string, tableID, projectID uint, re
 		return &models.Table{}, err
 	}
 
+	table.UpdatedBy = authenticatedUser.ID
+
 	for i, column := range table.Columns {
 		if column.Name == columnName {
 			table.Columns[i].Type = request.Type
@@ -118,7 +121,7 @@ func (s *ColumnServiceImpl) Alter(columnName string, tableID, projectID uint, re
 		return &models.Table{}, err
 	}
 
-	return s.coreTableRepo.Update(&table, authenticatedUser.ID)
+	return s.coreTableRepo.Update(&table)
 }
 
 func (s *ColumnServiceImpl) Rename(columnName string, tableID, projectID uint, request *requests.ColumnRenameRequest, authenticatedUser models.AuthenticatedUser) (*models.Table, error) {
@@ -145,6 +148,8 @@ func (s *ColumnServiceImpl) Rename(columnName string, tableID, projectID uint, r
 		return &models.Table{}, err
 	}
 
+	table.UpdatedBy = authenticatedUser.ID
+
 	for i, column := range table.Columns {
 		if column.Name == columnName {
 			table.Columns[i].Name = request.Name
@@ -162,7 +167,7 @@ func (s *ColumnServiceImpl) Rename(columnName string, tableID, projectID uint, r
 		return &models.Table{}, err
 	}
 
-	return s.coreTableRepo.Update(&table, authenticatedUser.ID)
+	return s.coreTableRepo.Update(&table)
 }
 
 func (s *ColumnServiceImpl) Delete(columnName string, tableID, organizationID, projectID uint, authenticatedUser models.AuthenticatedUser) (bool, error) {
@@ -188,6 +193,8 @@ func (s *ColumnServiceImpl) Delete(columnName string, tableID, organizationID, p
 		}
 	}
 
+	table.UpdatedBy = authenticatedUser.ID
+
 	clientColumnRepo, err := s.connectionService.GetClientColumnRepo(project.DBName)
 	if err != nil {
 		return false, err
@@ -198,7 +205,7 @@ func (s *ColumnServiceImpl) Delete(columnName string, tableID, organizationID, p
 		return false, err
 	}
 
-	_, err = s.coreTableRepo.Update(&table, authenticatedUser.ID)
+	_, err = s.coreTableRepo.Update(&table)
 
 	return err == nil, err
 }
