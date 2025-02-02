@@ -13,6 +13,8 @@ type JSONColumns []types.TableColumn // important for reading from db
 type Table struct {
 	ID        uint        `db:"id"`
 	ProjectID uint        `db:"project_id"`
+	CreatedBy uint        `db:"created_by"`
+	UpdatedBy uint        `db:"updated_by"`
 	Name      string      `db:"name"`
 	Columns   JSONColumns `db:"columns" json:"columns"`
 	CreatedAt time.Time   `db:"created_at"`
@@ -24,7 +26,7 @@ func (t Table) GetTableName() string {
 }
 
 func (t Table) GetColumns() string {
-	return "id, project_id, name, columns, created_at, updated_at"
+	return "id, project_id, created_by, updated_by, name, columns, created_at, updated_at"
 }
 
 func (t Table) GetColumnsWithAlias(alias string) string {

@@ -159,14 +159,14 @@ func (r *CoreTableRepository) HasColumn(column string, tableID uint) (bool, erro
 	return columnExists, nil
 }
 
-func (r *CoreTableRepository) Create(table *models.Table) (*models.Table, error) {
+func (r *CoreTableRepository) Create(table *models.Table, authenticatedUserID uint) (*models.Table, error) {
 	columnsJSON, err := table.MarshalJSONColumns()
 	if err != nil {
 		return nil, fmt.Errorf("could not marshal columns: %v", err)
 	}
 
-	query := "INSERT INTO tables (name, project_id, columns) VALUES ($1, $2, $3) RETURNING id"
-	queryErr := r.db.QueryRowx(query, table.Name, table.ProjectID, columnsJSON).Scan(&table.ID)
+	query := "INSERT INTO tables (name, project_id, created_by, updated_by, columns) VALUES ($1, $2, $3, $4) RETURNING id"
+	queryErr := r.db.QueryRowx(query, table.Name, table.ProjectID, authenticatedUserID, columnsJSON).Scan(&table.ID)
 	if queryErr != nil {
 		return nil, fmt.Errorf("could not create table: %v", queryErr)
 	}
@@ -174,7 +174,7 @@ func (r *CoreTableRepository) Create(table *models.Table) (*models.Table, error)
 	return table, nil
 }
 
-func (r *CoreTableRepository) Update(table *models.Table) (*models.Table, error) {
+func (r *CoreTableRepository) Update(table *models.Table, authenticatedUserID uint) (*models.Table, error) {
 	columnsJSON, err := table.MarshalJSONColumns()
 	if err != nil {
 		return nil, fmt.Errorf("could not marshal columns: %v", err)
@@ -182,12 +182,12 @@ func (r *CoreTableRepository) Update(table *models.Table) (*models.Table, error)
 
 	query := `
 		UPDATE tables 
-		SET name = $1, columns = $2, updated_at = $3 
-		WHERE id = $4
+		SET name = $1, columns = $2, updated_at = $3, updated_by = $4
+		WHERE id = $5
 		RETURNING id
 	`
 
-	queryErr := r.db.QueryRow(query, table.Name, columnsJSON, time.Now(), table.ID).Scan(&table.ID)
+	queryErr := r.db.QueryRow(query, table.Name, columnsJSON, time.Now(), authenticatedUserID, table.ID).Scan(&table.ID)
 	if queryErr != nil {
 		return nil, fmt.Errorf("could not update table: %v", queryErr)
 	}
@@ -195,13 +195,13 @@ func (r *CoreTableRepository) Update(table *models.Table) (*models.Table, error)
 	return table, nil
 }
 
-func (r *CoreTableRepository) Rename(tableID uint, name string) (models.Table, error) {
+func (r *CoreTableRepository) Rename(tableID uint, name string, authenticatedUserID uint) (models.Table, error) {
 	query := `
 		UPDATE tables 
-		SET name = $1, updated_at = $2 
-		WHERE id = $3`
+		SET name = $1, updated_at = $2, updated_by = $3
+		WHERE id = $4`
 
-	_, queryErr := r.db.Exec(query, name, time.Now(), tableID)
+	_, queryErr := r.db.Exec(query, name, time.Now(), authenticatedUserID, tableID)
 	if queryErr != nil {
 		return models.Table{}, fmt.Errorf("could not update table: %v", queryErr)
 	}
