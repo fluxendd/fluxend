@@ -8,6 +8,8 @@ import (
 type TableResponse struct {
 	ID        uint                `json:"id"`
 	ProjectID uint                `json:"project_id"`
+	CreatedBy uint                `json:"created_by"`
+	UpdatedBy uint                `json:"updated_by"`
 	Name      string              `json:"name"`
 	Columns   []types.TableColumn `json:"columns"`
 	CreatedAt string              `json:"created_at"`
@@ -18,6 +20,8 @@ func TableResource(table *models.Table) TableResponse {
 	return TableResponse{
 		ID:        table.ID,
 		ProjectID: table.ProjectID,
+		CreatedBy: table.CreatedBy,
+		UpdatedBy: table.UpdatedBy,
 		Name:      table.Name,
 		Columns:   table.Columns,
 		CreatedAt: table.CreatedAt.Format("2006-01-02 15:04:05"),
