@@ -2,8 +2,8 @@
 -- +goose StatementBegin
 CREATE TABLE organization_users (
     id SERIAL PRIMARY KEY,
-    organization_id INTEGER NOT NULL,
-    user_id INTEGER NOT NULL,
+    organization_id UUID NOT NULL,
+    user_id UUID NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );

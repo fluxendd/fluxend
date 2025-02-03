@@ -1,8 +1,8 @@
 -- +goose Up
 -- +goose StatementBegin
 CREATE TABLE users (
-   id SERIAL PRIMARY KEY,
-   role_id INT NOT NULL,
+   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+   role_id UUID NOT NULL,
    username VARCHAR(255) NOT NULL UNIQUE,
    email VARCHAR(255) NOT NULL UNIQUE,
    status VARCHAR(10) NOT NULL CHECK (status IN ('active', 'inactive')),

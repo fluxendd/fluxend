@@ -2,7 +2,7 @@
 -- +goose StatementBegin
 CREATE TABLE project_settings (
     id SERIAL PRIMARY KEY,
-    project_id INT NOT NULL,
+    project_id UUID NOT NULL,
     name VARCHAR(255) NOT NULL,
     value TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

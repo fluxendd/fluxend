@@ -2,9 +2,9 @@
 -- +goose StatementBegin
 CREATE TABLE tables (
     id SERIAL PRIMARY KEY,
-    project_id INT NOT NULL,
-    created_by INT NOT NULL,
-    updated_by INT NOT NULL,
+    project_id UUID NOT NULL,
+    created_by UUID NOT NULL,
+    updated_by UUID NOT NULL,
     name VARCHAR(255) NOT NULL,
     columns JSONB NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
