@@ -1,6 +1,9 @@
 package repositories
 
 import (
+	"database/sql"
+	"errors"
+	"fluxton/errs"
 	"fluxton/models"
 	"fluxton/utils"
 	"fmt"
@@ -58,6 +61,10 @@ func (r *ClientRowRepository) GetByID(tableName string, rowID uint64) (models.Ro
 
 	err := row.MapScan(resultRow)
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return models.Row{}, errs.NewNotFoundError("row.error.notFound")
+		}
+
 		return nil, fmt.Errorf("error getting row: %v", err)
 	}
 

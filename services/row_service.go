@@ -14,6 +14,7 @@ import (
 )
 
 type RowService interface {
+	GetByID(tableName string, rowID uint64, organizationID, projectID uuid.UUID, authenticatedUser models.AuthenticatedUser) (models.Row, error)
 	List(paginationParams utils.PaginationParams, tableName string, organizationID, projectID, authenticatedUserID uuid.UUID) ([]models.Row, error)
 	Create(request *requests.RowCreateRequest, projectID uuid.UUID, tableName string, authenticatedUser models.AuthenticatedUser) (models.Row, error)
 }
@@ -55,6 +56,24 @@ func (s *RowServiceImpl) List(paginationParams utils.PaginationParams, tableName
 	}
 
 	return clientRowRepo.List(tableName, paginationParams)
+}
+
+func (s *RowServiceImpl) GetByID(tableName string, rowID uint64, organizationID, projectID uuid.UUID, authenticatedUser models.AuthenticatedUser) (models.Row, error) {
+	if !s.projectPolicy.CanView(organizationID, authenticatedUser) {
+		return models.Row{}, errs.NewForbiddenError("project.error.listForbidden")
+	}
+
+	project, err := s.projectRepo.GetByID(projectID)
+	if err != nil {
+		return models.Row{}, err
+	}
+
+	clientRowRepo, err := s.getClientRowRepo(project.DBName)
+	if err != nil {
+		return models.Row{}, err
+	}
+
+	return clientRowRepo.GetByID(tableName, rowID)
 }
 
 func (s *RowServiceImpl) Create(request *requests.RowCreateRequest, projectID uuid.UUID, tableName string, authenticatedUser models.AuthenticatedUser) (models.Row, error) {
