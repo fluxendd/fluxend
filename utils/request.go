@@ -71,7 +71,7 @@ func GetUUIDPathParam(c echo.Context, name string, required bool) (uuid.UUID, er
 		return uuid.UUID{}, fmt.Errorf("path parameter [%s] is required", name)
 	}
 
-	return uuid.MustParse(c.Param(name)), nil
+	return uuid.Parse(c.Param(name))
 }
 
 func ConvertStringToUint(param string) (uint, error) {

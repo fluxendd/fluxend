@@ -137,6 +137,7 @@ func (r *OrganizationRepository) Create(organization *models.Organization, authe
 		return nil, fmt.Errorf("could not commit transaction: %v", err)
 	}
 
+	organization.ID = organization.ID
 	return organization, nil
 }
 

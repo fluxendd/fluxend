@@ -24,9 +24,9 @@ func (r *RowCreateRequest) BindAndValidate(c echo.Context) []string {
 		return []string{"Invalid JSON format"}
 	}
 
-	organizationID := uuid.MustParse(c.Request().Header.Get("X-OrganizationID"))
-	if organizationID == uuid.Nil {
-		return []string{"Organization ID is required and must be a UUID"}
+	organizationID, err := uuid.Parse(c.Request().Header.Get("X-OrganizationID"))
+	if err != nil {
+		return []string{"Invalid organization ID"}
 	}
 
 	r.OrganizationID = organizationID
