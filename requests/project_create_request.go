@@ -16,14 +16,14 @@ func (r *ProjectCreateRequest) BindAndValidate(c echo.Context) []string {
 		return []string{"Invalid request payload"}
 	}
 
-	organizationID := uuid.MustParse(c.Request().Header.Get("X-OrganizationID"))
-	if organizationID == uuid.Nil {
-		return []string{"Organization ID is required and must be a UUID"}
+	organizationID, err := uuid.Parse(c.Request().Header.Get("X-OrganizationID"))
+	if err != nil {
+		return []string{"Invalid organization ID"}
 	}
 
 	r.OrganizationID = organizationID
 
-	err := validation.ValidateStruct(r,
+	err = validation.ValidateStruct(r,
 		validation.Field(&r.Name, validation.Required.Error("Name is required"), validation.Length(3, 100).Error("Name must be between 3 and 100 characters")),
 	)
 

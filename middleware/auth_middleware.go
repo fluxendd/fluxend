@@ -44,8 +44,13 @@ func AuthMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 
 		// Optionally: You can store the user data from the token for later use in the request context
 		// For example, store user ID or role in context for further authorization checks.
+		userUUID, err := uuid.Parse(claims["id"].(string))
+		if err != nil {
+			return responses.ErrorResponse(c, errs.NewUnauthorizedError("auth.error.tokenInvalid"))
+		}
+
 		c.Set("user", models.AuthenticatedUser{
-			ID:     claims["id"].(uuid.UUID),
+			ID:     userUUID,
 			RoleID: int(claims["role_id"].(float64)),
 		})
 

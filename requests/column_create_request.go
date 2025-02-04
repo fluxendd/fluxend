@@ -19,9 +19,9 @@ func (r *ColumnCreateRequest) BindAndValidate(c echo.Context) []string {
 		return []string{"Invalid request payload"}
 	}
 
-	organizationID := uuid.MustParse(c.Request().Header.Get("X-OrganizationID"))
-	if organizationID == uuid.Nil {
-		return []string{"Organization ID is required and must be a UUID"}
+	organizationID, err := uuid.Parse(c.Request().Header.Get("X-OrganizationID"))
+	if err != nil {
+		return []string{"Invalid organization ID"}
 	}
 
 	r.OrganizationID = organizationID
@@ -29,7 +29,7 @@ func (r *ColumnCreateRequest) BindAndValidate(c echo.Context) []string {
 	var errors []string
 
 	// Validate base request columns
-	err := validation.ValidateStruct(r,
+	err = validation.ValidateStruct(r,
 		validation.Field(&r.Column, validation.Required.Error("Column is required")),
 	)
 
