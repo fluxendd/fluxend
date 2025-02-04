@@ -1,12 +1,13 @@
 package models
 
 import (
+	"github.com/google/uuid"
 	"strings"
 	"time"
 )
 
 type Project struct {
-	ID             uint      `db:"id"`
+	ID             uuid.UUID `db:"id"`
 	OrganizationID uint      `db:"organization_id"`
 	Name           string    `db:"name"`
 	DBName         string    `db:"db_name"`
