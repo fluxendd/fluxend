@@ -6,14 +6,15 @@ import (
 	"fluxton/policies"
 	"fluxton/repositories"
 	"fluxton/requests"
+	"github.com/google/uuid"
 	"github.com/samber/do"
 )
 
 type ColumnService interface {
-	Create(projectID, tableID uint, request *requests.ColumnCreateRequest, authenticatedUser models.AuthenticatedUser) (models.Table, error)
-	Alter(columnName string, tableID, projectID uint, request *requests.ColumnAlterRequest, authenticatedUser models.AuthenticatedUser) (*models.Table, error)
-	Rename(columnName string, tableID, projectID uint, request *requests.ColumnRenameRequest, authenticatedUser models.AuthenticatedUser) (*models.Table, error)
-	Delete(columnName string, tableID, organizationID, projectID uint, authenticatedUser models.AuthenticatedUser) (bool, error)
+	Create(projectID, tableID uuid.UUID, request *requests.ColumnCreateRequest, authenticatedUser models.AuthenticatedUser) (models.Table, error)
+	Alter(columnName string, tableID, projectID uuid.UUID, request *requests.ColumnAlterRequest, authenticatedUser models.AuthenticatedUser) (*models.Table, error)
+	Rename(columnName string, tableID, projectID uuid.UUID, request *requests.ColumnRenameRequest, authenticatedUser models.AuthenticatedUser) (*models.Table, error)
+	Delete(columnName string, tableID, organizationID, projectID uuid.UUID, authenticatedUser models.AuthenticatedUser) (bool, error)
 }
 
 type ColumnServiceImpl struct {
@@ -37,7 +38,7 @@ func NewColumnService(injector *do.Injector) (ColumnService, error) {
 	}, nil
 }
 
-func (s *ColumnServiceImpl) Create(projectID, tableID uint, request *requests.ColumnCreateRequest, authenticatedUser models.AuthenticatedUser) (models.Table, error) {
+func (s *ColumnServiceImpl) Create(projectID, tableID uuid.UUID, request *requests.ColumnCreateRequest, authenticatedUser models.AuthenticatedUser) (models.Table, error) {
 	project, err := s.projectRepo.GetByID(projectID)
 	if err != nil {
 		return models.Table{}, err
@@ -78,7 +79,7 @@ func (s *ColumnServiceImpl) Create(projectID, tableID uint, request *requests.Co
 	return table, nil
 }
 
-func (s *ColumnServiceImpl) Alter(columnName string, tableID, projectID uint, request *requests.ColumnAlterRequest, authenticatedUser models.AuthenticatedUser) (*models.Table, error) {
+func (s *ColumnServiceImpl) Alter(columnName string, tableID, projectID uuid.UUID, request *requests.ColumnAlterRequest, authenticatedUser models.AuthenticatedUser) (*models.Table, error) {
 	project, err := s.projectRepo.GetByID(projectID)
 	if err != nil {
 		return &models.Table{}, err
@@ -124,7 +125,7 @@ func (s *ColumnServiceImpl) Alter(columnName string, tableID, projectID uint, re
 	return s.coreTableRepo.Update(&table)
 }
 
-func (s *ColumnServiceImpl) Rename(columnName string, tableID, projectID uint, request *requests.ColumnRenameRequest, authenticatedUser models.AuthenticatedUser) (*models.Table, error) {
+func (s *ColumnServiceImpl) Rename(columnName string, tableID, projectID uuid.UUID, request *requests.ColumnRenameRequest, authenticatedUser models.AuthenticatedUser) (*models.Table, error) {
 	project, err := s.projectRepo.GetByID(projectID)
 	if err != nil {
 		return &models.Table{}, err
@@ -170,7 +171,7 @@ func (s *ColumnServiceImpl) Rename(columnName string, tableID, projectID uint, r
 	return s.coreTableRepo.Update(&table)
 }
 
-func (s *ColumnServiceImpl) Delete(columnName string, tableID, organizationID, projectID uint, authenticatedUser models.AuthenticatedUser) (bool, error) {
+func (s *ColumnServiceImpl) Delete(columnName string, tableID, organizationID, projectID uuid.UUID, authenticatedUser models.AuthenticatedUser) (bool, error) {
 	project, err := s.projectRepo.GetByID(projectID)
 	if err != nil {
 		return false, err
@@ -210,7 +211,7 @@ func (s *ColumnServiceImpl) Delete(columnName string, tableID, organizationID, p
 	return err == nil, err
 }
 
-func (s *ColumnServiceImpl) validateNameForDuplication(name string, tableID uint) error {
+func (s *ColumnServiceImpl) validateNameForDuplication(name string, tableID uuid.UUID) error {
 	exists, err := s.coreTableRepo.HasColumn(name, tableID)
 	if err != nil {
 		return err

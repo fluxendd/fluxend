@@ -26,12 +26,9 @@ func InitializeContainer() *do.Injector {
 	do.Provide(injector, repositories.NewCoreTableRepository)
 	do.Provide(injector, repositories.NewOrganizationRepository)
 	do.Provide(injector, repositories.NewProjectRepository)
-	do.Provide(injector, repositories.NewTagRepository)
 
 	// Factories
 	do.Provide(injector, factories.NewUserFactory)
-	do.Provide(injector, factories.NewNoteFactory)
-	do.Provide(injector, factories.NewTagFactory)
 
 	// policies
 	do.Provide(injector, policies.NewOrganizationPolicy)

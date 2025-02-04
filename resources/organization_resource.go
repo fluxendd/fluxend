@@ -1,12 +1,15 @@
 package resources
 
-import "fluxton/models"
+import (
+	"fluxton/models"
+	"github.com/google/uuid"
+)
 
 type OrganizationResponse struct {
-	ID        uint   `json:"id"`
-	Name      string `json:"name"`
-	CreatedAt string `json:"created_at"`
-	UpdatedAt string `json:"updated_at"`
+	ID        uuid.UUID `json:"id"`
+	Name      string    `json:"name"`
+	CreatedAt string    `json:"created_at"`
+	UpdatedAt string    `json:"updated_at"`
 }
 
 func OrganizationResource(organization *models.Organization) OrganizationResponse {

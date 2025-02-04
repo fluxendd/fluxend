@@ -3,6 +3,7 @@ package utils
 import (
 	"errors"
 	"fluxton/models"
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
 
@@ -26,10 +27,10 @@ func (a *Auth) User() (models.AuthenticatedUser, error) {
 	return userData, nil
 }
 
-func (a *Auth) Id() (uint, error) {
+func (a *Auth) Id() (uuid.UUID, error) {
 	user, err := a.User()
 	if err != nil {
-		return 0, err
+		return uuid.Nil, err
 	}
 
 	return user.ID, nil

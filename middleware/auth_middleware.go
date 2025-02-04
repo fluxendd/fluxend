@@ -6,6 +6,7 @@ import (
 	"fluxton/responses"
 	"fmt"
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"os"
 	"strings"
@@ -44,7 +45,7 @@ func AuthMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 		// Optionally: You can store the user data from the token for later use in the request context
 		// For example, store user ID or role in context for further authorization checks.
 		c.Set("user", models.AuthenticatedUser{
-			ID:     uint(claims["id"].(float64)),
+			ID:     claims["id"].(uuid.UUID),
 			RoleID: int(claims["role_id"].(float64)),
 		})
 

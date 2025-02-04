@@ -35,7 +35,7 @@ func (nc *OrganizationController) List(c echo.Context) error {
 func (nc *OrganizationController) Show(c echo.Context) error {
 	authenticatedUser, _ := utils.NewAuth(c).User()
 
-	id, err := utils.GetUintPathParam(c, "id", true)
+	id, err := utils.GetUUIDPathParam(c, "id", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
@@ -72,7 +72,7 @@ func (nc *OrganizationController) Update(c echo.Context) error {
 	var request requests.OrganizationCreateRequest
 	authenticatedUser, _ := utils.NewAuth(c).User()
 
-	id, err := utils.GetUintPathParam(c, "id", true)
+	id, err := utils.GetUUIDPathParam(c, "id", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
@@ -92,7 +92,7 @@ func (nc *OrganizationController) Update(c echo.Context) error {
 func (nc *OrganizationController) Delete(c echo.Context) error {
 	authenticatedUser, _ := utils.NewAuth(c).User()
 
-	id, err := utils.GetUintPathParam(c, "id", true)
+	id, err := utils.GetUUIDPathParam(c, "id", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}

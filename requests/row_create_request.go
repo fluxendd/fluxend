@@ -2,13 +2,13 @@ package requests
 
 import (
 	"encoding/json"
-	"fluxton/utils"
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"io"
 )
 
 type RowCreateRequest struct {
-	OrganizationID uint                   `json:"-"`
+	OrganizationID uuid.UUID              `json:"-"`
 	Fields         map[string]interface{} `json:"-"`
 }
 
@@ -24,9 +24,9 @@ func (r *RowCreateRequest) BindAndValidate(c echo.Context) []string {
 		return []string{"Invalid JSON format"}
 	}
 
-	organizationID, err := utils.ConvertStringToUint(c.Request().Header.Get("X-OrganizationID"))
-	if err != nil {
-		return []string{"Organization ID is required and must be a number"}
+	organizationID := uuid.MustParse(c.Request().Header.Get("X-OrganizationID"))
+	if organizationID == uuid.Nil {
+		return []string{"Organization ID is required and must be a UUID"}
 	}
 
 	r.OrganizationID = organizationID

@@ -7,12 +7,13 @@ import (
 	"fluxton/repositories"
 	"fluxton/requests"
 	"fmt"
+	"github.com/google/uuid"
 	"github.com/samber/do"
 	"strings"
 )
 
 type RowService interface {
-	Create(request *requests.RowCreateRequest, projectID uint, tableName string, authenticatedUser models.AuthenticatedUser) (models.Row, error)
+	Create(request *requests.RowCreateRequest, projectID uuid.UUID, tableName string, authenticatedUser models.AuthenticatedUser) (models.Row, error)
 }
 
 type RowServiceImpl struct {
@@ -36,7 +37,7 @@ func NewRowService(injector *do.Injector) (RowService, error) {
 	}, nil
 }
 
-func (s *RowServiceImpl) Create(request *requests.RowCreateRequest, projectID uint, tableName string, authenticatedUser models.AuthenticatedUser) (models.Row, error) {
+func (s *RowServiceImpl) Create(request *requests.RowCreateRequest, projectID uuid.UUID, tableName string, authenticatedUser models.AuthenticatedUser) (models.Row, error) {
 	table, err := s.coreTableRepo.GetByName(tableName)
 	if err != nil {
 		return models.Row{}, err

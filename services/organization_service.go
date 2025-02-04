@@ -7,15 +7,16 @@ import (
 	"fluxton/repositories"
 	"fluxton/requests"
 	"fluxton/utils"
+	"github.com/google/uuid"
 	"github.com/samber/do"
 )
 
 type OrganizationService interface {
-	List(paginationParams utils.PaginationParams, authenticatedUserId uint) ([]models.Organization, error)
-	GetByID(organizationId uint, authenticatedUser models.AuthenticatedUser) (models.Organization, error)
+	List(paginationParams utils.PaginationParams, authenticatedUserId uuid.UUID) ([]models.Organization, error)
+	GetByID(organizationId uuid.UUID, authenticatedUser models.AuthenticatedUser) (models.Organization, error)
 	Create(request *requests.OrganizationCreateRequest, authenticatedUser models.AuthenticatedUser) (models.Organization, error)
-	Update(organizationId uint, authenticatedUser models.AuthenticatedUser, request *requests.OrganizationCreateRequest) (*models.Organization, error)
-	Delete(organizationId uint, authenticatedUser models.AuthenticatedUser) (bool, error)
+	Update(organizationId uuid.UUID, authenticatedUser models.AuthenticatedUser, request *requests.OrganizationCreateRequest) (*models.Organization, error)
+	Delete(organizationId uuid.UUID, authenticatedUser models.AuthenticatedUser) (bool, error)
 }
 
 type OrganizationServiceImpl struct {
@@ -33,11 +34,11 @@ func NewOrganizationService(injector *do.Injector) (OrganizationService, error) 
 	}, nil
 }
 
-func (s *OrganizationServiceImpl) List(paginationParams utils.PaginationParams, authenticatedUserId uint) ([]models.Organization, error) {
+func (s *OrganizationServiceImpl) List(paginationParams utils.PaginationParams, authenticatedUserId uuid.UUID) ([]models.Organization, error) {
 	return s.organizationRepo.ListForUser(paginationParams, authenticatedUserId)
 }
 
-func (s *OrganizationServiceImpl) GetByID(organizationId uint, authenticatedUser models.AuthenticatedUser) (models.Organization, error) {
+func (s *OrganizationServiceImpl) GetByID(organizationId uuid.UUID, authenticatedUser models.AuthenticatedUser) (models.Organization, error) {
 	organization, err := s.organizationRepo.GetByIDForUser(organizationId, authenticatedUser.ID)
 	if err != nil {
 		return models.Organization{}, err
@@ -67,7 +68,7 @@ func (s *OrganizationServiceImpl) Create(request *requests.OrganizationCreateReq
 	return organization, nil
 }
 
-func (s *OrganizationServiceImpl) Update(organizationId uint, authenticatedUser models.AuthenticatedUser, request *requests.OrganizationCreateRequest) (*models.Organization, error) {
+func (s *OrganizationServiceImpl) Update(organizationId uuid.UUID, authenticatedUser models.AuthenticatedUser, request *requests.OrganizationCreateRequest) (*models.Organization, error) {
 	organization, err := s.organizationRepo.GetByIDForUser(organizationId, authenticatedUser.ID)
 	if err != nil {
 		return nil, err
@@ -85,7 +86,7 @@ func (s *OrganizationServiceImpl) Update(organizationId uint, authenticatedUser 
 	return s.organizationRepo.Update(organizationId, &organization)
 }
 
-func (s *OrganizationServiceImpl) Delete(organizationId uint, authenticatedUser models.AuthenticatedUser) (bool, error) {
+func (s *OrganizationServiceImpl) Delete(organizationId uuid.UUID, authenticatedUser models.AuthenticatedUser) (bool, error) {
 	_, err := s.organizationRepo.GetByIDForUser(organizationId, authenticatedUser.ID)
 	if err != nil {
 		return false, err

@@ -6,6 +6,7 @@ import (
 	"fluxton/responses"
 	"fluxton/services"
 	"fluxton/utils"
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
 )
@@ -103,15 +104,15 @@ func (pc *ColumnController) Delete(c echo.Context) error {
 	return responses.DeletedResponse(c, nil)
 }
 
-func (pc *ColumnController) parseRequest(c echo.Context) (uint, uint, string, error) {
-	projectID, err := utils.GetUintPathParam(c, "projectID", true)
+func (pc *ColumnController) parseRequest(c echo.Context) (uuid.UUID, uuid.UUID, string, error) {
+	projectID, err := utils.GetUUIDPathParam(c, "projectID", true)
 	if err != nil {
-		return 0, 0, "", err
+		return uuid.UUID{}, uuid.UUID{}, "", err
 	}
 
-	tableID, err := utils.GetUintPathParam(c, "tableID", true)
+	tableID, err := utils.GetUUIDPathParam(c, "tableID", true)
 	if err != nil {
-		return 0, 0, "", err
+		return uuid.UUID{}, uuid.UUID{}, "", err
 	}
 
 	columnName := c.Param("columnName")

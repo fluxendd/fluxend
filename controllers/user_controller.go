@@ -6,6 +6,7 @@ import (
 	"fluxton/responses"
 	"fluxton/services"
 	"fluxton/utils"
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
 )
@@ -21,7 +22,7 @@ func NewUserController(injector *do.Injector) (*UserController, error) {
 }
 
 func (uc *UserController) Show(c echo.Context) error {
-	id, err := utils.GetUintPathParam(c, "id", true)
+	id, err := utils.GetUUIDPathParam(c, "id", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
@@ -74,13 +75,13 @@ func (uc *UserController) Store(c echo.Context) error {
 }
 
 func (uc *UserController) Update(c echo.Context) error {
-	authenticatedUserId := uint(c.Get("userId").(float64))
-	if authenticatedUserId == 0 {
+	authenticatedUserId := c.Get("userId").(uuid.UUID)
+	if authenticatedUserId == uuid.Nil {
 		return responses.UnauthorizedResponse(c, "user.error.unauthorized")
 	}
 
 	var request requests.UserUpdateRequest
-	id, err := utils.GetUintPathParam(c, "id", true)
+	id, err := utils.GetUUIDPathParam(c, "id", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}

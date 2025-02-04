@@ -2,13 +2,14 @@ package services
 
 import (
 	"fluxton/repositories"
+	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 	"github.com/samber/do"
 )
 
 type ConnectionService interface {
 	ConnectByDatabaseName(name string) (*sqlx.DB, error)
-	ConnectByProjectID(projectID uint) (*sqlx.DB, error)
+	ConnectByProjectID(projectID uuid.UUID) (*sqlx.DB, error)
 	GetClientTableRepo(databaseName string) (*repositories.ClientTableRepository, error)
 	GetClientColumnRepo(databaseName string) (*repositories.ClientColumnRepository, error)
 }
@@ -32,7 +33,7 @@ func (s *ConnectionServiceImpl) ConnectByDatabaseName(name string) (*sqlx.DB, er
 	return s.databaseRepo.Connect(name)
 }
 
-func (s *ConnectionServiceImpl) ConnectByProjectID(projectID uint) (*sqlx.DB, error) {
+func (s *ConnectionServiceImpl) ConnectByProjectID(projectID uuid.UUID) (*sqlx.DB, error) {
 	project, err := s.projectRepo.GetByID(projectID)
 	if err != nil {
 		return nil, err

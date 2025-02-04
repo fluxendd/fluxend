@@ -28,7 +28,7 @@ func (rc *RowController) Store(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	projectID, err := utils.GetUintPathParam(c, "projectID", true)
+	projectID, err := utils.GetUUIDPathParam(c, "projectID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}

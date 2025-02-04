@@ -3,6 +3,7 @@ package policies
 import (
 	"fluxton/models"
 	"fluxton/repositories"
+	"github.com/google/uuid"
 	"github.com/samber/do"
 )
 
@@ -18,7 +19,7 @@ func NewProjectPolicy(injector *do.Injector) (*ProjectPolicy, error) {
 	}, nil
 }
 
-func (s *ProjectPolicy) CanCreate(organizationID uint, authenticatedUser models.AuthenticatedUser) bool {
+func (s *ProjectPolicy) CanCreate(organizationID uuid.UUID, authenticatedUser models.AuthenticatedUser) bool {
 	if !authenticatedUser.IsLordOrMore() {
 		return false
 	}
@@ -31,7 +32,7 @@ func (s *ProjectPolicy) CanCreate(organizationID uint, authenticatedUser models.
 	return isOrganizationUser
 }
 
-func (s *ProjectPolicy) CanList(organizationID uint, authenticatedUserId uint) bool {
+func (s *ProjectPolicy) CanList(organizationID uuid.UUID, authenticatedUserId uuid.UUID) bool {
 	isOrganizationUser, err := s.organizationRepo.IsOrganizationUser(organizationID, authenticatedUserId)
 	if err != nil {
 		return false
@@ -40,7 +41,7 @@ func (s *ProjectPolicy) CanList(organizationID uint, authenticatedUserId uint) b
 	return isOrganizationUser
 }
 
-func (s *ProjectPolicy) CanView(organizationID uint, authenticatedUser models.AuthenticatedUser) bool {
+func (s *ProjectPolicy) CanView(organizationID uuid.UUID, authenticatedUser models.AuthenticatedUser) bool {
 	isOrganizationUser, err := s.organizationRepo.IsOrganizationUser(organizationID, authenticatedUser.ID)
 	if err != nil {
 		return false
@@ -49,7 +50,7 @@ func (s *ProjectPolicy) CanView(organizationID uint, authenticatedUser models.Au
 	return isOrganizationUser
 }
 
-func (s *ProjectPolicy) CanUpdate(organizationID uint, authenticatedUser models.AuthenticatedUser) bool {
+func (s *ProjectPolicy) CanUpdate(organizationID uuid.UUID, authenticatedUser models.AuthenticatedUser) bool {
 	if !authenticatedUser.IsLordOrMore() {
 		return false
 	}

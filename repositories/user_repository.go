@@ -7,6 +7,7 @@ import (
 	"fluxton/models"
 	"fluxton/utils"
 	"fmt"
+	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 	"github.com/samber/do"
 	"time"
@@ -57,7 +58,7 @@ func (r *UserRepository) List(paginationParams utils.PaginationParams) ([]models
 	return users, nil
 }
 
-func (r *UserRepository) GetByID(id uint) (models.User, error) {
+func (r *UserRepository) GetByID(id uuid.UUID) (models.User, error) {
 	query := fmt.Sprintf("SELECT %s FROM users WHERE id = $1", models.User{}.GetColumns())
 	var user models.User
 	err := r.db.Get(&user, query, id)
@@ -72,7 +73,7 @@ func (r *UserRepository) GetByID(id uint) (models.User, error) {
 	return user, nil
 }
 
-func (r *UserRepository) ExistsByID(id uint) (bool, error) {
+func (r *UserRepository) ExistsByID(id uuid.UUID) (bool, error) {
 	query := "SELECT EXISTS(SELECT 1 FROM users WHERE id = $1)"
 	var exists bool
 	err := r.db.Get(&exists, query, id)
@@ -108,7 +109,7 @@ func (r *UserRepository) Create(user *models.User) (*models.User, error) {
 	return user, nil
 }
 
-func (r *UserRepository) Update(id uint, user *models.User) (*models.User, error) {
+func (r *UserRepository) Update(id uuid.UUID, user *models.User) (*models.User, error) {
 	user.UpdatedAt = time.Now()
 	user.ID = id
 
@@ -130,7 +131,7 @@ func (r *UserRepository) Update(id uint, user *models.User) (*models.User, error
 	return user, nil
 }
 
-func (r *UserRepository) Delete(userId uint) (bool, error) {
+func (r *UserRepository) Delete(userId uuid.UUID) (bool, error) {
 	query := "DELETE FROM users WHERE id = $1"
 	res, err := r.db.Exec(query, userId)
 	if err != nil {
