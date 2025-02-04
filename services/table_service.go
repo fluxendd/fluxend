@@ -71,6 +71,7 @@ func (s *TableServiceImpl) Create(request *requests.TableCreateRequest, projectI
 		return models.Table{}, err
 	}
 
+	// TODO: cleanup name and column names for spaces etc
 	table := models.Table{
 		Name:      request.Name,
 		ProjectID: projectID,
