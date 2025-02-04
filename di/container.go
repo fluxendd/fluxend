@@ -26,7 +26,6 @@ func InitializeContainer() *do.Injector {
 	do.Provide(injector, repositories.NewCoreTableRepository)
 	do.Provide(injector, repositories.NewOrganizationRepository)
 	do.Provide(injector, repositories.NewProjectRepository)
-	do.Provide(injector, repositories.NewNoteRepository)
 	do.Provide(injector, repositories.NewTagRepository)
 
 	// Factories
@@ -40,7 +39,6 @@ func InitializeContainer() *do.Injector {
 
 	// Services
 	do.Provide(injector, services.NewUserService)
-	do.Provide(injector, services.NewNoteService)
 	do.Provide(injector, services.NewConnectionService)
 	do.Provide(injector, services.NewOrganizationService)
 	do.Provide(injector, services.NewProjectService)
@@ -50,7 +48,6 @@ func InitializeContainer() *do.Injector {
 
 	// Controllers
 	do.Provide(injector, controllers.NewUserController)
-	do.Provide(injector, controllers.NewNoteController)
 	do.Provide(injector, controllers.NewOrganizationController)
 	do.Provide(injector, controllers.NewProjectController)
 	do.Provide(injector, controllers.NewTableController)
