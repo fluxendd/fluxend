@@ -6,6 +6,7 @@ import (
 	"fluxton/policies"
 	"fluxton/repositories"
 	"fluxton/requests"
+	"fluxton/utils"
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/samber/do"
@@ -13,6 +14,7 @@ import (
 )
 
 type RowService interface {
+	List(paginationParams utils.PaginationParams, tableName string, organizationID, projectID, authenticatedUserID uuid.UUID) ([]models.Row, error)
 	Create(request *requests.RowCreateRequest, projectID uuid.UUID, tableName string, authenticatedUser models.AuthenticatedUser) (models.Row, error)
 }
 
@@ -35,6 +37,24 @@ func NewRowService(injector *do.Injector) (RowService, error) {
 		projectRepo:   projectRepo,
 		coreTableRepo: coreTableRepo,
 	}, nil
+}
+
+func (s *RowServiceImpl) List(paginationParams utils.PaginationParams, tableName string, organizationID, projectID, authenticatedUserID uuid.UUID) ([]models.Row, error) {
+	if !s.projectPolicy.CanList(organizationID, authenticatedUserID) {
+		return []models.Row{}, errs.NewForbiddenError("project.error.listForbidden")
+	}
+
+	project, err := s.projectRepo.GetByID(projectID)
+	if err != nil {
+		return []models.Row{}, err
+	}
+
+	clientRowRepo, err := s.getClientRowRepo(project.DBName)
+	if err != nil {
+		return []models.Row{}, err
+	}
+
+	return clientRowRepo.List(tableName, paginationParams)
 }
 
 func (s *RowServiceImpl) Create(request *requests.RowCreateRequest, projectID uuid.UUID, tableName string, authenticatedUser models.AuthenticatedUser) (models.Row, error) {

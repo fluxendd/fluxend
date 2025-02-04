@@ -11,4 +11,5 @@ func RegisterRowRoutes(e *echo.Echo, RowController *controllers.RowController) {
 
 	// table routes
 	rowsGroup.POST("", RowController.Store)
+	rowsGroup.GET("", RowController.List)
 }

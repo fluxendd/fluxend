@@ -20,6 +20,28 @@ func NewRowController(injector *do.Injector) (*RowController, error) {
 	return &RowController{rowService: rowService}, nil
 }
 
+func (pc *RowController) List(c echo.Context) error {
+	var request requests.DefaultRequest
+	authenticatedUserId, _ := utils.NewAuth(c).Id()
+
+	if err := request.BindAndValidate(c); err != nil {
+		return responses.UnprocessableResponse(c, err)
+	}
+
+	projectID, err := utils.GetUUIDPathParam(c, "projectID", true)
+	if err != nil {
+		return responses.BadRequestResponse(c, err.Error())
+	}
+
+	paginationParams := utils.ExtractPaginationParams(c)
+	rows, err := pc.rowService.List(paginationParams, c.Param("tableName"), request.OrganizationID, projectID, authenticatedUserId)
+	if err != nil {
+		return responses.ErrorResponse(c, err)
+	}
+
+	return responses.SuccessResponse(c, resources.RowResourceCollection(rows))
+}
+
 func (rc *RowController) Store(c echo.Context) error {
 	var request requests.RowCreateRequest
 	authenticatedUser, _ := utils.NewAuth(c).User()

@@ -17,29 +17,18 @@ func NewClientRowRepository(connection *sqlx.DB) (*ClientRowRepository, error) {
 	return &ClientRowRepository{connection: connection}, nil
 }
 
-func (r *CoreTableRepository) List(tableName string, paginationParams utils.PaginationParams) ([]models.Row, error) {
+func (r *ClientRowRepository) List(tableName string, paginationParams utils.PaginationParams) ([]models.Row, error) {
 	offset := (paginationParams.Page - 1) * paginationParams.Limit
 
-	query := `
-		SELECT * FROM %s
-		ORDER BY 
-			:sort DESC
-		LIMIT 
-			:limit 
-		OFFSET 
-			:offset;
+	query := fmt.Sprintf(`
+		SELECT * 
+		FROM %s
+		ORDER BY %s DESC
+		LIMIT %d 
+		OFFSET %d
+	`, tableName, paginationParams.Sort, paginationParams.Limit, offset)
 
-	`
-
-	query = fmt.Sprintf(query, tableName)
-
-	params := map[string]interface{}{
-		"sort":   paginationParams.Sort,
-		"limit":  paginationParams.Limit,
-		"offset": offset,
-	}
-
-	rows, err := r.db.NamedQuery(query, params)
+	rows, err := r.connection.Queryx(query)
 	if err != nil {
 		return nil, fmt.Errorf("could not retrieve rows: %v", err)
 	}
@@ -47,11 +36,11 @@ func (r *CoreTableRepository) List(tableName string, paginationParams utils.Pagi
 
 	var results []models.Row
 	for rows.Next() {
-		var result models.Row
-		if err := rows.StructScan(&result); err != nil {
+		row := make(models.Row)
+		if err := rows.MapScan(row); err != nil {
 			return nil, fmt.Errorf("could not scan row: %v", err)
 		}
-		results = append(results, result)
+		results = append(results, row)
 	}
 
 	if err := rows.Err(); err != nil {
