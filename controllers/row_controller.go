@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fluxton/models"
 	"fluxton/requests"
 	"fluxton/resources"
 	"fluxton/responses"
@@ -34,10 +33,10 @@ func (rc *RowController) Store(c echo.Context) error {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	_, err = rc.rowService.Create(&request, projectID, c.Param("tableName"), authenticatedUser)
+	row, err := rc.rowService.Create(&request, projectID, c.Param("tableName"), authenticatedUser)
 	if err != nil {
 		return responses.UnprocessableResponse(c, []string{err.Error()})
 	}
 
-	return responses.CreatedResponse(c, resources.TableResource(&models.Table{}))
+	return responses.CreatedResponse(c, resources.RowResource(row))
 }

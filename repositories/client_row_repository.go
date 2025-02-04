@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"fluxton/models"
 	"fmt"
 	"github.com/jmoiron/sqlx"
 	"strings"
@@ -15,9 +16,9 @@ func NewClientRowRepository(connection *sqlx.DB) (*ClientRowRepository, error) {
 	return &ClientRowRepository{connection: connection}, nil
 }
 
-func (r *ClientRowRepository) Create(tableName string, fields map[string]interface{}) error {
+func (r *ClientRowRepository) Create(tableName string, fields models.Row) (uint64, error) {
 	if len(fields) == 0 {
-		return fmt.Errorf("no fields to insert")
+		return 0, fmt.Errorf("no fields to insert")
 	}
 
 	var columns []string
@@ -32,16 +33,32 @@ func (r *ClientRowRepository) Create(tableName string, fields map[string]interfa
 		i++
 	}
 
-	query := fmt.Sprintf("INSERT INTO %s (%s) VALUES (%s)",
+	query := fmt.Sprintf(
+		"INSERT INTO %s (%s) VALUES (%s) RETURNING id",
 		tableName,
 		strings.Join(columns, ", "),
 		strings.Join(placeholders, ", "),
 	)
 
-	_, err := r.connection.Exec(query, values...)
+	var insertedID uint64
+	err := r.connection.QueryRow(query, values...).Scan(&insertedID)
 	if err != nil {
-		return fmt.Errorf("error inserting row: %v", err)
+		return 0, fmt.Errorf("error inserting row: %v", err)
 	}
 
-	return nil
+	return insertedID, nil
+}
+
+func (r *ClientRowRepository) GetByID(tableName string, id uint64) (models.Row, error) {
+	query := fmt.Sprintf("SELECT * FROM %s WHERE id = $1", tableName)
+
+	resultRow := make(models.Row)
+	row := r.connection.QueryRowx(query, id)
+
+	err := row.MapScan(resultRow)
+	if err != nil {
+		return nil, fmt.Errorf("error getting row: %v", err)
+	}
+
+	return resultRow, nil
 }
