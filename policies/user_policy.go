@@ -1,5 +1,9 @@
 package policies
 
-func CanUpdateUser(userID, authenticatedUserId uint) bool {
+import (
+	"github.com/google/uuid"
+)
+
+func CanUpdateUser(userID, authenticatedUserId uuid.UUID) bool {
 	return userID == authenticatedUserId
 }

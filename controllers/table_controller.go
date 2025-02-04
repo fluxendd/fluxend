@@ -28,7 +28,7 @@ func (pc *TableController) List(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	projectID, err := utils.GetUintPathParam(c, "projectID", true)
+	projectID, err := utils.GetUUIDPathParam(c, "projectID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
@@ -50,7 +50,7 @@ func (pc *TableController) Show(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	tableID, err := utils.GetUintPathParam(c, "tableID", true)
+	tableID, err := utils.GetUUIDPathParam(c, "tableID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
@@ -71,7 +71,7 @@ func (pc *TableController) Store(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	projectID, err := utils.GetUintPathParam(c, "projectID", true)
+	projectID, err := utils.GetUUIDPathParam(c, "projectID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
@@ -88,12 +88,12 @@ func (pc *TableController) Rename(c echo.Context) error {
 	var request requests.TableRenameRequest
 	authenticatedUser, _ := utils.NewAuth(c).User()
 
-	projectID, err := utils.GetUintPathParam(c, "projectID", true)
+	projectID, err := utils.GetUUIDPathParam(c, "projectID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	tableID, err := utils.GetUintPathParam(c, "tableID", true)
+	tableID, err := utils.GetUUIDPathParam(c, "tableID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
@@ -118,12 +118,12 @@ func (pc *TableController) Delete(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	projectID, err := utils.GetUintPathParam(c, "projectID", true)
+	projectID, err := utils.GetUUIDPathParam(c, "projectID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	tableID, err := utils.GetUintPathParam(c, "tableID", true)
+	tableID, err := utils.GetUUIDPathParam(c, "tableID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}

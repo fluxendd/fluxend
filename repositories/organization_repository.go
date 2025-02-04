@@ -7,6 +7,7 @@ import (
 	"fluxton/models"
 	"fluxton/utils"
 	"fmt"
+	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 	"github.com/samber/do"
 	"time"
@@ -21,7 +22,7 @@ func NewOrganizationRepository(injector *do.Injector) (*OrganizationRepository, 
 	return &OrganizationRepository{db: db}, nil
 }
 
-func (r *OrganizationRepository) ListForUser(paginationParams utils.PaginationParams, authenticatedUserId uint) ([]models.Organization, error) {
+func (r *OrganizationRepository) ListForUser(paginationParams utils.PaginationParams, authenticatedUserId uuid.UUID) ([]models.Organization, error) {
 	offset := (paginationParams.Page - 1) * paginationParams.Limit
 	modelSkeleton := models.Organization{}
 
@@ -74,7 +75,7 @@ func (r *OrganizationRepository) ListForUser(paginationParams utils.PaginationPa
 	return organizations, nil
 }
 
-func (r *OrganizationRepository) GetByIDForUser(id, authenticatedUserId uint) (models.Organization, error) {
+func (r *OrganizationRepository) GetByIDForUser(id, authenticatedUserId uuid.UUID) (models.Organization, error) {
 	query := "SELECT %s FROM organizations WHERE id = $1"
 	query = fmt.Sprintf(query, models.Organization{}.GetColumns())
 
@@ -102,7 +103,7 @@ func (r *OrganizationRepository) ExistsByID(id uint) (bool, error) {
 	return exists, nil
 }
 
-func (r *OrganizationRepository) Create(organization *models.Organization, authenticatedUserId uint) (*models.Organization, error) {
+func (r *OrganizationRepository) Create(organization *models.Organization, authenticatedUserId uuid.UUID) (*models.Organization, error) {
 	tx, err := r.db.Beginx()
 	if err != nil {
 		return nil, fmt.Errorf("could not begin transaction: %v", err)
@@ -139,7 +140,7 @@ func (r *OrganizationRepository) Create(organization *models.Organization, authe
 	return organization, nil
 }
 
-func (r *OrganizationRepository) Update(id uint, organization *models.Organization) (*models.Organization, error) {
+func (r *OrganizationRepository) Update(id uuid.UUID, organization *models.Organization) (*models.Organization, error) {
 	organization.UpdatedAt = time.Now()
 	organization.ID = id
 
@@ -161,7 +162,7 @@ func (r *OrganizationRepository) Update(id uint, organization *models.Organizati
 	return organization, nil
 }
 
-func (r *OrganizationRepository) Delete(organizationId uint) (bool, error) {
+func (r *OrganizationRepository) Delete(organizationId uuid.UUID) (bool, error) {
 	query := "DELETE FROM organizations WHERE id = $1"
 	res, err := r.db.Exec(query, organizationId)
 	if err != nil {
@@ -176,7 +177,7 @@ func (r *OrganizationRepository) Delete(organizationId uint) (bool, error) {
 	return rowsAffected == 1, nil
 }
 
-func (r *OrganizationRepository) IsOrganizationUser(organizationId, authenticatedUserId uint) (bool, error) {
+func (r *OrganizationRepository) IsOrganizationUser(organizationId, authenticatedUserId uuid.UUID) (bool, error) {
 	query := "SELECT EXISTS(SELECT 1 FROM organization_users WHERE organization_id = $1 AND user_id = $2)"
 
 	var exists bool
@@ -188,7 +189,7 @@ func (r *OrganizationRepository) IsOrganizationUser(organizationId, authenticate
 	return exists, nil
 }
 
-func (r *OrganizationRepository) createOrganizationUser(tx *sqlx.Tx, organizationId, userId uint) error {
+func (r *OrganizationRepository) createOrganizationUser(tx *sqlx.Tx, organizationId, userId uuid.UUID) error {
 	query := "INSERT INTO organization_users (organization_id, user_id) VALUES ($1, $2)"
 	_, err := tx.Exec(query, organizationId, userId)
 	if err != nil {

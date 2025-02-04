@@ -3,6 +3,7 @@ package policies
 import (
 	"fluxton/models"
 	"fluxton/repositories"
+	"github.com/google/uuid"
 	"github.com/samber/do"
 )
 
@@ -22,7 +23,7 @@ func (s *OrganizationPolicy) CanCreate(authenticatedUser models.AuthenticatedUse
 	return authenticatedUser.IsBishopOrMore()
 }
 
-func (s *OrganizationPolicy) CanView(organizationId uint, authenticatedUser models.AuthenticatedUser) bool {
+func (s *OrganizationPolicy) CanView(organizationId uuid.UUID, authenticatedUser models.AuthenticatedUser) bool {
 	isOrganizationUser, err := s.organizationRepo.IsOrganizationUser(organizationId, authenticatedUser.ID)
 	if err != nil {
 		return false
@@ -31,7 +32,7 @@ func (s *OrganizationPolicy) CanView(organizationId uint, authenticatedUser mode
 	return isOrganizationUser
 }
 
-func (s *OrganizationPolicy) CanUpdate(organizationId uint, authenticatedUser models.AuthenticatedUser) bool {
+func (s *OrganizationPolicy) CanUpdate(organizationId uuid.UUID, authenticatedUser models.AuthenticatedUser) bool {
 	if !authenticatedUser.IsBishopOrMore() {
 		return false
 	}

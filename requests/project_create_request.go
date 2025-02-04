@@ -1,14 +1,14 @@
 package requests
 
 import (
-	"fluxton/utils"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
 
 type ProjectCreateRequest struct {
-	Name           string `json:"name"`
-	OrganizationID uint   `json:"-"`
+	Name           string    `json:"name"`
+	OrganizationID uuid.UUID `json:"-"`
 }
 
 func (r *ProjectCreateRequest) BindAndValidate(c echo.Context) []string {
@@ -16,14 +16,14 @@ func (r *ProjectCreateRequest) BindAndValidate(c echo.Context) []string {
 		return []string{"Invalid request payload"}
 	}
 
-	organizationID, err := utils.ConvertStringToUint(c.Request().Header.Get("X-OrganizationID"))
-	if err != nil {
-		return []string{"Organization ID is required and must be a number"}
+	organizationID := uuid.MustParse(c.Request().Header.Get("X-OrganizationID"))
+	if organizationID == uuid.Nil {
+		return []string{"Organization ID is required and must be a UUID"}
 	}
 
 	r.OrganizationID = organizationID
 
-	err = validation.ValidateStruct(r,
+	err := validation.ValidateStruct(r,
 		validation.Field(&r.Name, validation.Required.Error("Name is required"), validation.Length(3, 100).Error("Name must be between 3 and 100 characters")),
 	)
 

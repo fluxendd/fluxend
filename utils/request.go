@@ -3,6 +3,7 @@ package utils
 import (
 	"errors"
 	"fmt"
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"strconv"
 )
@@ -63,6 +64,14 @@ func GetUintPathParam(c echo.Context, name string, required bool) (uint, error) 
 	}
 
 	return ConvertStringToUint(c.Param(name))
+}
+
+func GetUUIDPathParam(c echo.Context, name string, required bool) (uuid.UUID, error) {
+	if required && c.Param(name) == "" {
+		return uuid.UUID{}, fmt.Errorf("path parameter [%s] is required", name)
+	}
+
+	return uuid.MustParse(c.Param(name)), nil
 }
 
 func ConvertStringToUint(param string) (uint, error) {

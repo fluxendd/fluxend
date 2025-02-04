@@ -1,24 +1,27 @@
 package resources
 
-import "fluxton/models"
+import (
+	"fluxton/models"
+	"github.com/google/uuid"
+)
 
 type ProjectResponse struct {
-	ID             uint   `json:"id"`
-	OrganizationID uint   `json:"organization_id"`
-	Name           string `json:"name"`
-	DBName         string `json:"db_name"`
-	CreatedAt      string `json:"created_at"`
-	UpdatedAt      string `json:"updated_at"`
+	ID             uuid.UUID `json:"id"`
+	OrganizationID uuid.UUID `json:"organization_id"`
+	Name           string    `json:"name"`
+	DBName         string    `json:"db_name"`
+	CreatedAt      string    `json:"created_at"`
+	UpdatedAt      string    `json:"updated_at"`
 }
 
-func ProjectResource(organization *models.Project) ProjectResponse {
+func ProjectResource(project *models.Project) ProjectResponse {
 	return ProjectResponse{
-		ID:             organization.ID,
-		OrganizationID: organization.OrganizationID,
-		Name:           organization.Name,
-		DBName:         organization.DBName,
-		CreatedAt:      organization.CreatedAt.Format("2006-01-02 15:04:05"),
-		UpdatedAt:      organization.UpdatedAt.Format("2006-01-02 15:04:05"),
+		ID:             project.ID,
+		OrganizationID: project.OrganizationID,
+		Name:           project.Name,
+		DBName:         project.DBName,
+		CreatedAt:      project.CreatedAt.Format("2006-01-02 15:04:05"),
+		UpdatedAt:      project.UpdatedAt.Format("2006-01-02 15:04:05"),
 	}
 }
 

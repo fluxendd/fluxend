@@ -3,13 +3,14 @@ package resources
 import (
 	"fluxton/models"
 	"fluxton/types"
+	"github.com/google/uuid"
 )
 
 type TableResponse struct {
-	ID        uint                `json:"id"`
-	ProjectID uint                `json:"project_id"`
-	CreatedBy uint                `json:"created_by"`
-	UpdatedBy uint                `json:"updated_by"`
+	ID        uuid.UUID           `json:"id"`
+	ProjectID uuid.UUID           `json:"project_id"`
+	CreatedBy uuid.UUID           `json:"created_by"`
+	UpdatedBy uuid.UUID           `json:"updated_by"`
 	Name      string              `json:"name"`
 	Columns   []types.TableColumn `json:"columns"`
 	CreatedAt string              `json:"created_at"`

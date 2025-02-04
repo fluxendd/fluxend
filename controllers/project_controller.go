@@ -45,7 +45,7 @@ func (pc *ProjectController) Show(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	id, err := utils.GetUintPathParam(c, "id", true)
+	id, err := utils.GetUUIDPathParam(c, "id", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
@@ -78,7 +78,7 @@ func (pc *ProjectController) Update(c echo.Context) error {
 	var request requests.ProjectCreateRequest
 	authenticatedUser, _ := utils.NewAuth(c).User()
 
-	id, err := utils.GetUintPathParam(c, "id", true)
+	id, err := utils.GetUUIDPathParam(c, "id", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
@@ -103,7 +103,7 @@ func (pc *ProjectController) Delete(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	id, err := utils.GetUintPathParam(c, "id", true)
+	id, err := utils.GetUUIDPathParam(c, "id", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}

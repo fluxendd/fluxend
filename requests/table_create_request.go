@@ -2,16 +2,16 @@ package requests
 
 import (
 	"fluxton/types"
-	"fluxton/utils"
 	"fmt"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"strings"
 )
 
 type TableCreateRequest struct {
 	Name           string              `json:"name"`
-	OrganizationID uint                `json:"-"`
+	OrganizationID uuid.UUID           `json:"-"`
 	Columns        []types.TableColumn `json:"columns"`
 }
 
@@ -48,9 +48,9 @@ func (r *TableCreateRequest) BindAndValidate(c echo.Context) []string {
 		return []string{"Invalid request payload"}
 	}
 
-	organizationID, err := utils.ConvertStringToUint(c.Request().Header.Get("X-OrganizationID"))
-	if err != nil {
-		return []string{"Organization ID is required and must be a number"}
+	organizationID := uuid.MustParse(c.Request().Header.Get("X-OrganizationID"))
+	if organizationID == uuid.Nil {
+		return []string{"Organization ID is required and must be a UUID"}
 	}
 
 	r.OrganizationID = organizationID
@@ -58,7 +58,7 @@ func (r *TableCreateRequest) BindAndValidate(c echo.Context) []string {
 	var errors []string
 
 	// Validate base request columns
-	err = validation.ValidateStruct(r,
+	err := validation.ValidateStruct(r,
 		validation.Field(&r.Name, validation.Required.Error("Name is required"), validation.Length(3, 100).Error("Name must be between 3 and 100 characters")),
 		validation.Field(&r.Columns, validation.Required.Error("Fields are required")),
 	)

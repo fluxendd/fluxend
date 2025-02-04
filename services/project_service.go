@@ -13,11 +13,11 @@ import (
 )
 
 type ProjectService interface {
-	List(paginationParams utils.PaginationParams, organizationId, authenticatedUserId uint) ([]models.Project, error)
-	GetByID(projectId, organizationId uint, authenticatedUser models.AuthenticatedUser) (models.Project, error)
+	List(paginationParams utils.PaginationParams, organizationId, authenticatedUserId uuid.UUID) ([]models.Project, error)
+	GetByID(projectId, organizationId uuid.UUID, authenticatedUser models.AuthenticatedUser) (models.Project, error)
 	Create(request *requests.ProjectCreateRequest, authenticatedUser models.AuthenticatedUser) (models.Project, error)
-	Update(projectId uint, authenticatedUser models.AuthenticatedUser, request *requests.ProjectCreateRequest) (*models.Project, error)
-	Delete(projectId uint, authenticatedUser models.AuthenticatedUser) (bool, error)
+	Update(projectId uuid.UUID, authenticatedUser models.AuthenticatedUser, request *requests.ProjectCreateRequest) (*models.Project, error)
+	Delete(projectId uuid.UUID, authenticatedUser models.AuthenticatedUser) (bool, error)
 }
 
 type ProjectServiceImpl struct {
@@ -38,7 +38,7 @@ func NewProjectService(injector *do.Injector) (ProjectService, error) {
 	}, nil
 }
 
-func (s *ProjectServiceImpl) List(paginationParams utils.PaginationParams, organizationId, authenticatedUserId uint) ([]models.Project, error) {
+func (s *ProjectServiceImpl) List(paginationParams utils.PaginationParams, organizationId, authenticatedUserId uuid.UUID) ([]models.Project, error) {
 	if !s.projectPolicy.CanList(organizationId, authenticatedUserId) {
 		return []models.Project{}, errs.NewForbiddenError("project.error.listForbidden")
 	}
@@ -46,7 +46,7 @@ func (s *ProjectServiceImpl) List(paginationParams utils.PaginationParams, organ
 	return s.projectRepo.ListForUser(paginationParams, authenticatedUserId)
 }
 
-func (s *ProjectServiceImpl) GetByID(projectId, organizationId uint, authenticatedUser models.AuthenticatedUser) (models.Project, error) {
+func (s *ProjectServiceImpl) GetByID(projectId, organizationId uuid.UUID, authenticatedUser models.AuthenticatedUser) (models.Project, error) {
 	if !s.projectPolicy.CanView(organizationId, authenticatedUser) {
 		return models.Project{}, errs.NewForbiddenError("project.error.viewForbidden")
 	}
@@ -83,7 +83,7 @@ func (s *ProjectServiceImpl) Create(request *requests.ProjectCreateRequest, auth
 	return project, nil
 }
 
-func (s *ProjectServiceImpl) Update(projectId uint, authenticatedUser models.AuthenticatedUser, request *requests.ProjectCreateRequest) (*models.Project, error) {
+func (s *ProjectServiceImpl) Update(projectId uuid.UUID, authenticatedUser models.AuthenticatedUser, request *requests.ProjectCreateRequest) (*models.Project, error) {
 	project, err := s.projectRepo.GetByID(projectId)
 	if err != nil {
 		return nil, err
@@ -107,7 +107,7 @@ func (s *ProjectServiceImpl) Update(projectId uint, authenticatedUser models.Aut
 	return s.projectRepo.Update(projectId, &project)
 }
 
-func (s *ProjectServiceImpl) Delete(projectId uint, authenticatedUser models.AuthenticatedUser) (bool, error) {
+func (s *ProjectServiceImpl) Delete(projectId uuid.UUID, authenticatedUser models.AuthenticatedUser) (bool, error) {
 	if !s.projectPolicy.CanUpdate(projectId, authenticatedUser) {
 		return false, errs.NewForbiddenError("project.error.updateForbidden")
 	}
@@ -119,7 +119,7 @@ func (s *ProjectServiceImpl) generateDBName() string {
 	return strings.ReplaceAll(strings.ToLower(uuid.New().String()), "-", "")
 }
 
-func (s *ProjectServiceImpl) validateNameForDuplication(name string, organizationId uint) error {
+func (s *ProjectServiceImpl) validateNameForDuplication(name string, organizationId uuid.UUID) error {
 	exists, err := s.projectRepo.ExistsByNameForOrganization(name, organizationId)
 	if err != nil {
 		return err

@@ -28,7 +28,7 @@ type User struct {
 }
 
 type AuthenticatedUser struct {
-	ID     uint
+	ID     uuid.UUID
 	RoleID int
 }
 

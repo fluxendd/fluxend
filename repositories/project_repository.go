@@ -7,6 +7,7 @@ import (
 	"fluxton/models"
 	"fluxton/utils"
 	"fmt"
+	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 	"github.com/samber/do"
 	"time"
@@ -22,7 +23,7 @@ func NewProjectRepository(injector *do.Injector) (*ProjectRepository, error) {
 	return &ProjectRepository{db: db}, nil
 }
 
-func (r *ProjectRepository) ListForUser(paginationParams utils.PaginationParams, authenticatedUserId uint) ([]models.Project, error) {
+func (r *ProjectRepository) ListForUser(paginationParams utils.PaginationParams, authenticatedUserId uuid.UUID) ([]models.Project, error) {
 	offset := (paginationParams.Page - 1) * paginationParams.Limit
 	modelSkeleton := models.Project{}
 
@@ -75,7 +76,7 @@ func (r *ProjectRepository) ListForUser(paginationParams utils.PaginationParams,
 	return projects, nil
 }
 
-func (r *ProjectRepository) GetByID(id uint) (models.Project, error) {
+func (r *ProjectRepository) GetByID(id uuid.UUID) (models.Project, error) {
 	query := "SELECT %s FROM projects WHERE id = $1"
 	query = fmt.Sprintf(query, models.Project{}.GetColumns())
 
@@ -92,7 +93,7 @@ func (r *ProjectRepository) GetByID(id uint) (models.Project, error) {
 	return project, nil
 }
 
-func (r *ProjectRepository) ExistsByID(id uint) (bool, error) {
+func (r *ProjectRepository) ExistsByID(id uuid.UUID) (bool, error) {
 	query := "SELECT EXISTS(SELECT 1 FROM projects WHERE id = $1)"
 
 	var exists bool
@@ -104,7 +105,7 @@ func (r *ProjectRepository) ExistsByID(id uint) (bool, error) {
 	return exists, nil
 }
 
-func (r *ProjectRepository) ExistsByNameForOrganization(name string, organizationId uint) (bool, error) {
+func (r *ProjectRepository) ExistsByNameForOrganization(name string, organizationId uuid.UUID) (bool, error) {
 	query := "SELECT EXISTS(SELECT 1 FROM projects WHERE name = $1 AND organization_id = $2)"
 
 	var exists bool
@@ -141,7 +142,7 @@ func (r *ProjectRepository) Create(project *models.Project) (*models.Project, er
 	return project, nil
 }
 
-func (r *ProjectRepository) Update(id uint, project *models.Project) (*models.Project, error) {
+func (r *ProjectRepository) Update(id uuid.UUID, project *models.Project) (*models.Project, error) {
 	project.UpdatedAt = time.Now()
 	project.ID = id
 
@@ -163,7 +164,7 @@ func (r *ProjectRepository) Update(id uint, project *models.Project) (*models.Pr
 	return project, nil
 }
 
-func (r *ProjectRepository) Delete(projectId uint) (bool, error) {
+func (r *ProjectRepository) Delete(projectId uuid.UUID) (bool, error) {
 	query := "DELETE FROM projects WHERE id = $1"
 	res, err := r.db.Exec(query, projectId)
 	if err != nil {

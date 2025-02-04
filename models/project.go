@@ -8,7 +8,7 @@ import (
 
 type Project struct {
 	ID             uuid.UUID `db:"id"`
-	OrganizationID uint      `db:"organization_id"`
+	OrganizationID uuid.UUID `db:"organization_id"`
 	Name           string    `db:"name"`
 	DBName         string    `db:"db_name"`
 	CreatedAt      time.Time `db:"created_at"`

@@ -8,6 +8,7 @@ import (
 	"fluxton/requests"
 	"fluxton/utils"
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/google/uuid"
 	"github.com/samber/do"
 	"os"
 	"time"
@@ -16,10 +17,10 @@ import (
 type UserService interface {
 	Login(request *requests.UserLoginRequest) (models.User, string, error)
 	List(paginationParams utils.PaginationParams) ([]models.User, error)
-	GetByID(id uint) (models.User, error)
+	GetByID(id uuid.UUID) (models.User, error)
 	Create(request *requests.UserCreateRequest) (models.User, error)
-	Update(userId, authenticatedUserId uint, request *requests.UserUpdateRequest) (*models.User, error)
-	Delete(userId uint) (bool, error)
+	Update(userId, authenticatedUserId uuid.UUID, request *requests.UserUpdateRequest) (*models.User, error)
+	Delete(userId uuid.UUID) (bool, error)
 }
 
 type UserServiceImpl struct {
@@ -54,7 +55,7 @@ func (s *UserServiceImpl) List(paginationParams utils.PaginationParams) ([]model
 	return s.userRepo.List(paginationParams)
 }
 
-func (s *UserServiceImpl) GetByID(id uint) (models.User, error) {
+func (s *UserServiceImpl) GetByID(id uuid.UUID) (models.User, error) {
 	return s.userRepo.GetByID(id)
 }
 
@@ -74,7 +75,7 @@ func (s *UserServiceImpl) Create(request *requests.UserCreateRequest) (models.Us
 	return user, nil
 }
 
-func (s *UserServiceImpl) Update(userId, authenticatedUserId uint, request *requests.UserUpdateRequest) (*models.User, error) {
+func (s *UserServiceImpl) Update(userId, authenticatedUserId uuid.UUID, request *requests.UserUpdateRequest) (*models.User, error) {
 	if !policies.CanUpdateUser(userId, authenticatedUserId) {
 		return nil, errs.NewForbiddenError("user.error.updateForbidden")
 	}
@@ -92,7 +93,7 @@ func (s *UserServiceImpl) Update(userId, authenticatedUserId uint, request *requ
 	return s.userRepo.Update(userId, &user)
 }
 
-func (s *UserServiceImpl) Delete(userId uint) (bool, error) {
+func (s *UserServiceImpl) Delete(userId uuid.UUID) (bool, error) {
 	exists, err := s.userRepo.ExistsByID(userId)
 	if err != nil {
 		return false, err

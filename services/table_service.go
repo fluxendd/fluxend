@@ -7,16 +7,17 @@ import (
 	"fluxton/repositories"
 	"fluxton/requests"
 	"fluxton/utils"
+	"github.com/google/uuid"
 
 	"github.com/samber/do"
 )
 
 type TableService interface {
-	List(paginationParams utils.PaginationParams, organizationID, projectID, authenticatedUserID uint) ([]models.Table, error)
-	GetByID(tableID, organizationID uint, authenticatedUser models.AuthenticatedUser) (models.Table, error)
-	Create(request *requests.TableCreateRequest, projectID uint, authenticatedUser models.AuthenticatedUser) (models.Table, error)
-	Rename(tableID, projectID uint, authenticatedUser models.AuthenticatedUser, request *requests.TableRenameRequest) (models.Table, error)
-	Delete(tableID, organizationID, projectID uint, authenticatedUser models.AuthenticatedUser) (bool, error)
+	List(paginationParams utils.PaginationParams, organizationID, projectID, authenticatedUserID uuid.UUID) ([]models.Table, error)
+	GetByID(tableID, organizationID uuid.UUID, authenticatedUser models.AuthenticatedUser) (models.Table, error)
+	Create(request *requests.TableCreateRequest, projectID uuid.UUID, authenticatedUser models.AuthenticatedUser) (models.Table, error)
+	Rename(tableID, projectID uuid.UUID, authenticatedUser models.AuthenticatedUser, request *requests.TableRenameRequest) (models.Table, error)
+	Delete(tableID, organizationID, projectID uuid.UUID, authenticatedUser models.AuthenticatedUser) (bool, error)
 }
 
 type TableServiceImpl struct {
@@ -40,7 +41,7 @@ func NewTableService(injector *do.Injector) (TableService, error) {
 	}, nil
 }
 
-func (s *TableServiceImpl) List(paginationParams utils.PaginationParams, organizationID, projectID, authenticatedUserID uint) ([]models.Table, error) {
+func (s *TableServiceImpl) List(paginationParams utils.PaginationParams, organizationID, projectID, authenticatedUserID uuid.UUID) ([]models.Table, error) {
 	if !s.projectPolicy.CanList(organizationID, authenticatedUserID) {
 		return []models.Table{}, errs.NewForbiddenError("project.error.listForbidden")
 	}
@@ -48,7 +49,7 @@ func (s *TableServiceImpl) List(paginationParams utils.PaginationParams, organiz
 	return s.coreTableRepo.ListForProject(paginationParams, projectID)
 }
 
-func (s *TableServiceImpl) GetByID(tableID, organizationID uint, authenticatedUser models.AuthenticatedUser) (models.Table, error) {
+func (s *TableServiceImpl) GetByID(tableID, organizationID uuid.UUID, authenticatedUser models.AuthenticatedUser) (models.Table, error) {
 	if !s.projectPolicy.CanView(organizationID, authenticatedUser) {
 		return models.Table{}, errs.NewForbiddenError("project.error.viewForbidden")
 	}
@@ -56,7 +57,7 @@ func (s *TableServiceImpl) GetByID(tableID, organizationID uint, authenticatedUs
 	return s.coreTableRepo.GetByID(tableID)
 }
 
-func (s *TableServiceImpl) Create(request *requests.TableCreateRequest, projectID uint, authenticatedUser models.AuthenticatedUser) (models.Table, error) {
+func (s *TableServiceImpl) Create(request *requests.TableCreateRequest, projectID uuid.UUID, authenticatedUser models.AuthenticatedUser) (models.Table, error) {
 	project, err := s.projectRepo.GetByID(projectID)
 	if err != nil {
 		return models.Table{}, err
@@ -98,7 +99,7 @@ func (s *TableServiceImpl) Create(request *requests.TableCreateRequest, projectI
 	return table, nil
 }
 
-func (s *TableServiceImpl) Rename(tableID, projectID uint, authenticatedUser models.AuthenticatedUser, request *requests.TableRenameRequest) (models.Table, error) {
+func (s *TableServiceImpl) Rename(tableID, projectID uuid.UUID, authenticatedUser models.AuthenticatedUser, request *requests.TableRenameRequest) (models.Table, error) {
 	project, err := s.projectRepo.GetByID(projectID)
 	if err != nil {
 		return models.Table{}, err
@@ -131,7 +132,7 @@ func (s *TableServiceImpl) Rename(tableID, projectID uint, authenticatedUser mod
 	return s.coreTableRepo.Rename(tableID, request.Name, authenticatedUser.ID)
 }
 
-func (s *TableServiceImpl) Delete(tableID, organizationID, projectID uint, authenticatedUser models.AuthenticatedUser) (bool, error) {
+func (s *TableServiceImpl) Delete(tableID, organizationID, projectID uuid.UUID, authenticatedUser models.AuthenticatedUser) (bool, error) {
 	project, err := s.projectRepo.GetByID(projectID)
 	if err != nil {
 		return false, err
@@ -159,7 +160,7 @@ func (s *TableServiceImpl) Delete(tableID, organizationID, projectID uint, authe
 	return s.coreTableRepo.Delete(tableID)
 }
 
-func (s *TableServiceImpl) validateNameForDuplication(name string, projectID uint) error {
+func (s *TableServiceImpl) validateNameForDuplication(name string, projectID uuid.UUID) error {
 	exists, err := s.coreTableRepo.ExistsByNameForProject(name, projectID)
 	if err != nil {
 		return err

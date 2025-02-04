@@ -8,6 +8,7 @@ import (
 	"fluxton/types"
 	"fluxton/utils"
 	"fmt"
+	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 	"github.com/samber/do"
 	"time"
@@ -23,7 +24,7 @@ func NewCoreTableRepository(injector *do.Injector) (*CoreTableRepository, error)
 	return &CoreTableRepository{db: db}, nil
 }
 
-func (r *CoreTableRepository) ListForProject(paginationParams utils.PaginationParams, projectID uint) ([]models.Table, error) {
+func (r *CoreTableRepository) ListForProject(paginationParams utils.PaginationParams, projectID uuid.UUID) ([]models.Table, error) {
 	offset := (paginationParams.Page - 1) * paginationParams.Limit
 	modelSkeleton := models.Table{}
 
@@ -74,7 +75,7 @@ func (r *CoreTableRepository) ListForProject(paginationParams utils.PaginationPa
 	return tables, nil
 }
 
-func (r *CoreTableRepository) ListColumns(tableID uint) ([]types.TableColumn, error) {
+func (r *CoreTableRepository) ListColumns(tableID uuid.UUID) ([]types.TableColumn, error) {
 	query := "SELECT columns FROM tables WHERE id = $1"
 
 	var columnsJSON models.JSONColumns
@@ -91,7 +92,7 @@ func (r *CoreTableRepository) ListColumns(tableID uint) ([]types.TableColumn, er
 	return columnsJSON, nil
 }
 
-func (r *CoreTableRepository) GetByID(id uint) (models.Table, error) {
+func (r *CoreTableRepository) GetByID(id uuid.UUID) (models.Table, error) {
 	query := "SELECT %s FROM tables WHERE id = $1"
 	query = fmt.Sprintf(query, models.Table{}.GetColumns())
 
@@ -125,7 +126,7 @@ func (r *CoreTableRepository) GetByName(name string) (models.Table, error) {
 	return table, nil
 }
 
-func (r *CoreTableRepository) ExistsByID(id uint) (bool, error) {
+func (r *CoreTableRepository) ExistsByID(id uuid.UUID) (bool, error) {
 	query := "SELECT EXISTS(SELECT 1 FROM tables WHERE id = $1)"
 
 	var exists bool
@@ -137,7 +138,7 @@ func (r *CoreTableRepository) ExistsByID(id uint) (bool, error) {
 	return exists, nil
 }
 
-func (r *CoreTableRepository) ExistsByNameForProject(name string, tableID uint) (bool, error) {
+func (r *CoreTableRepository) ExistsByNameForProject(name string, tableID uuid.UUID) (bool, error) {
 	query := "SELECT EXISTS(SELECT 1 FROM tables WHERE name = $1 AND project_Id = $2)"
 
 	var exists bool
@@ -149,7 +150,7 @@ func (r *CoreTableRepository) ExistsByNameForProject(name string, tableID uint) 
 	return exists, nil
 }
 
-func (r *CoreTableRepository) HasColumn(column string, tableID uint) (bool, error) {
+func (r *CoreTableRepository) HasColumn(column string, tableID uuid.UUID) (bool, error) {
 	query := `
 		SELECT EXISTS (
 			SELECT 1
@@ -211,7 +212,7 @@ func (r *CoreTableRepository) Update(table *models.Table) (*models.Table, error)
 	return table, nil
 }
 
-func (r *CoreTableRepository) Rename(tableID uint, name string, authenticatedUserID uint) (models.Table, error) {
+func (r *CoreTableRepository) Rename(tableID uuid.UUID, name string, authenticatedUserID uuid.UUID) (models.Table, error) {
 	query := `
 		UPDATE tables 
 		SET name = $1, updated_at = $2, updated_by = $3
@@ -225,7 +226,7 @@ func (r *CoreTableRepository) Rename(tableID uint, name string, authenticatedUse
 	return r.GetByID(tableID)
 }
 
-func (r *CoreTableRepository) Delete(tableID uint) (bool, error) {
+func (r *CoreTableRepository) Delete(tableID uuid.UUID) (bool, error) {
 	query := "DELETE FROM tables WHERE id = $1"
 	res, err := r.db.Exec(query, tableID)
 	if err != nil {

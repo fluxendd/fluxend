@@ -25,7 +25,6 @@ func runSeeders(container *do.Injector) {
 
 	seedersToRun := []func(*do.Injector){
 		seeders.SeedUsers,
-		seeders.SeedTags,
 	}
 
 	for _, seeder := range seedersToRun {
