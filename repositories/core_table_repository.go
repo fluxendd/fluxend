@@ -96,7 +96,24 @@ func (r *CoreTableRepository) GetByID(id uint) (models.Table, error) {
 	query = fmt.Sprintf(query, models.Table{}.GetColumns())
 
 	var table models.Table
-	err := r.db.Get(table, query, id)
+	err := r.db.Get(&table, query, id)
+
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return models.Table{}, errs.NewNotFoundError("table.error.notFound")
+		}
+		return models.Table{}, fmt.Errorf("could not fetch row: %v", err)
+	}
+
+	return table, nil
+}
+
+func (r *CoreTableRepository) GetByName(name string) (models.Table, error) {
+	query := "SELECT %s FROM tables WHERE name = $1"
+	query = fmt.Sprintf(query, models.Table{}.GetColumns())
+
+	var table models.Table
+	err := r.db.Get(&table, query, name)
 
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
