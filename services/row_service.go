@@ -12,7 +12,7 @@ import (
 )
 
 type RowService interface {
-	Create(request *requests.RowCreateRequest, projectID uint, tableName string, authenticatedUser models.AuthenticatedUser) (models.Table, error)
+	Create(request *requests.RowCreateRequest, projectID uint, tableName string, authenticatedUser models.AuthenticatedUser) (models.Row, error)
 }
 
 type RowServiceImpl struct {
@@ -36,33 +36,38 @@ func NewRowService(injector *do.Injector) (RowService, error) {
 	}, nil
 }
 
-func (s *RowServiceImpl) Create(request *requests.RowCreateRequest, projectID uint, tableName string, authenticatedUser models.AuthenticatedUser) (models.Table, error) {
+func (s *RowServiceImpl) Create(request *requests.RowCreateRequest, projectID uint, tableName string, authenticatedUser models.AuthenticatedUser) (models.Row, error) {
 	table, err := s.coreTableRepo.GetByName(tableName)
 	if err != nil {
-		return models.Table{}, err
+		return models.Row{}, err
 	}
 
 	err = s.validateColumns(request, table)
 	if err != nil {
-		return models.Table{}, err
+		return models.Row{}, err
 	}
 
 	project, err := s.projectRepo.GetByID(projectID)
 	if err != nil {
-		return models.Table{}, err
+		return models.Row{}, err
 	}
 
 	clientRowRepo, err := s.getClientRowRepo(project.DBName)
 	if err != nil {
-		return models.Table{}, err
+		return models.Row{}, err
 	}
 
-	err = clientRowRepo.Create(table.Name, request.Fields)
+	insertedID, err := clientRowRepo.Create(table.Name, request.Fields)
 	if err != nil {
-		return models.Table{}, err
+		return models.Row{}, err
 	}
 
-	return table, nil
+	row, err := clientRowRepo.GetByID(table.Name, insertedID)
+	if err != nil {
+		return models.Row{}, err
+	}
+
+	return row, nil
 }
 
 func (s *RowServiceImpl) validateColumns(request *requests.RowCreateRequest, table models.Table) error {
