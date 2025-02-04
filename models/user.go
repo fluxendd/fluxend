@@ -1,6 +1,7 @@
 package models
 
 import (
+	"github.com/google/uuid"
 	"time"
 )
 
@@ -15,7 +16,7 @@ const (
 )
 
 type User struct {
-	ID        uint      `db:"id"`
+	ID        uuid.UUID `db:"id"`
 	Username  string    `db:"username"`
 	Email     string    `db:"email"`
 	Status    string    `db:"status"`
