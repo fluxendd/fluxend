@@ -34,6 +34,7 @@ func main() {
 
 	tableController := do.MustInvoke[*controllers.TableController](container)
 	columnController := do.MustInvoke[*controllers.ColumnController](container)
+	rowController := do.MustInvoke[*controllers.RowController](container)
 
 	// Register routes
 	routes.RegisterUserRoutes(e, userController)
@@ -41,6 +42,7 @@ func main() {
 	routes.RegisterOrganizationRoutes(e, organizationController)
 	routes.RegisterProjectRoutes(e, projectController)
 	routes.RegisterTableRoutes(e, tableController, columnController)
+	routes.RegisterRowRoutes(e, rowController)
 
 	e.Logger.Fatal(e.Start(":8080"))
 }
