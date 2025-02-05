@@ -31,9 +31,9 @@ func (r *ProjectRepository) ListForUser(paginationParams utils.PaginationParams,
 		SELECT 
 			%s 
 		FROM 
-			projects
+			fluxton.projects projects
 		JOIN 
-			organization_users ON projects.organization_id = organization_users.organization_id
+			fluxton.organization_users organization_users ON projects.organization_id = organization_users.organization_id
 		WHERE 
 			organization_users.user_id = :user_id
 		ORDER BY 
@@ -77,7 +77,7 @@ func (r *ProjectRepository) ListForUser(paginationParams utils.PaginationParams,
 }
 
 func (r *ProjectRepository) GetByID(id uuid.UUID) (models.Project, error) {
-	query := "SELECT %s FROM projects WHERE id = $1"
+	query := "SELECT %s FROM fluxton.projects WHERE id = $1"
 	query = fmt.Sprintf(query, models.Project{}.GetColumns())
 
 	var project models.Project
@@ -94,7 +94,7 @@ func (r *ProjectRepository) GetByID(id uuid.UUID) (models.Project, error) {
 }
 
 func (r *ProjectRepository) ExistsByID(id uuid.UUID) (bool, error) {
-	query := "SELECT EXISTS(SELECT 1 FROM projects WHERE id = $1)"
+	query := "SELECT EXISTS(SELECT 1 FROM fluxton.projects WHERE id = $1)"
 
 	var exists bool
 	err := r.db.Get(&exists, query, id)
@@ -106,7 +106,7 @@ func (r *ProjectRepository) ExistsByID(id uuid.UUID) (bool, error) {
 }
 
 func (r *ProjectRepository) ExistsByNameForOrganization(name string, organizationId uuid.UUID) (bool, error) {
-	query := "SELECT EXISTS(SELECT 1 FROM projects WHERE name = $1 AND organization_id = $2)"
+	query := "SELECT EXISTS(SELECT 1 FROM fluxton.projects WHERE name = $1 AND organization_id = $2)"
 
 	var exists bool
 	err := r.db.Get(&exists, query, name, organizationId)
@@ -123,7 +123,7 @@ func (r *ProjectRepository) Create(project *models.Project) (*models.Project, er
 		return nil, fmt.Errorf("could not begin transaction: %v", err)
 	}
 
-	query := "INSERT INTO projects (name, db_name, organization_id) VALUES ($1, $2, $3) RETURNING id"
+	query := "INSERT INTO fluxton.projects (name, db_name, organization_id) VALUES ($1, $2, $3) RETURNING id"
 	queryErr := tx.QueryRowx(query, project.Name, project.DBName, project.OrganizationID).Scan(&project.ID)
 	if queryErr != nil {
 		err := tx.Rollback()
@@ -147,7 +147,7 @@ func (r *ProjectRepository) Update(id uuid.UUID, project *models.Project) (*mode
 	project.ID = id
 
 	query := `
-		UPDATE projects 
+		UPDATE fluxton.projects 
 		SET name = :name, updated_at = :updated_at 
 		WHERE id = :id`
 
@@ -165,7 +165,7 @@ func (r *ProjectRepository) Update(id uuid.UUID, project *models.Project) (*mode
 }
 
 func (r *ProjectRepository) Delete(projectId uuid.UUID) (bool, error) {
-	query := "DELETE FROM projects WHERE id = $1"
+	query := "DELETE FROM fluxton.projects WHERE id = $1"
 	res, err := r.db.Exec(query, projectId)
 	if err != nil {
 		return false, fmt.Errorf("could not delete row: %v", err)

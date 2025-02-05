@@ -30,9 +30,9 @@ func (r *OrganizationRepository) ListForUser(paginationParams utils.PaginationPa
 		SELECT 
 			%s 
 		FROM 
-			organizations
+			fluxton.organizations organizations
 		JOIN 
-			organization_users ON organizations.id = organization_users.organization_id
+			fluxton.organization_users organization_users ON organizations.id = organization_users.organization_id
 		WHERE 
 			organization_users.user_id = :user_id
 		ORDER BY 
@@ -76,7 +76,7 @@ func (r *OrganizationRepository) ListForUser(paginationParams utils.PaginationPa
 }
 
 func (r *OrganizationRepository) GetByIDForUser(id, authenticatedUserId uuid.UUID) (models.Organization, error) {
-	query := "SELECT %s FROM organizations WHERE id = $1"
+	query := "SELECT %s FROM fluxton.organizations WHERE id = $1"
 	query = fmt.Sprintf(query, models.Organization{}.GetColumns())
 
 	var organization models.Organization
@@ -93,7 +93,7 @@ func (r *OrganizationRepository) GetByIDForUser(id, authenticatedUserId uuid.UUI
 }
 
 func (r *OrganizationRepository) ExistsByID(id uint) (bool, error) {
-	query := "SELECT EXISTS(SELECT 1 FROM organizations WHERE id = $1)"
+	query := "SELECT EXISTS(SELECT 1 FROM fluxton.organizations WHERE id = $1)"
 	var exists bool
 	err := r.db.Get(&exists, query, id)
 	if err != nil {
@@ -110,7 +110,7 @@ func (r *OrganizationRepository) Create(organization *models.Organization, authe
 	}
 
 	// Insert into organizations table
-	query := "INSERT INTO organizations (name) VALUES ($1) RETURNING id"
+	query := "INSERT INTO fluxton.organizations (name) VALUES ($1) RETURNING id"
 	queryErr := tx.QueryRowx(query, organization.Name).Scan(&organization.ID)
 	if queryErr != nil {
 		err := tx.Rollback()
@@ -146,7 +146,7 @@ func (r *OrganizationRepository) Update(id uuid.UUID, organization *models.Organ
 	organization.ID = id
 
 	query := `
-		UPDATE organizations 
+		UPDATE fluxton.organizations 
 		SET name = :name, updated_at = :updated_at 
 		WHERE id = :id`
 
@@ -164,7 +164,7 @@ func (r *OrganizationRepository) Update(id uuid.UUID, organization *models.Organ
 }
 
 func (r *OrganizationRepository) Delete(organizationId uuid.UUID) (bool, error) {
-	query := "DELETE FROM organizations WHERE id = $1"
+	query := "DELETE FROM fluxton.organizations WHERE id = $1"
 	res, err := r.db.Exec(query, organizationId)
 	if err != nil {
 		return false, fmt.Errorf("could not delete row: %v", err)
@@ -179,7 +179,7 @@ func (r *OrganizationRepository) Delete(organizationId uuid.UUID) (bool, error) 
 }
 
 func (r *OrganizationRepository) IsOrganizationUser(organizationId, authenticatedUserId uuid.UUID) (bool, error) {
-	query := "SELECT EXISTS(SELECT 1 FROM organization_users WHERE organization_id = $1 AND user_id = $2)"
+	query := "SELECT EXISTS(SELECT 1 FROM fluxton.organization_users WHERE organization_id = $1 AND user_id = $2)"
 
 	var exists bool
 	err := r.db.Get(&exists, query, organizationId, authenticatedUserId)
