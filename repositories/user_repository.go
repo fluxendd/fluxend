@@ -26,7 +26,7 @@ func (r *UserRepository) List(paginationParams utils.PaginationParams) ([]models
 	offset := (paginationParams.Page - 1) * paginationParams.Limit
 
 	query := fmt.Sprintf(
-		"SELECT %s FROM users ORDER BY :sort DESC LIMIT :limit OFFSET :offset",
+		"SELECT %s FROM authentication.users ORDER BY :sort DESC LIMIT :limit OFFSET :offset",
 		models.User{}.GetColumns(),
 	)
 
@@ -59,7 +59,7 @@ func (r *UserRepository) List(paginationParams utils.PaginationParams) ([]models
 }
 
 func (r *UserRepository) GetByID(id uuid.UUID) (models.User, error) {
-	query := fmt.Sprintf("SELECT %s FROM users WHERE id = $1", models.User{}.GetColumns())
+	query := fmt.Sprintf("SELECT %s FROM authentication.users WHERE id = $1", models.User{}.GetColumns())
 	var user models.User
 	err := r.db.Get(&user, query, id)
 	if err != nil {
@@ -74,7 +74,7 @@ func (r *UserRepository) GetByID(id uuid.UUID) (models.User, error) {
 }
 
 func (r *UserRepository) ExistsByID(id uuid.UUID) (bool, error) {
-	query := "SELECT EXISTS(SELECT 1 FROM users WHERE id = $1)"
+	query := "SELECT EXISTS(SELECT 1 FROM authentication.users WHERE id = $1)"
 	var exists bool
 	err := r.db.Get(&exists, query, id)
 	if err != nil {
@@ -85,7 +85,7 @@ func (r *UserRepository) ExistsByID(id uuid.UUID) (bool, error) {
 }
 
 func (r *UserRepository) GetByEmail(email string) (models.User, error) {
-	query := fmt.Sprintf("SELECT %s FROM users WHERE email = $1", models.User{}.GetColumns())
+	query := fmt.Sprintf("SELECT %s FROM authentication.users WHERE email = $1", models.User{}.GetColumns())
 	var user models.User
 	err := r.db.Get(&user, query, email)
 	if err != nil {
@@ -100,7 +100,7 @@ func (r *UserRepository) GetByEmail(email string) (models.User, error) {
 }
 
 func (r *UserRepository) Create(user *models.User) (*models.User, error) {
-	query := "INSERT INTO users (username, email, status, role_id, password) VALUES ($1, $2, $3, $4, $5) RETURNING id"
+	query := "INSERT INTO authentication.users (username, email, status, role_id, password) VALUES ($1, $2, $3, $4, $5) RETURNING id"
 	err := r.db.QueryRowx(query, user.Username, user.Email, models.UserStatusActive, user.RoleID, utils.HashPassword(user.Password)).Scan(&user.ID)
 	if err != nil {
 		return &models.User{}, fmt.Errorf("could not create row: %v", err)
@@ -114,7 +114,7 @@ func (r *UserRepository) Update(id uuid.UUID, user *models.User) (*models.User, 
 	user.ID = id
 
 	query := `
-		UPDATE users 
+		UPDATE authentication.users 
 		SET bio = :bio, updated_at = :updated_at 
 		WHERE id = :id`
 
@@ -132,7 +132,7 @@ func (r *UserRepository) Update(id uuid.UUID, user *models.User) (*models.User, 
 }
 
 func (r *UserRepository) Delete(userId uuid.UUID) (bool, error) {
-	query := "DELETE FROM users WHERE id = $1"
+	query := "DELETE FROM authentication.users WHERE id = $1"
 	res, err := r.db.Exec(query, userId)
 	if err != nil {
 		return false, fmt.Errorf("could not delete row: %v", err)

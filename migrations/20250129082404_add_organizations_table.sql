@@ -1,6 +1,6 @@
 -- +goose Up
 -- +goose StatementBegin
-CREATE TABLE organizations (
+CREATE TABLE fluxton.organizations (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(255) NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -10,5 +10,5 @@ CREATE TABLE organizations (
 
 -- +goose Down
 -- +goose StatementBegin
-DROP TABLE organizations;
+DROP TABLE fluxton.organizations;
 -- +goose StatementEnd
