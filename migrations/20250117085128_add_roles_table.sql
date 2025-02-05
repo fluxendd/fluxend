@@ -1,13 +1,13 @@
 -- +goose Up
 -- +goose StatementBegin
-CREATE TABLE roles (
+CREATE TABLE authentication.roles (
    id SERIAL PRIMARY KEY,
    name VARCHAR(255) NOT NULL UNIQUE,
    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-INSERT INTO roles (name) VALUES
+INSERT INTO authentication.roles (name) VALUES
 /* Can do everything */
   ('king'),
 /* can CRUD own organizations and projects underneath  */
@@ -21,5 +21,5 @@ INSERT INTO roles (name) VALUES
 
 -- +goose Down
 -- +goose StatementBegin
-DROP TABLE roles;
+DROP TABLE authentication.roles;
 -- +goose StatementEnd
