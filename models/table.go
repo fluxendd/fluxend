@@ -23,7 +23,7 @@ type Table struct {
 }
 
 func (t Table) GetTableName() string {
-	return "tables"
+	return "fluxton.tables"
 }
 
 func (t Table) GetColumns() string {

@@ -14,7 +14,7 @@ type Organization struct {
 }
 
 func (u Organization) GetTableName() string {
-	return "organizations"
+	return "fluxton.organizations"
 }
 
 func (u Organization) GetColumns() string {

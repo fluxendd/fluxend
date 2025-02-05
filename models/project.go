@@ -16,7 +16,7 @@ type Project struct {
 }
 
 func (u Project) GetTableName() string {
-	return "projects"
+	return "fluxton.projects"
 }
 
 func (u Project) GetColumns() string {
