@@ -13,7 +13,7 @@ import (
 )
 
 type TableService interface {
-	List(paginationParams utils.PaginationParams, organizationID, projectID, authUserID uuid.UUID) ([]models.Table, error)
+	List(paginationParams utils.PaginationParams, organizationID, projectID uuid.UUID, authUser models.AuthUser) ([]models.Table, error)
 	GetByID(tableID, organizationID uuid.UUID, authUser models.AuthUser) (models.Table, error)
 	Create(request *requests.TableCreateRequest, projectID uuid.UUID, authUser models.AuthUser) (models.Table, error)
 	Rename(tableID, projectID uuid.UUID, authUser models.AuthUser, request *requests.TableRenameRequest) (models.Table, error)
@@ -41,8 +41,8 @@ func NewTableService(injector *do.Injector) (TableService, error) {
 	}, nil
 }
 
-func (s *TableServiceImpl) List(paginationParams utils.PaginationParams, organizationID, projectID, authUserID uuid.UUID) ([]models.Table, error) {
-	if !s.projectPolicy.CanList(organizationID, authUserID) {
+func (s *TableServiceImpl) List(paginationParams utils.PaginationParams, organizationID, projectID uuid.UUID, authUser models.AuthUser) ([]models.Table, error) {
+	if !s.projectPolicy.CanAccess(organizationID, authUser) {
 		return []models.Table{}, errs.NewForbiddenError("project.error.listForbidden")
 	}
 
@@ -50,7 +50,7 @@ func (s *TableServiceImpl) List(paginationParams utils.PaginationParams, organiz
 }
 
 func (s *TableServiceImpl) GetByID(tableID, organizationID uuid.UUID, authUser models.AuthUser) (models.Table, error) {
-	if !s.projectPolicy.CanView(organizationID, authUser) {
+	if !s.projectPolicy.CanAccess(organizationID, authUser) {
 		return models.Table{}, errs.NewForbiddenError("project.error.viewForbidden")
 	}
 

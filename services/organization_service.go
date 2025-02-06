@@ -44,7 +44,7 @@ func (s *OrganizationServiceImpl) GetByID(organizationId uuid.UUID, authUser mod
 		return models.Organization{}, err
 	}
 
-	if !s.organizationPolicy.CanView(organizationId, authUser) {
+	if !s.organizationPolicy.CanAccess(organizationId, authUser) {
 		return models.Organization{}, errs.NewForbiddenError("organization.error.viewForbidden")
 	}
 

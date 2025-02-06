@@ -22,14 +22,14 @@ func NewProjectController(injector *do.Injector) (*ProjectController, error) {
 
 func (pc *ProjectController) List(c echo.Context) error {
 	var request requests.DefaultRequest
-	authUserId, _ := utils.NewAuth(c).Id()
+	authUser, _ := utils.NewAuth(c).User()
 
 	if err := request.BindAndValidate(c); err != nil {
 		return responses.UnprocessableResponse(c, err)
 	}
 
 	paginationParams := utils.ExtractPaginationParams(c)
-	projects, err := pc.projectService.List(paginationParams, request.OrganizationID, authUserId)
+	projects, err := pc.projectService.List(paginationParams, request.OrganizationID, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
