@@ -20,7 +20,7 @@ func NewProjectPolicy(injector *do.Injector) (*ProjectPolicy, error) {
 }
 
 func (s *ProjectPolicy) CanCreate(organizationID uuid.UUID, authenticatedUser models.AuthenticatedUser) bool {
-	if !authenticatedUser.IsLordOrMore() {
+	if !authenticatedUser.IsDeveloperOrMore() {
 		return false
 	}
 
@@ -51,7 +51,7 @@ func (s *ProjectPolicy) CanView(organizationID uuid.UUID, authenticatedUser mode
 }
 
 func (s *ProjectPolicy) CanUpdate(organizationID uuid.UUID, authenticatedUser models.AuthenticatedUser) bool {
-	if !authenticatedUser.IsLordOrMore() {
+	if !authenticatedUser.IsDeveloperOrMore() {
 		return false
 	}
 

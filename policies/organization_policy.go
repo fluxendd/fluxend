@@ -20,7 +20,7 @@ func NewOrganizationPolicy(injector *do.Injector) (*OrganizationPolicy, error) {
 }
 
 func (s *OrganizationPolicy) CanCreate(authenticatedUser models.AuthenticatedUser) bool {
-	return authenticatedUser.IsBishopOrMore()
+	return authenticatedUser.IsAdminOrMore()
 }
 
 func (s *OrganizationPolicy) CanView(organizationId uuid.UUID, authenticatedUser models.AuthenticatedUser) bool {
@@ -33,7 +33,7 @@ func (s *OrganizationPolicy) CanView(organizationId uuid.UUID, authenticatedUser
 }
 
 func (s *OrganizationPolicy) CanUpdate(organizationId uuid.UUID, authenticatedUser models.AuthenticatedUser) bool {
-	if !authenticatedUser.IsBishopOrMore() {
+	if !authenticatedUser.IsAdminOrMore() {
 		return false
 	}
 

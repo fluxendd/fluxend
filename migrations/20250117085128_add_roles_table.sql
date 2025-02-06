@@ -9,13 +9,13 @@ CREATE TABLE authentication.roles (
 
 INSERT INTO authentication.roles (name) VALUES
 /* Can do everything */
-  ('king'),
+  ('owner'),
 /* can CRUD own organizations and projects underneath  */
-  ('bishop'),
+  ('admin'),
 /* Editor: can CRUD projects underneath org he is part of but cannot modify org */
-  ('lord'),
+  ('developer'),
 /* Explorer: can view projects underneath org he is part of */
-  ('peasant');
+  ('explorer');
 
 -- +goose StatementEnd
 

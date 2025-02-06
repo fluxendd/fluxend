@@ -9,10 +9,10 @@ const UserStatusActive = "active"
 const UserStatusInactive = "inactive"
 
 const (
-	UserRoleKing    = 1
-	UserRoleBishop  = 2
-	UserRoleLord    = 3
-	UserRolePeasant = 4
+	UserRoleOwner     = 1
+	UserRoleAdmin     = 2
+	UserRoleDeveloper = 3
+	UserRoleExplorer  = 4
 )
 
 type User struct {
@@ -41,37 +41,37 @@ func (u User) IsActive() bool {
 }
 
 func (u User) GetRoles() []int {
-	return []int{UserRoleKing, UserRoleBishop, UserRoleLord, UserRolePeasant}
+	return []int{UserRoleOwner, UserRoleAdmin, UserRoleDeveloper, UserRoleExplorer}
 }
 
-func (u User) IsKing() bool {
-	return u.RoleID == UserRoleKing
+func (u User) IsOwner() bool {
+	return u.RoleID == UserRoleOwner
 }
 
-func (u User) IsBishopOrMore() bool {
-	return u.RoleID <= UserRoleBishop
+func (u User) IsAdminOrMore() bool {
+	return u.RoleID <= UserRoleAdmin
 }
 
-func (u User) IsLordOrMore() bool {
-	return u.RoleID <= UserRoleLord
+func (u User) IsDeveloperOrMore() bool {
+	return u.RoleID <= UserRoleDeveloper
 }
 
-func (u User) IsPeasantOrMore() bool {
-	return u.RoleID <= UserRolePeasant
+func (u User) IsExplorerOrMore() bool {
+	return u.RoleID <= UserRoleExplorer
 }
 
-func (au AuthenticatedUser) IsKing() bool {
-	return au.RoleID == UserRoleKing
+func (au AuthenticatedUser) IsOwner() bool {
+	return au.RoleID == UserRoleOwner
 }
 
-func (au AuthenticatedUser) IsBishopOrMore() bool {
-	return au.RoleID <= UserRoleBishop
+func (au AuthenticatedUser) IsAdminOrMore() bool {
+	return au.RoleID <= UserRoleAdmin
 }
 
-func (au AuthenticatedUser) IsLordOrMore() bool {
-	return au.RoleID <= UserRoleLord
+func (au AuthenticatedUser) IsDeveloperOrMore() bool {
+	return au.RoleID <= UserRoleDeveloper
 }
 
-func (au AuthenticatedUser) IsPeasantOrMore() bool {
-	return au.RoleID <= UserRolePeasant
+func (au AuthenticatedUser) IsExplorerOrMore() bool {
+	return au.RoleID <= UserRoleExplorer
 }

@@ -29,7 +29,7 @@ func (f *UserFactory) Create(opts ...UserOption) (*models.User, error) {
 		Username:  utils.Faker.Internet().User(),
 		Email:     utils.Faker.Internet().Email(),
 		Password:  defaultPassword,
-		RoleID:    models.UserRoleBishop,
+		RoleID:    models.UserRoleAdmin,
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}
