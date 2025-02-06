@@ -13,11 +13,11 @@ import (
 )
 
 type ProjectService interface {
-	List(paginationParams utils.PaginationParams, organizationId, authenticatedUserId uuid.UUID) ([]models.Project, error)
-	GetByID(projectId, organizationId uuid.UUID, authenticatedUser models.AuthenticatedUser) (models.Project, error)
-	Create(request *requests.ProjectCreateRequest, authenticatedUser models.AuthenticatedUser) (models.Project, error)
-	Update(projectId uuid.UUID, authenticatedUser models.AuthenticatedUser, request *requests.ProjectCreateRequest) (*models.Project, error)
-	Delete(projectId uuid.UUID, authenticatedUser models.AuthenticatedUser) (bool, error)
+	List(paginationParams utils.PaginationParams, organizationId, authUserId uuid.UUID) ([]models.Project, error)
+	GetByID(projectId, organizationId uuid.UUID, authUser models.AuthUser) (models.Project, error)
+	Create(request *requests.ProjectCreateRequest, authUser models.AuthUser) (models.Project, error)
+	Update(projectId uuid.UUID, authUser models.AuthUser, request *requests.ProjectCreateRequest) (*models.Project, error)
+	Delete(projectId uuid.UUID, authUser models.AuthUser) (bool, error)
 }
 
 type ProjectServiceImpl struct {
@@ -38,24 +38,24 @@ func NewProjectService(injector *do.Injector) (ProjectService, error) {
 	}, nil
 }
 
-func (s *ProjectServiceImpl) List(paginationParams utils.PaginationParams, organizationId, authenticatedUserId uuid.UUID) ([]models.Project, error) {
-	if !s.projectPolicy.CanList(organizationId, authenticatedUserId) {
+func (s *ProjectServiceImpl) List(paginationParams utils.PaginationParams, organizationId, authUserId uuid.UUID) ([]models.Project, error) {
+	if !s.projectPolicy.CanList(organizationId, authUserId) {
 		return []models.Project{}, errs.NewForbiddenError("project.error.listForbidden")
 	}
 
-	return s.projectRepo.ListForUser(paginationParams, authenticatedUserId)
+	return s.projectRepo.ListForUser(paginationParams, authUserId)
 }
 
-func (s *ProjectServiceImpl) GetByID(projectId, organizationId uuid.UUID, authenticatedUser models.AuthenticatedUser) (models.Project, error) {
-	if !s.projectPolicy.CanView(organizationId, authenticatedUser) {
+func (s *ProjectServiceImpl) GetByID(projectId, organizationId uuid.UUID, authUser models.AuthUser) (models.Project, error) {
+	if !s.projectPolicy.CanView(organizationId, authUser) {
 		return models.Project{}, errs.NewForbiddenError("project.error.viewForbidden")
 	}
 
 	return s.projectRepo.GetByID(projectId)
 }
 
-func (s *ProjectServiceImpl) Create(request *requests.ProjectCreateRequest, authenticatedUser models.AuthenticatedUser) (models.Project, error) {
-	if !s.projectPolicy.CanCreate(request.OrganizationID, authenticatedUser) {
+func (s *ProjectServiceImpl) Create(request *requests.ProjectCreateRequest, authUser models.AuthUser) (models.Project, error) {
+	if !s.projectPolicy.CanCreate(request.OrganizationID, authUser) {
 		return models.Project{}, errs.NewForbiddenError("project.error.createForbidden")
 	}
 
@@ -83,13 +83,13 @@ func (s *ProjectServiceImpl) Create(request *requests.ProjectCreateRequest, auth
 	return project, nil
 }
 
-func (s *ProjectServiceImpl) Update(projectId uuid.UUID, authenticatedUser models.AuthenticatedUser, request *requests.ProjectCreateRequest) (*models.Project, error) {
+func (s *ProjectServiceImpl) Update(projectId uuid.UUID, authUser models.AuthUser, request *requests.ProjectCreateRequest) (*models.Project, error) {
 	project, err := s.projectRepo.GetByID(projectId)
 	if err != nil {
 		return nil, err
 	}
 
-	if !s.projectPolicy.CanUpdate(projectId, authenticatedUser) {
+	if !s.projectPolicy.CanUpdate(projectId, authUser) {
 		return &models.Project{}, errs.NewForbiddenError("project.error.updateForbidden")
 	}
 
@@ -107,8 +107,8 @@ func (s *ProjectServiceImpl) Update(projectId uuid.UUID, authenticatedUser model
 	return s.projectRepo.Update(projectId, &project)
 }
 
-func (s *ProjectServiceImpl) Delete(projectId uuid.UUID, authenticatedUser models.AuthenticatedUser) (bool, error) {
-	if !s.projectPolicy.CanUpdate(projectId, authenticatedUser) {
+func (s *ProjectServiceImpl) Delete(projectId uuid.UUID, authUser models.AuthUser) (bool, error) {
+	if !s.projectPolicy.CanUpdate(projectId, authUser) {
 		return false, errs.NewForbiddenError("project.error.updateForbidden")
 	}
 

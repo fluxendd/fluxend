@@ -19,12 +19,12 @@ func NewProjectPolicy(injector *do.Injector) (*ProjectPolicy, error) {
 	}, nil
 }
 
-func (s *ProjectPolicy) CanCreate(organizationID uuid.UUID, authenticatedUser models.AuthenticatedUser) bool {
-	if !authenticatedUser.IsDeveloperOrMore() {
+func (s *ProjectPolicy) CanCreate(organizationID uuid.UUID, authUser models.AuthUser) bool {
+	if !authUser.IsDeveloperOrMore() {
 		return false
 	}
 
-	isOrganizationUser, err := s.organizationRepo.IsOrganizationUser(organizationID, authenticatedUser.ID)
+	isOrganizationUser, err := s.organizationRepo.IsOrganizationUser(organizationID, authUser.ID)
 	if err != nil {
 		return false
 	}
@@ -32,8 +32,8 @@ func (s *ProjectPolicy) CanCreate(organizationID uuid.UUID, authenticatedUser mo
 	return isOrganizationUser
 }
 
-func (s *ProjectPolicy) CanList(organizationID uuid.UUID, authenticatedUserId uuid.UUID) bool {
-	isOrganizationUser, err := s.organizationRepo.IsOrganizationUser(organizationID, authenticatedUserId)
+func (s *ProjectPolicy) CanList(organizationID uuid.UUID, authUserId uuid.UUID) bool {
+	isOrganizationUser, err := s.organizationRepo.IsOrganizationUser(organizationID, authUserId)
 	if err != nil {
 		return false
 	}
@@ -41,8 +41,8 @@ func (s *ProjectPolicy) CanList(organizationID uuid.UUID, authenticatedUserId uu
 	return isOrganizationUser
 }
 
-func (s *ProjectPolicy) CanView(organizationID uuid.UUID, authenticatedUser models.AuthenticatedUser) bool {
-	isOrganizationUser, err := s.organizationRepo.IsOrganizationUser(organizationID, authenticatedUser.ID)
+func (s *ProjectPolicy) CanView(organizationID uuid.UUID, authUser models.AuthUser) bool {
+	isOrganizationUser, err := s.organizationRepo.IsOrganizationUser(organizationID, authUser.ID)
 	if err != nil {
 		return false
 	}
@@ -50,12 +50,12 @@ func (s *ProjectPolicy) CanView(organizationID uuid.UUID, authenticatedUser mode
 	return isOrganizationUser
 }
 
-func (s *ProjectPolicy) CanUpdate(organizationID uuid.UUID, authenticatedUser models.AuthenticatedUser) bool {
-	if !authenticatedUser.IsDeveloperOrMore() {
+func (s *ProjectPolicy) CanUpdate(organizationID uuid.UUID, authUser models.AuthUser) bool {
+	if !authUser.IsDeveloperOrMore() {
 		return false
 	}
 
-	isOrganizationUser, err := s.organizationRepo.IsOrganizationUser(organizationID, authenticatedUser.ID)
+	isOrganizationUser, err := s.organizationRepo.IsOrganizationUser(organizationID, authUser.ID)
 	if err != nil {
 		return false
 	}

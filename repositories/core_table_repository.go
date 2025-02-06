@@ -212,13 +212,13 @@ func (r *CoreTableRepository) Update(table *models.Table) (*models.Table, error)
 	return table, nil
 }
 
-func (r *CoreTableRepository) Rename(tableID uuid.UUID, name string, authenticatedUserID uuid.UUID) (models.Table, error) {
+func (r *CoreTableRepository) Rename(tableID uuid.UUID, name string, authUserID uuid.UUID) (models.Table, error) {
 	query := `
 		UPDATE fluxton.tables 
 		SET name = $1, updated_at = $2, updated_by = $3
 		WHERE id = $4`
 
-	queryErr := r.db.QueryRow(query, name, time.Now(), authenticatedUserID, tableID)
+	queryErr := r.db.QueryRow(query, name, time.Now(), authUserID, tableID)
 	if queryErr != nil {
 		return models.Table{}, fmt.Errorf("could not update table: %v", queryErr)
 	}

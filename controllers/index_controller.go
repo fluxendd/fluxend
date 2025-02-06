@@ -22,7 +22,7 @@ func NewIndexController(injector *do.Injector) (*IndexController, error) {
 
 func (pc *IndexController) List(c echo.Context) error {
 	var request requests.DefaultRequest
-	authenticatedUserId, _ := utils.NewAuth(c).Id()
+	authUserId, _ := utils.NewAuth(c).Id()
 
 	if err := request.BindAndValidate(c); err != nil {
 		return responses.UnprocessableResponse(c, err)
@@ -34,7 +34,7 @@ func (pc *IndexController) List(c echo.Context) error {
 	}
 
 	paginationParams := utils.ExtractPaginationParams(c)
-	tables, err := pc.tableService.List(paginationParams, request.OrganizationID, projectID, authenticatedUserId)
+	tables, err := pc.tableService.List(paginationParams, request.OrganizationID, projectID, authUserId)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -44,7 +44,7 @@ func (pc *IndexController) List(c echo.Context) error {
 
 func (pc *IndexController) Show(c echo.Context) error {
 	var request requests.DefaultRequest
-	authenticatedUser, _ := utils.NewAuth(c).User()
+	authUser, _ := utils.NewAuth(c).User()
 
 	if err := request.BindAndValidate(c); err != nil {
 		return responses.UnprocessableResponse(c, err)
@@ -55,7 +55,7 @@ func (pc *IndexController) Show(c echo.Context) error {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	table, err := pc.tableService.GetByID(tableID, request.OrganizationID, authenticatedUser)
+	table, err := pc.tableService.GetByID(tableID, request.OrganizationID, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -65,7 +65,7 @@ func (pc *IndexController) Show(c echo.Context) error {
 
 func (pc *IndexController) Store(c echo.Context) error {
 	var request requests.TableCreateRequest
-	authenticatedUser, _ := utils.NewAuth(c).User()
+	authUser, _ := utils.NewAuth(c).User()
 
 	if err := request.BindAndValidate(c); err != nil {
 		return responses.UnprocessableResponse(c, err)
@@ -76,7 +76,7 @@ func (pc *IndexController) Store(c echo.Context) error {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	table, err := pc.tableService.Create(&request, projectID, authenticatedUser)
+	table, err := pc.tableService.Create(&request, projectID, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -86,7 +86,7 @@ func (pc *IndexController) Store(c echo.Context) error {
 
 func (pc *IndexController) Delete(c echo.Context) error {
 	var request requests.DefaultRequest
-	authenticatedUser, _ := utils.NewAuth(c).User()
+	authUser, _ := utils.NewAuth(c).User()
 
 	if err := request.BindAndValidate(c); err != nil {
 		return responses.UnprocessableResponse(c, err)
@@ -102,7 +102,7 @@ func (pc *IndexController) Delete(c echo.Context) error {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	if _, err := pc.tableService.Delete(tableID, request.OrganizationID, projectID, authenticatedUser); err != nil {
+	if _, err := pc.tableService.Delete(tableID, request.OrganizationID, projectID, authUser); err != nil {
 		return responses.ErrorResponse(c, err)
 	}
 

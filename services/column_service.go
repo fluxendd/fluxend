@@ -11,10 +11,10 @@ import (
 )
 
 type ColumnService interface {
-	Create(projectID, tableID uuid.UUID, request *requests.ColumnCreateRequest, authenticatedUser models.AuthenticatedUser) (models.Table, error)
-	Alter(columnName string, tableID, projectID uuid.UUID, request *requests.ColumnAlterRequest, authenticatedUser models.AuthenticatedUser) (*models.Table, error)
-	Rename(columnName string, tableID, projectID uuid.UUID, request *requests.ColumnRenameRequest, authenticatedUser models.AuthenticatedUser) (*models.Table, error)
-	Delete(columnName string, tableID, organizationID, projectID uuid.UUID, authenticatedUser models.AuthenticatedUser) (bool, error)
+	Create(projectID, tableID uuid.UUID, request *requests.ColumnCreateRequest, authUser models.AuthUser) (models.Table, error)
+	Alter(columnName string, tableID, projectID uuid.UUID, request *requests.ColumnAlterRequest, authUser models.AuthUser) (*models.Table, error)
+	Rename(columnName string, tableID, projectID uuid.UUID, request *requests.ColumnRenameRequest, authUser models.AuthUser) (*models.Table, error)
+	Delete(columnName string, tableID, organizationID, projectID uuid.UUID, authUser models.AuthUser) (bool, error)
 }
 
 type ColumnServiceImpl struct {
@@ -38,13 +38,13 @@ func NewColumnService(injector *do.Injector) (ColumnService, error) {
 	}, nil
 }
 
-func (s *ColumnServiceImpl) Create(projectID, tableID uuid.UUID, request *requests.ColumnCreateRequest, authenticatedUser models.AuthenticatedUser) (models.Table, error) {
+func (s *ColumnServiceImpl) Create(projectID, tableID uuid.UUID, request *requests.ColumnCreateRequest, authUser models.AuthUser) (models.Table, error) {
 	project, err := s.projectRepo.GetByID(projectID)
 	if err != nil {
 		return models.Table{}, err
 	}
 
-	if !s.projectPolicy.CanCreate(request.OrganizationID, authenticatedUser) {
+	if !s.projectPolicy.CanCreate(request.OrganizationID, authUser) {
 		return models.Table{}, errs.NewForbiddenError("table.error.createForbidden")
 	}
 
@@ -59,7 +59,7 @@ func (s *ColumnServiceImpl) Create(projectID, tableID uuid.UUID, request *reques
 	}
 
 	table.Columns = append(table.Columns, request.Column)
-	table.UpdatedBy = authenticatedUser.ID
+	table.UpdatedBy = authUser.ID
 
 	_, err = s.coreTableRepo.Update(&table)
 	if err != nil {
@@ -79,13 +79,13 @@ func (s *ColumnServiceImpl) Create(projectID, tableID uuid.UUID, request *reques
 	return table, nil
 }
 
-func (s *ColumnServiceImpl) Alter(columnName string, tableID, projectID uuid.UUID, request *requests.ColumnAlterRequest, authenticatedUser models.AuthenticatedUser) (*models.Table, error) {
+func (s *ColumnServiceImpl) Alter(columnName string, tableID, projectID uuid.UUID, request *requests.ColumnAlterRequest, authUser models.AuthUser) (*models.Table, error) {
 	project, err := s.projectRepo.GetByID(projectID)
 	if err != nil {
 		return &models.Table{}, err
 	}
 
-	if !s.projectPolicy.CanUpdate(request.OrganizationID, authenticatedUser) {
+	if !s.projectPolicy.CanUpdate(request.OrganizationID, authUser) {
 		return &models.Table{}, errs.NewForbiddenError("project.error.updateForbidden")
 	}
 
@@ -103,7 +103,7 @@ func (s *ColumnServiceImpl) Alter(columnName string, tableID, projectID uuid.UUI
 		return &models.Table{}, err
 	}
 
-	table.UpdatedBy = authenticatedUser.ID
+	table.UpdatedBy = authUser.ID
 
 	for i, column := range table.Columns {
 		if column.Name == columnName {
@@ -125,13 +125,13 @@ func (s *ColumnServiceImpl) Alter(columnName string, tableID, projectID uuid.UUI
 	return s.coreTableRepo.Update(&table)
 }
 
-func (s *ColumnServiceImpl) Rename(columnName string, tableID, projectID uuid.UUID, request *requests.ColumnRenameRequest, authenticatedUser models.AuthenticatedUser) (*models.Table, error) {
+func (s *ColumnServiceImpl) Rename(columnName string, tableID, projectID uuid.UUID, request *requests.ColumnRenameRequest, authUser models.AuthUser) (*models.Table, error) {
 	project, err := s.projectRepo.GetByID(projectID)
 	if err != nil {
 		return &models.Table{}, err
 	}
 
-	if !s.projectPolicy.CanUpdate(request.OrganizationID, authenticatedUser) {
+	if !s.projectPolicy.CanUpdate(request.OrganizationID, authUser) {
 		return &models.Table{}, errs.NewForbiddenError("project.error.updateForbidden")
 	}
 
@@ -149,7 +149,7 @@ func (s *ColumnServiceImpl) Rename(columnName string, tableID, projectID uuid.UU
 		return &models.Table{}, err
 	}
 
-	table.UpdatedBy = authenticatedUser.ID
+	table.UpdatedBy = authUser.ID
 
 	for i, column := range table.Columns {
 		if column.Name == columnName {
@@ -171,13 +171,13 @@ func (s *ColumnServiceImpl) Rename(columnName string, tableID, projectID uuid.UU
 	return s.coreTableRepo.Update(&table)
 }
 
-func (s *ColumnServiceImpl) Delete(columnName string, tableID, organizationID, projectID uuid.UUID, authenticatedUser models.AuthenticatedUser) (bool, error) {
+func (s *ColumnServiceImpl) Delete(columnName string, tableID, organizationID, projectID uuid.UUID, authUser models.AuthUser) (bool, error) {
 	project, err := s.projectRepo.GetByID(projectID)
 	if err != nil {
 		return false, err
 	}
 
-	if !s.projectPolicy.CanUpdate(organizationID, authenticatedUser) {
+	if !s.projectPolicy.CanUpdate(organizationID, authUser) {
 		return false, errs.NewForbiddenError("project.error.updateForbidden")
 	}
 
@@ -194,7 +194,7 @@ func (s *ColumnServiceImpl) Delete(columnName string, tableID, organizationID, p
 		}
 	}
 
-	table.UpdatedBy = authenticatedUser.ID
+	table.UpdatedBy = authUser.ID
 
 	clientColumnRepo, err := s.connectionService.GetClientColumnRepo(project.DBName)
 	if err != nil {

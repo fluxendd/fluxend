@@ -12,11 +12,11 @@ import (
 )
 
 type OrganizationService interface {
-	List(paginationParams utils.PaginationParams, authenticatedUserId uuid.UUID) ([]models.Organization, error)
-	GetByID(organizationId uuid.UUID, authenticatedUser models.AuthenticatedUser) (models.Organization, error)
-	Create(request *requests.OrganizationCreateRequest, authenticatedUser models.AuthenticatedUser) (models.Organization, error)
-	Update(organizationId uuid.UUID, authenticatedUser models.AuthenticatedUser, request *requests.OrganizationCreateRequest) (*models.Organization, error)
-	Delete(organizationId uuid.UUID, authenticatedUser models.AuthenticatedUser) (bool, error)
+	List(paginationParams utils.PaginationParams, authUserId uuid.UUID) ([]models.Organization, error)
+	GetByID(organizationId uuid.UUID, authUser models.AuthUser) (models.Organization, error)
+	Create(request *requests.OrganizationCreateRequest, authUser models.AuthUser) (models.Organization, error)
+	Update(organizationId uuid.UUID, authUser models.AuthUser, request *requests.OrganizationCreateRequest) (*models.Organization, error)
+	Delete(organizationId uuid.UUID, authUser models.AuthUser) (bool, error)
 }
 
 type OrganizationServiceImpl struct {
@@ -34,25 +34,25 @@ func NewOrganizationService(injector *do.Injector) (OrganizationService, error) 
 	}, nil
 }
 
-func (s *OrganizationServiceImpl) List(paginationParams utils.PaginationParams, authenticatedUserId uuid.UUID) ([]models.Organization, error) {
-	return s.organizationRepo.ListForUser(paginationParams, authenticatedUserId)
+func (s *OrganizationServiceImpl) List(paginationParams utils.PaginationParams, authUserId uuid.UUID) ([]models.Organization, error) {
+	return s.organizationRepo.ListForUser(paginationParams, authUserId)
 }
 
-func (s *OrganizationServiceImpl) GetByID(organizationId uuid.UUID, authenticatedUser models.AuthenticatedUser) (models.Organization, error) {
-	organization, err := s.organizationRepo.GetByIDForUser(organizationId, authenticatedUser.ID)
+func (s *OrganizationServiceImpl) GetByID(organizationId uuid.UUID, authUser models.AuthUser) (models.Organization, error) {
+	organization, err := s.organizationRepo.GetByIDForUser(organizationId, authUser.ID)
 	if err != nil {
 		return models.Organization{}, err
 	}
 
-	if !s.organizationPolicy.CanView(organizationId, authenticatedUser) {
+	if !s.organizationPolicy.CanView(organizationId, authUser) {
 		return models.Organization{}, errs.NewForbiddenError("organization.error.viewForbidden")
 	}
 
 	return organization, nil
 }
 
-func (s *OrganizationServiceImpl) Create(request *requests.OrganizationCreateRequest, authenticatedUser models.AuthenticatedUser) (models.Organization, error) {
-	if !s.organizationPolicy.CanCreate(authenticatedUser) {
+func (s *OrganizationServiceImpl) Create(request *requests.OrganizationCreateRequest, authUser models.AuthUser) (models.Organization, error) {
+	if !s.organizationPolicy.CanCreate(authUser) {
 		return models.Organization{}, errs.NewForbiddenError("organization.error.createForbidden")
 	}
 
@@ -60,7 +60,7 @@ func (s *OrganizationServiceImpl) Create(request *requests.OrganizationCreateReq
 		Name: request.Name,
 	}
 
-	_, err := s.organizationRepo.Create(&organization, authenticatedUser.ID)
+	_, err := s.organizationRepo.Create(&organization, authUser.ID)
 	if err != nil {
 		return models.Organization{}, err
 	}
@@ -68,13 +68,13 @@ func (s *OrganizationServiceImpl) Create(request *requests.OrganizationCreateReq
 	return organization, nil
 }
 
-func (s *OrganizationServiceImpl) Update(organizationId uuid.UUID, authenticatedUser models.AuthenticatedUser, request *requests.OrganizationCreateRequest) (*models.Organization, error) {
-	organization, err := s.organizationRepo.GetByIDForUser(organizationId, authenticatedUser.ID)
+func (s *OrganizationServiceImpl) Update(organizationId uuid.UUID, authUser models.AuthUser, request *requests.OrganizationCreateRequest) (*models.Organization, error) {
+	organization, err := s.organizationRepo.GetByIDForUser(organizationId, authUser.ID)
 	if err != nil {
 		return nil, err
 	}
 
-	if !s.organizationPolicy.CanUpdate(organizationId, authenticatedUser) {
+	if !s.organizationPolicy.CanUpdate(organizationId, authUser) {
 		return &models.Organization{}, errs.NewForbiddenError("organization.error.updateForbidden")
 	}
 
@@ -86,13 +86,13 @@ func (s *OrganizationServiceImpl) Update(organizationId uuid.UUID, authenticated
 	return s.organizationRepo.Update(organizationId, &organization)
 }
 
-func (s *OrganizationServiceImpl) Delete(organizationId uuid.UUID, authenticatedUser models.AuthenticatedUser) (bool, error) {
-	_, err := s.organizationRepo.GetByIDForUser(organizationId, authenticatedUser.ID)
+func (s *OrganizationServiceImpl) Delete(organizationId uuid.UUID, authUser models.AuthUser) (bool, error) {
+	_, err := s.organizationRepo.GetByIDForUser(organizationId, authUser.ID)
 	if err != nil {
 		return false, err
 	}
 
-	if !s.organizationPolicy.CanUpdate(organizationId, authenticatedUser) {
+	if !s.organizationPolicy.CanUpdate(organizationId, authUser) {
 		return false, errs.NewForbiddenError("organization.error.updateForbidden")
 	}
 

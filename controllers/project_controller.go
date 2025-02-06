@@ -22,14 +22,14 @@ func NewProjectController(injector *do.Injector) (*ProjectController, error) {
 
 func (pc *ProjectController) List(c echo.Context) error {
 	var request requests.DefaultRequest
-	authenticatedUserId, _ := utils.NewAuth(c).Id()
+	authUserId, _ := utils.NewAuth(c).Id()
 
 	if err := request.BindAndValidate(c); err != nil {
 		return responses.UnprocessableResponse(c, err)
 	}
 
 	paginationParams := utils.ExtractPaginationParams(c)
-	projects, err := pc.projectService.List(paginationParams, request.OrganizationID, authenticatedUserId)
+	projects, err := pc.projectService.List(paginationParams, request.OrganizationID, authUserId)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -39,7 +39,7 @@ func (pc *ProjectController) List(c echo.Context) error {
 
 func (pc *ProjectController) Show(c echo.Context) error {
 	var request requests.DefaultRequest
-	authenticatedUser, _ := utils.NewAuth(c).User()
+	authUser, _ := utils.NewAuth(c).User()
 
 	if err := request.BindAndValidate(c); err != nil {
 		return responses.UnprocessableResponse(c, err)
@@ -50,7 +50,7 @@ func (pc *ProjectController) Show(c echo.Context) error {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	project, err := pc.projectService.GetByID(id, request.OrganizationID, authenticatedUser)
+	project, err := pc.projectService.GetByID(id, request.OrganizationID, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -60,13 +60,13 @@ func (pc *ProjectController) Show(c echo.Context) error {
 
 func (pc *ProjectController) Store(c echo.Context) error {
 	var request requests.ProjectCreateRequest
-	authenticatedUser, _ := utils.NewAuth(c).User()
+	authUser, _ := utils.NewAuth(c).User()
 
 	if err := request.BindAndValidate(c); err != nil {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	project, err := pc.projectService.Create(&request, authenticatedUser)
+	project, err := pc.projectService.Create(&request, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -76,7 +76,7 @@ func (pc *ProjectController) Store(c echo.Context) error {
 
 func (pc *ProjectController) Update(c echo.Context) error {
 	var request requests.ProjectCreateRequest
-	authenticatedUser, _ := utils.NewAuth(c).User()
+	authUser, _ := utils.NewAuth(c).User()
 
 	id, err := utils.GetUUIDPathParam(c, "id", true)
 	if err != nil {
@@ -87,7 +87,7 @@ func (pc *ProjectController) Update(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	updatedOrganization, err := pc.projectService.Update(id, authenticatedUser, &request)
+	updatedOrganization, err := pc.projectService.Update(id, authUser, &request)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -97,7 +97,7 @@ func (pc *ProjectController) Update(c echo.Context) error {
 
 func (pc *ProjectController) Delete(c echo.Context) error {
 	var request requests.DefaultRequest
-	authenticatedUser, _ := utils.NewAuth(c).User()
+	authUser, _ := utils.NewAuth(c).User()
 
 	if err := request.BindAndValidate(c); err != nil {
 		return responses.UnprocessableResponse(c, err)
@@ -108,7 +108,7 @@ func (pc *ProjectController) Delete(c echo.Context) error {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	if _, err := pc.projectService.Delete(id, authenticatedUser); err != nil {
+	if _, err := pc.projectService.Delete(id, authUser); err != nil {
 		return responses.ErrorResponse(c, err)
 	}
 

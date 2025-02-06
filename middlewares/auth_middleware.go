@@ -49,7 +49,7 @@ func AuthMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 			return responses.ErrorResponse(c, errs.NewUnauthorizedError("auth.error.tokenInvalid"))
 		}
 
-		c.Set("user", models.AuthenticatedUser{
+		c.Set("user", models.AuthUser{
 			ID:     userUUID,
 			RoleID: int(claims["role_id"].(float64)),
 		})
