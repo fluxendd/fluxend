@@ -14,8 +14,8 @@ import (
 )
 
 type RowService interface {
+	List(paginationParams utils.PaginationParams, tableName string, organizationID, projectID uuid.UUID, authUser models.AuthUser) ([]models.Row, error)
 	GetByID(tableName string, rowID uint64, organizationID, projectID uuid.UUID, authUser models.AuthUser) (models.Row, error)
-	List(paginationParams utils.PaginationParams, tableName string, organizationID, projectID, authUserID uuid.UUID) ([]models.Row, error)
 	Create(request *requests.RowCreateRequest, projectID uuid.UUID, tableName string, authUser models.AuthUser) (models.Row, error)
 }
 
@@ -40,8 +40,8 @@ func NewRowService(injector *do.Injector) (RowService, error) {
 	}, nil
 }
 
-func (s *RowServiceImpl) List(paginationParams utils.PaginationParams, tableName string, organizationID, projectID, authUserID uuid.UUID) ([]models.Row, error) {
-	if !s.projectPolicy.CanList(organizationID, authUserID) {
+func (s *RowServiceImpl) List(paginationParams utils.PaginationParams, tableName string, organizationID, projectID uuid.UUID, authUser models.AuthUser) ([]models.Row, error) {
+	if !s.projectPolicy.CanAccess(organizationID, authUser) {
 		return []models.Row{}, errs.NewForbiddenError("project.error.listForbidden")
 	}
 
@@ -59,7 +59,7 @@ func (s *RowServiceImpl) List(paginationParams utils.PaginationParams, tableName
 }
 
 func (s *RowServiceImpl) GetByID(tableName string, rowID uint64, organizationID, projectID uuid.UUID, authUser models.AuthUser) (models.Row, error) {
-	if !s.projectPolicy.CanView(organizationID, authUser) {
+	if !s.projectPolicy.CanAccess(organizationID, authUser) {
 		return models.Row{}, errs.NewForbiddenError("project.error.listForbidden")
 	}
 

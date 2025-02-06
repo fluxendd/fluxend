@@ -22,7 +22,7 @@ func NewOrganizationRepository(injector *do.Injector) (*OrganizationRepository, 
 	return &OrganizationRepository{db: db}, nil
 }
 
-func (r *OrganizationRepository) ListForUser(paginationParams utils.PaginationParams, authUserId uuid.UUID) ([]models.Organization, error) {
+func (r *OrganizationRepository) ListForUser(paginationParams utils.PaginationParams, authUserID uuid.UUID) ([]models.Organization, error) {
 	offset := (paginationParams.Page - 1) * paginationParams.Limit
 	modelSkeleton := models.Organization{}
 
@@ -47,7 +47,7 @@ func (r *OrganizationRepository) ListForUser(paginationParams utils.PaginationPa
 	query = fmt.Sprintf(query, modelSkeleton.GetColumnsWithAlias(modelSkeleton.GetTableName()))
 
 	params := map[string]interface{}{
-		"user_id": authUserId,
+		"user_id": authUserID,
 		"sort":    paginationParams.Sort,
 		"limit":   paginationParams.Limit,
 		"offset":  offset,
@@ -75,7 +75,7 @@ func (r *OrganizationRepository) ListForUser(paginationParams utils.PaginationPa
 	return organizations, nil
 }
 
-func (r *OrganizationRepository) GetByIDForUser(id, authUserId uuid.UUID) (models.Organization, error) {
+func (r *OrganizationRepository) GetByIDForUser(id, authUserID uuid.UUID) (models.Organization, error) {
 	query := "SELECT %s FROM fluxton.organizations WHERE id = $1"
 	query = fmt.Sprintf(query, models.Organization{}.GetColumns())
 
@@ -103,7 +103,7 @@ func (r *OrganizationRepository) ExistsByID(id uint) (bool, error) {
 	return exists, nil
 }
 
-func (r *OrganizationRepository) Create(organization *models.Organization, authUserId uuid.UUID) (*models.Organization, error) {
+func (r *OrganizationRepository) Create(organization *models.Organization, authUserID uuid.UUID) (*models.Organization, error) {
 	tx, err := r.db.Beginx()
 	if err != nil {
 		return nil, fmt.Errorf("could not begin transaction: %v", err)
@@ -122,7 +122,7 @@ func (r *OrganizationRepository) Create(organization *models.Organization, authU
 	}
 
 	// Insert into organization_users pivot table
-	queryErr = r.createOrganizationUser(tx, organization.ID, authUserId)
+	queryErr = r.createOrganizationUser(tx, organization.ID, authUserID)
 	if queryErr != nil {
 		err := tx.Rollback()
 		if err != nil {
@@ -163,9 +163,9 @@ func (r *OrganizationRepository) Update(id uuid.UUID, organization *models.Organ
 	return organization, nil
 }
 
-func (r *OrganizationRepository) Delete(organizationId uuid.UUID) (bool, error) {
+func (r *OrganizationRepository) Delete(organizationID uuid.UUID) (bool, error) {
 	query := "DELETE FROM fluxton.organizations WHERE id = $1"
-	res, err := r.db.Exec(query, organizationId)
+	res, err := r.db.Exec(query, organizationID)
 	if err != nil {
 		return false, fmt.Errorf("could not delete row: %v", err)
 	}
@@ -178,11 +178,11 @@ func (r *OrganizationRepository) Delete(organizationId uuid.UUID) (bool, error) 
 	return rowsAffected == 1, nil
 }
 
-func (r *OrganizationRepository) IsOrganizationUser(organizationId, authUserId uuid.UUID) (bool, error) {
+func (r *OrganizationRepository) IsOrganizationUser(organizationID, authUserID uuid.UUID) (bool, error) {
 	query := "SELECT EXISTS(SELECT 1 FROM fluxton.organization_users WHERE organization_id = $1 AND user_id = $2)"
 
 	var exists bool
-	err := r.db.Get(&exists, query, organizationId, authUserId)
+	err := r.db.Get(&exists, query, organizationID, authUserID)
 	if err != nil {
 		return false, fmt.Errorf("could not fetch row: %v", err)
 	}
@@ -190,9 +190,9 @@ func (r *OrganizationRepository) IsOrganizationUser(organizationId, authUserId u
 	return exists, nil
 }
 
-func (r *OrganizationRepository) createOrganizationUser(tx *sqlx.Tx, organizationId, userId uuid.UUID) error {
-	query := "INSERT INTO organization_users (organization_id, user_id) VALUES ($1, $2)"
-	_, err := tx.Exec(query, organizationId, userId)
+func (r *OrganizationRepository) createOrganizationUser(tx *sqlx.Tx, organizationID, userId uuid.UUID) error {
+	query := "INSERT INTO fluxton.organization_users (organization_id, user_id) VALUES ($1, $2)"
+	_, err := tx.Exec(query, organizationID, userId)
 	if err != nil {
 		return fmt.Errorf("could not insert into pivot table: %v", err)
 	}

@@ -22,7 +22,7 @@ func NewIndexController(injector *do.Injector) (*IndexController, error) {
 
 func (pc *IndexController) List(c echo.Context) error {
 	var request requests.DefaultRequest
-	authUserId, _ := utils.NewAuth(c).Id()
+	authUser, _ := utils.NewAuth(c).User()
 
 	if err := request.BindAndValidate(c); err != nil {
 		return responses.UnprocessableResponse(c, err)
@@ -34,7 +34,7 @@ func (pc *IndexController) List(c echo.Context) error {
 	}
 
 	paginationParams := utils.ExtractPaginationParams(c)
-	tables, err := pc.tableService.List(paginationParams, request.OrganizationID, projectID, authUserId)
+	tables, err := pc.tableService.List(paginationParams, request.OrganizationID, projectID, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
