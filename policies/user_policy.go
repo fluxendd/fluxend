@@ -4,6 +4,6 @@ import (
 	"github.com/google/uuid"
 )
 
-func CanUpdateUser(userID, authenticatedUserId uuid.UUID) bool {
-	return userID == authenticatedUserId
+func CanUpdateUser(userID, authUserId uuid.UUID) bool {
+	return userID == authUserId
 }

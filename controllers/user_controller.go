@@ -75,8 +75,8 @@ func (uc *UserController) Store(c echo.Context) error {
 }
 
 func (uc *UserController) Update(c echo.Context) error {
-	authenticatedUserId := c.Get("userId").(uuid.UUID)
-	if authenticatedUserId == uuid.Nil {
+	authUserId := c.Get("userId").(uuid.UUID)
+	if authUserId == uuid.Nil {
 		return responses.UnauthorizedResponse(c, "user.error.unauthorized")
 	}
 
@@ -90,7 +90,7 @@ func (uc *UserController) Update(c echo.Context) error {
 		return responses.BadRequestResponse(c, "note.error.invalidPayload")
 	}
 
-	updatedUser, err := uc.userService.Update(id, authenticatedUserId, &request)
+	updatedUser, err := uc.userService.Update(id, authUserId, &request)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}

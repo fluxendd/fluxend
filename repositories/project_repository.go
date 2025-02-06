@@ -23,7 +23,7 @@ func NewProjectRepository(injector *do.Injector) (*ProjectRepository, error) {
 	return &ProjectRepository{db: db}, nil
 }
 
-func (r *ProjectRepository) ListForUser(paginationParams utils.PaginationParams, authenticatedUserId uuid.UUID) ([]models.Project, error) {
+func (r *ProjectRepository) ListForUser(paginationParams utils.PaginationParams, authUserId uuid.UUID) ([]models.Project, error) {
 	offset := (paginationParams.Page - 1) * paginationParams.Limit
 	modelSkeleton := models.Project{}
 
@@ -48,7 +48,7 @@ func (r *ProjectRepository) ListForUser(paginationParams utils.PaginationParams,
 	query = fmt.Sprintf(query, modelSkeleton.GetColumnsWithAlias(modelSkeleton.GetTableName()))
 
 	params := map[string]interface{}{
-		"user_id": authenticatedUserId,
+		"user_id": authUserId,
 		"sort":    paginationParams.Sort,
 		"limit":   paginationParams.Limit,
 		"offset":  offset,

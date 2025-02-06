@@ -22,7 +22,7 @@ func NewRowController(injector *do.Injector) (*RowController, error) {
 
 func (pc *RowController) Show(c echo.Context) error {
 	var request requests.DefaultRequest
-	authenticatedUser, _ := utils.NewAuth(c).User()
+	authUser, _ := utils.NewAuth(c).User()
 
 	if err := request.BindAndValidate(c); err != nil {
 		return responses.UnprocessableResponse(c, err)
@@ -38,7 +38,7 @@ func (pc *RowController) Show(c echo.Context) error {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	row, err := pc.rowService.GetByID(c.Param("tableName"), uint64(rowID), request.OrganizationID, projectID, authenticatedUser)
+	row, err := pc.rowService.GetByID(c.Param("tableName"), uint64(rowID), request.OrganizationID, projectID, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -48,7 +48,7 @@ func (pc *RowController) Show(c echo.Context) error {
 
 func (pc *RowController) List(c echo.Context) error {
 	var request requests.DefaultRequest
-	authenticatedUserId, _ := utils.NewAuth(c).Id()
+	authUserId, _ := utils.NewAuth(c).Id()
 
 	if err := request.BindAndValidate(c); err != nil {
 		return responses.UnprocessableResponse(c, err)
@@ -60,7 +60,7 @@ func (pc *RowController) List(c echo.Context) error {
 	}
 
 	paginationParams := utils.ExtractPaginationParams(c)
-	rows, err := pc.rowService.List(paginationParams, c.Param("tableName"), request.OrganizationID, projectID, authenticatedUserId)
+	rows, err := pc.rowService.List(paginationParams, c.Param("tableName"), request.OrganizationID, projectID, authUserId)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -70,7 +70,7 @@ func (pc *RowController) List(c echo.Context) error {
 
 func (rc *RowController) Store(c echo.Context) error {
 	var request requests.RowCreateRequest
-	authenticatedUser, _ := utils.NewAuth(c).User()
+	authUser, _ := utils.NewAuth(c).User()
 
 	if err := request.BindAndValidate(c); err != nil {
 		return responses.UnprocessableResponse(c, err)
@@ -81,7 +81,7 @@ func (rc *RowController) Store(c echo.Context) error {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	row, err := rc.rowService.Create(&request, projectID, c.Param("tableName"), authenticatedUser)
+	row, err := rc.rowService.Create(&request, projectID, c.Param("tableName"), authUser)
 	if err != nil {
 		return responses.UnprocessableResponse(c, []string{err.Error()})
 	}

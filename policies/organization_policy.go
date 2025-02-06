@@ -19,12 +19,12 @@ func NewOrganizationPolicy(injector *do.Injector) (*OrganizationPolicy, error) {
 	}, nil
 }
 
-func (s *OrganizationPolicy) CanCreate(authenticatedUser models.AuthenticatedUser) bool {
-	return authenticatedUser.IsAdminOrMore()
+func (s *OrganizationPolicy) CanCreate(authUser models.AuthUser) bool {
+	return authUser.IsAdminOrMore()
 }
 
-func (s *OrganizationPolicy) CanView(organizationId uuid.UUID, authenticatedUser models.AuthenticatedUser) bool {
-	isOrganizationUser, err := s.organizationRepo.IsOrganizationUser(organizationId, authenticatedUser.ID)
+func (s *OrganizationPolicy) CanView(organizationId uuid.UUID, authUser models.AuthUser) bool {
+	isOrganizationUser, err := s.organizationRepo.IsOrganizationUser(organizationId, authUser.ID)
 	if err != nil {
 		return false
 	}
@@ -32,12 +32,12 @@ func (s *OrganizationPolicy) CanView(organizationId uuid.UUID, authenticatedUser
 	return isOrganizationUser
 }
 
-func (s *OrganizationPolicy) CanUpdate(organizationId uuid.UUID, authenticatedUser models.AuthenticatedUser) bool {
-	if !authenticatedUser.IsAdminOrMore() {
+func (s *OrganizationPolicy) CanUpdate(organizationId uuid.UUID, authUser models.AuthUser) bool {
+	if !authUser.IsAdminOrMore() {
 		return false
 	}
 
-	isOrganizationUser, err := s.organizationRepo.IsOrganizationUser(organizationId, authenticatedUser.ID)
+	isOrganizationUser, err := s.organizationRepo.IsOrganizationUser(organizationId, authUser.ID)
 	if err != nil {
 		return false
 	}

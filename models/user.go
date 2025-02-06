@@ -27,7 +27,7 @@ type User struct {
 	UpdatedAt time.Time `db:"updated_at"`
 }
 
-type AuthenticatedUser struct {
+type AuthUser struct {
 	ID     uuid.UUID
 	RoleID int
 }
@@ -60,18 +60,18 @@ func (u User) IsExplorerOrMore() bool {
 	return u.RoleID <= UserRoleExplorer
 }
 
-func (au AuthenticatedUser) IsOwner() bool {
+func (au AuthUser) IsOwner() bool {
 	return au.RoleID == UserRoleOwner
 }
 
-func (au AuthenticatedUser) IsAdminOrMore() bool {
+func (au AuthUser) IsAdminOrMore() bool {
 	return au.RoleID <= UserRoleAdmin
 }
 
-func (au AuthenticatedUser) IsDeveloperOrMore() bool {
+func (au AuthUser) IsDeveloperOrMore() bool {
 	return au.RoleID <= UserRoleDeveloper
 }
 
-func (au AuthenticatedUser) IsExplorerOrMore() bool {
+func (au AuthUser) IsExplorerOrMore() bool {
 	return au.RoleID <= UserRoleExplorer
 }

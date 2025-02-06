@@ -15,13 +15,13 @@ func NewAuth(ctx echo.Context) *Auth {
 	return &Auth{ctx: ctx}
 }
 
-func (a *Auth) User() (models.AuthenticatedUser, error) {
+func (a *Auth) User() (models.AuthUser, error) {
 	user := a.ctx.Get("user")
 
 	// Ensure the value is a map as expected from JWT claims
-	userData, ok := user.(models.AuthenticatedUser)
+	userData, ok := user.(models.AuthUser)
 	if !ok {
-		return models.AuthenticatedUser{}, errors.New("user.error.invalid_claim_structure")
+		return models.AuthUser{}, errors.New("user.error.invalid_claim_structure")
 	}
 
 	return userData, nil

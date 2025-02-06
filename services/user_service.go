@@ -19,7 +19,7 @@ type UserService interface {
 	List(paginationParams utils.PaginationParams) ([]models.User, error)
 	GetByID(id uuid.UUID) (models.User, error)
 	Create(request *requests.UserCreateRequest) (models.User, error)
-	Update(userId, authenticatedUserId uuid.UUID, request *requests.UserUpdateRequest) (*models.User, error)
+	Update(userId, authUserId uuid.UUID, request *requests.UserUpdateRequest) (*models.User, error)
 	Delete(userId uuid.UUID) (bool, error)
 }
 
@@ -75,8 +75,8 @@ func (s *UserServiceImpl) Create(request *requests.UserCreateRequest) (models.Us
 	return user, nil
 }
 
-func (s *UserServiceImpl) Update(userId, authenticatedUserId uuid.UUID, request *requests.UserUpdateRequest) (*models.User, error) {
-	if !policies.CanUpdateUser(userId, authenticatedUserId) {
+func (s *UserServiceImpl) Update(userId, authUserId uuid.UUID, request *requests.UserUpdateRequest) (*models.User, error) {
+	if !policies.CanUpdateUser(userId, authUserId) {
 		return nil, errs.NewForbiddenError("user.error.updateForbidden")
 	}
 
