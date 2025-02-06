@@ -14,7 +14,7 @@ func NewClientIndexRepository(connection *sqlx.DB) (*ClientColumnRepository, err
 	return &ClientColumnRepository{connection: connection}, nil
 }
 
-func (r *ClientIndexRepository) Get(tableName string, indexName string) (string, error) {
+func (r *ClientIndexRepository) GetByName(tableName string, indexName string) (string, error) {
 	var index string
 	err := r.connection.Get(&index, fmt.Sprintf("SELECT indexdef FROM pg_indexes WHERE tablename = '%s' AND indexname = '%s'", tableName, indexName))
 	if err != nil {
