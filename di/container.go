@@ -49,6 +49,7 @@ func InitializeContainer() *do.Injector {
 	do.Provide(injector, controllers.NewProjectController)
 	do.Provide(injector, controllers.NewTableController)
 	do.Provide(injector, controllers.NewColumnController)
+	do.Provide(injector, controllers.NewIndexController)
 	do.Provide(injector, controllers.NewRowController)
 
 	return injector
