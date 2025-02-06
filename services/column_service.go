@@ -14,7 +14,7 @@ type ColumnService interface {
 	Create(projectID, tableID uuid.UUID, request *requests.ColumnCreateRequest, authUser models.AuthUser) (models.Table, error)
 	Alter(columnName string, tableID, projectID uuid.UUID, request *requests.ColumnAlterRequest, authUser models.AuthUser) (*models.Table, error)
 	Rename(columnName string, tableID, projectID uuid.UUID, request *requests.ColumnRenameRequest, authUser models.AuthUser) (*models.Table, error)
-	Delete(columnName string, tableID, organizationID, projectID uuid.UUID, authUser models.AuthUser) (bool, error)
+	Delete(columnName string, tableID, projectID uuid.UUID, authUser models.AuthUser) (bool, error)
 }
 
 type ColumnServiceImpl struct {
@@ -171,13 +171,13 @@ func (s *ColumnServiceImpl) Rename(columnName string, tableID, projectID uuid.UU
 	return s.coreTableRepo.Update(&table)
 }
 
-func (s *ColumnServiceImpl) Delete(columnName string, tableID, organizationID, projectID uuid.UUID, authUser models.AuthUser) (bool, error) {
+func (s *ColumnServiceImpl) Delete(columnName string, tableID, projectID uuid.UUID, authUser models.AuthUser) (bool, error) {
 	project, err := s.projectRepo.GetByID(projectID)
 	if err != nil {
 		return false, err
 	}
 
-	if !s.projectPolicy.CanUpdate(organizationID, authUser) {
+	if !s.projectPolicy.CanUpdate(project.OrganizationID, authUser) {
 		return false, errs.NewForbiddenError("project.error.updateForbidden")
 	}
 

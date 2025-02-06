@@ -6,6 +6,7 @@ import (
 	"fluxton/responses"
 	"fluxton/services"
 	"fluxton/utils"
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
 )
@@ -21,15 +22,15 @@ func NewProjectController(injector *do.Injector) (*ProjectController, error) {
 }
 
 func (pc *ProjectController) List(c echo.Context) error {
-	var request requests.DefaultRequest
 	authUser, _ := utils.NewAuth(c).User()
 
-	if err := request.BindAndValidate(c); err != nil {
-		return responses.UnprocessableResponse(c, err)
+	organizationID, err := uuid.Parse(c.QueryParam("organization_id"))
+	if err != nil {
+		return responses.BadRequestResponse(c, "Invalid organization ID")
 	}
 
 	paginationParams := utils.ExtractPaginationParams(c)
-	projects, err := pc.projectService.List(paginationParams, request.OrganizationID, authUser)
+	projects, err := pc.projectService.List(paginationParams, organizationID, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -38,19 +39,14 @@ func (pc *ProjectController) List(c echo.Context) error {
 }
 
 func (pc *ProjectController) Show(c echo.Context) error {
-	var request requests.DefaultRequest
 	authUser, _ := utils.NewAuth(c).User()
 
-	if err := request.BindAndValidate(c); err != nil {
-		return responses.UnprocessableResponse(c, err)
-	}
-
-	id, err := utils.GetUUIDPathParam(c, "id", true)
+	projectID, err := utils.GetUUIDPathParam(c, "projectID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	project, err := pc.projectService.GetByID(id, request.OrganizationID, authUser)
+	project, err := pc.projectService.GetByID(projectID, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -75,10 +71,10 @@ func (pc *ProjectController) Store(c echo.Context) error {
 }
 
 func (pc *ProjectController) Update(c echo.Context) error {
-	var request requests.ProjectCreateRequest
+	var request requests.ProjectUpdateRequest
 	authUser, _ := utils.NewAuth(c).User()
 
-	id, err := utils.GetUUIDPathParam(c, "id", true)
+	projectID, err := utils.GetUUIDPathParam(c, "projectID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
@@ -87,7 +83,7 @@ func (pc *ProjectController) Update(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	updatedOrganization, err := pc.projectService.Update(id, authUser, &request)
+	updatedOrganization, err := pc.projectService.Update(projectID, authUser, &request)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -96,19 +92,14 @@ func (pc *ProjectController) Update(c echo.Context) error {
 }
 
 func (pc *ProjectController) Delete(c echo.Context) error {
-	var request requests.DefaultRequest
 	authUser, _ := utils.NewAuth(c).User()
 
-	if err := request.BindAndValidate(c); err != nil {
-		return responses.UnprocessableResponse(c, err)
-	}
-
-	id, err := utils.GetUUIDPathParam(c, "id", true)
+	projectID, err := utils.GetUUIDPathParam(c, "projectID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	if _, err := pc.projectService.Delete(id, authUser); err != nil {
+	if _, err := pc.projectService.Delete(projectID, authUser); err != nil {
 		return responses.ErrorResponse(c, err)
 	}
 

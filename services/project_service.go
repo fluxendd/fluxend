@@ -14,9 +14,9 @@ import (
 
 type ProjectService interface {
 	List(paginationParams utils.PaginationParams, organizationID uuid.UUID, authUser models.AuthUser) ([]models.Project, error)
-	GetByID(projectID, organizationID uuid.UUID, authUser models.AuthUser) (models.Project, error)
+	GetByID(projectID uuid.UUID, authUser models.AuthUser) (models.Project, error)
 	Create(request *requests.ProjectCreateRequest, authUser models.AuthUser) (models.Project, error)
-	Update(projectID uuid.UUID, authUser models.AuthUser, request *requests.ProjectCreateRequest) (*models.Project, error)
+	Update(projectID uuid.UUID, authUser models.AuthUser, request *requests.ProjectUpdateRequest) (*models.Project, error)
 	Delete(projectID uuid.UUID, authUser models.AuthUser) (bool, error)
 }
 
@@ -46,12 +46,17 @@ func (s *ProjectServiceImpl) List(paginationParams utils.PaginationParams, organ
 	return s.projectRepo.ListForUser(paginationParams, authUser.ID)
 }
 
-func (s *ProjectServiceImpl) GetByID(projectID, organizationID uuid.UUID, authUser models.AuthUser) (models.Project, error) {
-	if !s.projectPolicy.CanAccess(organizationID, authUser) {
+func (s *ProjectServiceImpl) GetByID(projectID uuid.UUID, authUser models.AuthUser) (models.Project, error) {
+	project, err := s.projectRepo.GetByID(projectID)
+	if err != nil {
+		return models.Project{}, err
+	}
+
+	if !s.projectPolicy.CanAccess(project.OrganizationID, authUser) {
 		return models.Project{}, errs.NewForbiddenError("project.error.viewForbidden")
 	}
 
-	return s.projectRepo.GetByID(projectID)
+	return project, nil
 }
 
 func (s *ProjectServiceImpl) Create(request *requests.ProjectCreateRequest, authUser models.AuthUser) (models.Project, error) {
@@ -83,7 +88,7 @@ func (s *ProjectServiceImpl) Create(request *requests.ProjectCreateRequest, auth
 	return project, nil
 }
 
-func (s *ProjectServiceImpl) Update(projectID uuid.UUID, authUser models.AuthUser, request *requests.ProjectCreateRequest) (*models.Project, error) {
+func (s *ProjectServiceImpl) Update(projectID uuid.UUID, authUser models.AuthUser, request *requests.ProjectUpdateRequest) (*models.Project, error) {
 	project, err := s.projectRepo.GetByID(projectID)
 	if err != nil {
 		return nil, err
@@ -93,13 +98,12 @@ func (s *ProjectServiceImpl) Update(projectID uuid.UUID, authUser models.AuthUse
 		return &models.Project{}, errs.NewForbiddenError("project.error.updateForbidden")
 	}
 
-	project.OrganizationID = request.OrganizationID
 	err = utils.PopulateModel(&project, request)
 	if err != nil {
 		return nil, err
 	}
 
-	err = s.validateNameForDuplication(request.Name, request.OrganizationID)
+	err = s.validateNameForDuplication(request.Name, project.OrganizationID)
 	if err != nil {
 		return &models.Project{}, err
 	}

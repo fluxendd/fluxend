@@ -85,19 +85,14 @@ func (pc *ColumnController) Rename(c echo.Context) error {
 }
 
 func (pc *ColumnController) Delete(c echo.Context) error {
-	var request requests.DefaultRequest
 	authUser, _ := utils.NewAuth(c).User()
-
-	if err := request.BindAndValidate(c); err != nil {
-		return responses.UnprocessableResponse(c, err)
-	}
 
 	projectID, tableID, columnName, err := pc.parseRequest(c)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	if _, err := pc.columnService.Delete(columnName, tableID, request.OrganizationID, projectID, authUser); err != nil {
+	if _, err := pc.columnService.Delete(columnName, tableID, projectID, authUser); err != nil {
 		return responses.ErrorResponse(c, err)
 	}
 

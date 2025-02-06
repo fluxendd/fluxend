@@ -93,6 +93,22 @@ func (r *ProjectRepository) GetByID(id uuid.UUID) (models.Project, error) {
 	return project, nil
 }
 
+func (r *ProjectRepository) GetOrganizationIDByProjectID(id uuid.UUID) (uuid.UUID, error) {
+	query := "SELECT organization_id FROM fluxton.projects WHERE id = $1"
+
+	var organizationID uuid.UUID
+	err := r.db.Get(&organizationID, query, id)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return uuid.UUID{}, errs.NewNotFoundError("project.error.notFound")
+		}
+
+		return uuid.UUID{}, fmt.Errorf("could not fetch row: %v", err)
+	}
+
+	return organizationID, nil
+}
+
 func (r *ProjectRepository) ExistsByID(id uuid.UUID) (bool, error) {
 	query := "SELECT EXISTS(SELECT 1 FROM fluxton.projects WHERE id = $1)"
 

@@ -21,12 +21,7 @@ func NewRowController(injector *do.Injector) (*RowController, error) {
 }
 
 func (pc *RowController) Show(c echo.Context) error {
-	var request requests.DefaultRequest
 	authUser, _ := utils.NewAuth(c).User()
-
-	if err := request.BindAndValidate(c); err != nil {
-		return responses.UnprocessableResponse(c, err)
-	}
 
 	projectID, err := utils.GetUUIDPathParam(c, "projectID", true)
 	if err != nil {
@@ -38,7 +33,7 @@ func (pc *RowController) Show(c echo.Context) error {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	row, err := pc.rowService.GetByID(c.Param("tableName"), uint64(rowID), request.OrganizationID, projectID, authUser)
+	row, err := pc.rowService.GetByID(c.Param("tableName"), uint64(rowID), projectID, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -47,12 +42,7 @@ func (pc *RowController) Show(c echo.Context) error {
 }
 
 func (pc *RowController) List(c echo.Context) error {
-	var request requests.DefaultRequest
 	authUser, _ := utils.NewAuth(c).User()
-
-	if err := request.BindAndValidate(c); err != nil {
-		return responses.UnprocessableResponse(c, err)
-	}
 
 	projectID, err := utils.GetUUIDPathParam(c, "projectID", true)
 	if err != nil {
@@ -60,7 +50,7 @@ func (pc *RowController) List(c echo.Context) error {
 	}
 
 	paginationParams := utils.ExtractPaginationParams(c)
-	rows, err := pc.rowService.List(paginationParams, c.Param("tableName"), request.OrganizationID, projectID, authUser)
+	rows, err := pc.rowService.List(paginationParams, c.Param("tableName"), projectID, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
