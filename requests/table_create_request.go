@@ -4,15 +4,13 @@ import (
 	"fluxton/types"
 	"fmt"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
-	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"strings"
 )
 
 type TableCreateRequest struct {
-	Name           string              `json:"name"`
-	OrganizationID uuid.UUID           `json:"-"`
-	Columns        []types.TableColumn `json:"columns"`
+	Name    string              `json:"name"`
+	Columns []types.TableColumn `json:"columns"`
 }
 
 var (
@@ -48,17 +46,10 @@ func (r *TableCreateRequest) BindAndValidate(c echo.Context) []string {
 		return []string{"Invalid request payload"}
 	}
 
-	organizationID, err := uuid.Parse(c.Request().Header.Get("X-OrganizationID"))
-	if err != nil {
-		return []string{"Invalid organization ID"}
-	}
-
-	r.OrganizationID = organizationID
-
 	var errors []string
 
 	// Validate base request columns
-	err = validation.ValidateStruct(r,
+	err := validation.ValidateStruct(r,
 		validation.Field(&r.Name, validation.Required.Error("Name is required"), validation.Length(3, 100).Error("Name must be between 3 and 100 characters")),
 		validation.Field(&r.Columns, validation.Required.Error("Fields are required")),
 	)

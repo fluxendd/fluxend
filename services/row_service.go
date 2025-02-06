@@ -14,8 +14,8 @@ import (
 )
 
 type RowService interface {
-	List(paginationParams utils.PaginationParams, tableName string, organizationID, projectID uuid.UUID, authUser models.AuthUser) ([]models.Row, error)
-	GetByID(tableName string, rowID uint64, organizationID, projectID uuid.UUID, authUser models.AuthUser) (models.Row, error)
+	List(paginationParams utils.PaginationParams, tableName string, projectID uuid.UUID, authUser models.AuthUser) ([]models.Row, error)
+	GetByID(tableName string, rowID uint64, projectID uuid.UUID, authUser models.AuthUser) (models.Row, error)
 	Create(request *requests.RowCreateRequest, projectID uuid.UUID, tableName string, authUser models.AuthUser) (models.Row, error)
 }
 
@@ -40,14 +40,14 @@ func NewRowService(injector *do.Injector) (RowService, error) {
 	}, nil
 }
 
-func (s *RowServiceImpl) List(paginationParams utils.PaginationParams, tableName string, organizationID, projectID uuid.UUID, authUser models.AuthUser) ([]models.Row, error) {
-	if !s.projectPolicy.CanAccess(organizationID, authUser) {
-		return []models.Row{}, errs.NewForbiddenError("project.error.listForbidden")
-	}
-
+func (s *RowServiceImpl) List(paginationParams utils.PaginationParams, tableName string, projectID uuid.UUID, authUser models.AuthUser) ([]models.Row, error) {
 	project, err := s.projectRepo.GetByID(projectID)
 	if err != nil {
 		return []models.Row{}, err
+	}
+
+	if !s.projectPolicy.CanAccess(project.OrganizationID, authUser) {
+		return []models.Row{}, errs.NewForbiddenError("project.error.listForbidden")
 	}
 
 	clientRowRepo, err := s.getClientRowRepo(project.DBName)
@@ -58,14 +58,14 @@ func (s *RowServiceImpl) List(paginationParams utils.PaginationParams, tableName
 	return clientRowRepo.List(tableName, paginationParams)
 }
 
-func (s *RowServiceImpl) GetByID(tableName string, rowID uint64, organizationID, projectID uuid.UUID, authUser models.AuthUser) (models.Row, error) {
-	if !s.projectPolicy.CanAccess(organizationID, authUser) {
-		return models.Row{}, errs.NewForbiddenError("project.error.listForbidden")
-	}
-
+func (s *RowServiceImpl) GetByID(tableName string, rowID uint64, projectID uuid.UUID, authUser models.AuthUser) (models.Row, error) {
 	project, err := s.projectRepo.GetByID(projectID)
 	if err != nil {
 		return models.Row{}, err
+	}
+
+	if !s.projectPolicy.CanAccess(project.OrganizationID, authUser) {
+		return models.Row{}, errs.NewForbiddenError("project.error.listForbidden")
 	}
 
 	clientRowRepo, err := s.getClientRowRepo(project.DBName)

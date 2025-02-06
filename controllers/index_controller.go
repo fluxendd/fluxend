@@ -21,12 +21,7 @@ func NewIndexController(injector *do.Injector) (*IndexController, error) {
 }
 
 func (pc *IndexController) List(c echo.Context) error {
-	var request requests.DefaultRequest
 	authUser, _ := utils.NewAuth(c).User()
-
-	if err := request.BindAndValidate(c); err != nil {
-		return responses.UnprocessableResponse(c, err)
-	}
 
 	projectID, err := utils.GetUUIDPathParam(c, "projectID", true)
 	if err != nil {
@@ -34,7 +29,7 @@ func (pc *IndexController) List(c echo.Context) error {
 	}
 
 	paginationParams := utils.ExtractPaginationParams(c)
-	tables, err := pc.tableService.List(paginationParams, request.OrganizationID, projectID, authUser)
+	tables, err := pc.tableService.List(paginationParams, projectID, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -43,11 +38,11 @@ func (pc *IndexController) List(c echo.Context) error {
 }
 
 func (pc *IndexController) Show(c echo.Context) error {
-	var request requests.DefaultRequest
 	authUser, _ := utils.NewAuth(c).User()
 
-	if err := request.BindAndValidate(c); err != nil {
-		return responses.UnprocessableResponse(c, err)
+	projectID, err := utils.GetUUIDPathParam(c, "projectID", true)
+	if err != nil {
+		return responses.BadRequestResponse(c, err.Error())
 	}
 
 	tableID, err := utils.GetUUIDPathParam(c, "tableID", true)
@@ -55,7 +50,7 @@ func (pc *IndexController) Show(c echo.Context) error {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	table, err := pc.tableService.GetByID(tableID, request.OrganizationID, authUser)
+	table, err := pc.tableService.GetByID(tableID, projectID, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -102,7 +97,7 @@ func (pc *IndexController) Delete(c echo.Context) error {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	if _, err := pc.tableService.Delete(tableID, request.OrganizationID, projectID, authUser); err != nil {
+	if _, err := pc.tableService.Delete(tableID, projectID, authUser); err != nil {
 		return responses.ErrorResponse(c, err)
 	}
 

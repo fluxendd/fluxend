@@ -11,7 +11,7 @@ func RegisterProjectRoutes(e *echo.Echo, ProjectController *controllers.ProjectC
 
 	projectsGroup.POST("", ProjectController.Store)
 	projectsGroup.GET("", ProjectController.List)
-	projectsGroup.GET("/:id", ProjectController.Show)
-	projectsGroup.PUT("/:id", ProjectController.Update)
-	projectsGroup.DELETE("/:id", ProjectController.Delete)
+	projectsGroup.GET("/:projectID", ProjectController.Show)
+	projectsGroup.PUT("/:projectID", ProjectController.Update)
+	projectsGroup.DELETE("/:projectID", ProjectController.Delete)
 }

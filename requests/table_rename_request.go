@@ -2,13 +2,11 @@ package requests
 
 import (
 	validation "github.com/go-ozzo/ozzo-validation/v4"
-	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
 
 type TableRenameRequest struct {
-	Name           string    `json:"name"`
-	OrganizationID uuid.UUID `json:"-"`
+	Name string `json:"name"`
 }
 
 func (r *TableRenameRequest) BindAndValidate(c echo.Context) []string {
@@ -16,14 +14,7 @@ func (r *TableRenameRequest) BindAndValidate(c echo.Context) []string {
 		return []string{"Invalid request payload"}
 	}
 
-	organizationID, err := uuid.Parse(c.Request().Header.Get("X-OrganizationID"))
-	if err != nil {
-		return []string{"Invalid organization ID"}
-	}
-
-	r.OrganizationID = organizationID
-
-	err = validation.ValidateStruct(r,
+	err := validation.ValidateStruct(r,
 		validation.Field(&r.Name, validation.Required.Error("Name is required"), validation.Length(3, 100).Error("Name must be between 3 and 100 characters")),
 	)
 
