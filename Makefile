@@ -24,6 +24,12 @@ lint: ## Run linter
 lint-fix: ## Run linter and fix
 	@golangci-lint run --fix
 
+up: ## Start the project
+	@docker-compose up
+
+down: ## Stop the project
+	@docker-compose down
+
 login-fluxton: ## Login to fluxton container
 	@docker exec -it fluxton /bin/sh
 
