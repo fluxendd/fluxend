@@ -2,6 +2,7 @@ package models
 
 import (
 	"github.com/google/uuid"
+	"strings"
 	"time"
 )
 
@@ -34,6 +35,15 @@ type AuthUser struct {
 
 func (u User) GetColumns() string {
 	return "id, username, email, status, role_id, bio, password, created_at, updated_at"
+}
+
+func (u User) GetColumnsWithAlias(alias string) string {
+	columns := strings.Split(u.GetColumns(), ", ")
+	for i, column := range columns {
+		columns[i] = alias + "." + column
+	}
+
+	return strings.Join(columns, ", ")
 }
 
 func (u User) IsActive() bool {
