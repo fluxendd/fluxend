@@ -49,6 +49,15 @@ func (r *ClientTableRepository) Create(name string, columns []types.TableColumn)
 	return nil
 }
 
+func (r *ClientTableRepository) Duplicate(oldName string, newName string) error {
+	_, err := r.connection.Exec(fmt.Sprintf("CREATE TABLE %s AS TABLE %s", newName, oldName))
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (r *ClientTableRepository) List() ([]string, error) {
 	var tables []string
 	err := r.connection.Select(&tables, "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public'")

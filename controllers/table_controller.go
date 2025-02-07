@@ -84,6 +84,32 @@ func (pc *TableController) Store(c echo.Context) error {
 	return responses.CreatedResponse(c, resources.TableResource(&table))
 }
 
+func (pc *TableController) Duplicate(c echo.Context) error {
+	var request requests.TableRenameRequest
+	authUser, _ := utils.NewAuth(c).User()
+
+	projectID, err := utils.GetUUIDPathParam(c, "projectID", true)
+	if err != nil {
+		return responses.BadRequestResponse(c, err.Error())
+	}
+
+	tableID, err := utils.GetUUIDPathParam(c, "tableID", true)
+	if err != nil {
+		return responses.BadRequestResponse(c, err.Error())
+	}
+
+	if err := request.BindAndValidate(c); err != nil {
+		return responses.UnprocessableResponse(c, err)
+	}
+
+	renamedTable, err := pc.tableService.Duplicate(tableID, projectID, authUser, &request)
+	if err != nil {
+		return responses.ErrorResponse(c, err)
+	}
+
+	return responses.SuccessResponse(c, resources.TableResource(&renamedTable))
+}
+
 func (pc *TableController) Rename(c echo.Context) error {
 	var request requests.TableRenameRequest
 	authUser, _ := utils.NewAuth(c).User()

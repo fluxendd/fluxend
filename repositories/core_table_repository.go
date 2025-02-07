@@ -203,9 +203,18 @@ func (r *CoreTableRepository) Update(table *models.Table) (*models.Table, error)
 		RETURNING id
 	`
 
-	queryErr := r.db.QueryRow(query, table.Name, columnsJSON, time.Now(), table.UpdatedBy, table.ID).Scan(&table.ID)
+	rows, queryErr := r.db.Exec(query, table.Name, columnsJSON, time.Now(), table.UpdatedBy, table.ID)
 	if queryErr != nil {
 		return nil, fmt.Errorf("could not update table: %v", queryErr)
+	}
+
+	rowsAffected, err := rows.RowsAffected()
+	if err != nil {
+		return nil, fmt.Errorf("could not determine affected rows: %v", err)
+	}
+
+	if rowsAffected != 1 {
+		return nil, errs.NewNotFoundError("table.error.notFound")
 	}
 
 	return table, nil
@@ -217,9 +226,18 @@ func (r *CoreTableRepository) Rename(tableID uuid.UUID, name string, authUserID 
 		SET name = $1, updated_at = $2, updated_by = $3
 		WHERE id = $4`
 
-	queryErr := r.db.QueryRow(query, name, time.Now(), authUserID, tableID)
-	if queryErr != nil {
-		return models.Table{}, fmt.Errorf("could not update table: %v", queryErr)
+	rows, err := r.db.Exec(query, name, time.Now(), authUserID, tableID)
+	if err != nil {
+		return models.Table{}, fmt.Errorf("could not update table: %v", err)
+	}
+
+	rowsAffected, err := rows.RowsAffected()
+	if err != nil {
+		return models.Table{}, fmt.Errorf("could not determine affected rows: %v", err)
+	}
+
+	if rowsAffected != 1 {
+		return models.Table{}, errs.NewNotFoundError("table.error.notFound")
 	}
 
 	return r.GetByID(tableID)
