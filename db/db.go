@@ -14,7 +14,7 @@ var DB *sqlx.DB
 func InitDB() {
 	var err error
 	connStr := fmt.Sprintf(
-		"user=%s dbname=%s password=%s host=%s sslmode=%s",
+		"user=%s dbname=%s password=%s host=%s sslmode=%s port=5432",
 		os.Getenv("DATABASE_USER"),
 		os.Getenv("DATABASE_NAME"),
 		os.Getenv("DATABASE_PASSWORD"),
