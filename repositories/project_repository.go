@@ -24,8 +24,6 @@ func NewProjectRepository(injector *do.Injector) (*ProjectRepository, error) {
 
 func (r *ProjectRepository) ListForUser(paginationParams utils.PaginationParams, authUserId uuid.UUID) ([]models.Project, error) {
 	offset := (paginationParams.Page - 1) * paginationParams.Limit
-	modelSkeleton := models.Project{}
-
 	query := `
 		SELECT 
 			%s 
@@ -44,7 +42,7 @@ func (r *ProjectRepository) ListForUser(paginationParams utils.PaginationParams,
 
 	`
 
-	query = fmt.Sprintf(query, modelSkeleton.GetColumnsWithAlias(modelSkeleton.GetTableName()))
+	query = fmt.Sprintf(query, utils.GetColumnsWithAlias[models.Project]("projects"))
 
 	params := map[string]interface{}{
 		"user_id": authUserId,
@@ -77,7 +75,7 @@ func (r *ProjectRepository) ListForUser(paginationParams utils.PaginationParams,
 
 func (r *ProjectRepository) GetByID(id uuid.UUID) (models.Project, error) {
 	query := "SELECT %s FROM fluxton.projects WHERE id = $1"
-	query = fmt.Sprintf(query, models.Project{}.GetColumns())
+	query = fmt.Sprintf(query, utils.GetColumns[models.Project]())
 
 	var project models.Project
 	err := r.db.Get(&project, query, id)

@@ -23,7 +23,6 @@ func NewOrganizationRepository(injector *do.Injector) (*OrganizationRepository, 
 
 func (r *OrganizationRepository) ListForUser(paginationParams utils.PaginationParams, authUserID uuid.UUID) ([]models.Organization, error) {
 	offset := (paginationParams.Page - 1) * paginationParams.Limit
-	modelSkeleton := models.Organization{}
 
 	query := `
 		SELECT 
@@ -43,7 +42,7 @@ func (r *OrganizationRepository) ListForUser(paginationParams utils.PaginationPa
 
 	`
 
-	query = fmt.Sprintf(query, modelSkeleton.GetColumnsWithAlias(modelSkeleton.GetTableName()))
+	query = fmt.Sprintf(query, utils.GetColumnsWithAlias[models.Organization]("organizations"))
 
 	params := map[string]interface{}{
 		"user_id": authUserID,
@@ -157,7 +156,7 @@ func (r *OrganizationRepository) DeleteUser(organizationID, userID uuid.UUID) er
 
 func (r *OrganizationRepository) GetByIDForUser(id, authUserID uuid.UUID) (models.Organization, error) {
 	query := "SELECT %s FROM fluxton.organizations WHERE id = $1"
-	query = fmt.Sprintf(query, models.Organization{}.GetColumns())
+	query = fmt.Sprintf(query, utils.GetColumns[models.Organization]())
 
 	var organization models.Organization
 	err := r.db.Get(&organization, query, id)

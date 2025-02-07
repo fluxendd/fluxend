@@ -5,7 +5,6 @@ import (
 	"fluxton/types"
 	"fmt"
 	"github.com/google/uuid"
-	"strings"
 	"time"
 )
 
@@ -24,19 +23,6 @@ type Table struct {
 
 func (t Table) GetTableName() string {
 	return "fluxton.tables"
-}
-
-func (t Table) GetColumns() string {
-	return "id, project_id, created_by, updated_by, name, columns, created_at, updated_at"
-}
-
-func (t Table) GetColumnsWithAlias(alias string) string {
-	columns := strings.Split(t.GetColumns(), ", ")
-	for i, column := range columns {
-		columns[i] = alias + "." + column
-	}
-
-	return strings.Join(columns, ", ")
 }
 
 func (t Table) MarshalJSONColumns() ([]byte, error) {
