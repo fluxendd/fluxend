@@ -29,6 +29,7 @@ func main() {
 	// controllers
 	userController := do.MustInvoke[*controllers.UserController](container)
 	organizationController := do.MustInvoke[*controllers.OrganizationController](container)
+	organizationUserController := do.MustInvoke[*controllers.OrganizationUserController](container)
 	projectController := do.MustInvoke[*controllers.ProjectController](container)
 
 	tableController := do.MustInvoke[*controllers.TableController](container)
@@ -38,7 +39,7 @@ func main() {
 
 	// Register routes
 	routes.RegisterUserRoutes(e, userController)
-	routes.RegisterOrganizationRoutes(e, organizationController)
+	routes.RegisterOrganizationRoutes(e, organizationController, organizationUserController)
 	routes.RegisterProjectRoutes(e, projectController)
 	routes.RegisterTableRoutes(e, tableController, columnController, indexController)
 	routes.RegisterRowRoutes(e, rowController)
