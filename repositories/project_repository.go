@@ -10,7 +10,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 	"github.com/samber/do"
-	"time"
 )
 
 type ProjectRepository struct {
@@ -139,8 +138,8 @@ func (r *ProjectRepository) Create(project *models.Project) (*models.Project, er
 		return nil, fmt.Errorf("could not begin transaction: %v", err)
 	}
 
-	query := "INSERT INTO fluxton.projects (name, db_name, organization_id) VALUES ($1, $2, $3) RETURNING id"
-	queryErr := tx.QueryRowx(query, project.Name, project.DBName, project.OrganizationID).Scan(&project.ID)
+	query := "INSERT INTO fluxton.projects (name, db_name, organization_id, created_by, updated_by) VALUES ($1, $2, $3, $4, $5) RETURNING id"
+	queryErr := tx.QueryRowx(query, project.Name, project.DBName, project.OrganizationID, project.CreatedBy, project.UpdatedBy).Scan(&project.ID)
 	if queryErr != nil {
 		err := tx.Rollback()
 		if err != nil {
@@ -158,10 +157,7 @@ func (r *ProjectRepository) Create(project *models.Project) (*models.Project, er
 	return project, nil
 }
 
-func (r *ProjectRepository) Update(id uuid.UUID, project *models.Project) (*models.Project, error) {
-	project.UpdatedAt = time.Now()
-	project.ID = id
-
+func (r *ProjectRepository) Update(project *models.Project) (*models.Project, error) {
 	query := `
 		UPDATE fluxton.projects 
 		SET name = :name, updated_at = :updated_at 
