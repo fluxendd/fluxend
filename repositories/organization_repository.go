@@ -10,7 +10,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 	"github.com/samber/do"
-	"time"
 )
 
 type OrganizationRepository struct {
@@ -109,9 +108,10 @@ func (r *OrganizationRepository) Create(organization *models.Organization, authU
 		return nil, fmt.Errorf("could not begin transaction: %v", err)
 	}
 
+	utils.DumpJSON(organization)
 	// Insert into organizations table
-	query := "INSERT INTO fluxton.organizations (name) VALUES ($1) RETURNING id"
-	queryErr := tx.QueryRowx(query, organization.Name).Scan(&organization.ID)
+	query := "INSERT INTO fluxton.organizations (name, created_by, updated_by) VALUES ($1, $2, $3) RETURNING id"
+	queryErr := tx.QueryRowx(query, organization.Name, organization.CreatedBy, organization.UpdatedBy).Scan(&organization.ID)
 	if queryErr != nil {
 		err := tx.Rollback()
 		if err != nil {
@@ -141,13 +141,10 @@ func (r *OrganizationRepository) Create(organization *models.Organization, authU
 	return organization, nil
 }
 
-func (r *OrganizationRepository) Update(id uuid.UUID, organization *models.Organization) (*models.Organization, error) {
-	organization.UpdatedAt = time.Now()
-	organization.ID = id
-
+func (r *OrganizationRepository) Update(organization *models.Organization) (*models.Organization, error) {
 	query := `
 		UPDATE fluxton.organizations 
-		SET name = :name, updated_at = :updated_at 
+		SET name = :name, updated_at = :updated_at, updated_by = :updated_by 
 		WHERE id = :id`
 
 	res, err := r.db.NamedExec(query, organization)

@@ -160,7 +160,7 @@ func (r *ProjectRepository) Create(project *models.Project) (*models.Project, er
 func (r *ProjectRepository) Update(project *models.Project) (*models.Project, error) {
 	query := `
 		UPDATE fluxton.projects 
-		SET name = :name, updated_at = :updated_at 
+		SET name = :name, updated_at = :updated_at, updated_by = :updated_by
 		WHERE id = :id`
 
 	res, err := r.db.NamedExec(query, project)
