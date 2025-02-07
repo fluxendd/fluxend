@@ -13,7 +13,7 @@ import (
 type IndexService interface {
 	List(tableID, projectID uuid.UUID, authUser models.AuthUser) ([]string, error)
 	GetByName(indexName string, tableID, projectID uuid.UUID, authUser models.AuthUser) (string, error)
-	Create(projectID, tableID uuid.UUID, request *requests.IndexCreateRequest, authUser models.AuthUser) (models.Table, error)
+	Create(projectID, tableID uuid.UUID, request *requests.IndexCreateRequest, authUser models.AuthUser) (string, error)
 	Delete(indexName string, tableID, projectID uuid.UUID, authUser models.AuthUser) (bool, error)
 }
 
@@ -84,45 +84,32 @@ func (s *IndexServiceImpl) GetByName(indexName string, tableID, projectID uuid.U
 	return clientIndexRepo.GetByName(table.Name, indexName)
 }
 
-func (s *IndexServiceImpl) Create(projectID, tableID uuid.UUID, request *requests.IndexCreateRequest, authUser models.AuthUser) (models.Table, error) {
+func (s *IndexServiceImpl) Create(projectID, tableID uuid.UUID, request *requests.IndexCreateRequest, authUser models.AuthUser) (string, error) {
 	project, err := s.projectRepo.GetByID(projectID)
 	if err != nil {
-		return models.Table{}, err
+		return "", err
 	}
 
-	if !s.projectPolicy.CanCreate(request.OrganizationID, authUser) {
-		return models.Table{}, errs.NewForbiddenError("table.error.createForbidden")
+	if !s.projectPolicy.CanCreate(project.OrganizationID, authUser) {
+		return "", errs.NewForbiddenError("table.error.createForbidden")
 	}
 
 	table, err := s.coreTableRepo.GetByID(tableID)
 	if err != nil {
-		return models.Table{}, err
+		return "", err
 	}
 
-	err = s.validateNameForDuplication(request.Column.Name, tableID)
+	clientIndexRepo, err := s.connectionService.GetClientIndexRepo(project.DBName)
 	if err != nil {
-		return models.Table{}, err
+		return "", err
 	}
 
-	table.Columns = append(table.Columns, request.Column)
-	table.UpdatedBy = authUser.ID
-
-	_, err = s.coreTableRepo.Update(&table)
+	_, err = clientIndexRepo.Create(table.Name, request.Name, request.Columns, request.IsUnique)
 	if err != nil {
-		return models.Table{}, err
+		return "", err
 	}
 
-	clientColumnRepo, err := s.connectionService.GetClientColumnRepo(project.DBName)
-	if err != nil {
-		return models.Table{}, err
-	}
-
-	err = clientColumnRepo.Create(table.Name, request.Column)
-	if err != nil {
-		return models.Table{}, err
-	}
-
-	return table, nil
+	return clientIndexRepo.GetByName(table.Name, request.Name)
 }
 
 func (s *IndexServiceImpl) Delete(indexName string, tableID, projectID uuid.UUID, authUser models.AuthUser) (bool, error) {
@@ -135,45 +122,15 @@ func (s *IndexServiceImpl) Delete(indexName string, tableID, projectID uuid.UUID
 		return false, errs.NewForbiddenError("project.error.updateForbidden")
 	}
 
-	table, err := s.coreTableRepo.GetByID(tableID)
+	_, err = s.coreTableRepo.GetByID(tableID)
 	if err != nil {
 		return false, err
 	}
 
-	for i, column := range table.Columns {
-		if column.Name == columnName {
-			// Remove column from slice
-			table.Columns = append(table.Columns[:i], table.Columns[i+1:]...)
-			break
-		}
-	}
-
-	table.UpdatedBy = authUser.ID
-
-	clientColumnRepo, err := s.connectionService.GetClientColumnRepo(project.DBName)
+	clientIndexRepo, err := s.connectionService.GetClientIndexRepo(project.DBName)
 	if err != nil {
 		return false, err
 	}
 
-	err = clientColumnRepo.Drop(table.Name, columnName)
-	if err != nil {
-		return false, err
-	}
-
-	_, err = s.coreTableRepo.Update(&table)
-
-	return err == nil, err
-}
-
-func (s *IndexServiceImpl) validateNameForDuplication(name string, tableID uuid.UUID) error {
-	exists, err := s.coreTableRepo.HasColumn(name, tableID)
-	if err != nil {
-		return err
-	}
-
-	if exists {
-		return errs.NewUnprocessableError("table.error.duplicateName")
-	}
-
-	return nil
+	return clientIndexRepo.DropIfExists(indexName)
 }
