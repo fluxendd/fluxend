@@ -26,7 +26,6 @@ func NewCoreTableRepository(injector *do.Injector) (*CoreTableRepository, error)
 
 func (r *CoreTableRepository) ListForProject(paginationParams utils.PaginationParams, projectID uuid.UUID) ([]models.Table, error) {
 	offset := (paginationParams.Page - 1) * paginationParams.Limit
-	modelSkeleton := models.Table{}
 
 	query := `
 		SELECT 
@@ -44,7 +43,7 @@ func (r *CoreTableRepository) ListForProject(paginationParams utils.PaginationPa
 
 	`
 
-	query = fmt.Sprintf(query, modelSkeleton.GetColumnsWithAlias(modelSkeleton.GetTableName()))
+	query = fmt.Sprintf(query, utils.GetColumns[models.Table]())
 
 	params := map[string]interface{}{
 		"project_id": projectID,
@@ -94,7 +93,7 @@ func (r *CoreTableRepository) ListColumns(tableID uuid.UUID) ([]types.TableColum
 
 func (r *CoreTableRepository) GetByID(id uuid.UUID) (models.Table, error) {
 	query := "SELECT %s FROM fluxton.tables WHERE id = $1"
-	query = fmt.Sprintf(query, models.Table{}.GetColumns())
+	query = fmt.Sprintf(query, utils.GetColumns[models.Table]())
 
 	var table models.Table
 	err := r.db.Get(&table, query, id)
@@ -111,7 +110,7 @@ func (r *CoreTableRepository) GetByID(id uuid.UUID) (models.Table, error) {
 
 func (r *CoreTableRepository) GetByName(name string) (models.Table, error) {
 	query := "SELECT %s FROM fluxton.tables WHERE name = $1"
-	query = fmt.Sprintf(query, models.Table{}.GetColumns())
+	query = fmt.Sprintf(query, utils.GetColumns[models.Table]())
 
 	var table models.Table
 	err := r.db.Get(&table, query, name)
