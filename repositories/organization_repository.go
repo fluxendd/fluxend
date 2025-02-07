@@ -74,6 +74,85 @@ func (r *OrganizationRepository) ListForUser(paginationParams utils.PaginationPa
 	return organizations, nil
 }
 
+func (r *OrganizationRepository) ListUsers(organizationID uuid.UUID) ([]models.User, error) {
+	query := `
+		SELECT 
+			users.id, users.email, users.status, users.bio, users.role_id, users.created_at, users.updated_at 
+		FROM 
+			authentication.users users
+		JOIN 
+			fluxton.organization_users organization_users ON users.id = organization_users.user_id
+		WHERE 
+			organization_users.organization_id = $1
+	`
+
+	rows, err := r.db.Queryx(query, organizationID)
+	if err != nil {
+		return nil, fmt.Errorf("could not retrieve rows: %v", err)
+	}
+	defer rows.Close()
+
+	var users []models.User
+	for rows.Next() {
+		var user models.User
+		if err := rows.StructScan(&user); err != nil {
+			return nil, fmt.Errorf("could not scan row: %v", err)
+		}
+		users = append(users, user)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("could not iterate over rows: %v", err)
+	}
+
+	return users, nil
+}
+
+func (r *OrganizationRepository) GetUser(organizationID, userID uuid.UUID) (models.User, error) {
+	query := `
+		SELECT 
+			users.id, users.email, users.status, users.bio, users.role_id, users.created_at, users.updated_at 
+		FROM 
+			authentication.users users
+		JOIN 
+			fluxton.organization_users organization_users ON users.id = organization_users.user_id
+		WHERE 
+			organization_users.organization_id = $1 AND organization_users.user_id = $2
+	`
+
+	var user models.User
+	err := r.db.Get(&user, query, organizationID, userID)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return models.User{}, errs.NewNotFoundError("organization.error.userNotFound")
+		}
+
+		return models.User{}, fmt.Errorf("could not fetch row: %v", err)
+	}
+
+	return user, nil
+}
+
+func (r *OrganizationRepository) CreateUser(organizationID, userID uuid.UUID) error {
+	query := "INSERT INTO fluxton.organization_users (organization_id, user_id) VALUES ($1, $2)"
+	_, err := r.db.Exec(query, organizationID, userID)
+	if err != nil {
+		return fmt.Errorf("could not insert into pivot table: %v", err)
+	}
+
+	return nil
+}
+
+func (r *OrganizationRepository) DeleteUser(organizationID, userID uuid.UUID) error {
+	query := "DELETE FROM fluxton.organization_users WHERE organization_id = $1 AND user_id = $2"
+	_, err := r.db.Exec(query, organizationID, userID)
+	if err != nil {
+		return fmt.Errorf("could not delete row: %v", err)
+	}
+
+	return nil
+}
+
 func (r *OrganizationRepository) GetByIDForUser(id, authUserID uuid.UUID) (models.Organization, error) {
 	query := "SELECT %s FROM fluxton.organizations WHERE id = $1"
 	query = fmt.Sprintf(query, models.Organization{}.GetColumns())

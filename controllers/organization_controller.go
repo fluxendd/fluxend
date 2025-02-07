@@ -35,12 +35,12 @@ func (nc *OrganizationController) List(c echo.Context) error {
 func (nc *OrganizationController) Show(c echo.Context) error {
 	authUser, _ := utils.NewAuth(c).User()
 
-	id, err := utils.GetUUIDPathParam(c, "id", true)
+	organizationID, err := utils.GetUUIDPathParam(c, "organizationID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	organization, err := nc.organizationService.GetByID(id, authUser)
+	organization, err := nc.organizationService.GetByID(organizationID, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -72,7 +72,7 @@ func (nc *OrganizationController) Update(c echo.Context) error {
 	var request requests.OrganizationCreateRequest
 	authUser, _ := utils.NewAuth(c).User()
 
-	id, err := utils.GetUUIDPathParam(c, "id", true)
+	organizationID, err := utils.GetUUIDPathParam(c, "organizationID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
@@ -81,7 +81,7 @@ func (nc *OrganizationController) Update(c echo.Context) error {
 		return responses.BadRequestResponse(c, "organization.error.invalidPayload")
 	}
 
-	updatedOrganization, err := nc.organizationService.Update(id, authUser, &request)
+	updatedOrganization, err := nc.organizationService.Update(organizationID, authUser, &request)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -92,12 +92,12 @@ func (nc *OrganizationController) Update(c echo.Context) error {
 func (nc *OrganizationController) Delete(c echo.Context) error {
 	authUser, _ := utils.NewAuth(c).User()
 
-	id, err := utils.GetUUIDPathParam(c, "id", true)
+	organizationID, err := utils.GetUUIDPathParam(c, "organizationID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	if _, err := nc.organizationService.Delete(id, authUser); err != nil {
+	if _, err := nc.organizationService.Delete(organizationID, authUser); err != nil {
 		return responses.ErrorResponse(c, err)
 	}
 
