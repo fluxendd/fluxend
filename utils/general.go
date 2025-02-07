@@ -2,8 +2,10 @@ package utils
 
 import (
 	"fmt"
+	"github.com/labstack/gommon/log"
 	"golang.org/x/crypto/bcrypt"
 	"reflect"
+	"strings"
 )
 
 // PopulateModel populates the fields of a model from another struct or a pointer to a struct with matching field names.
@@ -56,4 +58,46 @@ func ComparePassword(hashedPassword, plainPassword string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(plainPassword))
 
 	return err == nil
+}
+
+func GetColumnsList[T any](alias string) []string {
+	var fields []string
+	var t T
+	typ := reflect.TypeOf(t)
+
+	if alias != "" {
+		alias = alias + "."
+	}
+
+	if typ.Kind() != reflect.Struct {
+		log.Error("Error: Expected a struct type")
+
+		return fields
+	}
+
+	if typ.Kind() == reflect.Pointer {
+		typ = typ.Elem() // Handle pointer types
+	}
+
+	for i := 0; i < typ.NumField(); i++ {
+		field := typ.Field(i)
+		dbTag := field.Tag.Get("db")
+		if dbTag != "" {
+			fields = append(fields, alias+dbTag)
+		}
+	}
+
+	return fields
+}
+
+func GetColumnsWithAlias[T any](alias string) string {
+	columns := GetColumnsList[T](alias)
+
+	return strings.Join(columns, ", ")
+}
+
+func GetColumns[T any]() string {
+	columns := GetColumnsList[T]("")
+
+	return strings.Join(columns, ", ")
 }
