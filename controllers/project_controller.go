@@ -9,6 +9,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
+	"strings"
 )
 
 type ProjectController struct {
@@ -24,7 +25,7 @@ func NewProjectController(injector *do.Injector) (*ProjectController, error) {
 func (pc *ProjectController) List(c echo.Context) error {
 	authUser, _ := utils.NewAuth(c).User()
 
-	organizationID, err := uuid.Parse(c.QueryParam("organization_id"))
+	organizationID, err := uuid.Parse(strings.TrimSpace(c.QueryParam("organization_id")))
 	if err != nil {
 		return responses.BadRequestResponse(c, "Invalid organization ID")
 	}

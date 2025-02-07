@@ -3,6 +3,8 @@
 CREATE TABLE fluxton.projects (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     organization_id UUID NOT NULL REFERENCES fluxton.organizations (id) ON DELETE CASCADE,
+    created_by UUID NOT NULL REFERENCES authentication.users (id) ON DELETE CASCADE,
+    updated_by UUID NOT NULL REFERENCES authentication.users (id) ON DELETE CASCADE,
     name VARCHAR(255) NOT NULL,
     db_name VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

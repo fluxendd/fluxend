@@ -10,6 +10,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/samber/do"
 	"strings"
+	"time"
 )
 
 type ProjectService interface {
@@ -73,6 +74,8 @@ func (s *ProjectServiceImpl) Create(request *requests.ProjectCreateRequest, auth
 		Name:           request.Name,
 		OrganizationID: request.OrganizationID,
 		DBName:         s.generateDBName(),
+		CreatedBy:      authUser.ID,
+		UpdatedBy:      authUser.ID,
 	}
 
 	_, err = s.projectRepo.Create(&project)
@@ -103,12 +106,15 @@ func (s *ProjectServiceImpl) Update(projectID uuid.UUID, authUser models.AuthUse
 		return nil, err
 	}
 
+	project.UpdatedAt = time.Now()
+	project.UpdatedBy = authUser.ID
+
 	err = s.validateNameForDuplication(request.Name, project.OrganizationID)
 	if err != nil {
 		return &models.Project{}, err
 	}
 
-	return s.projectRepo.Update(projectID, &project)
+	return s.projectRepo.Update(&project)
 }
 
 func (s *ProjectServiceImpl) Delete(projectID uuid.UUID, authUser models.AuthUser) (bool, error) {
