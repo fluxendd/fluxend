@@ -40,11 +40,7 @@ func (nc *OrganizationUserController) Store(c echo.Context) error {
 	var request requests.OrganizationUserCreateRequest
 	authUser, _ := utils.NewAuth(c).User()
 
-	if err := c.Bind(&request); err != nil {
-		return responses.BadRequestResponse(c, "organization.error.invalidPayload")
-	}
-
-	if err := request.Validate(); err != nil {
+	if err := request.BindAndValidate(c); err != nil {
 		return responses.UnprocessableResponse(c, err)
 	}
 

@@ -65,6 +65,7 @@ func (s *UserServiceImpl) Create(request *requests.UserCreateRequest) (models.Us
 		Email:    request.Email,
 		Password: request.Password,
 		Status:   models.UserStatusActive,
+		RoleID:   models.UserRoleDeveloper,
 	}
 
 	_, err := s.userRepo.Create(&user)
