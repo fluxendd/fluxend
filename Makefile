@@ -23,3 +23,9 @@ lint: ## Run linter
 
 lint-fix: ## Run linter and fix
 	@golangci-lint run --fix
+
+login-fluxton: ## Login to fluxton container
+	@docker exec -it fluxton /bin/sh
+
+login-db: ## Login to database container
+	@docker exec -it fluxton_db /bin/bash
