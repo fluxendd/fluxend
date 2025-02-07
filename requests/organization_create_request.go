@@ -2,13 +2,18 @@ package requests
 
 import (
 	validation "github.com/go-ozzo/ozzo-validation/v4"
+	"github.com/labstack/echo/v4"
 )
 
 type OrganizationCreateRequest struct {
 	Name string `json:"name"`
 }
 
-func (r *OrganizationCreateRequest) Validate() []string {
+func (r *OrganizationCreateRequest) BindAndValidate(c echo.Context) []string {
+	if err := c.Bind(r); err != nil {
+		return []string{"Invalid request payload"}
+	}
+
 	err := validation.ValidateStruct(r,
 		validation.Field(&r.Name, validation.Required.Error("Name is required"), validation.Length(3, 100).Error("Title must be between 3 and 100 characters")),
 	)
@@ -26,5 +31,4 @@ func (r *OrganizationCreateRequest) Validate() []string {
 	}
 
 	return errors
-
 }
