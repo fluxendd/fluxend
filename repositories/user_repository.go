@@ -27,7 +27,7 @@ func (r *UserRepository) List(paginationParams utils.PaginationParams) ([]models
 
 	query := fmt.Sprintf(
 		"SELECT %s FROM authentication.users ORDER BY :sort DESC LIMIT :limit OFFSET :offset",
-		models.User{}.GetColumns(),
+		utils.GetColumns[models.User](),
 	)
 
 	params := map[string]interface{}{
@@ -59,7 +59,7 @@ func (r *UserRepository) List(paginationParams utils.PaginationParams) ([]models
 }
 
 func (r *UserRepository) GetByID(id uuid.UUID) (models.User, error) {
-	query := fmt.Sprintf("SELECT %s FROM authentication.users WHERE id = $1", models.User{}.GetColumns())
+	query := fmt.Sprintf("SELECT %s FROM authentication.users WHERE id = $1", utils.GetColumns[models.User]())
 	var user models.User
 	err := r.db.Get(&user, query, id)
 	if err != nil {
@@ -85,7 +85,7 @@ func (r *UserRepository) ExistsByID(id uuid.UUID) (bool, error) {
 }
 
 func (r *UserRepository) GetByEmail(email string) (models.User, error) {
-	query := fmt.Sprintf("SELECT %s FROM authentication.users WHERE email = $1", models.User{}.GetColumns())
+	query := fmt.Sprintf("SELECT %s FROM authentication.users WHERE email = $1", utils.GetColumns[models.User]())
 	var user models.User
 	err := r.db.Get(&user, query, email)
 	if err != nil {
