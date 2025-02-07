@@ -6,72 +6,69 @@ import (
 	"fluxton/responses"
 	"fluxton/services"
 	"fluxton/utils"
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
 )
 
 type IndexController struct {
-	tableService services.TableService
+	indexService services.IndexService
 }
 
 func NewIndexController(injector *do.Injector) (*IndexController, error) {
-	tableService := do.MustInvoke[services.TableService](injector)
+	indexService := do.MustInvoke[services.IndexService](injector)
 
-	return &IndexController{tableService: tableService}, nil
+	return &IndexController{indexService: indexService}, nil
 }
 
 func (pc *IndexController) List(c echo.Context) error {
 	authUser, _ := utils.NewAuth(c).User()
 
-	projectID, err := utils.GetUUIDPathParam(c, "projectID", true)
+	projectID, tableID, err := pc.parseRequest(c)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	paginationParams := utils.ExtractPaginationParams(c)
-	tables, err := pc.tableService.List(paginationParams, projectID, authUser)
+	indexes, err := pc.indexService.List(tableID, projectID, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
 
-	return responses.SuccessResponse(c, resources.TableResourceCollection(tables))
+	return responses.SuccessResponse(c, resources.GenericResourceCollection(indexes))
 }
 
 func (pc *IndexController) Show(c echo.Context) error {
 	authUser, _ := utils.NewAuth(c).User()
 
-	projectID, err := utils.GetUUIDPathParam(c, "projectID", true)
+	projectID, tableID, err := pc.parseRequest(c)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	tableID, err := utils.GetUUIDPathParam(c, "tableID", true)
-	if err != nil {
-		return responses.BadRequestResponse(c, err.Error())
-	}
+	indexName := c.Param("indexName")
 
-	table, err := pc.tableService.GetByID(tableID, projectID, authUser)
+	index, err := pc.indexService.GetByName(indexName, tableID, projectID, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
 
-	return responses.SuccessResponse(c, resources.TableResource(&table))
+	return responses.SuccessResponse(c, resources.GenericResource(&index))
 }
 
 func (pc *IndexController) Store(c echo.Context) error {
-	var request requests.TableCreateRequest
+	var request requests.IndexCreateRequest
 	authUser, _ := utils.NewAuth(c).User()
 
 	if err := request.BindAndValidate(c); err != nil {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	projectID, err := utils.GetUUIDPathParam(c, "projectID", true)
+	projectID, tableID, err := pc.parseRequest(c)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	table, err := pc.tableService.Create(&request, projectID, authUser)
+	table, err := pc.indexService.Create(projectID, tableID, &request, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -87,19 +84,30 @@ func (pc *IndexController) Delete(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	projectID, err := utils.GetUUIDPathParam(c, "projectID", true)
+	projectID, tableID, err := pc.parseRequest(c)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	tableID, err := utils.GetUUIDPathParam(c, "tableID", true)
-	if err != nil {
-		return responses.BadRequestResponse(c, err.Error())
-	}
+	indexName := c.Param("indexName")
 
-	if _, err := pc.tableService.Delete(tableID, projectID, authUser); err != nil {
+	if _, err := pc.indexService.Delete(indexName, tableID, projectID, authUser); err != nil {
 		return responses.ErrorResponse(c, err)
 	}
 
 	return responses.DeletedResponse(c, nil)
+}
+
+func (pc *IndexController) parseRequest(c echo.Context) (uuid.UUID, uuid.UUID, error) {
+	projectID, err := utils.GetUUIDPathParam(c, "projectID", true)
+	if err != nil {
+		return uuid.Nil, uuid.Nil, err
+	}
+
+	tableID, err := utils.GetUUIDPathParam(c, "tableID", true)
+	if err != nil {
+		return uuid.Nil, uuid.Nil, err
+	}
+
+	return projectID, tableID, nil
 }
