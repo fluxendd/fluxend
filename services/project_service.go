@@ -94,7 +94,7 @@ func (s *ProjectServiceImpl) Update(projectID uuid.UUID, authUser models.AuthUse
 		return nil, err
 	}
 
-	if !s.projectPolicy.CanUpdate(projectID, authUser) {
+	if !s.projectPolicy.CanUpdate(project.OrganizationID, authUser) {
 		return &models.Project{}, errs.NewForbiddenError("project.error.updateForbidden")
 	}
 
@@ -112,8 +112,18 @@ func (s *ProjectServiceImpl) Update(projectID uuid.UUID, authUser models.AuthUse
 }
 
 func (s *ProjectServiceImpl) Delete(projectID uuid.UUID, authUser models.AuthUser) (bool, error) {
-	if !s.projectPolicy.CanUpdate(projectID, authUser) {
+	project, err := s.projectRepo.GetByID(projectID)
+	if err != nil {
+		return false, err
+	}
+
+	if !s.projectPolicy.CanUpdate(project.OrganizationID, authUser) {
 		return false, errs.NewForbiddenError("project.error.updateForbidden")
+	}
+
+	err = s.databaseRepo.DropIfExists(project.DBName)
+	if err != nil {
+		return false, err
 	}
 
 	return s.projectRepo.Delete(projectID)
