@@ -77,7 +77,7 @@ func (r *OrganizationRepository) ListForUser(paginationParams utils.PaginationPa
 func (r *OrganizationRepository) ListUsers(organizationID uuid.UUID) ([]models.User, error) {
 	query := `
 		SELECT 
-			users.id, users.email, users.status, users.bio, users.role_id, users.created_at, users.updated_at 
+			%s 
 		FROM 
 			authentication.users users
 		JOIN 
@@ -86,6 +86,7 @@ func (r *OrganizationRepository) ListUsers(organizationID uuid.UUID) ([]models.U
 			organization_users.organization_id = $1
 	`
 
+	query = fmt.Sprintf(query, models.User{}.GetColumnsWithAlias("users"))
 	rows, err := r.db.Queryx(query, organizationID)
 	if err != nil {
 		return nil, fmt.Errorf("could not retrieve rows: %v", err)
@@ -111,7 +112,7 @@ func (r *OrganizationRepository) ListUsers(organizationID uuid.UUID) ([]models.U
 func (r *OrganizationRepository) GetUser(organizationID, userID uuid.UUID) (models.User, error) {
 	query := `
 		SELECT 
-			users.id, users.email, users.status, users.bio, users.role_id, users.created_at, users.updated_at 
+			%s 
 		FROM 
 			authentication.users users
 		JOIN 
@@ -119,6 +120,7 @@ func (r *OrganizationRepository) GetUser(organizationID, userID uuid.UUID) (mode
 		WHERE 
 			organization_users.organization_id = $1 AND organization_users.user_id = $2
 	`
+	query = fmt.Sprintf(query, models.User{}.GetColumnsWithAlias("users"))
 
 	var user models.User
 	err := r.db.Get(&user, query, organizationID, userID)
@@ -216,7 +218,6 @@ func (r *OrganizationRepository) Create(organization *models.Organization, authU
 		return nil, fmt.Errorf("could not commit transaction: %v", err)
 	}
 
-	organization.ID = organization.ID
 	return organization, nil
 }
 
@@ -263,6 +264,7 @@ func (r *OrganizationRepository) IsOrganizationUser(organizationID, authUserID u
 		return false, fmt.Errorf("could not fetch row: %v", err)
 	}
 
+	utils.DumpJSON(exists)
 	return exists, nil
 }
 
