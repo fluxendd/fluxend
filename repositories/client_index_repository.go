@@ -10,8 +10,8 @@ type ClientIndexRepository struct {
 	connection *sqlx.DB
 }
 
-func NewClientIndexRepository(connection *sqlx.DB) (*ClientColumnRepository, error) {
-	return &ClientColumnRepository{connection: connection}, nil
+func NewClientIndexRepository(connection *sqlx.DB) (*ClientIndexRepository, error) {
+	return &ClientIndexRepository{connection: connection}, nil
 }
 
 func (r *ClientIndexRepository) GetByName(tableName string, indexName string) (string, error) {
