@@ -9,6 +9,7 @@ import (
 	"fluxton/utils"
 	"github.com/google/uuid"
 	"github.com/samber/do"
+	"time"
 )
 
 type OrganizationService interface {
@@ -57,7 +58,9 @@ func (s *OrganizationServiceImpl) Create(request *requests.OrganizationCreateReq
 	}
 
 	organization := models.Organization{
-		Name: request.Name,
+		Name:      request.Name,
+		CreatedBy: authUser.ID,
+		UpdatedBy: authUser.ID,
 	}
 
 	_, err := s.organizationRepo.Create(&organization, authUser.ID)
@@ -82,8 +85,11 @@ func (s *OrganizationServiceImpl) Update(organizationId uuid.UUID, authUser mode
 	if err != nil {
 		return nil, err
 	}
+	
+	organization.UpdatedBy = authUser.ID
+	organization.UpdatedAt = time.Now()
 
-	return s.organizationRepo.Update(organizationId, &organization)
+	return s.organizationRepo.Update(&organization)
 }
 
 func (s *OrganizationServiceImpl) Delete(organizationId uuid.UUID, authUser models.AuthUser) (bool, error) {

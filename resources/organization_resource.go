@@ -8,6 +8,8 @@ import (
 type OrganizationResponse struct {
 	ID        uuid.UUID `json:"id"`
 	Name      string    `json:"name"`
+	CreatedBy uuid.UUID `json:"created_by"`
+	UpdatedBy uuid.UUID `json:"updated_by"`
 	CreatedAt string    `json:"created_at"`
 	UpdatedAt string    `json:"updated_at"`
 }
@@ -16,6 +18,8 @@ func OrganizationResource(organization *models.Organization) OrganizationRespons
 	return OrganizationResponse{
 		ID:        organization.ID,
 		Name:      organization.Name,
+		CreatedBy: organization.CreatedBy,
+		UpdatedBy: organization.UpdatedBy,
 		CreatedAt: organization.CreatedAt.Format("2006-01-02 15:04:05"),
 		UpdatedAt: organization.UpdatedAt.Format("2006-01-02 15:04:05"),
 	}
