@@ -18,7 +18,8 @@ func RegisterTableRoutes(
 	tablesGroup.POST("", TableController.Store)
 	tablesGroup.GET("", TableController.List)
 	tablesGroup.GET("/:tableID", TableController.Show)
-	tablesGroup.PUT("/:tableID", TableController.Rename)
+	tablesGroup.PUT("/:tableID/duplicate", TableController.Duplicate)
+	tablesGroup.PUT("/:tableID/rename", TableController.Rename)
 	tablesGroup.DELETE("/:tableID", TableController.Delete)
 
 	// column routes
