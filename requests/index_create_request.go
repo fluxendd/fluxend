@@ -8,9 +8,9 @@ import (
 )
 
 type IndexCreateRequest struct {
-	IndexName string   `json:"index_name"`
-	Columns   []string `json:"columns"`
-	IsUnique  bool     `json:"is_unique"`
+	Name     string   `json:"name"`
+	Columns  []string `json:"columns"`
+	IsUnique bool     `json:"is_unique"`
 }
 
 var reservedIndexNames = map[string]bool{
@@ -29,7 +29,7 @@ func (r *IndexCreateRequest) BindAndValidate(c echo.Context) []string {
 
 	// Validate base request fields
 	err := validation.ValidateStruct(r,
-		validation.Field(&r.IndexName, validation.Required.Error("Index name is required")),
+		validation.Field(&r.Name, validation.Required.Error("Index name is required")),
 		validation.Field(&r.Columns, validation.Required.Error("At least one column is required")),
 	)
 
@@ -44,11 +44,11 @@ func (r *IndexCreateRequest) BindAndValidate(c echo.Context) []string {
 	}
 
 	// Validate index name restrictions
-	if reservedIndexNames[strings.ToLower(r.IndexName)] {
-		errors = append(errors, fmt.Sprintf("Index name '%s' is reserved and cannot be used", r.IndexName))
+	if reservedIndexNames[strings.ToLower(r.Name)] {
+		errors = append(errors, fmt.Sprintf("Index name '%s' is reserved and cannot be used", r.Name))
 	}
 
-	if strings.Contains(r.IndexName, " ") {
+	if strings.Contains(r.Name, " ") {
 		errors = append(errors, "Index name cannot contain spaces")
 	}
 

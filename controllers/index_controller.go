@@ -68,12 +68,12 @@ func (pc *IndexController) Store(c echo.Context) error {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	table, err := pc.indexService.Create(projectID, tableID, &request, authUser)
+	index, err := pc.indexService.Create(projectID, tableID, &request, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
 
-	return responses.CreatedResponse(c, resources.TableResource(&table))
+	return responses.CreatedResponse(c, resources.GenericResource(index))
 }
 
 func (pc *IndexController) Delete(c echo.Context) error {

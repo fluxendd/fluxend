@@ -34,7 +34,7 @@ func (r *ClientIndexRepository) List(tableName string) ([]string, error) {
 	return indexes, nil
 }
 
-func (r *ClientIndexRepository) Create(tableName string, indexName string, isUnique bool, columns []string) (bool, error) {
+func (r *ClientIndexRepository) Create(tableName string, indexName string, columns []string, isUnique bool) (bool, error) {
 	unique := ""
 	if isUnique {
 		unique = "UNIQUE"
