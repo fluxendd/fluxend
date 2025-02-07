@@ -86,7 +86,7 @@ func (r *OrganizationRepository) ListUsers(organizationID uuid.UUID) ([]models.U
 			organization_users.organization_id = $1
 	`
 
-	query = fmt.Sprintf(query, models.User{}.GetColumnsWithAlias("users"))
+	query = fmt.Sprintf(query, utils.GetColumnsWithAlias[models.User]("users"))
 	rows, err := r.db.Queryx(query, organizationID)
 	if err != nil {
 		return nil, fmt.Errorf("could not retrieve rows: %v", err)
@@ -120,7 +120,7 @@ func (r *OrganizationRepository) GetUser(organizationID, userID uuid.UUID) (mode
 		WHERE 
 			organization_users.organization_id = $1 AND organization_users.user_id = $2
 	`
-	query = fmt.Sprintf(query, models.User{}.GetColumnsWithAlias("users"))
+	query = fmt.Sprintf(query, utils.GetColumnsWithAlias[models.User]("users"))
 
 	var user models.User
 	err := r.db.Get(&user, query, organizationID, userID)
