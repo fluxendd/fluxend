@@ -78,11 +78,10 @@ func (r *DatabaseRepository) Connect(name string) (*sqlx.DB, error) {
 
 func (r *DatabaseRepository) importSeedFiles(databaseName string) error {
 	connection, err := r.Connect(databaseName)
-	defer connection.Close()
-
 	if err != nil {
 		return fmt.Errorf("could not connect to database: %v", err)
 	}
+	defer connection.Close()
 
 	seedDir := "seeders/client"
 
@@ -102,19 +101,19 @@ func (r *DatabaseRepository) importSeedFiles(databaseName string) error {
 		// Load the contents of the SQL file
 		sqlContent, err := os.ReadFile(filePath)
 		if err != nil {
-			log.Debug("DB: %s => Skipping file %s: could not read file: %v", databaseName, filePath, err)
+			log.Printf("DB: %s => Skipping file %s: could not read file: %v", databaseName, filePath, err)
 
 			continue
 		}
 
 		// Execute the SQL statements
 		if _, err := connection.Exec(string(sqlContent)); err != nil {
-			log.Debug("DB: %s => Skipping file %s: could not execute SQL: %v", databaseName, filePath, err)
+			log.Printf("DB: %s => Skipping file %s: could not execute SQL: %v", databaseName, filePath, err)
 
 			continue
 		}
 
-		log.Debug("DB: %s => Successfully executed seed file %s", databaseName, filePath)
+		log.Printf("DB: %s => Successfully executed seed file %s", databaseName, filePath)
 	}
 
 	return nil
