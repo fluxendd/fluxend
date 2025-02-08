@@ -1,28 +1,6 @@
 version: '3.8'
 
 services:
-#  fluxton:
-#    image: golang:latest
-#    container_name: fluxton
-#    working_dir: /app
-#    volumes:
-#      - .:/app  # Maps the current directory to /app in the container
-#    command: go run cmd/main.go # Adjust the command based on how you start your Echo app
-#    ports:
-#      - "8080:8080" # Exposing the application on port 8080
-#    depends_on:
-#      - fluxton_db
-#    environment:
-#      - DATABASE_HOST=${DATABASE_HOST:-fluxton_db} # Fallback to 'fluxton_db' if not set
-#      - DATABASE_PORT=5432
-#      - DATABASE_USER=${DATABASE_USER:-postgres}  # Fallback to 'postgres' if not set
-#      - DATABASE_PASSWORD=${DATABASE_PASSWORD:-yourpassword}  # Fallback to 'yourpassword' if not set
-#      - DATABASE_NAME=${DATABASE_NAME:-fluxton_db}  # Fallback to 'fluxton_db' if not set
-#      - DATABASE_SSL_MODE=${DATABASE_SSL_MODE:-disable}  # Fallback to 'disable' if not set
-#      - JWT_SECRET=${JWT_SECRET:-secret}  # Fallback to 'secret' if not set
-#    networks:
-#      - fluxton_network
-
   fluxton_db:
     image: postgres:latest
     container_name: fluxton_db
