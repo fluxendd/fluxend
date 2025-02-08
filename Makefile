@@ -13,10 +13,13 @@ help: ## Shows this help
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_\-\.]+:.*?## / {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
 run: ## Run the project
-	@go run cmd/main.go
+	@go run cmd/*.go
+
+list_routes: ## Show the routes
+	@go run cmd/*.go -cmd=routes
 
 build: ## Build the project
-	@go build -o bin/fluxton cmd/main.go
+	@go build -o bin/fluxton cmd/*.go
 
 lint: ## Run linter
 	@golangci-lint run
