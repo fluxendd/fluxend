@@ -38,12 +38,7 @@ func (pc *TableController) List(c echo.Context) error {
 }
 
 func (pc *TableController) Show(c echo.Context) error {
-	var request requests.DefaultRequest
 	authUser, _ := utils.NewAuth(c).User()
-
-	if err := request.BindAndValidate(c); err != nil {
-		return responses.UnprocessableResponse(c, err)
-	}
 
 	projectID, err := utils.GetUUIDPathParam(c, "projectID", true)
 	if err != nil {

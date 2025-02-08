@@ -77,12 +77,7 @@ func (pc *IndexController) Store(c echo.Context) error {
 }
 
 func (pc *IndexController) Delete(c echo.Context) error {
-	var request requests.DefaultRequest
 	authUser, _ := utils.NewAuth(c).User()
-
-	if err := request.BindAndValidate(c); err != nil {
-		return responses.UnprocessableResponse(c, err)
-	}
 
 	projectID, tableID, err := pc.parseRequest(c)
 	if err != nil {

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/labstack/echo/v4"
+	"regexp"
 	"strings"
 )
 
@@ -50,7 +51,10 @@ func (r *TableCreateRequest) BindAndValidate(c echo.Context) []string {
 
 	// Validate base request columns
 	err := validation.ValidateStruct(r,
-		validation.Field(&r.Name, validation.Required.Error("Name is required"), validation.Length(3, 100).Error("Name must be between 3 and 100 characters")),
+		validation.Field(
+			&r.Name, validation.Required.Error("Name is required"),
+			validation.Match(regexp.MustCompile(`^[a-zA-Z][a-zA-Z0-9_]*$`)).Error("Name must be alphanumeric with underscores"),
+			validation.Length(3, 100).Error("Name must be between 3 and 100 characters")),
 		validation.Field(&r.Columns, validation.Required.Error("Fields are required")),
 	)
 
