@@ -16,7 +16,7 @@ run: ## Run the project
 	@go run cmd/main.go
 
 build: ## Build the project
-	@go build -o bin/main cmd/main.go
+	@go build -o bin/fluxton cmd/main.go
 
 lint: ## Run linter
 	@golangci-lint run
