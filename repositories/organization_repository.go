@@ -188,7 +188,6 @@ func (r *OrganizationRepository) Create(organization *models.Organization, authU
 		return nil, fmt.Errorf("could not begin transaction: %v", err)
 	}
 
-	utils.DumpJSON(organization)
 	// Insert into organizations table
 	query := "INSERT INTO fluxton.organizations (name, created_by, updated_by) VALUES ($1, $2, $3) RETURNING id"
 	queryErr := tx.QueryRowx(query, organization.Name, organization.CreatedBy, organization.UpdatedBy).Scan(&organization.ID)
@@ -263,7 +262,6 @@ func (r *OrganizationRepository) IsOrganizationUser(organizationID, authUserID u
 		return false, fmt.Errorf("could not fetch row: %v", err)
 	}
 
-	utils.DumpJSON(exists)
 	return exists, nil
 }
 
