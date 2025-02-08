@@ -44,7 +44,7 @@ func (s *ColumnServiceImpl) Create(projectID, tableID uuid.UUID, request *reques
 		return models.Table{}, err
 	}
 
-	if !s.projectPolicy.CanCreate(request.OrganizationID, authUser) {
+	if !s.projectPolicy.CanCreate(project.OrganizationID, authUser) {
 		return models.Table{}, errs.NewForbiddenError("table.error.createForbidden")
 	}
 
@@ -85,7 +85,7 @@ func (s *ColumnServiceImpl) Alter(columnName string, tableID, projectID uuid.UUI
 		return &models.Table{}, err
 	}
 
-	if !s.projectPolicy.CanUpdate(request.OrganizationID, authUser) {
+	if !s.projectPolicy.CanUpdate(project.OrganizationID, authUser) {
 		return &models.Table{}, errs.NewForbiddenError("project.error.updateForbidden")
 	}
 
@@ -131,7 +131,7 @@ func (s *ColumnServiceImpl) Rename(columnName string, tableID, projectID uuid.UU
 		return &models.Table{}, err
 	}
 
-	if !s.projectPolicy.CanUpdate(request.OrganizationID, authUser) {
+	if !s.projectPolicy.CanUpdate(project.OrganizationID, authUser) {
 		return &models.Table{}, errs.NewForbiddenError("project.error.updateForbidden")
 	}
 

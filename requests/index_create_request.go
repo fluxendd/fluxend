@@ -4,6 +4,7 @@ import (
 	"fmt"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/labstack/echo/v4"
+	"regexp"
 	"strings"
 )
 
@@ -29,7 +30,13 @@ func (r *IndexCreateRequest) BindAndValidate(c echo.Context) []string {
 
 	// Validate base request fields
 	err := validation.ValidateStruct(r,
-		validation.Field(&r.Name, validation.Required.Error("Index name is required")),
+		validation.Field(
+			&r.Name,
+			validation.Required.Error("Index name is required"),
+			validation.Match(
+				regexp.MustCompile(`^[a-zA-Z][a-zA-Z0-9_]*$`),
+			).Error("Index name must be alphanumeric with underscores"),
+		),
 		validation.Field(&r.Columns, validation.Required.Error("At least one column is required")),
 	)
 
@@ -46,10 +53,6 @@ func (r *IndexCreateRequest) BindAndValidate(c echo.Context) []string {
 	// Validate index name restrictions
 	if reservedIndexNames[strings.ToLower(r.Name)] {
 		errors = append(errors, fmt.Sprintf("Index name '%s' is reserved and cannot be used", r.Name))
-	}
-
-	if strings.Contains(r.Name, " ") {
-		errors = append(errors, "Index name cannot contain spaces")
 	}
 
 	// Ensure unique column names for the index

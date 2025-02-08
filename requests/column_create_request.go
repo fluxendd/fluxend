@@ -4,14 +4,12 @@ import (
 	"fluxton/types"
 	"fmt"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
-	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"strings"
 )
 
 type ColumnCreateRequest struct {
-	Column         types.TableColumn `json:"column"`
-	OrganizationID uuid.UUID         `json:"-"`
+	Column types.TableColumn `json:"column"`
 }
 
 func (r *ColumnCreateRequest) BindAndValidate(c echo.Context) []string {
@@ -19,17 +17,10 @@ func (r *ColumnCreateRequest) BindAndValidate(c echo.Context) []string {
 		return []string{"Invalid request payload"}
 	}
 
-	organizationID, err := uuid.Parse(c.Request().Header.Get("X-OrganizationID"))
-	if err != nil {
-		return []string{"Invalid organization ID"}
-	}
-
-	r.OrganizationID = organizationID
-
 	var errors []string
 
 	// Validate base request columns
-	err = validation.ValidateStruct(r,
+	err := validation.ValidateStruct(r,
 		validation.Field(&r.Column, validation.Required.Error("Column is required")),
 	)
 

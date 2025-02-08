@@ -3,6 +3,7 @@ package requests
 import (
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/labstack/echo/v4"
+	"regexp"
 )
 
 type OrganizationCreateRequest struct {
@@ -15,7 +16,12 @@ func (r *OrganizationCreateRequest) BindAndValidate(c echo.Context) []string {
 	}
 
 	err := validation.ValidateStruct(r,
-		validation.Field(&r.Name, validation.Required.Error("Name is required"), validation.Length(3, 100).Error("Title must be between 3 and 100 characters")),
+		validation.Field(
+			&r.Name,
+			validation.Required.Error("Name is required"),
+			validation.Length(3, 100).Error("Title must be between 3 and 100 characters"),
+			validation.Match(regexp.MustCompile(`^[a-zA-Z][a-zA-Z0-9_ -]*$`)).Error("Name must start with a letter and contain only alphanumeric characters, underscores, spaces, and dashes"),
+		),
 	)
 
 	// If no errors, return nil
