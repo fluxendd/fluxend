@@ -23,6 +23,7 @@ func InitializeContainer() *do.Injector {
 	// Repositories
 	do.Provide(injector, repositories.NewUserRepository)
 	do.Provide(injector, repositories.NewDatabaseRepository)
+	do.Provide(injector, repositories.NewSettingRepository)
 	do.Provide(injector, repositories.NewCoreTableRepository)
 	do.Provide(injector, repositories.NewOrganizationRepository)
 	do.Provide(injector, repositories.NewProjectRepository)
@@ -36,6 +37,7 @@ func InitializeContainer() *do.Injector {
 
 	// Services
 	do.Provide(injector, services.NewUserService)
+	do.Provide(injector, services.NewSettingService)
 	do.Provide(injector, services.NewConnectionService)
 	do.Provide(injector, services.NewOrganizationService)
 	do.Provide(injector, services.NewProjectService)
@@ -46,6 +48,7 @@ func InitializeContainer() *do.Injector {
 
 	// Controllers
 	do.Provide(injector, controllers.NewUserController)
+	do.Provide(injector, controllers.NewSettingController)
 	do.Provide(injector, controllers.NewOrganizationController)
 	do.Provide(injector, controllers.NewOrganizationUserController)
 	do.Provide(injector, controllers.NewProjectController)
