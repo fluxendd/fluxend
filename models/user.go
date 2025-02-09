@@ -9,10 +9,11 @@ const UserStatusActive = "active"
 const UserStatusInactive = "inactive"
 
 const (
-	UserRoleOwner     = 1
-	UserRoleAdmin     = 2
-	UserRoleDeveloper = 3
-	UserRoleExplorer  = 4
+	UserRoleSuperman  = 1
+	UserRoleOwner     = 2
+	UserRoleAdmin     = 3
+	UserRoleDeveloper = 4
+	UserRoleExplorer  = 5
 )
 
 type User struct {
@@ -40,6 +41,10 @@ func (u User) GetRoles() []int {
 	return []int{UserRoleOwner, UserRoleAdmin, UserRoleDeveloper, UserRoleExplorer}
 }
 
+func (u User) IsSuperman() bool {
+	return u.RoleID == UserRoleSuperman
+}
+
 func (u User) IsOwner() bool {
 	return u.RoleID == UserRoleOwner
 }
@@ -58,6 +63,10 @@ func (u User) IsExplorerOrMore() bool {
 
 func (au AuthUser) IsOwner() bool {
 	return au.RoleID == UserRoleOwner
+}
+
+func (au AuthUser) IsSuperman() bool {
+	return au.RoleID == UserRoleSuperman
 }
 
 func (au AuthUser) IsAdminOrMore() bool {
