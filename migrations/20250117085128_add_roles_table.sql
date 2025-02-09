@@ -8,7 +8,9 @@ CREATE TABLE authentication.roles (
 );
 
 INSERT INTO authentication.roles (name) VALUES
-/* Can do everything */
+/* Fluxton superuser with admin area access */
+  ('superman'),
+/* Can do everything with created orgs, project and users */
   ('owner'),
 /* can CRUD own organizations and projects underneath  */
   ('admin'),

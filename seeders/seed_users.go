@@ -12,7 +12,7 @@ func SeedUsers(container *do.Injector) {
 
 	_, err := userFactory.Create(
 		userFactory.WithUsername("admin"),
-		userFactory.WithRole(models.UserRoleOwner),
+		userFactory.WithRole(models.UserRoleSuperman),
 		userFactory.WithEmail("admin@fluxton.com"),
 	)
 	if err != nil {
