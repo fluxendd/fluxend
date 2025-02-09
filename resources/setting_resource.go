@@ -1,0 +1,34 @@
+package resources
+
+import (
+	"fluxton/models"
+)
+
+type SettingResponse struct {
+	ID           int    `json:"id"`
+	Name         string `json:"name"`
+	Value        string `json:"value"`
+	DefaultValue string `json:"default_value"`
+	CreatedAt    string `json:"created_at"`
+	UpdatedAt    string `json:"updated_at"`
+}
+
+func SettingResource(setting *models.Setting) SettingResponse {
+	return SettingResponse{
+		ID:           setting.ID,
+		Name:         setting.Name,
+		Value:        setting.Value,
+		DefaultValue: setting.DefaultValue,
+		CreatedAt:    setting.CreatedAt.Format("2006-01-02 15:04:05"),
+		UpdatedAt:    setting.UpdatedAt.Format("2006-01-02 15:04:05"),
+	}
+}
+
+func SettingResourceCollection(settings []models.Setting) []SettingResponse {
+	resourcesettings := make([]SettingResponse, len(settings))
+	for i, setting := range settings {
+		resourcesettings[i] = SettingResource(&setting)
+	}
+
+	return resourcesettings
+}
