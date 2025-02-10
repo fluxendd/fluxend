@@ -66,6 +66,7 @@ func registerRoutes(e *echo.Echo, container *do.Injector) {
 	// Controllers
 	userController := do.MustInvoke[*controllers.UserController](container)
 	settingController := do.MustInvoke[*controllers.SettingController](container)
+	healthController := do.MustInvoke[*controllers.HealthController](container)
 	organizationController := do.MustInvoke[*controllers.OrganizationController](container)
 	organizationUserController := do.MustInvoke[*controllers.OrganizationUserController](container)
 	projectController := do.MustInvoke[*controllers.ProjectController](container)
@@ -79,7 +80,7 @@ func registerRoutes(e *echo.Echo, container *do.Injector) {
 
 	// Register routes
 	routes.RegisterUserRoutes(e, authMiddleware, userController)
-	routes.RegisterAdminRoutes(e, authMiddleware, settingController)
+	routes.RegisterAdminRoutes(e, authMiddleware, settingController, healthController)
 	routes.RegisterOrganizationRoutes(e, authMiddleware, organizationController, organizationUserController)
 	routes.RegisterProjectRoutes(e, authMiddleware, projectController)
 	routes.RegisterTableRoutes(e, authMiddleware, tableController, columnController, indexController)
