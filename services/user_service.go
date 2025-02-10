@@ -43,7 +43,12 @@ func (s *UserServiceImpl) Login(request *requests.UserLoginRequest) (models.User
 		return models.User{}, "", errs.NewUnauthorizedError("user.error.invalidCredentials")
 	}
 
-	token, err := s.GenerateToken(&user)
+	jwtVersion, err := s.userRepo.CreateJWTVersion(user.ID)
+	if err != nil {
+		return models.User{}, "", err
+	}
+
+	token, err := s.GenerateToken(&user, jwtVersion)
 	if err != nil {
 		return models.User{}, "", err
 	}
@@ -107,8 +112,9 @@ func (s *UserServiceImpl) Delete(userId uuid.UUID) (bool, error) {
 	return s.userRepo.Delete(userId)
 }
 
-func (s *UserServiceImpl) GenerateToken(user *models.User) (string, error) {
+func (s *UserServiceImpl) GenerateToken(user *models.User, jwtVersion int) (string, error) {
 	claims := jwt.MapClaims{
+		"version": jwtVersion,
 		"exp":     time.Now().Add(time.Hour * 24).Unix(),
 		"iat":     time.Now().Unix(),
 		"id":      user.ID.String(),
