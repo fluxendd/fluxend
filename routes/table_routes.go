@@ -2,17 +2,17 @@ package routes
 
 import (
 	"fluxton/controllers"
-	"fluxton/middlewares"
 	"github.com/labstack/echo/v4"
 )
 
 func RegisterTableRoutes(
 	e *echo.Echo,
+	authMiddleware echo.MiddlewareFunc,
 	TableController *controllers.TableController,
 	ColumnController *controllers.ColumnController,
 	IndexController *controllers.IndexController,
 ) {
-	tablesGroup := e.Group("api/projects/:projectID/tables", middlewares.AuthMiddleware)
+	tablesGroup := e.Group("api/projects/:projectID/tables", authMiddleware)
 
 	// table routes
 	tablesGroup.POST("", TableController.Store)

@@ -4,6 +4,8 @@ import (
 	"flag"
 	"fluxton/controllers"
 	"fluxton/di"
+	"fluxton/middlewares"
+	"fluxton/repositories"
 	"fluxton/routes"
 	"fluxton/seeders"
 	"fmt"
@@ -72,13 +74,16 @@ func registerRoutes(e *echo.Echo, container *do.Injector) {
 	rowController := do.MustInvoke[*controllers.RowController](container)
 	indexController := do.MustInvoke[*controllers.IndexController](container)
 
+	userRepo := do.MustInvoke[*repositories.UserRepository](container)
+	authMiddleware := middlewares.AuthMiddleware(userRepo)
+
 	// Register routes
-	routes.RegisterUserRoutes(e, userController)
-	routes.RegisterAdminRoutes(e, settingController)
-	routes.RegisterOrganizationRoutes(e, organizationController, organizationUserController)
-	routes.RegisterProjectRoutes(e, projectController)
-	routes.RegisterTableRoutes(e, tableController, columnController, indexController)
-	routes.RegisterRowRoutes(e, rowController)
+	routes.RegisterUserRoutes(e, authMiddleware, userController)
+	routes.RegisterAdminRoutes(e, authMiddleware, settingController)
+	routes.RegisterOrganizationRoutes(e, authMiddleware, organizationController, organizationUserController)
+	routes.RegisterProjectRoutes(e, authMiddleware, projectController)
+	routes.RegisterTableRoutes(e, authMiddleware, tableController, columnController, indexController)
+	routes.RegisterRowRoutes(e, authMiddleware, rowController)
 }
 
 // runSeeders runs all seeders defined in the seeders package

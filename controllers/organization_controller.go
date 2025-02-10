@@ -50,7 +50,12 @@ func (nc *OrganizationController) Show(c echo.Context) error {
 
 func (nc *OrganizationController) Store(c echo.Context) error {
 	var request requests.OrganizationCreateRequest
-	authUser, _ := utils.NewAuth(c).User()
+	authUser, err := utils.NewAuth(c).User()
+	if err != nil {
+		return responses.UnauthorizedResponse(c, err.Error())
+	}
+
+	utils.DumpJSON(authUser)
 
 	if err := request.BindAndValidate(c); err != nil {
 		return responses.UnprocessableResponse(c, err)

@@ -2,12 +2,11 @@ package routes
 
 import (
 	"fluxton/controllers"
-	"fluxton/middlewares"
 	"github.com/labstack/echo/v4"
 )
 
-func RegisterOrganizationRoutes(e *echo.Echo, organizationController *controllers.OrganizationController, organizationUserController *controllers.OrganizationUserController) {
-	organizationsGroup := e.Group("api/organizations", middlewares.AuthMiddleware)
+func RegisterOrganizationRoutes(e *echo.Echo, authMiddleware echo.MiddlewareFunc, organizationController *controllers.OrganizationController, organizationUserController *controllers.OrganizationUserController) {
+	organizationsGroup := e.Group("api/organizations", authMiddleware)
 
 	organizationsGroup.POST("", organizationController.Store)
 	organizationsGroup.GET("", organizationController.List)
