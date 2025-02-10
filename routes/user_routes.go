@@ -11,5 +11,5 @@ func RegisterUserRoutes(e *echo.Echo, authMiddleware echo.MiddlewareFunc, userCo
 	// e.GET("/users", userController.List)
 	e.GET("/api/users/:id", authMiddleware(userController.Show))
 	e.PUT("/api/users/:id", authMiddleware(userController.Update))
-	// e.DELETE("/users/:id", userController.Delete)
+	e.POST("api/users/logout", authMiddleware(userController.Logout))
 }

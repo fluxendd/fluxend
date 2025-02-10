@@ -21,6 +21,7 @@ type UserService interface {
 	Create(request *requests.UserCreateRequest) (models.User, error)
 	Update(userId, authUserId uuid.UUID, request *requests.UserUpdateRequest) (*models.User, error)
 	Delete(userId uuid.UUID) (bool, error)
+	Logout(userId uuid.UUID) error
 }
 
 type UserServiceImpl struct {
@@ -48,7 +49,7 @@ func (s *UserServiceImpl) Login(request *requests.UserLoginRequest) (models.User
 		return models.User{}, "", err
 	}
 
-	token, err := s.GenerateToken(&user, jwtVersion)
+	token, err := s.generateToken(&user, jwtVersion)
 	if err != nil {
 		return models.User{}, "", err
 	}
@@ -112,7 +113,22 @@ func (s *UserServiceImpl) Delete(userId uuid.UUID) (bool, error) {
 	return s.userRepo.Delete(userId)
 }
 
-func (s *UserServiceImpl) GenerateToken(user *models.User, jwtVersion int) (string, error) {
+func (s *UserServiceImpl) Logout(userId uuid.UUID) error {
+	exists, err := s.userRepo.ExistsByID(userId)
+	if err != nil {
+		return err
+	}
+
+	if !exists {
+		return errs.NewNotFoundError("user.error.notFound")
+	}
+
+	_, err = s.userRepo.CreateJWTVersion(userId)
+
+	return err
+}
+
+func (s *UserServiceImpl) generateToken(user *models.User, jwtVersion int) (string, error) {
 	claims := jwt.MapClaims{
 		"version": jwtVersion,
 		"exp":     time.Now().Add(time.Hour * 24).Unix(),
