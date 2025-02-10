@@ -9,7 +9,7 @@ import (
 )
 
 type HealthService interface {
-	Pulse(authUser models.AuthUser) ([]models.Setting, error)
+	Pulse(authUser models.AuthUser) (models.Health, error)
 }
 
 type HealthServiceImpl struct {
@@ -30,10 +30,10 @@ func NewHealthService(injector *do.Injector) (HealthService, error) {
 	}, nil
 }
 
-func (s *HealthServiceImpl) Pulse(authUser models.AuthUser) ([]models.Setting, error) {
+func (s *HealthServiceImpl) Pulse(authUser models.AuthUser) (models.Health, error) {
 	if !s.adminPolicy.CanAccess(authUser) {
-		return []models.Setting{}, errs.NewForbiddenError("setting.error.listForbidden")
+		return models.Health{}, errs.NewForbiddenError("setting.error.listForbidden")
 	}
 
-	return s.settingRepo.List()
+	return models.Health{}, nil
 }
