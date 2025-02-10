@@ -109,6 +109,37 @@ func (r *UserRepository) Create(user *models.User) (*models.User, error) {
 	return user, nil
 }
 
+func (r *UserRepository) CreateJWTVersion(userId uuid.UUID) (int, error) {
+	var version int
+	query := `
+		INSERT INTO authentication.jwt_versions (user_id, version, updated_at)
+		VALUES ($1, 1, CURRENT_TIMESTAMP)
+		ON CONFLICT (user_id) 
+		DO UPDATE 
+		SET version = authentication.jwt_versions.version + 1, 
+		    updated_at = CURRENT_TIMESTAMP
+		RETURNING version;
+	`
+
+	err := r.db.QueryRow(query, userId).Scan(&version)
+	if err != nil {
+		return 0, fmt.Errorf("could not create or update JWT version: %v", err)
+	}
+
+	return version, nil
+}
+
+func (r *UserRepository) GetJWTVersion(userId uuid.UUID) (int, error) {
+	query := "SELECT version FROM authentication.jwt_versions WHERE user_id = $1"
+	var version int
+	err := r.db.Get(&version, query, userId)
+	if err != nil {
+		return 0, fmt.Errorf("could not fetch JWT version: %v", err)
+	}
+
+	return version, nil
+}
+
 func (r *UserRepository) Update(id uuid.UUID, user *models.User) (*models.User, error) {
 	user.UpdatedAt = time.Now()
 	user.ID = id
