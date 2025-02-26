@@ -97,12 +97,12 @@ func (pc *TableController) Duplicate(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	renamedTable, err := pc.tableService.Duplicate(tableID, projectID, authUser, &request)
+	duplicatedTable, err := pc.tableService.Duplicate(tableID, projectID, authUser, &request)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
 
-	return responses.SuccessResponse(c, resources.TableResource(&renamedTable))
+	return responses.SuccessResponse(c, resources.TableResource(duplicatedTable))
 }
 
 func (pc *TableController) Rename(c echo.Context) error {

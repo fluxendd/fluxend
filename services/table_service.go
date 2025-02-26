@@ -16,7 +16,7 @@ type TableService interface {
 	List(paginationParams utils.PaginationParams, projectID uuid.UUID, authUser models.AuthUser) ([]models.Table, error)
 	GetByID(tableID, projectID uuid.UUID, authUser models.AuthUser) (models.Table, error)
 	Create(request *requests.TableCreateRequest, projectID uuid.UUID, authUser models.AuthUser) (models.Table, error)
-	Duplicate(tableID, projectID uuid.UUID, authUser models.AuthUser, request *requests.TableRenameRequest) (models.Table, error)
+	Duplicate(tableID, projectID uuid.UUID, authUser models.AuthUser, request *requests.TableRenameRequest) (*models.Table, error)
 	Rename(tableID, projectID uuid.UUID, authUser models.AuthUser, request *requests.TableRenameRequest) (models.Table, error)
 	Delete(tableID, projectID uuid.UUID, authUser models.AuthUser) (bool, error)
 }
@@ -110,37 +110,39 @@ func (s *TableServiceImpl) Create(request *requests.TableCreateRequest, projectI
 	return table, nil
 }
 
-func (s *TableServiceImpl) Duplicate(tableID, projectID uuid.UUID, authUser models.AuthUser, request *requests.TableRenameRequest) (models.Table, error) {
+func (s *TableServiceImpl) Duplicate(tableID, projectID uuid.UUID, authUser models.AuthUser, request *requests.TableRenameRequest) (*models.Table, error) {
 	project, err := s.projectRepo.GetByUUID(projectID)
 	if err != nil {
-		return models.Table{}, err
+		return &models.Table{}, err
 	}
 
 	if !s.projectPolicy.CanUpdate(project.OrganizationUuid, authUser) {
-		return models.Table{}, errs.NewForbiddenError("project.error.updateForbidden")
+		return &models.Table{}, errs.NewForbiddenError("project.error.updateForbidden")
 	}
 
 	err = s.validateNameForDuplication(request.Name, projectID)
 	if err != nil {
-		return models.Table{}, err
+		return &models.Table{}, err
 	}
 
 	table, err := s.coreTableRepo.GetByID(tableID)
 	if err != nil {
-		return models.Table{}, err
+		return &models.Table{}, err
 	}
 
 	clientTableRepo, err := s.getClientTableRepo(project.DBName)
 	if err != nil {
-		return models.Table{}, err
+		return &models.Table{}, err
 	}
 
 	err = clientTableRepo.Duplicate(table.Name, request.Name)
 	if err != nil {
-		return models.Table{}, err
+		return &models.Table{}, err
 	}
 
-	return s.coreTableRepo.Rename(tableID, request.Name, authUser.Uuid)
+	table.Name = request.Name
+
+	return s.coreTableRepo.Create(&table)
 }
 
 func (s *TableServiceImpl) Rename(tableID, projectID uuid.UUID, authUser models.AuthUser, request *requests.TableRenameRequest) (models.Table, error) {
