@@ -2,8 +2,8 @@ package main
 
 import (
 	"fluxton/controllers"
-	"fluxton/db"
-	"fluxton/factories"
+	"fluxton/database"
+	"fluxton/database/factories"
 	"fluxton/policies"
 	"fluxton/repositories"
 	"fluxton/services"
@@ -15,9 +15,9 @@ func InitializeContainer() *do.Injector {
 	injector := do.New()
 
 	// Database
-	db.InitDB()
+	database.InitDB()
 	do.Provide(injector, func(i *do.Injector) (*sqlx.DB, error) {
-		return db.GetDB(), nil
+		return database.GetDB(), nil
 	})
 
 	// Repositories
