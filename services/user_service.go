@@ -17,6 +17,7 @@ import (
 type UserService interface {
 	Login(request *requests.UserLoginRequest) (models.User, string, error)
 	List(paginationParams utils.PaginationParams) ([]models.User, error)
+	ExistsByUUID(id uuid.UUID) error
 	GetByID(id uuid.UUID) (models.User, error)
 	Create(request *requests.UserCreateRequest) (models.User, error)
 	Update(userUUID, authUserUUID uuid.UUID, request *requests.UserUpdateRequest) (*models.User, error)
@@ -65,6 +66,19 @@ func (s *UserServiceImpl) GetByID(id uuid.UUID) (models.User, error) {
 	return s.userRepo.GetByID(id)
 }
 
+func (s *UserServiceImpl) ExistsByUUID(id uuid.UUID) error {
+	exists, err := s.userRepo.ExistsByID(id)
+	if err != nil {
+		return err
+	}
+
+	if !exists {
+		return errs.NewNotFoundError("user.error.notFound")
+	}
+
+	return nil
+}
+
 func (s *UserServiceImpl) Create(request *requests.UserCreateRequest) (models.User, error) {
 	user := models.User{
 		Username: request.Username,
@@ -101,26 +115,18 @@ func (s *UserServiceImpl) Update(userUUID, authUserUUID uuid.UUID, request *requ
 }
 
 func (s *UserServiceImpl) Delete(userUUID uuid.UUID) (bool, error) {
-	exists, err := s.userRepo.ExistsByID(userUUID)
+	err := s.ExistsByUUID(userUUID)
 	if err != nil {
 		return false, err
-	}
-
-	if !exists {
-		return false, errs.NewNotFoundError("user.error.notFound")
 	}
 
 	return s.userRepo.Delete(userUUID)
 }
 
 func (s *UserServiceImpl) Logout(userUUID uuid.UUID) error {
-	exists, err := s.userRepo.ExistsByID(userUUID)
+	err := s.ExistsByUUID(userUUID)
 	if err != nil {
 		return err
-	}
-
-	if !exists {
-		return errs.NewNotFoundError("user.error.notFound")
 	}
 
 	_, err = s.userRepo.CreateJWTVersion(userUUID)

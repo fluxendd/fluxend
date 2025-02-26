@@ -26,15 +26,18 @@ type OrganizationService interface {
 type OrganizationServiceImpl struct {
 	organizationPolicy *policies.OrganizationPolicy
 	organizationRepo   *repositories.OrganizationRepository
+	userRepo           *repositories.UserRepository
 }
 
 func NewOrganizationService(injector *do.Injector) (OrganizationService, error) {
 	policy := do.MustInvoke[*policies.OrganizationPolicy](injector)
-	repo := do.MustInvoke[*repositories.OrganizationRepository](injector)
+	organizationRepo := do.MustInvoke[*repositories.OrganizationRepository](injector)
+	userRepo := do.MustInvoke[*repositories.UserRepository](injector)
 
 	return &OrganizationServiceImpl{
 		organizationPolicy: policy,
-		organizationRepo:   repo,
+		organizationRepo:   organizationRepo,
+		userRepo:           userRepo,
 	}, nil
 }
 
@@ -53,6 +56,19 @@ func (s *OrganizationServiceImpl) GetByID(organizationUUID uuid.UUID, authUser m
 	}
 
 	return organization, nil
+}
+
+func (s *OrganizationServiceImpl) ExistsByUUID(organizationUUID uuid.UUID) error {
+	exists, err := s.organizationRepo.ExistsByID(organizationUUID)
+	if err != nil {
+		return err
+	}
+
+	if !exists {
+		return errs.NewNotFoundError("organization.error.notFound")
+	}
+
+	return nil
 }
 
 func (s *OrganizationServiceImpl) Create(request *requests.OrganizationCreateRequest, authUser models.AuthUser) (models.Organization, error) {
@@ -96,7 +112,7 @@ func (s *OrganizationServiceImpl) Update(organizationUUID uuid.UUID, authUser mo
 }
 
 func (s *OrganizationServiceImpl) Delete(organizationUUID uuid.UUID, authUser models.AuthUser) (bool, error) {
-	_, err := s.organizationRepo.GetByUUID(organizationUUID)
+	err := s.ExistsByUUID(organizationUUID)
 	if err != nil {
 		return false, err
 	}
@@ -121,6 +137,20 @@ func (s *OrganizationServiceImpl) CreateUser(request *requests.OrganizationUserC
 		return models.User{}, errs.NewForbiddenError("organization.error.createUserForbidden")
 	}
 
+	err := s.ExistsByUUID(organizationUUID)
+	if err != nil {
+		return models.User{}, err
+	}
+
+	exists, err := s.userRepo.ExistsByID(request.UserID)
+	if err != nil {
+		return models.User{}, err
+	}
+
+	if !exists {
+		return models.User{}, errs.NewNotFoundError("user.error.notFound")
+	}
+
 	userExists, err := s.organizationRepo.IsOrganizationMember(organizationUUID, request.UserID)
 	if err != nil {
 		return models.User{}, err
@@ -138,10 +168,19 @@ func (s *OrganizationServiceImpl) CreateUser(request *requests.OrganizationUserC
 	return s.organizationRepo.GetUser(organizationUUID, request.UserID)
 }
 
-func (s *OrganizationServiceImpl) DeleteUser(organizationUUID, userID uuid.UUID, authUser models.AuthUser) error {
+func (s *OrganizationServiceImpl) DeleteUser(organizationUUID, userUUID uuid.UUID, authUser models.AuthUser) error {
 	if !s.organizationPolicy.CanUpdate(organizationUUID, authUser) {
 		return errs.NewForbiddenError("organization.error.deleteUserForbidden")
 	}
 
-	return s.organizationRepo.DeleteUser(organizationUUID, userID)
+	userExists, err := s.organizationRepo.IsOrganizationMember(organizationUUID, userUUID)
+	if err != nil {
+		return err
+	}
+
+	if !userExists {
+		return errs.NewNotFoundError("organization.error.userNotFound")
+	}
+
+	return s.organizationRepo.DeleteUser(organizationUUID, userUUID)
 }
