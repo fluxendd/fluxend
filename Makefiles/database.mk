@@ -1,5 +1,13 @@
 .PHONY: migrate-create migrate-up migrate-down migrate-status migrate-reset migrate-redo migrate-fresh seed seed-fresh
 
+drop-user-databases: ## Drop all user-created databases
+	@docker exec -i fluxton_db psql -U ${DATABASE_USER} -d ${DATABASE_NAME} -t -c "SELECT datname FROM pg_database WHERE datname LIKE 'udb_%';" | sed 's/^[ \t]*//' | while read dbname; do \
+		if [ ! -z "$$dbname" ]; then \
+			echo "Dropping database: $$dbname"; \
+			docker exec -i fluxton_db psql -U ${DATABASE_USER} -d ${DATABASE_NAME} -c "DROP DATABASE IF EXISTS \"$$dbname\""; \
+		fi \
+	done
+
 migrate-create: ## Create a new database migration
 	@read -p "Enter migration name: " name; \
 	goose -dir migrations create $$name sql
@@ -20,6 +28,7 @@ migrate-redo: ## Rollback the last migration and run it again
 	goose -dir migrations postgres ${DATABASE_CONNECTION} redo
 
 migrate-fresh: ## Rollback all migrations and run them again
+	make drop-user-databases
 	make migrate-reset
 	make migrate-up
 
@@ -29,3 +38,6 @@ seed: ## Seed the database
 seed-fresh: ## Seed the database with fresh data
 	make migrate-fresh
 	make seed
+
+
+
