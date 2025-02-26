@@ -24,6 +24,16 @@ func (r *ClientIndexRepository) GetByName(tableName string, indexName string) (s
 	return index, nil
 }
 
+func (r *ClientIndexRepository) Has(tableName string, indexName string) (bool, error) {
+	var count int
+	err := r.connection.Get(&count, fmt.Sprintf("SELECT COUNT(*) FROM pg_indexes WHERE tablename = '%s' AND indexname = '%s'", tableName, indexName))
+	if err != nil {
+		return false, err
+	}
+
+	return count > 0, nil
+}
+
 func (r *ClientIndexRepository) List(tableName string) ([]string, error) {
 	var indexes []string
 	err := r.connection.Select(&indexes, fmt.Sprintf("SELECT indexname FROM pg_indexes WHERE tablename = '%s'", tableName))
