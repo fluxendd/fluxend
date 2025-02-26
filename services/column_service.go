@@ -39,7 +39,7 @@ func NewColumnService(injector *do.Injector) (ColumnService, error) {
 }
 
 func (s *ColumnServiceImpl) Create(projectID, tableID uuid.UUID, request *requests.ColumnCreateRequest, authUser models.AuthUser) (models.Table, error) {
-	project, err := s.projectRepo.GetByID(projectID)
+	project, err := s.projectRepo.GetByUUID(projectID)
 	if err != nil {
 		return models.Table{}, err
 	}
@@ -80,7 +80,7 @@ func (s *ColumnServiceImpl) Create(projectID, tableID uuid.UUID, request *reques
 }
 
 func (s *ColumnServiceImpl) Alter(columnName string, tableID, projectID uuid.UUID, request *requests.ColumnAlterRequest, authUser models.AuthUser) (*models.Table, error) {
-	project, err := s.projectRepo.GetByID(projectID)
+	project, err := s.projectRepo.GetByUUID(projectID)
 	if err != nil {
 		return &models.Table{}, err
 	}
@@ -126,7 +126,7 @@ func (s *ColumnServiceImpl) Alter(columnName string, tableID, projectID uuid.UUI
 }
 
 func (s *ColumnServiceImpl) Rename(columnName string, tableID, projectID uuid.UUID, request *requests.ColumnRenameRequest, authUser models.AuthUser) (*models.Table, error) {
-	project, err := s.projectRepo.GetByID(projectID)
+	project, err := s.projectRepo.GetByUUID(projectID)
 	if err != nil {
 		return &models.Table{}, err
 	}
@@ -172,7 +172,7 @@ func (s *ColumnServiceImpl) Rename(columnName string, tableID, projectID uuid.UU
 }
 
 func (s *ColumnServiceImpl) Delete(columnName string, tableID, projectID uuid.UUID, authUser models.AuthUser) (bool, error) {
-	project, err := s.projectRepo.GetByID(projectID)
+	project, err := s.projectRepo.GetByUUID(projectID)
 	if err != nil {
 		return false, err
 	}

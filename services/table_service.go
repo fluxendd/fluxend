@@ -43,7 +43,7 @@ func NewTableService(injector *do.Injector) (TableService, error) {
 }
 
 func (s *TableServiceImpl) List(paginationParams utils.PaginationParams, projectID uuid.UUID, authUser models.AuthUser) ([]models.Table, error) {
-	organizationUUID, err := s.projectRepo.GetorganizationUUIDByProjectID(projectID)
+	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(projectID)
 	if err != nil {
 		return []models.Table{}, err
 	}
@@ -56,7 +56,7 @@ func (s *TableServiceImpl) List(paginationParams utils.PaginationParams, project
 }
 
 func (s *TableServiceImpl) GetByID(tableID, projectID uuid.UUID, authUser models.AuthUser) (models.Table, error) {
-	organizationUUID, err := s.projectRepo.GetorganizationUUIDByProjectID(projectID)
+	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(projectID)
 	if err != nil {
 		return models.Table{}, err
 	}
@@ -69,7 +69,7 @@ func (s *TableServiceImpl) GetByID(tableID, projectID uuid.UUID, authUser models
 }
 
 func (s *TableServiceImpl) Create(request *requests.TableCreateRequest, projectID uuid.UUID, authUser models.AuthUser) (models.Table, error) {
-	project, err := s.projectRepo.GetByID(projectID)
+	project, err := s.projectRepo.GetByUUID(projectID)
 	if err != nil {
 		return models.Table{}, err
 	}
@@ -111,7 +111,7 @@ func (s *TableServiceImpl) Create(request *requests.TableCreateRequest, projectI
 }
 
 func (s *TableServiceImpl) Duplicate(tableID, projectID uuid.UUID, authUser models.AuthUser, request *requests.TableRenameRequest) (models.Table, error) {
-	project, err := s.projectRepo.GetByID(projectID)
+	project, err := s.projectRepo.GetByUUID(projectID)
 	if err != nil {
 		return models.Table{}, err
 	}
@@ -144,7 +144,7 @@ func (s *TableServiceImpl) Duplicate(tableID, projectID uuid.UUID, authUser mode
 }
 
 func (s *TableServiceImpl) Rename(tableID, projectID uuid.UUID, authUser models.AuthUser, request *requests.TableRenameRequest) (models.Table, error) {
-	project, err := s.projectRepo.GetByID(projectID)
+	project, err := s.projectRepo.GetByUUID(projectID)
 	if err != nil {
 		return models.Table{}, err
 	}
@@ -177,7 +177,7 @@ func (s *TableServiceImpl) Rename(tableID, projectID uuid.UUID, authUser models.
 }
 
 func (s *TableServiceImpl) Delete(tableID, projectID uuid.UUID, authUser models.AuthUser) (bool, error) {
-	project, err := s.projectRepo.GetByID(projectID)
+	project, err := s.projectRepo.GetByUUID(projectID)
 	if err != nil {
 		return false, err
 	}

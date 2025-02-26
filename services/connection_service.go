@@ -35,7 +35,7 @@ func (s *ConnectionServiceImpl) ConnectByDatabaseName(name string) (*sqlx.DB, er
 }
 
 func (s *ConnectionServiceImpl) ConnectByProjectID(projectID uuid.UUID) (*sqlx.DB, error) {
-	project, err := s.projectRepo.GetByID(projectID)
+	project, err := s.projectRepo.GetByUUID(projectID)
 	if err != nil {
 		return nil, err
 	}

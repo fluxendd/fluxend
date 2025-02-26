@@ -49,7 +49,7 @@ func (s *ProjectServiceImpl) List(paginationParams utils.PaginationParams, organ
 }
 
 func (s *ProjectServiceImpl) GetByID(projectID uuid.UUID, authUser models.AuthUser) (models.Project, error) {
-	project, err := s.projectRepo.GetByID(projectID)
+	project, err := s.projectRepo.GetByUUID(projectID)
 	if err != nil {
 		return models.Project{}, err
 	}
@@ -97,7 +97,7 @@ func (s *ProjectServiceImpl) Create(request *requests.ProjectCreateRequest, auth
 }
 
 func (s *ProjectServiceImpl) Update(projectID uuid.UUID, authUser models.AuthUser, request *requests.ProjectUpdateRequest) (*models.Project, error) {
-	project, err := s.projectRepo.GetByID(projectID)
+	project, err := s.projectRepo.GetByUUID(projectID)
 	if err != nil {
 		return nil, err
 	}
@@ -123,7 +123,7 @@ func (s *ProjectServiceImpl) Update(projectID uuid.UUID, authUser models.AuthUse
 }
 
 func (s *ProjectServiceImpl) Delete(projectID uuid.UUID, authUser models.AuthUser) (bool, error) {
-	project, err := s.projectRepo.GetByID(projectID)
+	project, err := s.projectRepo.GetByUUID(projectID)
 	if err != nil {
 		return false, err
 	}
