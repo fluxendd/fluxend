@@ -253,7 +253,7 @@ func (r *OrganizationRepository) Delete(organizationUUID uuid.UUID) (bool, error
 	return rowsAffected == 1, nil
 }
 
-func (r *OrganizationRepository) IsOrganizationUser(organizationUUID, authUserID uuid.UUID) (bool, error) {
+func (r *OrganizationRepository) IsOrganizationMember(organizationUUID, authUserID uuid.UUID) (bool, error) {
 	query := "SELECT EXISTS(SELECT 1 FROM fluxton.organization_members WHERE organization_uuid = $1 AND user_uuid = $2)"
 
 	var exists bool

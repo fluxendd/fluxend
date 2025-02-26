@@ -24,7 +24,7 @@ func (s *OrganizationPolicy) CanCreate(authUser models.AuthUser) bool {
 }
 
 func (s *OrganizationPolicy) CanAccess(organizationUUID uuid.UUID, authUser models.AuthUser) bool {
-	isOrganizationUser, err := s.organizationRepo.IsOrganizationUser(organizationUUID, authUser.Uuid)
+	isOrganizationUser, err := s.organizationRepo.IsOrganizationMember(organizationUUID, authUser.Uuid)
 	if err != nil {
 		return false
 	}
@@ -37,7 +37,7 @@ func (s *OrganizationPolicy) CanUpdate(organizationUUID uuid.UUID, authUser mode
 		return false
 	}
 
-	isOrganizationUser, err := s.organizationRepo.IsOrganizationUser(organizationUUID, authUser.Uuid)
+	isOrganizationUser, err := s.organizationRepo.IsOrganizationMember(organizationUUID, authUser.Uuid)
 	if err != nil {
 		return false
 	}
