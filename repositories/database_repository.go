@@ -93,7 +93,7 @@ func (r *DatabaseRepository) importSeedFiles(databaseName string) error {
 	}
 	defer connection.Close()
 
-	seedDir := "seeders/client"
+	seedDir := "database/seeders/client"
 
 	// Read all files in the directory
 	files, err := os.ReadDir(seedDir)

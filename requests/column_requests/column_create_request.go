@@ -1,4 +1,4 @@
-package requests
+package column_requests
 
 import (
 	"fluxton/types"
@@ -7,21 +7,19 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/labstack/echo/v4"
 	"regexp"
-	"strings"
 )
 
-type ColumnAlterRequest struct {
+type ColumnCreateRequest struct {
 	Columns []types.TableColumn `json:"columns"`
 }
 
-func (r *ColumnAlterRequest) BindAndValidate(c echo.Context) []string {
+func (r *ColumnCreateRequest) BindAndValidate(c echo.Context) []string {
 	if err := c.Bind(r); err != nil {
 		return []string{"Invalid request payload"}
 	}
 
 	var errors []string
 
-	// Validate each column in the request
 	for _, column := range r.Columns {
 		// Validate column name and type
 		err := validation.ValidateStruct(&column,
@@ -31,8 +29,13 @@ func (r *ColumnAlterRequest) BindAndValidate(c echo.Context) []string {
 				validation.Match(
 					regexp.MustCompile(utils.AlphanumericWithUnderscoreAndDashPattern()),
 				).Error("Column name must be alphanumeric and start with a letter"),
+				validation.By(validateName),
 			),
-			validation.Field(&column.Type, validation.Required.Error("Column type is required")),
+			validation.Field(
+				&column.Type,
+				validation.Required.Error("Column type is required"),
+				validation.By(validateType),
+			),
 		)
 
 		if err != nil {
@@ -41,11 +44,6 @@ func (r *ColumnAlterRequest) BindAndValidate(c echo.Context) []string {
 					errors = append(errors, fmt.Sprintf("Column '%s': %s", column.Name, validationErr.Error()))
 				}
 			}
-		}
-
-		// Check for valid column types
-		if !allowedFieldTypes[strings.ToLower(column.Type)] {
-			errors = append(errors, fmt.Sprintf("Column '%s': type '%s' is not allowed", column.Name, column.Type))
 		}
 	}
 
