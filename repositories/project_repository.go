@@ -136,8 +136,8 @@ func (r *ProjectRepository) Create(project *models.Project) (*models.Project, er
 		return nil, fmt.Errorf("could not begin transaction: %v", err)
 	}
 
-	query := "INSERT INTO fluxton.projects (name, db_name, organization_uuid, created_by, updated_by) VALUES ($1, $2, $3, $4, $5) RETURNING uuid"
-	queryErr := tx.QueryRowx(query, project.Name, project.DBName, project.OrganizationUuid, project.CreatedBy, project.UpdatedBy).Scan(&project.Uuid)
+	query := "INSERT INTO fluxton.projects (name, db_name, db_port, organization_uuid, created_by, updated_by) VALUES ($1, $2, $3, $4, $5, $6) RETURNING uuid"
+	queryErr := tx.QueryRowx(query, project.Name, project.DBName, project.DBPort, project.OrganizationUuid, project.CreatedBy, project.UpdatedBy).Scan(&project.Uuid)
 	if queryErr != nil {
 		err := tx.Rollback()
 		if err != nil {
