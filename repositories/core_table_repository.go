@@ -75,7 +75,7 @@ func (r *CoreTableRepository) ListForProject(paginationParams utils.PaginationPa
 }
 
 func (r *CoreTableRepository) ListColumns(tableID uuid.UUID) ([]types.TableColumn, error) {
-	query := "SELECT columns FROM fluxton.tables WHERE id = $1"
+	query := "SELECT columns FROM fluxton.tables WHERE uuid = $1"
 
 	var columnsJSON models.JSONColumns
 	row := r.db.QueryRow(query, tableID)
@@ -126,7 +126,7 @@ func (r *CoreTableRepository) GetByName(name string) (models.Table, error) {
 }
 
 func (r *CoreTableRepository) ExistsByID(id uuid.UUID) (bool, error) {
-	query := "SELECT EXISTS(SELECT 1 FROM fluxton.tables WHERE id = $1)"
+	query := "SELECT EXISTS(SELECT 1 FROM fluxton.tables WHERE uuid = $1)"
 
 	var exists bool
 	err := r.db.Get(&exists, query, id)
@@ -138,7 +138,7 @@ func (r *CoreTableRepository) ExistsByID(id uuid.UUID) (bool, error) {
 }
 
 func (r *CoreTableRepository) ExistsByNameForProject(name string, tableID uuid.UUID) (bool, error) {
-	query := "SELECT EXISTS(SELECT 1 FROM fluxton.tables WHERE name = $1 AND project_Id = $2)"
+	query := "SELECT EXISTS(SELECT 1 FROM fluxton.tables WHERE name = $1 AND project_uuid = $2)"
 
 	var exists bool
 	err := r.db.Get(&exists, query, name, tableID)
@@ -154,7 +154,7 @@ func (r *CoreTableRepository) HasColumn(column string, tableID uuid.UUID) (bool,
 		SELECT EXISTS (
 			SELECT 1
 			FROM fluxton.tables
-			WHERE id = $1
+			WHERE uuid = $1
 			AND EXISTS (
 				SELECT 1
 				FROM jsonb_array_elements(columns) AS col
@@ -181,8 +181,8 @@ func (r *CoreTableRepository) Create(table *models.Table) (*models.Table, error)
 		return nil, fmt.Errorf("could not marshal columns: %v", err)
 	}
 
-	query := "INSERT INTO fluxton.tables (name, project_id, created_by, updated_by, columns) VALUES ($1, $2, $3, $4, $5) RETURNING id"
-	queryErr := r.db.QueryRow(query, table.Name, table.ProjectID, table.CreatedBy, table.UpdatedBy, columnsJSON).Scan(&table.ID)
+	query := "INSERT INTO fluxton.tables (name, project_uuid, created_by, updated_by, columns) VALUES ($1, $2, $3, $4, $5) RETURNING uuid"
+	queryErr := r.db.QueryRow(query, table.Name, table.ProjectUuid, table.CreatedBy, table.UpdatedBy, columnsJSON).Scan(&table.Uuid)
 	if queryErr != nil {
 		return nil, fmt.Errorf("could not create table: %v", queryErr)
 	}
@@ -199,11 +199,11 @@ func (r *CoreTableRepository) Update(table *models.Table) (*models.Table, error)
 	query := `
 		UPDATE fluxton.tables 
 		SET name = $1, columns = $2, updated_at = $3, updated_by = $4
-		WHERE id = $5
-		RETURNING id
+		WHERE uuid = $5
+		RETURNING uuid
 	`
 
-	rows, queryErr := r.db.Exec(query, table.Name, columnsJSON, time.Now(), table.UpdatedBy, table.ID)
+	rows, queryErr := r.db.Exec(query, table.Name, columnsJSON, time.Now(), table.UpdatedBy, table.Uuid)
 	if queryErr != nil {
 		return nil, fmt.Errorf("could not update table: %v", queryErr)
 	}
@@ -224,7 +224,7 @@ func (r *CoreTableRepository) Rename(tableID uuid.UUID, name string, authUserID 
 	query := `
 		UPDATE fluxton.tables 
 		SET name = $1, updated_at = $2, updated_by = $3
-		WHERE id = $4`
+		WHERE uuid = $4`
 
 	rows, err := r.db.Exec(query, name, time.Now(), authUserID, tableID)
 	if err != nil {
@@ -244,7 +244,7 @@ func (r *CoreTableRepository) Rename(tableID uuid.UUID, name string, authUserID 
 }
 
 func (r *CoreTableRepository) Delete(tableID uuid.UUID) (bool, error) {
-	query := "DELETE FROM fluxton.tables WHERE id = $1"
+	query := "DELETE FROM fluxton.tables WHERE uuid = $1"
 	res, err := r.db.Exec(query, tableID)
 	if err != nil {
 		return false, fmt.Errorf("could not delete row: %v", err)
