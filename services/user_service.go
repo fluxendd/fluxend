@@ -19,9 +19,9 @@ type UserService interface {
 	List(paginationParams utils.PaginationParams) ([]models.User, error)
 	GetByID(id uuid.UUID) (models.User, error)
 	Create(request *requests.UserCreateRequest) (models.User, error)
-	Update(userId, authUserId uuid.UUID, request *requests.UserUpdateRequest) (*models.User, error)
-	Delete(userId uuid.UUID) (bool, error)
-	Logout(userId uuid.UUID) error
+	Update(userUUID, authUserUUID uuid.UUID, request *requests.UserUpdateRequest) (*models.User, error)
+	Delete(userUUID uuid.UUID) (bool, error)
+	Logout(userUUID uuid.UUID) error
 }
 
 type UserServiceImpl struct {
@@ -82,12 +82,12 @@ func (s *UserServiceImpl) Create(request *requests.UserCreateRequest) (models.Us
 	return user, nil
 }
 
-func (s *UserServiceImpl) Update(userId, authUserId uuid.UUID, request *requests.UserUpdateRequest) (*models.User, error) {
-	if !policies.CanUpdateUser(userId, authUserId) {
+func (s *UserServiceImpl) Update(userUUID, authUserUUID uuid.UUID, request *requests.UserUpdateRequest) (*models.User, error) {
+	if !policies.CanUpdateUser(userUUID, authUserUUID) {
 		return nil, errs.NewForbiddenError("user.error.updateForbidden")
 	}
 
-	user, err := s.userRepo.GetByID(userId)
+	user, err := s.userRepo.GetByID(userUUID)
 	if err != nil {
 		return nil, err
 	}
@@ -97,11 +97,11 @@ func (s *UserServiceImpl) Update(userId, authUserId uuid.UUID, request *requests
 		return nil, err
 	}
 
-	return s.userRepo.Update(userId, &user)
+	return s.userRepo.Update(userUUID, &user)
 }
 
-func (s *UserServiceImpl) Delete(userId uuid.UUID) (bool, error) {
-	exists, err := s.userRepo.ExistsByID(userId)
+func (s *UserServiceImpl) Delete(userUUID uuid.UUID) (bool, error) {
+	exists, err := s.userRepo.ExistsByID(userUUID)
 	if err != nil {
 		return false, err
 	}
@@ -110,11 +110,11 @@ func (s *UserServiceImpl) Delete(userId uuid.UUID) (bool, error) {
 		return false, errs.NewNotFoundError("user.error.notFound")
 	}
 
-	return s.userRepo.Delete(userId)
+	return s.userRepo.Delete(userUUID)
 }
 
-func (s *UserServiceImpl) Logout(userId uuid.UUID) error {
-	exists, err := s.userRepo.ExistsByID(userId)
+func (s *UserServiceImpl) Logout(userUUID uuid.UUID) error {
+	exists, err := s.userRepo.ExistsByID(userUUID)
 	if err != nil {
 		return err
 	}
@@ -123,7 +123,7 @@ func (s *UserServiceImpl) Logout(userId uuid.UUID) error {
 		return errs.NewNotFoundError("user.error.notFound")
 	}
 
-	_, err = s.userRepo.CreateJWTVersion(userId)
+	_, err = s.userRepo.CreateJWTVersion(userUUID)
 
 	return err
 }
