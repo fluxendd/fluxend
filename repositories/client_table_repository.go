@@ -14,6 +14,26 @@ func NewClientTableRepository(connection *sqlx.DB) (*ClientTableRepository, erro
 	return &ClientTableRepository{connection: connection}, nil
 }
 
+func (r *ClientTableRepository) Exists(name string) (bool, error) {
+	var count int
+	err := r.connection.Get(&count, "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = 'public' AND table_name = $1", name)
+	if err != nil {
+		return false, err
+	}
+
+	return count > 0, nil
+}
+
+func (r *ClientTableRepository) GetColumns(name string) ([]types.TableColumn, error) {
+	var columns []types.TableColumn
+	err := r.connection.Select(&columns, "SELECT column_name, data_type, is_nullable, column_default FROM information_schema.columns WHERE table_name = $1", name)
+	if err != nil {
+		return []types.TableColumn{}, err
+	}
+
+	return columns, nil
+}
+
 func (r *ClientTableRepository) Create(name string, columns []types.TableColumn) error {
 	query := "CREATE TABLE " + name + " ("
 
@@ -66,16 +86,6 @@ func (r *ClientTableRepository) List() ([]string, error) {
 	}
 
 	return tables, nil
-}
-
-func (r *ClientTableRepository) Exists(name string) (bool, error) {
-	var count int
-	err := r.connection.Get(&count, "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = 'public' AND table_name = $1", name)
-	if err != nil {
-		return false, err
-	}
-
-	return count > 0, nil
 }
 
 func (r *ClientTableRepository) DropIfExists(name string) error {
