@@ -9,6 +9,7 @@ import (
 	"fluxton/utils"
 	"github.com/google/uuid"
 	"github.com/samber/do"
+	"math/rand"
 	"strings"
 	"time"
 )
@@ -74,6 +75,7 @@ func (s *ProjectServiceImpl) Create(request *requests.ProjectCreateRequest, auth
 		Name:             request.Name,
 		OrganizationUuid: request.OrganizationUUID,
 		DBName:           s.generateDBName(),
+		DBPort:           s.generateDBPort(),
 		CreatedBy:        authUser.Uuid,
 		UpdatedBy:        authUser.Uuid,
 	}
@@ -137,6 +139,10 @@ func (s *ProjectServiceImpl) Delete(projectID uuid.UUID, authUser models.AuthUse
 
 func (s *ProjectServiceImpl) generateDBName() string {
 	return strings.ReplaceAll(strings.ToLower(uuid.New().String()), "-", "")
+}
+
+func (s *ProjectServiceImpl) generateDBPort() int {
+	return rand.Intn(65535-5000+1) + 5000
 }
 
 func (s *ProjectServiceImpl) validateNameForDuplication(name string, organizationUUID uuid.UUID) error {
