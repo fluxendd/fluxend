@@ -14,7 +14,7 @@ import (
 )
 
 type ProjectService interface {
-	List(paginationParams utils.PaginationParams, organizationID uuid.UUID, authUser models.AuthUser) ([]models.Project, error)
+	List(paginationParams utils.PaginationParams, organizationUUID uuid.UUID, authUser models.AuthUser) ([]models.Project, error)
 	GetByID(projectID uuid.UUID, authUser models.AuthUser) (models.Project, error)
 	Create(request *requests.ProjectCreateRequest, authUser models.AuthUser) (models.Project, error)
 	Update(projectID uuid.UUID, authUser models.AuthUser, request *requests.ProjectUpdateRequest) (*models.Project, error)
@@ -39,12 +39,12 @@ func NewProjectService(injector *do.Injector) (ProjectService, error) {
 	}, nil
 }
 
-func (s *ProjectServiceImpl) List(paginationParams utils.PaginationParams, organizationID uuid.UUID, authUser models.AuthUser) ([]models.Project, error) {
-	if !s.projectPolicy.CanAccess(organizationID, authUser) {
+func (s *ProjectServiceImpl) List(paginationParams utils.PaginationParams, organizationUUID uuid.UUID, authUser models.AuthUser) ([]models.Project, error) {
+	if !s.projectPolicy.CanAccess(organizationUUID, authUser) {
 		return []models.Project{}, errs.NewForbiddenError("project.error.listForbidden")
 	}
 
-	return s.projectRepo.ListForUser(paginationParams, authUser.ID)
+	return s.projectRepo.ListForUser(paginationParams, authUser.Uuid)
 }
 
 func (s *ProjectServiceImpl) GetByID(projectID uuid.UUID, authUser models.AuthUser) (models.Project, error) {
@@ -53,7 +53,7 @@ func (s *ProjectServiceImpl) GetByID(projectID uuid.UUID, authUser models.AuthUs
 		return models.Project{}, err
 	}
 
-	if !s.projectPolicy.CanAccess(project.OrganizationID, authUser) {
+	if !s.projectPolicy.CanAccess(project.OrganizationUuid, authUser) {
 		return models.Project{}, errs.NewForbiddenError("project.error.viewForbidden")
 	}
 
@@ -61,21 +61,21 @@ func (s *ProjectServiceImpl) GetByID(projectID uuid.UUID, authUser models.AuthUs
 }
 
 func (s *ProjectServiceImpl) Create(request *requests.ProjectCreateRequest, authUser models.AuthUser) (models.Project, error) {
-	if !s.projectPolicy.CanCreate(request.OrganizationID, authUser) {
+	if !s.projectPolicy.CanCreate(request.OrganizationUUID, authUser) {
 		return models.Project{}, errs.NewForbiddenError("project.error.createForbidden")
 	}
 
-	err := s.validateNameForDuplication(request.Name, request.OrganizationID)
+	err := s.validateNameForDuplication(request.Name, request.OrganizationUUID)
 	if err != nil {
 		return models.Project{}, err
 	}
 
 	project := models.Project{
-		Name:           request.Name,
-		OrganizationID: request.OrganizationID,
-		DBName:         s.generateDBName(),
-		CreatedBy:      authUser.ID,
-		UpdatedBy:      authUser.ID,
+		Name:             request.Name,
+		OrganizationUuid: request.OrganizationUUID,
+		DBName:           s.generateDBName(),
+		CreatedBy:        authUser.Uuid,
+		UpdatedBy:        authUser.Uuid,
 	}
 
 	_, err = s.projectRepo.Create(&project)
@@ -97,7 +97,7 @@ func (s *ProjectServiceImpl) Update(projectID uuid.UUID, authUser models.AuthUse
 		return nil, err
 	}
 
-	if !s.projectPolicy.CanUpdate(project.OrganizationID, authUser) {
+	if !s.projectPolicy.CanUpdate(project.OrganizationUuid, authUser) {
 		return &models.Project{}, errs.NewForbiddenError("project.error.updateForbidden")
 	}
 
@@ -107,9 +107,9 @@ func (s *ProjectServiceImpl) Update(projectID uuid.UUID, authUser models.AuthUse
 	}
 
 	project.UpdatedAt = time.Now()
-	project.UpdatedBy = authUser.ID
+	project.UpdatedBy = authUser.Uuid
 
-	err = s.validateNameForDuplication(request.Name, project.OrganizationID)
+	err = s.validateNameForDuplication(request.Name, project.OrganizationUuid)
 	if err != nil {
 		return &models.Project{}, err
 	}
@@ -123,7 +123,7 @@ func (s *ProjectServiceImpl) Delete(projectID uuid.UUID, authUser models.AuthUse
 		return false, err
 	}
 
-	if !s.projectPolicy.CanUpdate(project.OrganizationID, authUser) {
+	if !s.projectPolicy.CanUpdate(project.OrganizationUuid, authUser) {
 		return false, errs.NewForbiddenError("project.error.updateForbidden")
 	}
 
@@ -139,8 +139,8 @@ func (s *ProjectServiceImpl) generateDBName() string {
 	return strings.ReplaceAll(strings.ToLower(uuid.New().String()), "-", "")
 }
 
-func (s *ProjectServiceImpl) validateNameForDuplication(name string, organizationID uuid.UUID) error {
-	exists, err := s.projectRepo.ExistsByNameForOrganization(name, organizationID)
+func (s *ProjectServiceImpl) validateNameForDuplication(name string, organizationUUID uuid.UUID) error {
+	exists, err := s.projectRepo.ExistsByNameForOrganization(name, organizationUUID)
 	if err != nil {
 		return err
 	}

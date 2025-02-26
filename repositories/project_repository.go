@@ -90,11 +90,11 @@ func (r *ProjectRepository) GetByID(id uuid.UUID) (models.Project, error) {
 	return project, nil
 }
 
-func (r *ProjectRepository) GetOrganizationIDByProjectID(id uuid.UUID) (uuid.UUID, error) {
+func (r *ProjectRepository) GetorganizationUUIDByProjectID(id uuid.UUID) (uuid.UUID, error) {
 	query := "SELECT organization_uuid FROM fluxton.projects WHERE uuid = $1"
 
-	var organizationID uuid.UUID
-	err := r.db.Get(&organizationID, query, id)
+	var organizationUUID uuid.UUID
+	err := r.db.Get(&organizationUUID, query, id)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return uuid.UUID{}, errs.NewNotFoundError("project.error.notFound")
@@ -103,7 +103,7 @@ func (r *ProjectRepository) GetOrganizationIDByProjectID(id uuid.UUID) (uuid.UUI
 		return uuid.UUID{}, fmt.Errorf("could not fetch row: %v", err)
 	}
 
-	return organizationID, nil
+	return organizationUUID, nil
 }
 
 func (r *ProjectRepository) ExistsByID(id uuid.UUID) (bool, error) {
@@ -118,11 +118,11 @@ func (r *ProjectRepository) ExistsByID(id uuid.UUID) (bool, error) {
 	return exists, nil
 }
 
-func (r *ProjectRepository) ExistsByNameForOrganization(name string, organizationId uuid.UUID) (bool, error) {
+func (r *ProjectRepository) ExistsByNameForOrganization(name string, organizationUUID uuid.UUID) (bool, error) {
 	query := "SELECT EXISTS(SELECT 1 FROM fluxton.projects WHERE name = $1 AND organization_uuid = $2)"
 
 	var exists bool
-	err := r.db.Get(&exists, query, name, organizationId)
+	err := r.db.Get(&exists, query, name, organizationUUID)
 	if err != nil {
 		return false, fmt.Errorf("could not fetch row: %v", err)
 	}

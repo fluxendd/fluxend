@@ -46,7 +46,7 @@ func (s *RowServiceImpl) List(paginationParams utils.PaginationParams, tableName
 		return []models.Row{}, err
 	}
 
-	if !s.projectPolicy.CanAccess(project.OrganizationID, authUser) {
+	if !s.projectPolicy.CanAccess(project.OrganizationUuid, authUser) {
 		return []models.Row{}, errs.NewForbiddenError("project.error.listForbidden")
 	}
 
@@ -64,7 +64,7 @@ func (s *RowServiceImpl) GetByID(tableName string, rowID uint64, projectID uuid.
 		return models.Row{}, err
 	}
 
-	if !s.projectPolicy.CanAccess(project.OrganizationID, authUser) {
+	if !s.projectPolicy.CanAccess(project.OrganizationUuid, authUser) {
 		return models.Row{}, errs.NewForbiddenError("project.error.listForbidden")
 	}
 

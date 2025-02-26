@@ -23,12 +23,12 @@ func NewOrganizationUserController(injector *do.Injector) (*OrganizationUserCont
 func (nc *OrganizationUserController) List(c echo.Context) error {
 	authUser, _ := utils.NewAuth(c).User()
 
-	organizationID, err := utils.GetUUIDPathParam(c, "organizationID", true)
+	organizationUUID, err := utils.GetUUIDPathParam(c, "organizationUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	organizationUsers, err := nc.organizationService.ListUsers(organizationID, authUser)
+	organizationUsers, err := nc.organizationService.ListUsers(organizationUUID, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -44,12 +44,12 @@ func (nc *OrganizationUserController) Store(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	organizationID, err := utils.GetUUIDPathParam(c, "organizationID", true)
+	organizationUUID, err := utils.GetUUIDPathParam(c, "organizationUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	organizationUser, err := nc.organizationService.CreateUser(&request, organizationID, authUser)
+	organizationUser, err := nc.organizationService.CreateUser(&request, organizationUUID, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -60,7 +60,7 @@ func (nc *OrganizationUserController) Store(c echo.Context) error {
 func (nc *OrganizationUserController) Delete(c echo.Context) error {
 	authUser, _ := utils.NewAuth(c).User()
 
-	organizationID, err := utils.GetUUIDPathParam(c, "organizationID", true)
+	organizationUUID, err := utils.GetUUIDPathParam(c, "organizationUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
@@ -70,7 +70,7 @@ func (nc *OrganizationUserController) Delete(c echo.Context) error {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	if err := nc.organizationService.DeleteUser(organizationID, userID, authUser); err != nil {
+	if err := nc.organizationService.DeleteUser(organizationUUID, userID, authUser); err != nil {
 		return responses.ErrorResponse(c, err)
 	}
 

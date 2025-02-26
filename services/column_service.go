@@ -44,7 +44,7 @@ func (s *ColumnServiceImpl) Create(projectID, tableID uuid.UUID, request *reques
 		return models.Table{}, err
 	}
 
-	if !s.projectPolicy.CanCreate(project.OrganizationID, authUser) {
+	if !s.projectPolicy.CanCreate(project.OrganizationUuid, authUser) {
 		return models.Table{}, errs.NewForbiddenError("table.error.createForbidden")
 	}
 
@@ -59,7 +59,7 @@ func (s *ColumnServiceImpl) Create(projectID, tableID uuid.UUID, request *reques
 	}
 
 	table.Columns = append(table.Columns, request.Column)
-	table.UpdatedBy = authUser.ID
+	table.UpdatedBy = authUser.Uuid
 
 	_, err = s.coreTableRepo.Update(&table)
 	if err != nil {
@@ -85,7 +85,7 @@ func (s *ColumnServiceImpl) Alter(columnName string, tableID, projectID uuid.UUI
 		return &models.Table{}, err
 	}
 
-	if !s.projectPolicy.CanUpdate(project.OrganizationID, authUser) {
+	if !s.projectPolicy.CanUpdate(project.OrganizationUuid, authUser) {
 		return &models.Table{}, errs.NewForbiddenError("project.error.updateForbidden")
 	}
 
@@ -103,7 +103,7 @@ func (s *ColumnServiceImpl) Alter(columnName string, tableID, projectID uuid.UUI
 		return &models.Table{}, err
 	}
 
-	table.UpdatedBy = authUser.ID
+	table.UpdatedBy = authUser.Uuid
 
 	for i, column := range table.Columns {
 		if column.Name == columnName {
@@ -131,7 +131,7 @@ func (s *ColumnServiceImpl) Rename(columnName string, tableID, projectID uuid.UU
 		return &models.Table{}, err
 	}
 
-	if !s.projectPolicy.CanUpdate(project.OrganizationID, authUser) {
+	if !s.projectPolicy.CanUpdate(project.OrganizationUuid, authUser) {
 		return &models.Table{}, errs.NewForbiddenError("project.error.updateForbidden")
 	}
 
@@ -149,7 +149,7 @@ func (s *ColumnServiceImpl) Rename(columnName string, tableID, projectID uuid.UU
 		return &models.Table{}, err
 	}
 
-	table.UpdatedBy = authUser.ID
+	table.UpdatedBy = authUser.Uuid
 
 	for i, column := range table.Columns {
 		if column.Name == columnName {
@@ -177,7 +177,7 @@ func (s *ColumnServiceImpl) Delete(columnName string, tableID, projectID uuid.UU
 		return false, err
 	}
 
-	if !s.projectPolicy.CanUpdate(project.OrganizationID, authUser) {
+	if !s.projectPolicy.CanUpdate(project.OrganizationUuid, authUser) {
 		return false, errs.NewForbiddenError("project.error.updateForbidden")
 	}
 
@@ -194,7 +194,7 @@ func (s *ColumnServiceImpl) Delete(columnName string, tableID, projectID uuid.UU
 		}
 	}
 
-	table.UpdatedBy = authUser.ID
+	table.UpdatedBy = authUser.Uuid
 
 	clientColumnRepo, err := s.connectionService.GetClientColumnRepo(project.DBName)
 	if err != nil {

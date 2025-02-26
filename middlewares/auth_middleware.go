@@ -62,7 +62,7 @@ func AuthMiddleware(userRepo *repositories.UserRepository) echo.MiddlewareFunc {
 			}
 
 			c.Set("user", models.AuthUser{
-				ID:     userUUID,
+				Uuid:   userUUID,
 				RoleID: int(claims["role_id"].(float64)),
 			})
 

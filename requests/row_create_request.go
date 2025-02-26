@@ -8,8 +8,8 @@ import (
 )
 
 type RowCreateRequest struct {
-	OrganizationID uuid.UUID              `json:"-"`
-	Fields         map[string]interface{} `json:"-"`
+	organizationUUID uuid.UUID              `json:"-"`
+	Fields           map[string]interface{} `json:"-"`
 }
 
 func (r *RowCreateRequest) BindAndValidate(c echo.Context) []string {
@@ -24,12 +24,12 @@ func (r *RowCreateRequest) BindAndValidate(c echo.Context) []string {
 		return []string{"Invalid JSON format"}
 	}
 
-	organizationID, err := uuid.Parse(c.Request().Header.Get("X-OrganizationID"))
+	organizationUUID, err := uuid.Parse(c.Request().Header.Get("X-organizationUUID"))
 	if err != nil {
 		return []string{"Invalid organization ID"}
 	}
 
-	r.OrganizationID = organizationID
+	r.organizationUUID = organizationUUID
 
 	return nil
 }

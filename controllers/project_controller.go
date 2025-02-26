@@ -25,13 +25,13 @@ func NewProjectController(injector *do.Injector) (*ProjectController, error) {
 func (pc *ProjectController) List(c echo.Context) error {
 	authUser, _ := utils.NewAuth(c).User()
 
-	organizationID, err := uuid.Parse(strings.TrimSpace(c.QueryParam("organization_id")))
+	organizationUUID, err := uuid.Parse(strings.TrimSpace(c.QueryParam("organization_id")))
 	if err != nil {
 		return responses.BadRequestResponse(c, "Invalid organization ID")
 	}
 
 	paginationParams := utils.ExtractPaginationParams(c)
-	projects, err := pc.projectService.List(paginationParams, organizationID, authUser)
+	projects, err := pc.projectService.List(paginationParams, organizationUUID, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}

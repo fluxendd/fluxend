@@ -14,13 +14,13 @@ import (
 
 type OrganizationService interface {
 	List(paginationParams utils.PaginationParams, authUserId uuid.UUID) ([]models.Organization, error)
-	GetByID(organizationId uuid.UUID, authUser models.AuthUser) (models.Organization, error)
+	GetByID(organizationUUID uuid.UUID, authUser models.AuthUser) (models.Organization, error)
 	Create(request *requests.OrganizationCreateRequest, authUser models.AuthUser) (models.Organization, error)
-	Update(organizationId uuid.UUID, authUser models.AuthUser, request *requests.OrganizationCreateRequest) (*models.Organization, error)
-	Delete(organizationId uuid.UUID, authUser models.AuthUser) (bool, error)
-	ListUsers(organizationID uuid.UUID, authUser models.AuthUser) ([]models.User, error)
-	CreateUser(request *requests.OrganizationUserCreateRequest, organizationID uuid.UUID, authUser models.AuthUser) (models.User, error)
-	DeleteUser(organizationID, userID uuid.UUID, authUser models.AuthUser) error
+	Update(organizationUUID uuid.UUID, authUser models.AuthUser, request *requests.OrganizationCreateRequest) (*models.Organization, error)
+	Delete(organizationUUID uuid.UUID, authUser models.AuthUser) (bool, error)
+	ListUsers(organizationUUID uuid.UUID, authUser models.AuthUser) ([]models.User, error)
+	CreateUser(request *requests.OrganizationUserCreateRequest, organizationUUID uuid.UUID, authUser models.AuthUser) (models.User, error)
+	DeleteUser(organizationUUID, userID uuid.UUID, authUser models.AuthUser) error
 }
 
 type OrganizationServiceImpl struct {
@@ -42,13 +42,13 @@ func (s *OrganizationServiceImpl) List(paginationParams utils.PaginationParams, 
 	return s.organizationRepo.ListForUser(paginationParams, authUserId)
 }
 
-func (s *OrganizationServiceImpl) GetByID(organizationId uuid.UUID, authUser models.AuthUser) (models.Organization, error) {
-	organization, err := s.organizationRepo.GetByIDForUser(organizationId, authUser.ID)
+func (s *OrganizationServiceImpl) GetByID(organizationUUID uuid.UUID, authUser models.AuthUser) (models.Organization, error) {
+	organization, err := s.organizationRepo.GetByIDForUser(organizationUUID, authUser.Uuid)
 	if err != nil {
 		return models.Organization{}, err
 	}
 
-	if !s.organizationPolicy.CanAccess(organizationId, authUser) {
+	if !s.organizationPolicy.CanAccess(organizationUUID, authUser) {
 		return models.Organization{}, errs.NewForbiddenError("organization.error.viewForbidden")
 	}
 
@@ -62,11 +62,11 @@ func (s *OrganizationServiceImpl) Create(request *requests.OrganizationCreateReq
 
 	organization := models.Organization{
 		Name:      request.Name,
-		CreatedBy: authUser.ID,
-		UpdatedBy: authUser.ID,
+		CreatedBy: authUser.Uuid,
+		UpdatedBy: authUser.Uuid,
 	}
 
-	_, err := s.organizationRepo.Create(&organization, authUser.ID)
+	_, err := s.organizationRepo.Create(&organization, authUser.Uuid)
 	if err != nil {
 		return models.Organization{}, err
 	}
@@ -74,13 +74,13 @@ func (s *OrganizationServiceImpl) Create(request *requests.OrganizationCreateReq
 	return organization, nil
 }
 
-func (s *OrganizationServiceImpl) Update(organizationId uuid.UUID, authUser models.AuthUser, request *requests.OrganizationCreateRequest) (*models.Organization, error) {
-	organization, err := s.organizationRepo.GetByIDForUser(organizationId, authUser.ID)
+func (s *OrganizationServiceImpl) Update(organizationUUID uuid.UUID, authUser models.AuthUser, request *requests.OrganizationCreateRequest) (*models.Organization, error) {
+	organization, err := s.organizationRepo.GetByIDForUser(organizationUUID, authUser.Uuid)
 	if err != nil {
 		return nil, err
 	}
 
-	if !s.organizationPolicy.CanUpdate(organizationId, authUser) {
+	if !s.organizationPolicy.CanUpdate(organizationUUID, authUser) {
 		return &models.Organization{}, errs.NewForbiddenError("organization.error.updateForbidden")
 	}
 
@@ -89,39 +89,39 @@ func (s *OrganizationServiceImpl) Update(organizationId uuid.UUID, authUser mode
 		return nil, err
 	}
 
-	organization.UpdatedBy = authUser.ID
+	organization.UpdatedBy = authUser.Uuid
 	organization.UpdatedAt = time.Now()
 
 	return s.organizationRepo.Update(&organization)
 }
 
-func (s *OrganizationServiceImpl) Delete(organizationId uuid.UUID, authUser models.AuthUser) (bool, error) {
-	_, err := s.organizationRepo.GetByIDForUser(organizationId, authUser.ID)
+func (s *OrganizationServiceImpl) Delete(organizationUUID uuid.UUID, authUser models.AuthUser) (bool, error) {
+	_, err := s.organizationRepo.GetByIDForUser(organizationUUID, authUser.Uuid)
 	if err != nil {
 		return false, err
 	}
 
-	if !s.organizationPolicy.CanUpdate(organizationId, authUser) {
+	if !s.organizationPolicy.CanUpdate(organizationUUID, authUser) {
 		return false, errs.NewForbiddenError("organization.error.updateForbidden")
 	}
 
-	return s.organizationRepo.Delete(organizationId)
+	return s.organizationRepo.Delete(organizationUUID)
 }
 
-func (s *OrganizationServiceImpl) ListUsers(organizationID uuid.UUID, authUser models.AuthUser) ([]models.User, error) {
-	if !s.organizationPolicy.CanAccess(organizationID, authUser) {
+func (s *OrganizationServiceImpl) ListUsers(organizationUUID uuid.UUID, authUser models.AuthUser) ([]models.User, error) {
+	if !s.organizationPolicy.CanAccess(organizationUUID, authUser) {
 		return nil, errs.NewForbiddenError("organization.error.viewForbidden")
 	}
 
-	return s.organizationRepo.ListUsers(organizationID)
+	return s.organizationRepo.ListUsers(organizationUUID)
 }
 
-func (s *OrganizationServiceImpl) CreateUser(request *requests.OrganizationUserCreateRequest, organizationID uuid.UUID, authUser models.AuthUser) (models.User, error) {
+func (s *OrganizationServiceImpl) CreateUser(request *requests.OrganizationUserCreateRequest, organizationUUID uuid.UUID, authUser models.AuthUser) (models.User, error) {
 	if !s.organizationPolicy.CanCreate(authUser) {
 		return models.User{}, errs.NewForbiddenError("organization.error.createUserForbidden")
 	}
 
-	userExists, err := s.organizationRepo.IsOrganizationUser(organizationID, request.UserID)
+	userExists, err := s.organizationRepo.IsOrganizationUser(organizationUUID, request.UserID)
 	if err != nil {
 		return models.User{}, err
 	}
@@ -130,18 +130,18 @@ func (s *OrganizationServiceImpl) CreateUser(request *requests.OrganizationUserC
 		return models.User{}, errs.NewUnprocessableError("organization.error.userAlreadyExists")
 	}
 
-	err = s.organizationRepo.CreateUser(organizationID, request.UserID)
+	err = s.organizationRepo.CreateUser(organizationUUID, request.UserID)
 	if err != nil {
 		return models.User{}, err
 	}
 
-	return s.organizationRepo.GetUser(organizationID, request.UserID)
+	return s.organizationRepo.GetUser(organizationUUID, request.UserID)
 }
 
-func (s *OrganizationServiceImpl) DeleteUser(organizationID, userID uuid.UUID, authUser models.AuthUser) error {
-	if !s.organizationPolicy.CanUpdate(organizationID, authUser) {
+func (s *OrganizationServiceImpl) DeleteUser(organizationUUID, userID uuid.UUID, authUser models.AuthUser) error {
+	if !s.organizationPolicy.CanUpdate(organizationUUID, authUser) {
 		return errs.NewForbiddenError("organization.error.deleteUserForbidden")
 	}
 
-	return s.organizationRepo.DeleteUser(organizationID, userID)
+	return s.organizationRepo.DeleteUser(organizationUUID, userID)
 }

@@ -19,12 +19,12 @@ func NewProjectPolicy(injector *do.Injector) (*ProjectPolicy, error) {
 	}, nil
 }
 
-func (s *ProjectPolicy) CanCreate(organizationID uuid.UUID, authUser models.AuthUser) bool {
+func (s *ProjectPolicy) CanCreate(organizationUUID uuid.UUID, authUser models.AuthUser) bool {
 	if !authUser.IsDeveloperOrMore() {
 		return false
 	}
 
-	isOrganizationUser, err := s.organizationRepo.IsOrganizationUser(organizationID, authUser.ID)
+	isOrganizationUser, err := s.organizationRepo.IsOrganizationUser(organizationUUID, authUser.Uuid)
 	if err != nil {
 		return false
 	}
@@ -32,8 +32,8 @@ func (s *ProjectPolicy) CanCreate(organizationID uuid.UUID, authUser models.Auth
 	return isOrganizationUser
 }
 
-func (s *ProjectPolicy) CanAccess(organizationID uuid.UUID, authUser models.AuthUser) bool {
-	isOrganizationUser, err := s.organizationRepo.IsOrganizationUser(organizationID, authUser.ID)
+func (s *ProjectPolicy) CanAccess(organizationUUID uuid.UUID, authUser models.AuthUser) bool {
+	isOrganizationUser, err := s.organizationRepo.IsOrganizationUser(organizationUUID, authUser.Uuid)
 	if err != nil {
 		return false
 	}
@@ -41,12 +41,12 @@ func (s *ProjectPolicy) CanAccess(organizationID uuid.UUID, authUser models.Auth
 	return isOrganizationUser
 }
 
-func (s *ProjectPolicy) CanUpdate(organizationID uuid.UUID, authUser models.AuthUser) bool {
+func (s *ProjectPolicy) CanUpdate(organizationUUID uuid.UUID, authUser models.AuthUser) bool {
 	if !authUser.IsDeveloperOrMore() {
 		return false
 	}
 
-	isOrganizationUser, err := s.organizationRepo.IsOrganizationUser(organizationID, authUser.ID)
+	isOrganizationUser, err := s.organizationRepo.IsOrganizationUser(organizationUUID, authUser.Uuid)
 	if err != nil {
 		return false
 	}
