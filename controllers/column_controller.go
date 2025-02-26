@@ -46,7 +46,7 @@ func (pc *ColumnController) Alter(c echo.Context) error {
 	var request requests.ColumnAlterRequest
 	authUser, _ := utils.NewAuth(c).User()
 
-	projectID, tableID, columnName, err := pc.parseRequest(c)
+	projectID, tableID, _, err := pc.parseRequest(c)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
@@ -55,7 +55,7 @@ func (pc *ColumnController) Alter(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	renamedTable, err := pc.columnService.Alter(columnName, tableID, projectID, &request, authUser)
+	renamedTable, err := pc.columnService.Alter(tableID, projectID, &request, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}

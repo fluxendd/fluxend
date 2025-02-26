@@ -12,7 +12,7 @@ import (
 
 type ColumnService interface {
 	Create(projectID, tableID uuid.UUID, request *requests.ColumnCreateRequest, authUser models.AuthUser) (models.Table, error)
-	Alter(columnName string, tableID, projectID uuid.UUID, request *requests.ColumnAlterRequest, authUser models.AuthUser) (*models.Table, error)
+	Alter(tableID, projectID uuid.UUID, request *requests.ColumnAlterRequest, authUser models.AuthUser) (*models.Table, error)
 	Rename(columnName string, tableID, projectID uuid.UUID, request *requests.ColumnRenameRequest, authUser models.AuthUser) (*models.Table, error)
 	Delete(columnName string, tableID, projectID uuid.UUID, authUser models.AuthUser) (bool, error)
 }
@@ -79,7 +79,7 @@ func (s *ColumnServiceImpl) Create(projectID, tableID uuid.UUID, request *reques
 	return table, nil
 }
 
-func (s *ColumnServiceImpl) Alter(columnName string, tableID, projectID uuid.UUID, request *requests.ColumnAlterRequest, authUser models.AuthUser) (*models.Table, error) {
+func (s *ColumnServiceImpl) Alter(tableID, projectID uuid.UUID, request *requests.ColumnAlterRequest, authUser models.AuthUser) (*models.Table, error) {
 	project, err := s.projectRepo.GetByUUID(projectID)
 	if err != nil {
 		return &models.Table{}, err
@@ -89,27 +89,9 @@ func (s *ColumnServiceImpl) Alter(columnName string, tableID, projectID uuid.UUI
 		return &models.Table{}, errs.NewForbiddenError("project.error.updateForbidden")
 	}
 
-	columnExists, err := s.coreTableRepo.HasColumn(columnName, tableID)
-	if err != nil {
-		return &models.Table{}, err
-	}
-
-	if !columnExists {
-		return &models.Table{}, errs.NewNotFoundError("column.error.notFound")
-	}
-
 	table, err := s.coreTableRepo.GetByID(tableID)
 	if err != nil {
 		return &models.Table{}, err
-	}
-
-	table.UpdatedBy = authUser.Uuid
-
-	for i, column := range table.Columns {
-		if column.Name == columnName {
-			table.Columns[i].Type = request.Type
-			break
-		}
 	}
 
 	clientColumnRepo, err := s.connectionService.GetClientColumnRepo(project.DBName)
@@ -117,7 +99,26 @@ func (s *ColumnServiceImpl) Alter(columnName string, tableID, projectID uuid.UUI
 		return &models.Table{}, err
 	}
 
-	err = clientColumnRepo.Alter(table.Name, columnName, request.Type)
+	allColumnsExist, err := clientColumnRepo.HasAll(table.Name, request.Columns)
+	if err != nil {
+		return &models.Table{}, err
+	}
+
+	if !allColumnsExist {
+		return &models.Table{}, errs.NewNotFoundError("column.error.someNotFound")
+	}
+
+	table.UpdatedBy = authUser.Uuid
+	for _, column := range request.Columns {
+		for i, tableColumn := range table.Columns {
+			if tableColumn.Name == column.Name {
+				table.Columns[i].Type = column.Type
+				break
+			}
+		}
+	}
+
+	err = clientColumnRepo.Alter(table.Name, request.Columns)
 	if err != nil {
 		return &models.Table{}, err
 	}
