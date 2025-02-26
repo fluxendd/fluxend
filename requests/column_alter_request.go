@@ -2,9 +2,11 @@ package requests
 
 import (
 	"fluxton/types"
+	"fluxton/utils"
 	"fmt"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/labstack/echo/v4"
+	"regexp"
 	"strings"
 )
 
@@ -23,7 +25,13 @@ func (r *ColumnAlterRequest) BindAndValidate(c echo.Context) []string {
 	for _, column := range r.Columns {
 		// Validate column name and type
 		err := validation.ValidateStruct(&column,
-			validation.Field(&column.Name, validation.Required.Error("Column name is required")),
+			validation.Field(
+				&column.Name,
+				validation.Required.Error("Column name is required"),
+				validation.Match(
+					regexp.MustCompile(utils.AlphanumericWithUnderscoreAndDashPattern()),
+				).Error("Column name must be alphanumeric and start with a letter"),
+			),
 			validation.Field(&column.Type, validation.Required.Error("Column type is required")),
 		)
 

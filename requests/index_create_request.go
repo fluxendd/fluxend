@@ -1,6 +1,7 @@
 package requests
 
 import (
+	"fluxton/utils"
 	"fmt"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/labstack/echo/v4"
@@ -34,7 +35,7 @@ func (r *IndexCreateRequest) BindAndValidate(c echo.Context) []string {
 			&r.Name,
 			validation.Required.Error("Index name is required"),
 			validation.Match(
-				regexp.MustCompile(`^[a-zA-Z][a-zA-Z0-9_]*$`),
+				regexp.MustCompile(utils.AlphanumericWithUnderscorePattern()),
 			).Error("Index name must be alphanumeric with underscores"),
 		),
 		validation.Field(&r.Columns, validation.Required.Error("At least one column is required")),
