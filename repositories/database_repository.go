@@ -72,8 +72,18 @@ func (r *DatabaseRepository) Exists(name string) (bool, error) {
 	return count > 0, nil
 }
 
+// Connect TODO: create actual user for using here
 func (r *DatabaseRepository) Connect(name string) (*sqlx.DB, error) {
-	return sqlx.Connect("postgres", fmt.Sprintf("dbname=%s sslmode=disable", name))
+	connStr := fmt.Sprintf(
+		"user=%s dbname=%s password=%s host=%s sslmode=%s port=5432",
+		os.Getenv("DATABASE_USER"),
+		name,
+		os.Getenv("DATABASE_PASSWORD"),
+		os.Getenv("DATABASE_HOST"),
+		os.Getenv("DATABASE_SSL_MODE"),
+	)
+
+	return sqlx.Connect("postgres", connStr)
 }
 
 func (r *DatabaseRepository) importSeedFiles(databaseName string) error {

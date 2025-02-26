@@ -87,6 +87,9 @@ func (s *ProjectServiceImpl) Create(request *requests.ProjectCreateRequest, auth
 
 	err = s.databaseRepo.Create(project.DBName)
 	if err != nil {
+		// TODO: handle better
+		s.projectRepo.Delete(project.Uuid)
+
 		return models.Project{}, err
 	}
 
@@ -138,7 +141,7 @@ func (s *ProjectServiceImpl) Delete(projectID uuid.UUID, authUser models.AuthUse
 }
 
 func (s *ProjectServiceImpl) generateDBName() string {
-	return strings.ReplaceAll(strings.ToLower(uuid.New().String()), "-", "")
+	return "udb_" + strings.ReplaceAll(strings.ToLower(uuid.New().String()), "-", "")
 }
 
 func (s *ProjectServiceImpl) generateDBPort() int {
