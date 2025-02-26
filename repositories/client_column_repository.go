@@ -24,6 +24,36 @@ func (r *ClientColumnRepository) List(tableName string) ([]string, error) {
 	return columns, nil
 }
 
+func (r *ClientColumnRepository) Has(tableName, columnName string) (bool, error) {
+	var count int
+	err := r.connection.Get(&count, fmt.Sprintf("SELECT COUNT(*) FROM information_schema.columns WHERE table_name = '%s' AND column_name = '%s'", tableName, columnName))
+	if err != nil {
+		return false, err
+	}
+
+	return count > 0, nil
+}
+
+func (r *ClientColumnRepository) HasAny(tableName string, columnNames []string) (bool, error) {
+	var count int
+	err := r.connection.Get(&count, fmt.Sprintf("SELECT COUNT(*) FROM information_schema.columns WHERE table_name = '%s' AND column_name IN ('%s')", tableName, columnNames))
+	if err != nil {
+		return false, err
+	}
+
+	return count > 0, nil
+}
+
+func (r *ClientColumnRepository) HasAll(tableName string, columnNames []string) (bool, error) {
+	var count int
+	err := r.connection.Get(&count, fmt.Sprintf("SELECT COUNT(*) FROM information_schema.columns WHERE table_name = '%s' AND column_name IN ('%s')", tableName, columnNames))
+	if err != nil {
+		return false, err
+	}
+
+	return count == len(columnNames), nil
+}
+
 func (r *ClientColumnRepository) Create(tableName string, field types.TableColumn) error {
 	query := fmt.Sprintf("ALTER TABLE %s ADD COLUMN %s %s", tableName, field.Name, field.Type)
 	_, err := r.connection.Exec(query)
@@ -34,11 +64,35 @@ func (r *ClientColumnRepository) Create(tableName string, field types.TableColum
 	return nil
 }
 
+func (r *ClientColumnRepository) CreateMany(tableName string, fields []types.TableColumn) error {
+	for _, field := range fields {
+		query := fmt.Sprintf("ALTER TABLE %s ADD COLUMN %s %s", tableName, field.Name, field.Type)
+		_, err := r.connection.Exec(query)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 func (r *ClientColumnRepository) Alter(tableName, columnName, columnType string) error {
 	query := fmt.Sprintf("ALTER TABLE %s ALTER COLUMN %s TYPE %s", tableName, columnName, columnType)
 	_, err := r.connection.Exec(query)
 	if err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func (r *ClientColumnRepository) AlterMany(tableName string, fields []types.TableColumn) error {
+	for _, field := range fields {
+		query := fmt.Sprintf("ALTER TABLE %s ALTER COLUMN %s TYPE %s", tableName, field.Name, field.Type)
+		_, err := r.connection.Exec(query)
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil
