@@ -30,7 +30,7 @@ func (r *OrganizationRepository) ListForUser(paginationParams utils.PaginationPa
 		FROM 
 			fluxton.organizations organizations
 		JOIN 
-			fluxton.organization_members organization_members ON organizations.id = organization_members.organization_uuid
+			fluxton.organization_members organization_members ON organizations.uuid = organization_members.organization_uuid
 		WHERE 
 			organization_members.user_uuid = :user_uuid
 		ORDER BY 
@@ -80,7 +80,7 @@ func (r *OrganizationRepository) ListUsers(organizationUUID uuid.UUID) ([]models
 		FROM 
 			authentication.users users
 		JOIN 
-			fluxton.organization_members organization_members ON users.id = organization_members.user_uuid
+			fluxton.organization_members organization_members ON users.uuid = organization_members.user_uuid
 		WHERE 
 			organization_members.organization_uuid = $1
 	`
@@ -108,21 +108,21 @@ func (r *OrganizationRepository) ListUsers(organizationUUID uuid.UUID) ([]models
 	return users, nil
 }
 
-func (r *OrganizationRepository) GetUser(organizationUUID, userID uuid.UUID) (models.User, error) {
+func (r *OrganizationRepository) GetUser(organizationUUID, userUUID uuid.UUID) (models.User, error) {
 	query := `
 		SELECT 
 			%s 
 		FROM 
 			authentication.users users
 		JOIN 
-			fluxton.organization_members organization_members ON users.id = organization_members.user_uuid
+			fluxton.organization_members organization_members ON users.uuid = organization_members.user_uuid
 		WHERE 
 			organization_members.organization_uuid = $1 AND organization_members.user_uuid = $2
 	`
 	query = fmt.Sprintf(query, utils.GetColumnsWithAlias[models.User]("users"))
 
 	var user models.User
-	err := r.db.Get(&user, query, organizationUUID, userID)
+	err := r.db.Get(&user, query, organizationUUID, userUUID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return models.User{}, errs.NewNotFoundError("organization.error.userNotFound")
@@ -134,9 +134,9 @@ func (r *OrganizationRepository) GetUser(organizationUUID, userID uuid.UUID) (mo
 	return user, nil
 }
 
-func (r *OrganizationRepository) CreateUser(organizationUUID, userID uuid.UUID) error {
+func (r *OrganizationRepository) CreateUser(organizationUUID, userUUID uuid.UUID) error {
 	query := "INSERT INTO fluxton.organization_members (organization_uuid, user_uuid) VALUES ($1, $2)"
-	_, err := r.db.Exec(query, organizationUUID, userID)
+	_, err := r.db.Exec(query, organizationUUID, userUUID)
 	if err != nil {
 		return fmt.Errorf("could not insert into pivot table: %v", err)
 	}
@@ -144,9 +144,9 @@ func (r *OrganizationRepository) CreateUser(organizationUUID, userID uuid.UUID) 
 	return nil
 }
 
-func (r *OrganizationRepository) DeleteUser(organizationUUID, userID uuid.UUID) error {
+func (r *OrganizationRepository) DeleteUser(organizationUUID, userUUID uuid.UUID) error {
 	query := "DELETE FROM fluxton.organization_members WHERE organization_uuid = $1 AND user_uuid = $2"
-	_, err := r.db.Exec(query, organizationUUID, userID)
+	_, err := r.db.Exec(query, organizationUUID, userUUID)
 	if err != nil {
 		return fmt.Errorf("could not delete row: %v", err)
 	}
@@ -154,12 +154,12 @@ func (r *OrganizationRepository) DeleteUser(organizationUUID, userID uuid.UUID) 
 	return nil
 }
 
-func (r *OrganizationRepository) GetByIDForUser(id, authUserID uuid.UUID) (models.Organization, error) {
-	query := "SELECT %s FROM fluxton.organizations WHERE id = $1"
+func (r *OrganizationRepository) GetByUUID(organizationUUID uuid.UUID) (models.Organization, error) {
+	query := "SELECT %s FROM fluxton.organizations WHERE uuid = $1"
 	query = fmt.Sprintf(query, utils.GetColumns[models.Organization]())
 
 	var organization models.Organization
-	err := r.db.Get(&organization, query, id)
+	err := r.db.Get(&organization, query, organizationUUID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return models.Organization{}, errs.NewNotFoundError("organization.error.notFound")
@@ -171,10 +171,10 @@ func (r *OrganizationRepository) GetByIDForUser(id, authUserID uuid.UUID) (model
 	return organization, nil
 }
 
-func (r *OrganizationRepository) ExistsByID(id uint) (bool, error) {
+func (r *OrganizationRepository) ExistsByID(organizationUUID uuid.UUID) (bool, error) {
 	query := "SELECT EXISTS(SELECT 1 FROM fluxton.organizations WHERE uuid = $1)"
 	var exists bool
-	err := r.db.Get(&exists, query, id)
+	err := r.db.Get(&exists, query, organizationUUID)
 	if err != nil {
 		return false, fmt.Errorf("could not fetch row: %v", err)
 	}
