@@ -11,8 +11,8 @@ CREATE TABLE fluxton.forms (
    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
 
    CONSTRAINT fk_forms_project FOREIGN KEY (project_uuid) REFERENCES fluxton.projects(uuid) ON DELETE CASCADE,
-   CONSTRAINT fk_forms_created_by FOREIGN KEY (created_by) REFERENCES users(uuid) ON DELETE CASCADE,
-   CONSTRAINT fk_forms_updated_by FOREIGN KEY (updated_by) REFERENCES users(uuid) ON DELETE SET NULL
+   CONSTRAINT fk_forms_created_by FOREIGN KEY (created_by) REFERENCES authentication.users(uuid) ON DELETE CASCADE,
+   CONSTRAINT fk_forms_updated_by FOREIGN KEY (updated_by) REFERENCES authentication.users(uuid) ON DELETE SET NULL
 );
 
 -- +goose StatementEnd
