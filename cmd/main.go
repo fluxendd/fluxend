@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fluxton/controllers"
-	"fluxton/di"
 	"fluxton/middlewares"
 	"fluxton/repositories"
 	"fluxton/routes"
@@ -25,7 +24,7 @@ func main() {
 		log.Fatalf("Error loading .env file: %v", err)
 	}
 
-	container := di.InitializeContainer()
+	container := InitializeContainer()
 	handleMode(container, *mode)
 }
 
