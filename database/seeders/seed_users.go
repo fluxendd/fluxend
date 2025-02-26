@@ -1,7 +1,7 @@
 package seeders
 
 import (
-	"fluxton/factories"
+	"fluxton/database/factories"
 	"fluxton/models"
 	"github.com/labstack/gommon/log"
 	"github.com/samber/do"

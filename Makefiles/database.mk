@@ -33,7 +33,7 @@ migrate-fresh: ## Rollback all migrations and run them again
 	make migrate-up
 
 seed: ## Seed the database
-	@go run cmd/main.go -cmd=seed
+	@go run cmd/*.go -cmd=seed
 
 seed-fresh: ## Seed the database with fresh data
 	make migrate-fresh

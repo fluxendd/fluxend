@@ -3,10 +3,10 @@ package main
 import (
 	"flag"
 	"fluxton/controllers"
+	"fluxton/database/seeders"
 	"fluxton/middlewares"
 	"fluxton/repositories"
 	"fluxton/routes"
-	"fluxton/seeders"
 	"fmt"
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
