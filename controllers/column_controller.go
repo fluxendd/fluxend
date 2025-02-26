@@ -34,7 +34,7 @@ func (pc *ColumnController) Store(c echo.Context) error {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	table, err := pc.columnService.Create(projectID, tableID, &request, authUser)
+	table, err := pc.columnService.CreateMany(projectID, tableID, &request, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -55,7 +55,7 @@ func (pc *ColumnController) Alter(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	renamedTable, err := pc.columnService.Alter(tableID, projectID, &request, authUser)
+	renamedTable, err := pc.columnService.AlterMany(tableID, projectID, &request, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}

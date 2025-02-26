@@ -11,8 +11,8 @@ import (
 )
 
 type ColumnService interface {
-	Create(projectID, tableID uuid.UUID, request *requests.ColumnCreateRequest, authUser models.AuthUser) (models.Table, error)
-	Alter(tableID, projectID uuid.UUID, request *requests.ColumnAlterRequest, authUser models.AuthUser) (*models.Table, error)
+	CreateMany(projectID, tableID uuid.UUID, request *requests.ColumnCreateRequest, authUser models.AuthUser) (models.Table, error)
+	AlterMany(tableID, projectID uuid.UUID, request *requests.ColumnAlterRequest, authUser models.AuthUser) (*models.Table, error)
 	Rename(columnName string, tableID, projectID uuid.UUID, request *requests.ColumnRenameRequest, authUser models.AuthUser) (*models.Table, error)
 	Delete(columnName string, tableID, projectID uuid.UUID, authUser models.AuthUser) (bool, error)
 }
@@ -38,7 +38,7 @@ func NewColumnService(injector *do.Injector) (ColumnService, error) {
 	}, nil
 }
 
-func (s *ColumnServiceImpl) Create(projectID, tableID uuid.UUID, request *requests.ColumnCreateRequest, authUser models.AuthUser) (models.Table, error) {
+func (s *ColumnServiceImpl) CreateMany(projectID, tableID uuid.UUID, request *requests.ColumnCreateRequest, authUser models.AuthUser) (models.Table, error) {
 	project, err := s.projectRepo.GetByUUID(projectID)
 	if err != nil {
 		return models.Table{}, err
@@ -53,12 +53,26 @@ func (s *ColumnServiceImpl) Create(projectID, tableID uuid.UUID, request *reques
 		return models.Table{}, err
 	}
 
-	err = s.validateNameForDuplication(request.Column.Name, tableID)
+	clientColumnRepo, err := s.connectionService.GetClientColumnRepo(project.DBName)
 	if err != nil {
 		return models.Table{}, err
 	}
 
-	table.Columns = append(table.Columns, request.Column)
+	anyColumnExists, err := clientColumnRepo.HasAny(table.Name, request.Columns)
+	if err != nil {
+		return models.Table{}, err
+	}
+
+	if anyColumnExists {
+		return models.Table{}, errs.NewUnprocessableError("column.error.someAlreadyExist")
+	}
+
+	err = clientColumnRepo.CreateMany(table.Name, request.Columns)
+	if err != nil {
+		return models.Table{}, err
+	}
+
+	table.Columns = append(table.Columns, request.Columns...)
 	table.UpdatedBy = authUser.Uuid
 
 	_, err = s.coreTableRepo.Update(&table)
@@ -66,20 +80,10 @@ func (s *ColumnServiceImpl) Create(projectID, tableID uuid.UUID, request *reques
 		return models.Table{}, err
 	}
 
-	clientColumnRepo, err := s.connectionService.GetClientColumnRepo(project.DBName)
-	if err != nil {
-		return models.Table{}, err
-	}
-
-	err = clientColumnRepo.Create(table.Name, request.Column)
-	if err != nil {
-		return models.Table{}, err
-	}
-
 	return table, nil
 }
 
-func (s *ColumnServiceImpl) Alter(tableID, projectID uuid.UUID, request *requests.ColumnAlterRequest, authUser models.AuthUser) (*models.Table, error) {
+func (s *ColumnServiceImpl) AlterMany(tableID, projectID uuid.UUID, request *requests.ColumnAlterRequest, authUser models.AuthUser) (*models.Table, error) {
 	project, err := s.projectRepo.GetByUUID(projectID)
 	if err != nil {
 		return &models.Table{}, err
@@ -118,7 +122,7 @@ func (s *ColumnServiceImpl) Alter(tableID, projectID uuid.UUID, request *request
 		}
 	}
 
-	err = clientColumnRepo.Alter(table.Name, request.Columns)
+	err = clientColumnRepo.AlterMany(table.Name, request.Columns)
 	if err != nil {
 		return &models.Table{}, err
 	}

@@ -9,7 +9,7 @@ import (
 )
 
 type ColumnCreateRequest struct {
-	Column types.TableColumn `json:"column"`
+	Columns []types.TableColumn `json:"columns"`
 }
 
 func (r *ColumnCreateRequest) BindAndValidate(c echo.Context) []string {
@@ -21,7 +21,7 @@ func (r *ColumnCreateRequest) BindAndValidate(c echo.Context) []string {
 
 	// Validate base request columns
 	err := validation.ValidateStruct(r,
-		validation.Field(&r.Column, validation.Required.Error("Column is required")),
+		validation.Field(&r.Columns, validation.Required.Error("At least one column is required")),
 	)
 
 	if err != nil {
@@ -34,23 +34,25 @@ func (r *ColumnCreateRequest) BindAndValidate(c echo.Context) []string {
 		return errors
 	}
 
-	// Validate column
-	if r.Column.Name == "" {
-		errors = append(errors, "Field name is required")
-	}
+	// Validate each column
+	for _, column := range r.Columns {
+		if column.Name == "" {
+			errors = append(errors, "Field name is required")
+		}
 
-	if r.Column.Type == "" {
-		errors = append(errors, fmt.Sprintf("Field type is required for column %s", r.Column.Name))
-	}
+		if column.Type == "" {
+			errors = append(errors, fmt.Sprintf("Field type is required for column %s", column.Name))
+		}
 
-	// Check for reserved column names
-	if reservedFieldNames[strings.ToLower(r.Column.Name)] {
-		errors = append(errors, fmt.Sprintf("Field name '%s' is reserved and cannot be used", r.Column.Name))
-	}
+		// Check for reserved column names
+		if reservedFieldNames[strings.ToLower(column.Name)] {
+			errors = append(errors, fmt.Sprintf("Field name '%s' is reserved and cannot be used", column.Name))
+		}
 
-	// Check for valid column types
-	if !allowedFieldTypes[strings.ToLower(r.Column.Type)] {
-		errors = append(errors, fmt.Sprintf("Field type '%s' is not allowed", r.Column.Type))
+		// Check for valid column types
+		if !allowedFieldTypes[strings.ToLower(column.Type)] {
+			errors = append(errors, fmt.Sprintf("Field type '%s' is not allowed", column.Type))
+		}
 	}
 
 	return errors
