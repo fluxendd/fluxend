@@ -6,7 +6,6 @@ import (
 	"fluxton/responses"
 	"fluxton/services"
 	"fluxton/utils"
-	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
 )
@@ -75,13 +74,13 @@ func (uc *UserController) Store(c echo.Context) error {
 }
 
 func (uc *UserController) Update(c echo.Context) error {
-	authUserID := c.Get("userId").(uuid.UUID)
-	if authUserID == uuid.Nil {
-		return responses.UnauthorizedResponse(c, "user.error.unauthorized")
+	authUserUUID, err := utils.NewAuth(c).Uuid()
+	if err != nil {
+		return responses.UnauthorizedResponse(c, err.Error())
 	}
 
 	var request requests.UserUpdateRequest
-	id, err := utils.GetUUIDPathParam(c, "id", true)
+	userUUID, err := utils.GetUUIDPathParam(c, "userUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
@@ -90,7 +89,7 @@ func (uc *UserController) Update(c echo.Context) error {
 		return responses.BadRequestResponse(c, "note.error.invalidPayload")
 	}
 
-	updatedUser, err := uc.userService.Update(id, authUserID, &request)
+	updatedUser, err := uc.userService.Update(userUUID, authUserUUID, &request)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -99,12 +98,12 @@ func (uc *UserController) Update(c echo.Context) error {
 }
 
 func (uc *UserController) Logout(c echo.Context) error {
-	authUserID, err := utils.NewAuth(c).Uuid()
+	userUUID, err := utils.NewAuth(c).Uuid()
 	if err != nil {
 		return responses.UnauthorizedResponse(c, err.Error())
 	}
 
-	err = uc.userService.Logout(authUserID)
+	err = uc.userService.Logout(userUUID)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}

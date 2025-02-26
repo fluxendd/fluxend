@@ -59,7 +59,7 @@ func (r *UserRepository) List(paginationParams utils.PaginationParams) ([]models
 }
 
 func (r *UserRepository) GetByID(userUUID uuid.UUID) (models.User, error) {
-	query := fmt.Sprintf("SELECT %s FROM authentication.users WHERE id = $1", utils.GetColumns[models.User]())
+	query := fmt.Sprintf("SELECT %s FROM authentication.users WHERE uuid = $1", utils.GetColumns[models.User]())
 	var user models.User
 	err := r.db.Get(&user, query, userUUID)
 	if err != nil {

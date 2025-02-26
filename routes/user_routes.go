@@ -8,8 +8,7 @@ import (
 func RegisterUserRoutes(e *echo.Echo, authMiddleware echo.MiddlewareFunc, userController *controllers.UserController) {
 	e.POST("api/users/register", userController.Store)
 	e.POST("api/users/login", userController.Login)
-	// e.GET("/users", userController.List)
-	e.GET("/api/users/:id", authMiddleware(userController.Show))
-	e.PUT("/api/users/:id", authMiddleware(userController.Update))
+	e.GET("/api/users/:userUUID", authMiddleware(userController.Show))
+	e.PUT("/api/users/:userUUID", authMiddleware(userController.Update))
 	e.POST("api/users/logout", authMiddleware(userController.Logout))
 }
