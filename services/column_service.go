@@ -186,6 +186,20 @@ func (s *ColumnServiceImpl) Delete(columnName string, tableID, projectID uuid.UU
 		return false, err
 	}
 
+	clientColumnRepo, err := s.connectionService.GetClientColumnRepo(project.DBName)
+	if err != nil {
+		return false, err
+	}
+
+	hasColumn, err := s.coreTableRepo.HasColumn(columnName, tableID)
+	if err != nil {
+		return false, err
+	}
+
+	if !hasColumn {
+		return false, errs.NewNotFoundError("column.error.notFound")
+	}
+
 	for i, column := range table.Columns {
 		if column.Name == columnName {
 			// Remove column from slice
@@ -195,11 +209,6 @@ func (s *ColumnServiceImpl) Delete(columnName string, tableID, projectID uuid.UU
 	}
 
 	table.UpdatedBy = authUser.Uuid
-
-	clientColumnRepo, err := s.connectionService.GetClientColumnRepo(project.DBName)
-	if err != nil {
-		return false, err
-	}
 
 	err = clientColumnRepo.Drop(table.Name, columnName)
 	if err != nil {
