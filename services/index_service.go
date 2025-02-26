@@ -104,6 +104,15 @@ func (s *IndexServiceImpl) Create(projectID, tableID uuid.UUID, request *request
 		return "", err
 	}
 
+	hasIndex, err := clientIndexRepo.Has(table.Name, request.Name)
+	if err != nil {
+		return "", err
+	}
+
+	if hasIndex {
+		return "", errs.NewUnprocessableError("index.error.alreadyExists")
+	}
+
 	_, err = clientIndexRepo.Create(table.Name, request.Name, request.Columns, request.IsUnique)
 	if err != nil {
 		return "", err
@@ -122,7 +131,7 @@ func (s *IndexServiceImpl) Delete(indexName string, tableID, projectID uuid.UUID
 		return false, errs.NewForbiddenError("project.error.updateForbidden")
 	}
 
-	_, err = s.coreTableRepo.GetByID(tableID)
+	table, err := s.coreTableRepo.GetByID(tableID)
 	if err != nil {
 		return false, err
 	}
@@ -130,6 +139,15 @@ func (s *IndexServiceImpl) Delete(indexName string, tableID, projectID uuid.UUID
 	clientIndexRepo, err := s.connectionService.GetClientIndexRepo(project.DBName)
 	if err != nil {
 		return false, err
+	}
+
+	hasIndex, err := clientIndexRepo.Has(table.Name, indexName)
+	if err != nil {
+		return false, err
+	}
+
+	if !hasIndex {
+		return false, errs.NewNotFoundError("index.error.notFound")
 	}
 
 	return clientIndexRepo.DropIfExists(indexName)
