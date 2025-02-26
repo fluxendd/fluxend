@@ -1,10 +1,8 @@
-package requests
+package column_requests
 
 import (
-	"fmt"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/labstack/echo/v4"
-	"strings"
 )
 
 type ColumnRenameRequest struct {
@@ -20,7 +18,11 @@ func (r *ColumnRenameRequest) BindAndValidate(c echo.Context) []string {
 
 	// Validate base request columns
 	err := validation.ValidateStruct(r,
-		validation.Field(&r.Name, validation.Required.Error("New name is required for column")),
+		validation.Field(
+			&r.Name,
+			validation.Required.Error("New name is required for column"),
+			validation.By(validateName),
+		),
 	)
 
 	if err != nil {
@@ -31,11 +33,6 @@ func (r *ColumnRenameRequest) BindAndValidate(c echo.Context) []string {
 		}
 
 		return errors
-	}
-
-	// Check for valid column types
-	if reservedFieldNames[strings.ToLower(r.Name)] {
-		errors = append(errors, fmt.Sprintf("Field name '%s' is reserved and cannot be used", r.Name))
 	}
 
 	return errors

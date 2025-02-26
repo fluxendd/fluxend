@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"fluxton/requests"
+	"fluxton/requests/column_requests"
 	"fluxton/resources"
 	"fluxton/responses"
 	"fluxton/services"
@@ -22,7 +22,7 @@ func NewColumnController(injector *do.Injector) (*ColumnController, error) {
 }
 
 func (pc *ColumnController) Store(c echo.Context) error {
-	var request requests.ColumnCreateRequest
+	var request column_requests.ColumnCreateRequest
 	authUser, _ := utils.NewAuth(c).User()
 
 	if err := request.BindAndValidate(c); err != nil {
@@ -43,7 +43,7 @@ func (pc *ColumnController) Store(c echo.Context) error {
 }
 
 func (pc *ColumnController) Alter(c echo.Context) error {
-	var request requests.ColumnAlterRequest
+	var request column_requests.ColumnCreateRequest
 	authUser, _ := utils.NewAuth(c).User()
 
 	projectID, tableID, _, err := pc.parseRequest(c)
@@ -55,16 +55,16 @@ func (pc *ColumnController) Alter(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	renamedTable, err := pc.columnService.AlterMany(tableID, projectID, &request, authUser)
+	alteredTable, err := pc.columnService.AlterMany(tableID, projectID, &request, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
 
-	return responses.SuccessResponse(c, resources.TableResource(renamedTable))
+	return responses.SuccessResponse(c, resources.TableResource(alteredTable))
 }
 
 func (pc *ColumnController) Rename(c echo.Context) error {
-	var request requests.ColumnRenameRequest
+	var request column_requests.ColumnRenameRequest
 	authUser, _ := utils.NewAuth(c).User()
 
 	projectID, tableID, columnName, err := pc.parseRequest(c)

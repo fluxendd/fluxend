@@ -5,15 +5,15 @@ import (
 	"fluxton/models"
 	"fluxton/policies"
 	"fluxton/repositories"
-	"fluxton/requests"
+	"fluxton/requests/column_requests"
 	"github.com/google/uuid"
 	"github.com/samber/do"
 )
 
 type ColumnService interface {
-	CreateMany(projectID, tableID uuid.UUID, request *requests.ColumnCreateRequest, authUser models.AuthUser) (models.Table, error)
-	AlterMany(tableID, projectID uuid.UUID, request *requests.ColumnAlterRequest, authUser models.AuthUser) (*models.Table, error)
-	Rename(columnName string, tableID, projectID uuid.UUID, request *requests.ColumnRenameRequest, authUser models.AuthUser) (*models.Table, error)
+	CreateMany(projectID, tableID uuid.UUID, request *column_requests.ColumnCreateRequest, authUser models.AuthUser) (models.Table, error)
+	AlterMany(tableID, projectID uuid.UUID, request *column_requests.ColumnCreateRequest, authUser models.AuthUser) (*models.Table, error)
+	Rename(columnName string, tableID, projectID uuid.UUID, request *column_requests.ColumnRenameRequest, authUser models.AuthUser) (*models.Table, error)
 	Delete(columnName string, tableID, projectID uuid.UUID, authUser models.AuthUser) (bool, error)
 }
 
@@ -38,7 +38,7 @@ func NewColumnService(injector *do.Injector) (ColumnService, error) {
 	}, nil
 }
 
-func (s *ColumnServiceImpl) CreateMany(projectID, tableID uuid.UUID, request *requests.ColumnCreateRequest, authUser models.AuthUser) (models.Table, error) {
+func (s *ColumnServiceImpl) CreateMany(projectID, tableID uuid.UUID, request *column_requests.ColumnCreateRequest, authUser models.AuthUser) (models.Table, error) {
 	project, err := s.projectRepo.GetByUUID(projectID)
 	if err != nil {
 		return models.Table{}, err
@@ -83,7 +83,7 @@ func (s *ColumnServiceImpl) CreateMany(projectID, tableID uuid.UUID, request *re
 	return table, nil
 }
 
-func (s *ColumnServiceImpl) AlterMany(tableID, projectID uuid.UUID, request *requests.ColumnAlterRequest, authUser models.AuthUser) (*models.Table, error) {
+func (s *ColumnServiceImpl) AlterMany(tableID, projectID uuid.UUID, request *column_requests.ColumnCreateRequest, authUser models.AuthUser) (*models.Table, error) {
 	project, err := s.projectRepo.GetByUUID(projectID)
 	if err != nil {
 		return &models.Table{}, err
@@ -130,7 +130,7 @@ func (s *ColumnServiceImpl) AlterMany(tableID, projectID uuid.UUID, request *req
 	return s.coreTableRepo.Update(&table)
 }
 
-func (s *ColumnServiceImpl) Rename(columnName string, tableID, projectID uuid.UUID, request *requests.ColumnRenameRequest, authUser models.AuthUser) (*models.Table, error) {
+func (s *ColumnServiceImpl) Rename(columnName string, tableID, projectID uuid.UUID, request *column_requests.ColumnRenameRequest, authUser models.AuthUser) (*models.Table, error) {
 	project, err := s.projectRepo.GetByUUID(projectID)
 	if err != nil {
 		return &models.Table{}, err
