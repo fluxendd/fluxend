@@ -43,7 +43,7 @@ func (s *OrganizationServiceImpl) List(paginationParams utils.PaginationParams, 
 }
 
 func (s *OrganizationServiceImpl) GetByID(organizationUUID uuid.UUID, authUser models.AuthUser) (models.Organization, error) {
-	organization, err := s.organizationRepo.GetByIDForUser(organizationUUID, authUser.Uuid)
+	organization, err := s.organizationRepo.GetByUUID(organizationUUID)
 	if err != nil {
 		return models.Organization{}, err
 	}
@@ -75,7 +75,7 @@ func (s *OrganizationServiceImpl) Create(request *requests.OrganizationCreateReq
 }
 
 func (s *OrganizationServiceImpl) Update(organizationUUID uuid.UUID, authUser models.AuthUser, request *requests.OrganizationCreateRequest) (*models.Organization, error) {
-	organization, err := s.organizationRepo.GetByIDForUser(organizationUUID, authUser.Uuid)
+	organization, err := s.organizationRepo.GetByUUID(organizationUUID)
 	if err != nil {
 		return nil, err
 	}
@@ -96,7 +96,7 @@ func (s *OrganizationServiceImpl) Update(organizationUUID uuid.UUID, authUser mo
 }
 
 func (s *OrganizationServiceImpl) Delete(organizationUUID uuid.UUID, authUser models.AuthUser) (bool, error) {
-	_, err := s.organizationRepo.GetByIDForUser(organizationUUID, authUser.Uuid)
+	_, err := s.organizationRepo.GetByUUID(organizationUUID)
 	if err != nil {
 		return false, err
 	}
