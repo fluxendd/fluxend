@@ -58,10 +58,10 @@ func (r *UserRepository) List(paginationParams utils.PaginationParams) ([]models
 	return users, nil
 }
 
-func (r *UserRepository) GetByID(id uuid.UUID) (models.User, error) {
+func (r *UserRepository) GetByID(userUUID uuid.UUID) (models.User, error) {
 	query := fmt.Sprintf("SELECT %s FROM authentication.users WHERE id = $1", utils.GetColumns[models.User]())
 	var user models.User
-	err := r.db.Get(&user, query, id)
+	err := r.db.Get(&user, query, userUUID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return models.User{}, errs.NewNotFoundError("user.error.notFound")
@@ -73,10 +73,10 @@ func (r *UserRepository) GetByID(id uuid.UUID) (models.User, error) {
 	return user, nil
 }
 
-func (r *UserRepository) ExistsByID(id uuid.UUID) (bool, error) {
+func (r *UserRepository) ExistsByID(userUUID uuid.UUID) (bool, error) {
 	query := "SELECT EXISTS(SELECT 1 FROM authentication.users WHERE uuid = $1)"
 	var exists bool
-	err := r.db.Get(&exists, query, id)
+	err := r.db.Get(&exists, query, userUUID)
 	if err != nil {
 		return false, fmt.Errorf("could not fetch row: %v", err)
 	}
