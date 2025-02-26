@@ -11,14 +11,14 @@ import (
 type JSONColumns []types.TableColumn // important for reading from db
 
 type Table struct {
-	ID        uuid.UUID   `db:"id"`
-	ProjectID uuid.UUID   `db:"project_id"`
-	CreatedBy uuid.UUID   `db:"created_by"`
-	UpdatedBy uuid.UUID   `db:"updated_by"`
-	Name      string      `db:"name"`
-	Columns   JSONColumns `db:"columns" json:"columns"`
-	CreatedAt time.Time   `db:"created_at"`
-	UpdatedAt time.Time   `db:"updated_at"`
+	Uuid        uuid.UUID   `db:"uuid"`
+	ProjectUuid uuid.UUID   `db:"project_uuid"`
+	CreatedBy   uuid.UUID   `db:"created_by"`
+	UpdatedBy   uuid.UUID   `db:"updated_by"`
+	Name        string      `db:"name"`
+	Columns     JSONColumns `db:"columns" json:"columns"`
+	CreatedAt   time.Time   `db:"created_at"`
+	UpdatedAt   time.Time   `db:"updated_at"`
 }
 
 func (t Table) GetTableName() string {
