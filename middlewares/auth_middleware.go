@@ -46,7 +46,7 @@ func AuthMiddleware(userRepo *repositories.UserRepository) echo.MiddlewareFunc {
 				return responses.ErrorResponse(c, errs.NewUnauthorizedError("auth.error.tokenInvalid"))
 			}
 
-			userUUID, err := uuid.Parse(claims["id"].(string))
+			userUUID, err := uuid.Parse(claims["uuid"].(string))
 			if err != nil {
 				return responses.ErrorResponse(c, errs.NewUnauthorizedError("auth.error.tokenInvalid"))
 			}
