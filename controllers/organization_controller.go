@@ -21,7 +21,7 @@ func NewOrganizationController(injector *do.Injector) (*OrganizationController, 
 }
 
 func (nc *OrganizationController) List(c echo.Context) error {
-	authUserId, _ := utils.NewAuth(c).Id()
+	authUserId, _ := utils.NewAuth(c).Uuid()
 
 	paginationParams := utils.ExtractPaginationParams(c)
 	organizations, err := nc.organizationService.List(paginationParams, authUserId)

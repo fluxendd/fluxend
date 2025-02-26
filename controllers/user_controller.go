@@ -99,7 +99,7 @@ func (uc *UserController) Update(c echo.Context) error {
 }
 
 func (uc *UserController) Logout(c echo.Context) error {
-	authUserID, err := utils.NewAuth(c).Id()
+	authUserID, err := utils.NewAuth(c).Uuid()
 	if err != nil {
 		return responses.UnauthorizedResponse(c, err.Error())
 	}

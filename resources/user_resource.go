@@ -6,7 +6,7 @@ import (
 )
 
 type UserResponse struct {
-	ID        uuid.UUID `json:"id"`
+	Uuid      uuid.UUID `json:"uuid"`
 	Username  string    `json:"username"`
 	Email     string    `json:"email"`
 	Status    string    `json:"status"`
@@ -18,7 +18,7 @@ type UserResponse struct {
 
 func UserResource(user *models.User) UserResponse {
 	return UserResponse{
-		ID:        user.ID,
+		Uuid:      user.Uuid,
 		Username:  user.Username,
 		Email:     user.Email,
 		Status:    user.Status,
