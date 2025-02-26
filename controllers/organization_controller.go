@@ -55,8 +55,6 @@ func (nc *OrganizationController) Store(c echo.Context) error {
 		return responses.UnauthorizedResponse(c, err.Error())
 	}
 
-	utils.DumpJSON(authUser)
-
 	if err := request.BindAndValidate(c); err != nil {
 		return responses.UnprocessableResponse(c, err)
 	}
