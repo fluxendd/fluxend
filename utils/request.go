@@ -6,6 +6,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"strconv"
+	"strings"
 )
 
 type PaginationParams struct {
@@ -72,6 +73,14 @@ func GetUUIDPathParam(c echo.Context, name string, required bool) (uuid.UUID, er
 	}
 
 	return uuid.Parse(c.Param(name))
+}
+
+func GetUUIDQueryParam(c echo.Context, name string, required bool) (uuid.UUID, error) {
+	if required && c.QueryParam(name) == "" {
+		return uuid.UUID{}, fmt.Errorf("query parameter [%s] is required", name)
+	}
+
+	return uuid.Parse(strings.TrimSpace(c.QueryParam(name)))
 }
 
 func ConvertStringToUint(param string) (uint, error) {

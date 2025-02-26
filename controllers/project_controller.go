@@ -6,10 +6,8 @@ import (
 	"fluxton/responses"
 	"fluxton/services"
 	"fluxton/utils"
-	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
-	"strings"
 )
 
 type ProjectController struct {
@@ -25,7 +23,7 @@ func NewProjectController(injector *do.Injector) (*ProjectController, error) {
 func (pc *ProjectController) List(c echo.Context) error {
 	authUser, _ := utils.NewAuth(c).User()
 
-	organizationUUID, err := uuid.Parse(strings.TrimSpace(c.QueryParam("organization_id")))
+	organizationUUID, err := utils.GetUUIDQueryParam(c, "organization_uuid", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, "Invalid organization ID")
 	}

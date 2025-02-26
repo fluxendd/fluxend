@@ -33,7 +33,7 @@ func (r *CoreTableRepository) ListForProject(paginationParams utils.PaginationPa
 		FROM 
 			fluxton.tables
 		WHERE 
-			project_id = :project_id
+			project_uuid = :project_uuid
 		ORDER BY 
 			:sort DESC
 		LIMIT 
@@ -46,10 +46,10 @@ func (r *CoreTableRepository) ListForProject(paginationParams utils.PaginationPa
 	query = fmt.Sprintf(query, utils.GetColumns[models.Table]())
 
 	params := map[string]interface{}{
-		"project_id": projectID,
-		"sort":       paginationParams.Sort,
-		"limit":      paginationParams.Limit,
-		"offset":     offset,
+		"project_uuid": projectID,
+		"sort":         paginationParams.Sort,
+		"limit":        paginationParams.Limit,
+		"offset":       offset,
 	}
 
 	rows, err := r.db.NamedQuery(query, params)
@@ -91,12 +91,12 @@ func (r *CoreTableRepository) ListColumns(tableID uuid.UUID) ([]types.TableColum
 	return columnsJSON, nil
 }
 
-func (r *CoreTableRepository) GetByID(id uuid.UUID) (models.Table, error) {
-	query := "SELECT %s FROM fluxton.tables WHERE id = $1"
+func (r *CoreTableRepository) GetByID(tableUUID uuid.UUID) (models.Table, error) {
+	query := "SELECT %s FROM fluxton.tables WHERE uuid = $1"
 	query = fmt.Sprintf(query, utils.GetColumns[models.Table]())
 
 	var table models.Table
-	err := r.db.Get(&table, query, id)
+	err := r.db.Get(&table, query, tableUUID)
 
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -125,11 +125,11 @@ func (r *CoreTableRepository) GetByName(name string) (models.Table, error) {
 	return table, nil
 }
 
-func (r *CoreTableRepository) ExistsByID(id uuid.UUID) (bool, error) {
+func (r *CoreTableRepository) ExistsByID(tableUUID uuid.UUID) (bool, error) {
 	query := "SELECT EXISTS(SELECT 1 FROM fluxton.tables WHERE uuid = $1)"
 
 	var exists bool
-	err := r.db.Get(&exists, query, id)
+	err := r.db.Get(&exists, query, tableUUID)
 	if err != nil {
 		return false, fmt.Errorf("could not fetch row: %v", err)
 	}

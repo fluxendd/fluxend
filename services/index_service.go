@@ -39,7 +39,7 @@ func NewIndexService(injector *do.Injector) (IndexService, error) {
 }
 
 func (s *IndexServiceImpl) List(tableID, projectID uuid.UUID, authUser models.AuthUser) ([]string, error) {
-	project, err := s.projectRepo.GetByID(projectID)
+	project, err := s.projectRepo.GetByUUID(projectID)
 	if err != nil {
 		return nil, err
 	}
@@ -62,7 +62,7 @@ func (s *IndexServiceImpl) List(tableID, projectID uuid.UUID, authUser models.Au
 }
 
 func (s *IndexServiceImpl) GetByName(indexName string, tableID, projectID uuid.UUID, authUser models.AuthUser) (string, error) {
-	project, err := s.projectRepo.GetByID(projectID)
+	project, err := s.projectRepo.GetByUUID(projectID)
 	if err != nil {
 		return "", err
 	}
@@ -85,7 +85,7 @@ func (s *IndexServiceImpl) GetByName(indexName string, tableID, projectID uuid.U
 }
 
 func (s *IndexServiceImpl) Create(projectID, tableID uuid.UUID, request *requests.IndexCreateRequest, authUser models.AuthUser) (string, error) {
-	project, err := s.projectRepo.GetByID(projectID)
+	project, err := s.projectRepo.GetByUUID(projectID)
 	if err != nil {
 		return "", err
 	}
@@ -113,7 +113,7 @@ func (s *IndexServiceImpl) Create(projectID, tableID uuid.UUID, request *request
 }
 
 func (s *IndexServiceImpl) Delete(indexName string, tableID, projectID uuid.UUID, authUser models.AuthUser) (bool, error) {
-	project, err := s.projectRepo.GetByID(projectID)
+	project, err := s.projectRepo.GetByUUID(projectID)
 	if err != nil {
 		return false, err
 	}

@@ -41,7 +41,7 @@ func NewRowService(injector *do.Injector) (RowService, error) {
 }
 
 func (s *RowServiceImpl) List(paginationParams utils.PaginationParams, tableName string, projectID uuid.UUID, authUser models.AuthUser) ([]models.Row, error) {
-	project, err := s.projectRepo.GetByID(projectID)
+	project, err := s.projectRepo.GetByUUID(projectID)
 	if err != nil {
 		return []models.Row{}, err
 	}
@@ -59,7 +59,7 @@ func (s *RowServiceImpl) List(paginationParams utils.PaginationParams, tableName
 }
 
 func (s *RowServiceImpl) GetByID(tableName string, rowID uint64, projectID uuid.UUID, authUser models.AuthUser) (models.Row, error) {
-	project, err := s.projectRepo.GetByID(projectID)
+	project, err := s.projectRepo.GetByUUID(projectID)
 	if err != nil {
 		return models.Row{}, err
 	}
@@ -87,7 +87,7 @@ func (s *RowServiceImpl) Create(request *requests.RowCreateRequest, projectID uu
 		return models.Row{}, err
 	}
 
-	project, err := s.projectRepo.GetByID(projectID)
+	project, err := s.projectRepo.GetByUUID(projectID)
 	if err != nil {
 		return models.Row{}, err
 	}

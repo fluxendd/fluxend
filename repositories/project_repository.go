@@ -73,12 +73,12 @@ func (r *ProjectRepository) ListForUser(paginationParams utils.PaginationParams,
 	return projects, nil
 }
 
-func (r *ProjectRepository) GetByID(id uuid.UUID) (models.Project, error) {
-	query := "SELECT %s FROM fluxton.projects WHERE id = $1"
+func (r *ProjectRepository) GetByUUID(projectUUID uuid.UUID) (models.Project, error) {
+	query := "SELECT %s FROM fluxton.projects WHERE uuid = $1"
 	query = fmt.Sprintf(query, utils.GetColumns[models.Project]())
 
 	var project models.Project
-	err := r.db.Get(&project, query, id)
+	err := r.db.Get(&project, query, projectUUID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return models.Project{}, errs.NewNotFoundError("project.error.notFound")
@@ -90,7 +90,7 @@ func (r *ProjectRepository) GetByID(id uuid.UUID) (models.Project, error) {
 	return project, nil
 }
 
-func (r *ProjectRepository) GetorganizationUUIDByProjectID(id uuid.UUID) (uuid.UUID, error) {
+func (r *ProjectRepository) GetOrganizationUUIDByProjectUUID(id uuid.UUID) (uuid.UUID, error) {
 	query := "SELECT organization_uuid FROM fluxton.projects WHERE uuid = $1"
 
 	var organizationUUID uuid.UUID
