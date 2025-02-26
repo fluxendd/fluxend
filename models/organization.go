@@ -6,7 +6,7 @@ import (
 )
 
 type Organization struct {
-	ID        uuid.UUID `db:"id"`
+	Uuid      uuid.UUID `db:"uuid"`
 	Name      string    `db:"name"`
 	CreatedBy uuid.UUID `db:"created_by"`
 	UpdatedBy uuid.UUID `db:"updated_by"`
