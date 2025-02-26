@@ -17,7 +17,7 @@ const (
 )
 
 type User struct {
-	ID        uuid.UUID `db:"id"`
+	Uuid      uuid.UUID `db:"uuid"`
 	Username  string    `db:"username"`
 	Email     string    `db:"email"`
 	Status    string    `db:"status"`
@@ -29,7 +29,7 @@ type User struct {
 }
 
 type AuthUser struct {
-	ID     uuid.UUID
+	Uuid   uuid.UUID
 	RoleID int
 }
 
