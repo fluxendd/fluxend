@@ -30,9 +30,9 @@ func (r *ProjectRepository) ListForUser(paginationParams utils.PaginationParams,
 		FROM 
 			fluxton.projects projects
 		JOIN 
-			fluxton.organization_users organization_users ON projects.organization_id = organization_users.organization_id
+			fluxton.organization_members organization_members ON projects.organization_uuid = organization_members.organization_uuid
 		WHERE 
-			organization_users.user_id = :user_id
+			organization_members.user_uuid = :user_uuid
 		ORDER BY 
 			:sort DESC
 		LIMIT 
@@ -45,10 +45,10 @@ func (r *ProjectRepository) ListForUser(paginationParams utils.PaginationParams,
 	query = fmt.Sprintf(query, utils.GetColumnsWithAlias[models.Project]("projects"))
 
 	params := map[string]interface{}{
-		"user_id": authUserId,
-		"sort":    paginationParams.Sort,
-		"limit":   paginationParams.Limit,
-		"offset":  offset,
+		"user_uuid": authUserId,
+		"sort":      paginationParams.Sort,
+		"limit":     paginationParams.Limit,
+		"offset":    offset,
 	}
 
 	rows, err := r.db.NamedQuery(query, params)
@@ -91,7 +91,7 @@ func (r *ProjectRepository) GetByID(id uuid.UUID) (models.Project, error) {
 }
 
 func (r *ProjectRepository) GetOrganizationIDByProjectID(id uuid.UUID) (uuid.UUID, error) {
-	query := "SELECT organization_id FROM fluxton.projects WHERE id = $1"
+	query := "SELECT organization_uuid FROM fluxton.projects WHERE uuid = $1"
 
 	var organizationID uuid.UUID
 	err := r.db.Get(&organizationID, query, id)
@@ -107,7 +107,7 @@ func (r *ProjectRepository) GetOrganizationIDByProjectID(id uuid.UUID) (uuid.UUI
 }
 
 func (r *ProjectRepository) ExistsByID(id uuid.UUID) (bool, error) {
-	query := "SELECT EXISTS(SELECT 1 FROM fluxton.projects WHERE id = $1)"
+	query := "SELECT EXISTS(SELECT 1 FROM fluxton.projects WHERE uuid = $1)"
 
 	var exists bool
 	err := r.db.Get(&exists, query, id)
@@ -119,7 +119,7 @@ func (r *ProjectRepository) ExistsByID(id uuid.UUID) (bool, error) {
 }
 
 func (r *ProjectRepository) ExistsByNameForOrganization(name string, organizationId uuid.UUID) (bool, error) {
-	query := "SELECT EXISTS(SELECT 1 FROM fluxton.projects WHERE name = $1 AND organization_id = $2)"
+	query := "SELECT EXISTS(SELECT 1 FROM fluxton.projects WHERE name = $1 AND organization_uuid = $2)"
 
 	var exists bool
 	err := r.db.Get(&exists, query, name, organizationId)
@@ -136,8 +136,8 @@ func (r *ProjectRepository) Create(project *models.Project) (*models.Project, er
 		return nil, fmt.Errorf("could not begin transaction: %v", err)
 	}
 
-	query := "INSERT INTO fluxton.projects (name, db_name, organization_id, created_by, updated_by) VALUES ($1, $2, $3, $4, $5) RETURNING id"
-	queryErr := tx.QueryRowx(query, project.Name, project.DBName, project.OrganizationID, project.CreatedBy, project.UpdatedBy).Scan(&project.ID)
+	query := "INSERT INTO fluxton.projects (name, db_name, organization_uuid, created_by, updated_by) VALUES ($1, $2, $3, $4, $5) RETURNING uuid"
+	queryErr := tx.QueryRowx(query, project.Name, project.DBName, project.OrganizationUuid, project.CreatedBy, project.UpdatedBy).Scan(&project.Uuid)
 	if queryErr != nil {
 		err := tx.Rollback()
 		if err != nil {
@@ -159,7 +159,7 @@ func (r *ProjectRepository) Update(project *models.Project) (*models.Project, er
 	query := `
 		UPDATE fluxton.projects 
 		SET name = :name, updated_at = :updated_at, updated_by = :updated_by
-		WHERE id = :id`
+		WHERE uuid = :uuid`
 
 	res, err := r.db.NamedExec(query, project)
 	if err != nil {
@@ -175,7 +175,7 @@ func (r *ProjectRepository) Update(project *models.Project) (*models.Project, er
 }
 
 func (r *ProjectRepository) Delete(projectId uuid.UUID) (bool, error) {
-	query := "DELETE FROM fluxton.projects WHERE id = $1"
+	query := "DELETE FROM fluxton.projects WHERE uuid = $1"
 	res, err := r.db.Exec(query, projectId)
 	if err != nil {
 		return false, fmt.Errorf("could not delete row: %v", err)

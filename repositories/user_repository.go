@@ -74,7 +74,7 @@ func (r *UserRepository) GetByID(id uuid.UUID) (models.User, error) {
 }
 
 func (r *UserRepository) ExistsByID(id uuid.UUID) (bool, error) {
-	query := "SELECT EXISTS(SELECT 1 FROM authentication.users WHERE id = $1)"
+	query := "SELECT EXISTS(SELECT 1 FROM authentication.users WHERE uuid = $1)"
 	var exists bool
 	err := r.db.Get(&exists, query, id)
 	if err != nil {
@@ -100,8 +100,8 @@ func (r *UserRepository) GetByEmail(email string) (models.User, error) {
 }
 
 func (r *UserRepository) Create(user *models.User) (*models.User, error) {
-	query := "INSERT INTO authentication.users (username, email, status, role_id, password) VALUES ($1, $2, $3, $4, $5) RETURNING id"
-	err := r.db.QueryRowx(query, user.Username, user.Email, models.UserStatusActive, user.RoleID, utils.HashPassword(user.Password)).Scan(&user.ID)
+	query := "INSERT INTO authentication.users (username, email, status, role_id, password) VALUES ($1, $2, $3, $4, $5) RETURNING uuid"
+	err := r.db.QueryRowx(query, user.Username, user.Email, models.UserStatusActive, user.RoleID, utils.HashPassword(user.Password)).Scan(&user.Uuid)
 	if err != nil {
 		return &models.User{}, fmt.Errorf("could not create row: %v", err)
 	}
@@ -140,14 +140,14 @@ func (r *UserRepository) GetJWTVersion(userId uuid.UUID) (int, error) {
 	return version, nil
 }
 
-func (r *UserRepository) Update(id uuid.UUID, user *models.User) (*models.User, error) {
+func (r *UserRepository) Update(userUUID uuid.UUID, user *models.User) (*models.User, error) {
 	user.UpdatedAt = time.Now()
-	user.ID = id
+	user.Uuid = userUUID
 
 	query := `
 		UPDATE authentication.users 
 		SET bio = :bio, updated_at = :updated_at 
-		WHERE id = :id`
+		WHERE uuid = :uuid`
 
 	res, err := r.db.NamedExec(query, user)
 	if err != nil {
@@ -162,9 +162,9 @@ func (r *UserRepository) Update(id uuid.UUID, user *models.User) (*models.User, 
 	return user, nil
 }
 
-func (r *UserRepository) Delete(userId uuid.UUID) (bool, error) {
-	query := "DELETE FROM authentication.users WHERE id = $1"
-	res, err := r.db.Exec(query, userId)
+func (r *UserRepository) Delete(userUUID uuid.UUID) (bool, error) {
+	query := "DELETE FROM authentication.users WHERE uuid = $1"
+	res, err := r.db.Exec(query, userUUID)
 	if err != nil {
 		return false, fmt.Errorf("could not delete row: %v", err)
 	}
