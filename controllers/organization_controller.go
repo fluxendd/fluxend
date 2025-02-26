@@ -35,12 +35,12 @@ func (nc *OrganizationController) List(c echo.Context) error {
 func (nc *OrganizationController) Show(c echo.Context) error {
 	authUser, _ := utils.NewAuth(c).User()
 
-	organizationID, err := utils.GetUUIDPathParam(c, "organizationID", true)
+	organizationUUID, err := utils.GetUUIDPathParam(c, "organizationUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	organization, err := nc.organizationService.GetByID(organizationID, authUser)
+	organization, err := nc.organizationService.GetByID(organizationUUID, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -71,7 +71,7 @@ func (nc *OrganizationController) Update(c echo.Context) error {
 	var request requests.OrganizationCreateRequest
 	authUser, _ := utils.NewAuth(c).User()
 
-	organizationID, err := utils.GetUUIDPathParam(c, "organizationID", true)
+	organizationUUID, err := utils.GetUUIDPathParam(c, "organizationUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
@@ -80,7 +80,7 @@ func (nc *OrganizationController) Update(c echo.Context) error {
 		return responses.BadRequestResponse(c, "organization.error.invalidPayload")
 	}
 
-	updatedOrganization, err := nc.organizationService.Update(organizationID, authUser, &request)
+	updatedOrganization, err := nc.organizationService.Update(organizationUUID, authUser, &request)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -91,12 +91,12 @@ func (nc *OrganizationController) Update(c echo.Context) error {
 func (nc *OrganizationController) Delete(c echo.Context) error {
 	authUser, _ := utils.NewAuth(c).User()
 
-	organizationID, err := utils.GetUUIDPathParam(c, "organizationID", true)
+	organizationUUID, err := utils.GetUUIDPathParam(c, "organizationUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	if _, err := nc.organizationService.Delete(organizationID, authUser); err != nil {
+	if _, err := nc.organizationService.Delete(organizationUUID, authUser); err != nil {
 		return responses.ErrorResponse(c, err)
 	}
 

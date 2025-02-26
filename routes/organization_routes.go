@@ -10,12 +10,12 @@ func RegisterOrganizationRoutes(e *echo.Echo, authMiddleware echo.MiddlewareFunc
 
 	organizationsGroup.POST("", organizationController.Store)
 	organizationsGroup.GET("", organizationController.List)
-	organizationsGroup.GET("/:organizationID", organizationController.Show)
-	organizationsGroup.PUT("/:organizationID", organizationController.Update)
-	organizationsGroup.DELETE("/:organizationID", organizationController.Delete)
+	organizationsGroup.GET("/:organizationUUID", organizationController.Show)
+	organizationsGroup.PUT("/:organizationUUID", organizationController.Update)
+	organizationsGroup.DELETE("/:organizationUUID", organizationController.Delete)
 
 	// organization users
-	organizationsGroup.POST("/:organizationID/users", organizationUserController.Store)
-	organizationsGroup.GET("/:organizationID/users", organizationUserController.List)
-	organizationsGroup.DELETE("/:organizationID/users/:userID", organizationUserController.Delete)
+	organizationsGroup.POST("/:organizationUUID/users", organizationUserController.Store)
+	organizationsGroup.GET("/:organizationUUID/users", organizationUserController.List)
+	organizationsGroup.DELETE("/:organizationUUID/users/:userID", organizationUserController.Delete)
 }

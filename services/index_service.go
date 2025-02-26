@@ -44,7 +44,7 @@ func (s *IndexServiceImpl) List(tableID, projectID uuid.UUID, authUser models.Au
 		return nil, err
 	}
 
-	if !s.projectPolicy.CanAccess(project.OrganizationID, authUser) {
+	if !s.projectPolicy.CanAccess(project.OrganizationUuid, authUser) {
 		return nil, errs.NewForbiddenError("project.error.readForbidden")
 	}
 
@@ -67,7 +67,7 @@ func (s *IndexServiceImpl) GetByName(indexName string, tableID, projectID uuid.U
 		return "", err
 	}
 
-	if !s.projectPolicy.CanAccess(project.OrganizationID, authUser) {
+	if !s.projectPolicy.CanAccess(project.OrganizationUuid, authUser) {
 		return "", errs.NewForbiddenError("project.error.readForbidden")
 	}
 
@@ -90,7 +90,7 @@ func (s *IndexServiceImpl) Create(projectID, tableID uuid.UUID, request *request
 		return "", err
 	}
 
-	if !s.projectPolicy.CanCreate(project.OrganizationID, authUser) {
+	if !s.projectPolicy.CanCreate(project.OrganizationUuid, authUser) {
 		return "", errs.NewForbiddenError("table.error.createForbidden")
 	}
 
@@ -118,7 +118,7 @@ func (s *IndexServiceImpl) Delete(indexName string, tableID, projectID uuid.UUID
 		return false, err
 	}
 
-	if !s.projectPolicy.CanUpdate(project.OrganizationID, authUser) {
+	if !s.projectPolicy.CanUpdate(project.OrganizationUuid, authUser) {
 		return false, errs.NewForbiddenError("project.error.updateForbidden")
 	}
 

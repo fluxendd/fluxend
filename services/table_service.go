@@ -43,12 +43,12 @@ func NewTableService(injector *do.Injector) (TableService, error) {
 }
 
 func (s *TableServiceImpl) List(paginationParams utils.PaginationParams, projectID uuid.UUID, authUser models.AuthUser) ([]models.Table, error) {
-	organizationID, err := s.projectRepo.GetOrganizationIDByProjectID(projectID)
+	organizationUUID, err := s.projectRepo.GetorganizationUUIDByProjectID(projectID)
 	if err != nil {
 		return []models.Table{}, err
 	}
 
-	if !s.projectPolicy.CanAccess(organizationID, authUser) {
+	if !s.projectPolicy.CanAccess(organizationUUID, authUser) {
 		return []models.Table{}, errs.NewForbiddenError("project.error.listForbidden")
 	}
 
@@ -56,12 +56,12 @@ func (s *TableServiceImpl) List(paginationParams utils.PaginationParams, project
 }
 
 func (s *TableServiceImpl) GetByID(tableID, projectID uuid.UUID, authUser models.AuthUser) (models.Table, error) {
-	organizationID, err := s.projectRepo.GetOrganizationIDByProjectID(projectID)
+	organizationUUID, err := s.projectRepo.GetorganizationUUIDByProjectID(projectID)
 	if err != nil {
 		return models.Table{}, err
 	}
 
-	if !s.projectPolicy.CanAccess(organizationID, authUser) {
+	if !s.projectPolicy.CanAccess(organizationUUID, authUser) {
 		return models.Table{}, errs.NewForbiddenError("project.error.viewForbidden")
 	}
 
@@ -74,7 +74,7 @@ func (s *TableServiceImpl) Create(request *requests.TableCreateRequest, projectI
 		return models.Table{}, err
 	}
 
-	if !s.projectPolicy.CanCreate(project.OrganizationID, authUser) {
+	if !s.projectPolicy.CanCreate(project.OrganizationUuid, authUser) {
 		return models.Table{}, errs.NewForbiddenError("table.error.createForbidden")
 	}
 
@@ -85,11 +85,11 @@ func (s *TableServiceImpl) Create(request *requests.TableCreateRequest, projectI
 
 	// TODO: cleanup name and column names for spaces etc
 	table := models.Table{
-		Name:      request.Name,
-		ProjectID: projectID,
-		CreatedBy: authUser.ID,
-		UpdatedBy: authUser.ID,
-		Columns:   request.Columns,
+		Name:        request.Name,
+		ProjectUuid: projectID,
+		CreatedBy:   authUser.Uuid,
+		UpdatedBy:   authUser.Uuid,
+		Columns:     request.Columns,
 	}
 
 	_, err = s.coreTableRepo.Create(&table)
@@ -116,7 +116,7 @@ func (s *TableServiceImpl) Duplicate(tableID, projectID uuid.UUID, authUser mode
 		return models.Table{}, err
 	}
 
-	if !s.projectPolicy.CanUpdate(project.OrganizationID, authUser) {
+	if !s.projectPolicy.CanUpdate(project.OrganizationUuid, authUser) {
 		return models.Table{}, errs.NewForbiddenError("project.error.updateForbidden")
 	}
 
@@ -140,7 +140,7 @@ func (s *TableServiceImpl) Duplicate(tableID, projectID uuid.UUID, authUser mode
 		return models.Table{}, err
 	}
 
-	return s.coreTableRepo.Rename(tableID, request.Name, authUser.ID)
+	return s.coreTableRepo.Rename(tableID, request.Name, authUser.Uuid)
 }
 
 func (s *TableServiceImpl) Rename(tableID, projectID uuid.UUID, authUser models.AuthUser, request *requests.TableRenameRequest) (models.Table, error) {
@@ -149,7 +149,7 @@ func (s *TableServiceImpl) Rename(tableID, projectID uuid.UUID, authUser models.
 		return models.Table{}, err
 	}
 
-	if !s.projectPolicy.CanUpdate(project.OrganizationID, authUser) {
+	if !s.projectPolicy.CanUpdate(project.OrganizationUuid, authUser) {
 		return models.Table{}, errs.NewForbiddenError("project.error.updateForbidden")
 	}
 
@@ -173,7 +173,7 @@ func (s *TableServiceImpl) Rename(tableID, projectID uuid.UUID, authUser models.
 		return models.Table{}, err
 	}
 
-	return s.coreTableRepo.Rename(tableID, request.Name, authUser.ID)
+	return s.coreTableRepo.Rename(tableID, request.Name, authUser.Uuid)
 }
 
 func (s *TableServiceImpl) Delete(tableID, projectID uuid.UUID, authUser models.AuthUser) (bool, error) {
@@ -182,7 +182,7 @@ func (s *TableServiceImpl) Delete(tableID, projectID uuid.UUID, authUser models.
 		return false, err
 	}
 
-	if !s.projectPolicy.CanUpdate(project.OrganizationID, authUser) {
+	if !s.projectPolicy.CanUpdate(project.OrganizationUuid, authUser) {
 		return false, errs.NewForbiddenError("project.error.updateForbidden")
 	}
 

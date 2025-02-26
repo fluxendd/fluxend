@@ -23,8 +23,8 @@ func (s *OrganizationPolicy) CanCreate(authUser models.AuthUser) bool {
 	return authUser.IsAdminOrMore()
 }
 
-func (s *OrganizationPolicy) CanAccess(organizationID uuid.UUID, authUser models.AuthUser) bool {
-	isOrganizationUser, err := s.organizationRepo.IsOrganizationUser(organizationID, authUser.ID)
+func (s *OrganizationPolicy) CanAccess(organizationUUID uuid.UUID, authUser models.AuthUser) bool {
+	isOrganizationUser, err := s.organizationRepo.IsOrganizationUser(organizationUUID, authUser.Uuid)
 	if err != nil {
 		return false
 	}
@@ -32,12 +32,12 @@ func (s *OrganizationPolicy) CanAccess(organizationID uuid.UUID, authUser models
 	return isOrganizationUser
 }
 
-func (s *OrganizationPolicy) CanUpdate(organizationID uuid.UUID, authUser models.AuthUser) bool {
+func (s *OrganizationPolicy) CanUpdate(organizationUUID uuid.UUID, authUser models.AuthUser) bool {
 	if !authUser.IsAdminOrMore() {
 		return false
 	}
 
-	isOrganizationUser, err := s.organizationRepo.IsOrganizationUser(organizationID, authUser.ID)
+	isOrganizationUser, err := s.organizationRepo.IsOrganizationUser(organizationUUID, authUser.Uuid)
 	if err != nil {
 		return false
 	}
