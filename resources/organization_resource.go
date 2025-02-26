@@ -6,7 +6,7 @@ import (
 )
 
 type OrganizationResponse struct {
-	ID        uuid.UUID `json:"id"`
+	Uuid      uuid.UUID `json:"uuid"`
 	Name      string    `json:"name"`
 	CreatedBy uuid.UUID `json:"created_by"`
 	UpdatedBy uuid.UUID `json:"updated_by"`
@@ -16,7 +16,7 @@ type OrganizationResponse struct {
 
 func OrganizationResource(organization *models.Organization) OrganizationResponse {
 	return OrganizationResponse{
-		ID:        organization.ID,
+		Uuid:      organization.Uuid,
 		Name:      organization.Name,
 		CreatedBy: organization.CreatedBy,
 		UpdatedBy: organization.UpdatedBy,

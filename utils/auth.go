@@ -27,13 +27,13 @@ func (a *Auth) User() (models.AuthUser, error) {
 	return userData, nil
 }
 
-func (a *Auth) Id() (uuid.UUID, error) {
+func (a *Auth) Uuid() (uuid.UUID, error) {
 	user, err := a.User()
 	if err != nil {
 		return uuid.Nil, err
 	}
 
-	return user.ID, nil
+	return user.Uuid, nil
 }
 
 func (a *Auth) RoleID() (int, error) {
