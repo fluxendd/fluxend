@@ -121,7 +121,7 @@ func (s *OrganizationServiceImpl) CreateUser(request *requests.OrganizationUserC
 		return models.User{}, errs.NewForbiddenError("organization.error.createUserForbidden")
 	}
 
-	userExists, err := s.organizationRepo.IsOrganizationUser(organizationUUID, request.UserID)
+	userExists, err := s.organizationRepo.IsOrganizationMember(organizationUUID, request.UserID)
 	if err != nil {
 		return models.User{}, err
 	}
