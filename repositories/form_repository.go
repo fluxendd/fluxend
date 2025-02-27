@@ -117,7 +117,7 @@ func (r *FormRepository) Create(form *models.Form) (*models.Form, error) {
 	}
 
 	query := "INSERT INTO fluxton.projects (project_uuid, name, description, created_by, updated_by) VALUES ($1, $2, $3, $4, $5, $6) RETURNING uuid"
-	queryErr := tx.QueryRowx(query, form.ProjectUuid, form.Name, form.Description, form.CreatedBy, form.CreatedBy).Scan(&form.Uuid)
+	queryErr := tx.QueryRowx(query, form.ProjectUuid, form.Name, form.Description, form.CreatedBy, form.UpdatedBy).Scan(&form.Uuid)
 	if queryErr != nil {
 		err := tx.Rollback()
 		if err != nil {
