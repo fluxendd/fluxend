@@ -61,11 +61,11 @@ func (pc *TableController) Show(c echo.Context) error {
 
 func (pc *TableController) Store(c echo.Context) error {
 	var request table_requests.CreateRequest
-	authUser, _ := utils.NewAuth(c).User()
-
 	if err := request.BindAndValidate(c); err != nil {
 		return responses.UnprocessableResponse(c, err)
 	}
+
+	authUser, _ := utils.NewAuth(c).User()
 
 	projectID, err := utils.GetUUIDPathParam(c, "projectID", true)
 	if err != nil {
@@ -82,6 +82,10 @@ func (pc *TableController) Store(c echo.Context) error {
 
 func (pc *TableController) Duplicate(c echo.Context) error {
 	var request table_requests.RenameRequest
+	if err := request.BindAndValidate(c); err != nil {
+		return responses.UnprocessableResponse(c, err)
+	}
+
 	authUser, _ := utils.NewAuth(c).User()
 
 	projectID, err := utils.GetUUIDPathParam(c, "projectID", true)
@@ -92,10 +96,6 @@ func (pc *TableController) Duplicate(c echo.Context) error {
 	tableID, err := utils.GetUUIDPathParam(c, "tableID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
-	}
-
-	if err := request.BindAndValidate(c); err != nil {
-		return responses.UnprocessableResponse(c, err)
 	}
 
 	duplicatedTable, err := pc.tableService.Duplicate(tableID, projectID, authUser, &request)
@@ -108,6 +108,10 @@ func (pc *TableController) Duplicate(c echo.Context) error {
 
 func (pc *TableController) Rename(c echo.Context) error {
 	var request table_requests.RenameRequest
+	if err := request.BindAndValidate(c); err != nil {
+		return responses.UnprocessableResponse(c, err)
+	}
+
 	authUser, _ := utils.NewAuth(c).User()
 
 	projectID, err := utils.GetUUIDPathParam(c, "projectID", true)
@@ -120,10 +124,6 @@ func (pc *TableController) Rename(c echo.Context) error {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	if err := request.BindAndValidate(c); err != nil {
-		return responses.UnprocessableResponse(c, err)
-	}
-
 	renamedTable, err := pc.tableService.Rename(tableID, projectID, authUser, &request)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
@@ -134,11 +134,11 @@ func (pc *TableController) Rename(c echo.Context) error {
 
 func (pc *TableController) Delete(c echo.Context) error {
 	var request requests.DefaultRequest
-	authUser, _ := utils.NewAuth(c).User()
-
 	if err := request.BindAndValidate(c); err != nil {
 		return responses.UnprocessableResponse(c, err)
 	}
+
+	authUser, _ := utils.NewAuth(c).User()
 
 	projectID, err := utils.GetUUIDPathParam(c, "projectID", true)
 	if err != nil {

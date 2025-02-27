@@ -38,11 +38,11 @@ func (nc *OrganizationUserController) List(c echo.Context) error {
 
 func (nc *OrganizationUserController) Store(c echo.Context) error {
 	var request organization_requests.MemberCreateRequest
-	authUser, _ := utils.NewAuth(c).User()
-
 	if err := request.BindAndValidate(c); err != nil {
 		return responses.UnprocessableResponse(c, err)
 	}
+
+	authUser, _ := utils.NewAuth(c).User()
 
 	organizationUUID, err := utils.GetUUIDPathParam(c, "organizationUUID", true)
 	if err != nil {

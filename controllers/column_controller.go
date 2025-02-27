@@ -23,11 +23,11 @@ func NewColumnController(injector *do.Injector) (*ColumnController, error) {
 
 func (pc *ColumnController) Store(c echo.Context) error {
 	var request column_requests.CreateRequest
-	authUser, _ := utils.NewAuth(c).User()
-
 	if err := request.BindAndValidate(c); err != nil {
 		return responses.UnprocessableResponse(c, err)
 	}
+
+	authUser, _ := utils.NewAuth(c).User()
 
 	projectID, tableID, _, err := pc.parseRequest(c)
 	if err != nil {
@@ -44,15 +44,15 @@ func (pc *ColumnController) Store(c echo.Context) error {
 
 func (pc *ColumnController) Alter(c echo.Context) error {
 	var request column_requests.CreateRequest
+	if err := request.BindAndValidate(c); err != nil {
+		return responses.UnprocessableResponse(c, err)
+	}
+
 	authUser, _ := utils.NewAuth(c).User()
 
 	projectID, tableID, _, err := pc.parseRequest(c)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
-	}
-
-	if err := request.BindAndValidate(c); err != nil {
-		return responses.UnprocessableResponse(c, err)
 	}
 
 	alteredTable, err := pc.columnService.AlterMany(tableID, projectID, &request, authUser)
@@ -65,15 +65,15 @@ func (pc *ColumnController) Alter(c echo.Context) error {
 
 func (pc *ColumnController) Rename(c echo.Context) error {
 	var request column_requests.RenameRequest
+	if err := request.BindAndValidate(c); err != nil {
+		return responses.UnprocessableResponse(c, err)
+	}
+
 	authUser, _ := utils.NewAuth(c).User()
 
 	projectID, tableID, columnName, err := pc.parseRequest(c)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
-	}
-
-	if err := request.BindAndValidate(c); err != nil {
-		return responses.UnprocessableResponse(c, err)
 	}
 
 	renamedTable, err := pc.columnService.Rename(columnName, tableID, projectID, &request, authUser)
