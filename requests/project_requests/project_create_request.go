@@ -1,6 +1,7 @@
 package project_requests
 
 import (
+	"fluxton/requests"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
@@ -8,6 +9,7 @@ import (
 )
 
 type ProjectCreateRequest struct {
+	requests.BaseRequest
 	Name             string    `json:"name"`
 	OrganizationUUID uuid.UUID `json:"organization_uuid"`
 }
@@ -26,16 +28,5 @@ func (r *ProjectCreateRequest) BindAndValidate(c echo.Context) []string {
 		validation.Field(&r.OrganizationUUID, validation.Required.Error("Organization UUID is required")),
 	)
 
-	if err == nil {
-		return nil
-	}
-
-	var errors []string
-	if ve, ok := err.(validation.Errors); ok {
-		for _, validationErr := range ve {
-			errors = append(errors, validationErr.Error())
-		}
-	}
-
-	return errors
+	return r.ExtractValidationErrors(err)
 }

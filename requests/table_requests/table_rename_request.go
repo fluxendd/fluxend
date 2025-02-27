@@ -1,12 +1,14 @@
 package table_requests
 
 import (
+	"fluxton/requests"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/labstack/echo/v4"
 	"regexp"
 )
 
 type TableRenameRequest struct {
+	requests.BaseRequest
 	Name string `json:"name"`
 }
 
@@ -23,16 +25,5 @@ func (r *TableRenameRequest) BindAndValidate(c echo.Context) []string {
 			validation.Length(3, 100).Error("Name must be between 3 and 100 characters")),
 	)
 
-	if err == nil {
-		return nil
-	}
-
-	var errors []string
-	if ve, ok := err.(validation.Errors); ok {
-		for _, validationErr := range ve {
-			errors = append(errors, validationErr.Error())
-		}
-	}
-
-	return errors
+	return r.ExtractValidationErrors(err)
 }

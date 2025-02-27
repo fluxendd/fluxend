@@ -1,6 +1,7 @@
 package user_requests
 
 import (
+	"fluxton/requests"
 	"regexp"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -8,6 +9,7 @@ import (
 )
 
 type UserCreateRequest struct {
+	requests.BaseRequest
 	Username string `json:"username"`
 	Email    string `json:"email"`
 	Password string `json:"password"`
@@ -40,16 +42,5 @@ func (r *UserCreateRequest) Validate() []string {
 		),
 	)
 
-	if err == nil {
-		return nil
-	}
-
-	var errors []string
-	if ve, ok := err.(validation.Errors); ok {
-		for _, validationErr := range ve {
-			errors = append(errors, validationErr.Error())
-		}
-	}
-
-	return errors
+	return r.ExtractValidationErrors(err)
 }
