@@ -1,4 +1,4 @@
-package requests
+package organization_requests
 
 import (
 	validation "github.com/go-ozzo/ozzo-validation/v4"

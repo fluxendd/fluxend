@@ -32,7 +32,7 @@ func validateName(value interface{}) error {
 	name := value.(string)
 
 	if reservedColumnNames[strings.ToLower(name)] {
-		return fmt.Errorf("Column name '%s' is reserved and cannot be used", name)
+		return fmt.Errorf("column name '%s' is reserved and cannot be used", name)
 	}
 
 	return nil

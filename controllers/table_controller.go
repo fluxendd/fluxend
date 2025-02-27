@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"fluxton/requests"
+	"fluxton/requests/table_requests"
 	"fluxton/resources"
 	"fluxton/responses"
 	"fluxton/services"
@@ -59,7 +60,7 @@ func (pc *TableController) Show(c echo.Context) error {
 }
 
 func (pc *TableController) Store(c echo.Context) error {
-	var request requests.TableCreateRequest
+	var request table_requests.TableCreateRequest
 	authUser, _ := utils.NewAuth(c).User()
 
 	if err := request.BindAndValidate(c); err != nil {
@@ -80,7 +81,7 @@ func (pc *TableController) Store(c echo.Context) error {
 }
 
 func (pc *TableController) Duplicate(c echo.Context) error {
-	var request requests.TableRenameRequest
+	var request table_requests.TableRenameRequest
 	authUser, _ := utils.NewAuth(c).User()
 
 	projectID, err := utils.GetUUIDPathParam(c, "projectID", true)
@@ -106,7 +107,7 @@ func (pc *TableController) Duplicate(c echo.Context) error {
 }
 
 func (pc *TableController) Rename(c echo.Context) error {
-	var request requests.TableRenameRequest
+	var request table_requests.TableRenameRequest
 	authUser, _ := utils.NewAuth(c).User()
 
 	projectID, err := utils.GetUUIDPathParam(c, "projectID", true)

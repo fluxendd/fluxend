@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"fluxton/requests"
+	"fluxton/requests/organization_requests"
 	"fluxton/resources"
 	"fluxton/responses"
 	"fluxton/services"
@@ -37,7 +37,7 @@ func (nc *OrganizationUserController) List(c echo.Context) error {
 }
 
 func (nc *OrganizationUserController) Store(c echo.Context) error {
-	var request requests.OrganizationUserCreateRequest
+	var request organization_requests.OrganizationUserCreateRequest
 	authUser, _ := utils.NewAuth(c).User()
 
 	if err := request.BindAndValidate(c); err != nil {

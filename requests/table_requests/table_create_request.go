@@ -1,4 +1,4 @@
-package requests
+package table_requests
 
 import (
 	"fluxton/types"
