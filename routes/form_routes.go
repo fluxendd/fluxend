@@ -6,7 +6,7 @@ import (
 )
 
 func RegisterFormRoutes(e *echo.Echo, authMiddleware echo.MiddlewareFunc, FormController *controllers.FormController) {
-	projectsGroup := e.Group("api/projects/:projectID/forms", authMiddleware)
+	projectsGroup := e.Group("api/projects/:projectUUID/forms", authMiddleware)
 
 	projectsGroup.POST("", FormController.Store)
 	projectsGroup.GET("", FormController.List)
