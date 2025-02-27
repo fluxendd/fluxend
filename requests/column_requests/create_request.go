@@ -10,11 +10,11 @@ import (
 	"regexp"
 )
 
-type ColumnCreateRequest struct {
+type CreateRequest struct {
 	Columns []types.TableColumn `json:"columns"`
 }
 
-func (r *ColumnCreateRequest) BindAndValidate(c echo.Context) []string {
+func (r *CreateRequest) BindAndValidate(c echo.Context) []string {
 	if err := c.Bind(r); err != nil {
 		return []string{"Invalid request payload"}
 	}

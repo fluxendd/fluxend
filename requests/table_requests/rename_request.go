@@ -10,12 +10,12 @@ import (
 	"regexp"
 )
 
-type TableRenameRequest struct {
+type RenameRequest struct {
 	requests.BaseRequest
 	Name string `json:"name"`
 }
 
-func (r *TableRenameRequest) BindAndValidate(c echo.Context) []string {
+func (r *RenameRequest) BindAndValidate(c echo.Context) []string {
 	if err := c.Bind(r); err != nil {
 		return []string{"Invalid request payload"}
 	}

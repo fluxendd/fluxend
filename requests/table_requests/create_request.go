@@ -12,13 +12,13 @@ import (
 	"regexp"
 )
 
-type TableCreateRequest struct {
+type CreateRequest struct {
 	requests.BaseRequest
 	Name    string              `json:"name"`
 	Columns []types.TableColumn `json:"columns"`
 }
 
-func (r *TableCreateRequest) BindAndValidate(c echo.Context) []string {
+func (r *CreateRequest) BindAndValidate(c echo.Context) []string {
 	if err := c.Bind(r); err != nil {
 		return []string{"Invalid request payload"}
 	}
@@ -42,7 +42,7 @@ func (r *TableCreateRequest) BindAndValidate(c echo.Context) []string {
 	return errors
 }
 
-func (r *TableCreateRequest) validate() error {
+func (r *CreateRequest) validate() error {
 	return validation.ValidateStruct(r,
 		validation.Field(
 			&r.Name,

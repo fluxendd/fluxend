@@ -54,7 +54,7 @@ func (pc *ProjectController) Show(c echo.Context) error {
 }
 
 func (pc *ProjectController) Store(c echo.Context) error {
-	var request project_requests.ProjectCreateRequest
+	var request project_requests.CreateRequest
 	authUser, _ := utils.NewAuth(c).User()
 
 	if err := request.BindAndValidate(c); err != nil {
@@ -70,7 +70,7 @@ func (pc *ProjectController) Store(c echo.Context) error {
 }
 
 func (pc *ProjectController) Update(c echo.Context) error {
-	var request project_requests.ProjectUpdateRequest
+	var request project_requests.UpdateRequest
 	authUser, _ := utils.NewAuth(c).User()
 
 	projectID, err := utils.GetUUIDPathParam(c, "projectID", true)

@@ -15,9 +15,9 @@ import (
 type TableService interface {
 	List(paginationParams utils.PaginationParams, projectID uuid.UUID, authUser models.AuthUser) ([]models.Table, error)
 	GetByID(tableID, projectID uuid.UUID, authUser models.AuthUser) (models.Table, error)
-	Create(request *table_requests.TableCreateRequest, projectID uuid.UUID, authUser models.AuthUser) (models.Table, error)
-	Duplicate(tableID, projectID uuid.UUID, authUser models.AuthUser, request *table_requests.TableRenameRequest) (*models.Table, error)
-	Rename(tableID, projectID uuid.UUID, authUser models.AuthUser, request *table_requests.TableRenameRequest) (models.Table, error)
+	Create(request *table_requests.CreateRequest, projectID uuid.UUID, authUser models.AuthUser) (models.Table, error)
+	Duplicate(tableID, projectID uuid.UUID, authUser models.AuthUser, request *table_requests.RenameRequest) (*models.Table, error)
+	Rename(tableID, projectID uuid.UUID, authUser models.AuthUser, request *table_requests.RenameRequest) (models.Table, error)
 	Delete(tableID, projectID uuid.UUID, authUser models.AuthUser) (bool, error)
 }
 
@@ -68,7 +68,7 @@ func (s *TableServiceImpl) GetByID(tableID, projectID uuid.UUID, authUser models
 	return s.coreTableRepo.GetByID(tableID)
 }
 
-func (s *TableServiceImpl) Create(request *table_requests.TableCreateRequest, projectID uuid.UUID, authUser models.AuthUser) (models.Table, error) {
+func (s *TableServiceImpl) Create(request *table_requests.CreateRequest, projectID uuid.UUID, authUser models.AuthUser) (models.Table, error) {
 	project, err := s.projectRepo.GetByUUID(projectID)
 	if err != nil {
 		return models.Table{}, err
@@ -110,7 +110,7 @@ func (s *TableServiceImpl) Create(request *table_requests.TableCreateRequest, pr
 	return table, nil
 }
 
-func (s *TableServiceImpl) Duplicate(tableID, projectID uuid.UUID, authUser models.AuthUser, request *table_requests.TableRenameRequest) (*models.Table, error) {
+func (s *TableServiceImpl) Duplicate(tableID, projectID uuid.UUID, authUser models.AuthUser, request *table_requests.RenameRequest) (*models.Table, error) {
 	project, err := s.projectRepo.GetByUUID(projectID)
 	if err != nil {
 		return &models.Table{}, err
@@ -145,7 +145,7 @@ func (s *TableServiceImpl) Duplicate(tableID, projectID uuid.UUID, authUser mode
 	return s.coreTableRepo.Create(&table)
 }
 
-func (s *TableServiceImpl) Rename(tableID, projectID uuid.UUID, authUser models.AuthUser, request *table_requests.TableRenameRequest) (models.Table, error) {
+func (s *TableServiceImpl) Rename(tableID, projectID uuid.UUID, authUser models.AuthUser, request *table_requests.RenameRequest) (models.Table, error) {
 	project, err := s.projectRepo.GetByUUID(projectID)
 	if err != nil {
 		return models.Table{}, err

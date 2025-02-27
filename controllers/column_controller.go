@@ -22,7 +22,7 @@ func NewColumnController(injector *do.Injector) (*ColumnController, error) {
 }
 
 func (pc *ColumnController) Store(c echo.Context) error {
-	var request column_requests.ColumnCreateRequest
+	var request column_requests.CreateRequest
 	authUser, _ := utils.NewAuth(c).User()
 
 	if err := request.BindAndValidate(c); err != nil {
@@ -43,7 +43,7 @@ func (pc *ColumnController) Store(c echo.Context) error {
 }
 
 func (pc *ColumnController) Alter(c echo.Context) error {
-	var request column_requests.ColumnCreateRequest
+	var request column_requests.CreateRequest
 	authUser, _ := utils.NewAuth(c).User()
 
 	projectID, tableID, _, err := pc.parseRequest(c)
@@ -64,7 +64,7 @@ func (pc *ColumnController) Alter(c echo.Context) error {
 }
 
 func (pc *ColumnController) Rename(c echo.Context) error {
-	var request column_requests.ColumnRenameRequest
+	var request column_requests.RenameRequest
 	authUser, _ := utils.NewAuth(c).User()
 
 	projectID, tableID, columnName, err := pc.parseRequest(c)

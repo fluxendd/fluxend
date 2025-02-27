@@ -5,12 +5,12 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
-type UserUpdateRequest struct {
+type UpdateRequest struct {
 	requests.BaseRequest
 	Bio string `json:"bio"`
 }
 
-func (r *UserUpdateRequest) Validate() []string {
+func (r *UpdateRequest) Validate() []string {
 	err := validation.ValidateStruct(r,
 		// Bio: optional, length 0-500
 		validation.Field(&r.Bio,

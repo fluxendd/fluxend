@@ -15,12 +15,12 @@ import (
 )
 
 type UserService interface {
-	Login(request *user_requests.UserLoginRequest) (models.User, string, error)
+	Login(request *user_requests.LoginRequest) (models.User, string, error)
 	List(paginationParams utils.PaginationParams) ([]models.User, error)
 	ExistsByUUID(id uuid.UUID) error
 	GetByID(id uuid.UUID) (models.User, error)
-	Create(request *user_requests.UserCreateRequest) (models.User, error)
-	Update(userUUID, authUserUUID uuid.UUID, request *user_requests.UserUpdateRequest) (*models.User, error)
+	Create(request *user_requests.CreateRequest) (models.User, error)
+	Update(userUUID, authUserUUID uuid.UUID, request *user_requests.UpdateRequest) (*models.User, error)
 	Delete(userUUID uuid.UUID) (bool, error)
 	Logout(userUUID uuid.UUID) error
 }
@@ -35,7 +35,7 @@ func NewUserService(injector *do.Injector) (UserService, error) {
 	return &UserServiceImpl{userRepo: repo}, nil
 }
 
-func (s *UserServiceImpl) Login(request *user_requests.UserLoginRequest) (models.User, string, error) {
+func (s *UserServiceImpl) Login(request *user_requests.LoginRequest) (models.User, string, error) {
 	user, err := s.userRepo.GetByEmail(request.Email)
 	if err != nil {
 		return models.User{}, "", err
@@ -79,7 +79,7 @@ func (s *UserServiceImpl) ExistsByUUID(id uuid.UUID) error {
 	return nil
 }
 
-func (s *UserServiceImpl) Create(request *user_requests.UserCreateRequest) (models.User, error) {
+func (s *UserServiceImpl) Create(request *user_requests.CreateRequest) (models.User, error) {
 	user := models.User{
 		Username: request.Username,
 		Email:    request.Email,
@@ -96,7 +96,7 @@ func (s *UserServiceImpl) Create(request *user_requests.UserCreateRequest) (mode
 	return user, nil
 }
 
-func (s *UserServiceImpl) Update(userUUID, authUserUUID uuid.UUID, request *user_requests.UserUpdateRequest) (*models.User, error) {
+func (s *UserServiceImpl) Update(userUUID, authUserUUID uuid.UUID, request *user_requests.UpdateRequest) (*models.User, error) {
 	if !policies.CanUpdateUser(userUUID, authUserUUID) {
 		return nil, errs.NewForbiddenError("user.error.updateForbidden")
 	}
