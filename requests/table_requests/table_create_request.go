@@ -27,11 +27,15 @@ func (r *TableCreateRequest) BindAndValidate(c echo.Context) []string {
 
 	if err := r.validate(); err != nil {
 		errors = append(errors, r.ExtractValidationErrors(err)...)
+
+		return errors
 	}
 
 	for _, column := range r.Columns {
 		if err := column_requests.ValidateColumn(column); err != nil {
 			errors = append(errors, err.Error())
+
+			return errors
 		}
 	}
 

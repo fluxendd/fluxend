@@ -30,6 +30,13 @@ var (
 		"float":     true,
 		"uuid":      true,
 	}
+
+	reservedIndexNames = map[string]bool{
+		"primary": true,
+		"unique":  true,
+		"foreign": true,
+		"exclude": true,
+	}
 )
 
 type BaseRequest struct{}
@@ -79,6 +86,18 @@ func GetAllowedColumnTypes() map[string]bool {
 
 func IsAllowedColumnType(columnType string) bool {
 	if _, ok := allowedColumnTypes[columnType]; ok {
+		return true
+	}
+
+	return false
+}
+
+func GetReservedIndexNames() map[string]bool {
+	return reservedIndexNames
+}
+
+func IsReservedIndexName(name string) bool {
+	if _, ok := reservedIndexNames[name]; ok {
 		return true
 	}
 

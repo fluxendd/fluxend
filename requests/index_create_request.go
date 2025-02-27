@@ -11,16 +11,10 @@ import (
 )
 
 type IndexCreateRequest struct {
+	BaseRequest
 	Name     string   `json:"name"`
 	Columns  []string `json:"columns"`
 	IsUnique bool     `json:"is_unique"`
-}
-
-var reservedIndexNames = map[string]bool{
-	"primary": true,
-	"unique":  true,
-	"foreign": true,
-	"exclude": true,
 }
 
 func (r *IndexCreateRequest) BindAndValidate(c echo.Context) []string {
@@ -30,7 +24,6 @@ func (r *IndexCreateRequest) BindAndValidate(c echo.Context) []string {
 
 	var errors []string
 
-	// Validate base request fields
 	err := validation.ValidateStruct(r,
 		validation.Field(
 			&r.Name,
@@ -51,19 +44,13 @@ func (r *IndexCreateRequest) BindAndValidate(c echo.Context) []string {
 		validation.Field(&r.Columns, validation.Required.Error("At least one column is required")),
 	)
 
-	if err != nil {
-		if ve, ok := err.(validation.Errors); ok {
-			for _, validationErr := range ve {
-				errors = append(errors, validationErr.Error())
-			}
-		}
-
+	errors = append(errors, r.ExtractValidationErrors(err)...)
+	if len(errors) > 0 {
 		return errors
 	}
 
-	// Validate index name restrictions
-	if reservedIndexNames[strings.ToLower(r.Name)] {
-		errors = append(errors, fmt.Sprintf("Index name '%s' is reserved and cannot be used", r.Name))
+	if IsReservedIndexName(strings.ToLower(r.Name)) {
+		return append(errors, fmt.Sprintf("Index name '%s' is reserved and cannot be used", r.Name))
 	}
 
 	// Ensure unique column names for the index
@@ -71,12 +58,14 @@ func (r *IndexCreateRequest) BindAndValidate(c echo.Context) []string {
 	for _, column := range r.Columns {
 		if strings.TrimSpace(column) == "" {
 			errors = append(errors, "Column name in index cannot be empty")
+
 			continue
 		}
 
 		if seen[strings.ToLower(column)] {
 			errors = append(errors, fmt.Sprintf("Duplicate column '%s' in index definition", column))
 		}
+
 		seen[strings.ToLower(column)] = true
 	}
 

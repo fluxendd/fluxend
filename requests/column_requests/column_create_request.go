@@ -24,6 +24,8 @@ func (r *ColumnCreateRequest) BindAndValidate(c echo.Context) []string {
 	for _, column := range r.Columns {
 		if err := ValidateColumn(column); err != nil {
 			errors = append(errors, err.Error())
+
+			return errors
 		}
 	}
 
