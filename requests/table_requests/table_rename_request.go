@@ -1,8 +1,10 @@
 package table_requests
 
 import (
+	"fluxton/configs"
 	"fluxton/requests"
 	"fluxton/utils"
+	"fmt"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/labstack/echo/v4"
 	"regexp"
@@ -24,7 +26,15 @@ func (r *TableRenameRequest) BindAndValidate(c echo.Context) []string {
 			validation.Match(
 				regexp.MustCompile(utils.AlphanumericWithUnderscorePattern()),
 			).Error("Table name must be alphanumeric with underscores"),
-			validation.Length(3, 100).Error("Name must be between 3 and 100 characters"),
+			validation.Length(
+				configs.MinTableNameLength, configs.MaxTableNameLength,
+			).Error(
+				fmt.Sprintf(
+					"Name must be between %d and %d characters",
+					configs.MinTableNameLength,
+					configs.MaxTableNameLength,
+				),
+			),
 			validation.By(validateName),
 		),
 	)
