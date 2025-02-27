@@ -16,8 +16,8 @@ type FormService interface {
 	List(paginationParams utils.PaginationParams, projectUUID uuid.UUID, authUser models.AuthUser) ([]models.Form, error)
 	GetByUUID(formUUID, projectUUID uuid.UUID, authUser models.AuthUser) (models.Form, error)
 	Create(projectUUID uuid.UUID, request *form_requests.CreateRequest, authUser models.AuthUser) (models.Form, error)
-	Update(projectID uuid.UUID, authUser models.AuthUser, request *form_requests.CreateRequest) (*models.Form, error)
-	Delete(projectID uuid.UUID, authUser models.AuthUser) (bool, error)
+	Update(formUUID uuid.UUID, authUser models.AuthUser, request *form_requests.CreateRequest) (*models.Form, error)
+	Delete(formUUID uuid.UUID, authUser models.AuthUser) (bool, error)
 }
 
 type FormServiceImpl struct {
