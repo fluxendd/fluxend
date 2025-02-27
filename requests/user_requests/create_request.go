@@ -8,7 +8,7 @@ import (
 	"github.com/go-ozzo/ozzo-validation/v4/is"
 )
 
-type UserCreateRequest struct {
+type CreateRequest struct {
 	requests.BaseRequest
 	Username string `json:"username"`
 	Email    string `json:"email"`
@@ -16,7 +16,7 @@ type UserCreateRequest struct {
 	Bio      string `json:"bio"`
 }
 
-func (r *UserCreateRequest) Validate() []string {
+func (r *CreateRequest) Validate() []string {
 	usernameRegex := regexp.MustCompile(`^[a-zA-Z0-9_-]+$`)
 
 	err := validation.ValidateStruct(r,

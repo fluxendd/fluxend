@@ -49,7 +49,7 @@ func (nc *OrganizationController) Show(c echo.Context) error {
 }
 
 func (nc *OrganizationController) Store(c echo.Context) error {
-	var request organization_requests.OrganizationCreateRequest
+	var request organization_requests.CreateRequest
 	authUser, err := utils.NewAuth(c).User()
 	if err != nil {
 		return responses.UnauthorizedResponse(c, err.Error())
@@ -68,7 +68,7 @@ func (nc *OrganizationController) Store(c echo.Context) error {
 }
 
 func (nc *OrganizationController) Update(c echo.Context) error {
-	var request organization_requests.OrganizationCreateRequest
+	var request organization_requests.CreateRequest
 	authUser, _ := utils.NewAuth(c).User()
 
 	organizationUUID, err := utils.GetUUIDPathParam(c, "organizationUUID", true)

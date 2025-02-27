@@ -15,11 +15,11 @@ import (
 type OrganizationService interface {
 	List(paginationParams utils.PaginationParams, authUserId uuid.UUID) ([]models.Organization, error)
 	GetByID(organizationUUID uuid.UUID, authUser models.AuthUser) (models.Organization, error)
-	Create(request *organization_requests.OrganizationCreateRequest, authUser models.AuthUser) (models.Organization, error)
-	Update(organizationUUID uuid.UUID, authUser models.AuthUser, request *organization_requests.OrganizationCreateRequest) (*models.Organization, error)
+	Create(request *organization_requests.CreateRequest, authUser models.AuthUser) (models.Organization, error)
+	Update(organizationUUID uuid.UUID, authUser models.AuthUser, request *organization_requests.CreateRequest) (*models.Organization, error)
 	Delete(organizationUUID uuid.UUID, authUser models.AuthUser) (bool, error)
 	ListUsers(organizationUUID uuid.UUID, authUser models.AuthUser) ([]models.User, error)
-	CreateUser(request *organization_requests.OrganizationUserCreateRequest, organizationUUID uuid.UUID, authUser models.AuthUser) (models.User, error)
+	CreateUser(request *organization_requests.MemberCreateRequest, organizationUUID uuid.UUID, authUser models.AuthUser) (models.User, error)
 	DeleteUser(organizationUUID, userID uuid.UUID, authUser models.AuthUser) error
 }
 
@@ -71,7 +71,7 @@ func (s *OrganizationServiceImpl) ExistsByUUID(organizationUUID uuid.UUID) error
 	return nil
 }
 
-func (s *OrganizationServiceImpl) Create(request *organization_requests.OrganizationCreateRequest, authUser models.AuthUser) (models.Organization, error) {
+func (s *OrganizationServiceImpl) Create(request *organization_requests.CreateRequest, authUser models.AuthUser) (models.Organization, error) {
 	if !s.organizationPolicy.CanCreate(authUser) {
 		return models.Organization{}, errs.NewForbiddenError("organization.error.createForbidden")
 	}
@@ -90,7 +90,7 @@ func (s *OrganizationServiceImpl) Create(request *organization_requests.Organiza
 	return organization, nil
 }
 
-func (s *OrganizationServiceImpl) Update(organizationUUID uuid.UUID, authUser models.AuthUser, request *organization_requests.OrganizationCreateRequest) (*models.Organization, error) {
+func (s *OrganizationServiceImpl) Update(organizationUUID uuid.UUID, authUser models.AuthUser, request *organization_requests.CreateRequest) (*models.Organization, error) {
 	organization, err := s.organizationRepo.GetByUUID(organizationUUID)
 	if err != nil {
 		return nil, err
@@ -132,7 +132,7 @@ func (s *OrganizationServiceImpl) ListUsers(organizationUUID uuid.UUID, authUser
 	return s.organizationRepo.ListUsers(organizationUUID)
 }
 
-func (s *OrganizationServiceImpl) CreateUser(request *organization_requests.OrganizationUserCreateRequest, organizationUUID uuid.UUID, authUser models.AuthUser) (models.User, error) {
+func (s *OrganizationServiceImpl) CreateUser(request *organization_requests.MemberCreateRequest, organizationUUID uuid.UUID, authUser models.AuthUser) (models.User, error) {
 	if !s.organizationPolicy.CanCreate(authUser) {
 		return models.User{}, errs.NewForbiddenError("organization.error.createUserForbidden")
 	}

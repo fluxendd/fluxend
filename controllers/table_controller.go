@@ -60,7 +60,7 @@ func (pc *TableController) Show(c echo.Context) error {
 }
 
 func (pc *TableController) Store(c echo.Context) error {
-	var request table_requests.TableCreateRequest
+	var request table_requests.CreateRequest
 	authUser, _ := utils.NewAuth(c).User()
 
 	if err := request.BindAndValidate(c); err != nil {
@@ -81,7 +81,7 @@ func (pc *TableController) Store(c echo.Context) error {
 }
 
 func (pc *TableController) Duplicate(c echo.Context) error {
-	var request table_requests.TableRenameRequest
+	var request table_requests.RenameRequest
 	authUser, _ := utils.NewAuth(c).User()
 
 	projectID, err := utils.GetUUIDPathParam(c, "projectID", true)
@@ -107,7 +107,7 @@ func (pc *TableController) Duplicate(c echo.Context) error {
 }
 
 func (pc *TableController) Rename(c echo.Context) error {
-	var request table_requests.TableRenameRequest
+	var request table_requests.RenameRequest
 	authUser, _ := utils.NewAuth(c).User()
 
 	projectID, err := utils.GetUUIDPathParam(c, "projectID", true)

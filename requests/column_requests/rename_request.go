@@ -8,12 +8,12 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-type ColumnRenameRequest struct {
+type RenameRequest struct {
 	requests.BaseRequest
 	Name string `json:"name"`
 }
 
-func (r *ColumnRenameRequest) BindAndValidate(c echo.Context) []string {
+func (r *RenameRequest) BindAndValidate(c echo.Context) []string {
 	if err := c.Bind(r); err != nil {
 		return []string{"Invalid request payload"}
 	}

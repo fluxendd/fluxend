@@ -35,7 +35,7 @@ func (uc *UserController) Show(c echo.Context) error {
 }
 
 func (uc *UserController) Login(c echo.Context) error {
-	var request user_requests.UserLoginRequest
+	var request user_requests.LoginRequest
 	if err := c.Bind(&request); err != nil {
 		return responses.BadRequestResponse(c, "user.error.invalidPayload")
 	}
@@ -56,7 +56,7 @@ func (uc *UserController) Login(c echo.Context) error {
 }
 
 func (uc *UserController) Store(c echo.Context) error {
-	var request user_requests.UserCreateRequest
+	var request user_requests.CreateRequest
 	if err := c.Bind(&request); err != nil {
 		return responses.BadRequestResponse(c, "user.error.invalidPayload")
 	}
@@ -79,7 +79,7 @@ func (uc *UserController) Update(c echo.Context) error {
 		return responses.UnauthorizedResponse(c, err.Error())
 	}
 
-	var request user_requests.UserUpdateRequest
+	var request user_requests.UpdateRequest
 	userUUID, err := utils.GetUUIDPathParam(c, "userUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())

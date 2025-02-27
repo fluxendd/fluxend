@@ -37,7 +37,7 @@ func (nc *OrganizationUserController) List(c echo.Context) error {
 }
 
 func (nc *OrganizationUserController) Store(c echo.Context) error {
-	var request organization_requests.OrganizationUserCreateRequest
+	var request organization_requests.MemberCreateRequest
 	authUser, _ := utils.NewAuth(c).User()
 
 	if err := request.BindAndValidate(c); err != nil {

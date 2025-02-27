@@ -7,12 +7,12 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-type OrganizationUserCreateRequest struct {
+type MemberCreateRequest struct {
 	requests.BaseRequest
 	UserID uuid.UUID `json:"user_id"`
 }
 
-func (r *OrganizationUserCreateRequest) BindAndValidate(c echo.Context) []string {
+func (r *MemberCreateRequest) BindAndValidate(c echo.Context) []string {
 	if err := c.Bind(r); err != nil {
 		return []string{"Invalid request payload"}
 	}

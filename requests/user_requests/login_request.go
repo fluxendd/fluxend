@@ -6,13 +6,13 @@ import (
 	"github.com/go-ozzo/ozzo-validation/v4/is"
 )
 
-type UserLoginRequest struct {
+type LoginRequest struct {
 	requests.BaseRequest
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }
 
-func (r *UserLoginRequest) Validate() []string {
+func (r *LoginRequest) Validate() []string {
 	err := validation.ValidateStruct(r,
 		// Email: required, valid format
 		validation.Field(&r.Email,
