@@ -55,11 +55,11 @@ func (pc *ProjectController) Show(c echo.Context) error {
 
 func (pc *ProjectController) Store(c echo.Context) error {
 	var request project_requests.CreateRequest
-	authUser, _ := utils.NewAuth(c).User()
-
 	if err := request.BindAndValidate(c); err != nil {
 		return responses.UnprocessableResponse(c, err)
 	}
+
+	authUser, _ := utils.NewAuth(c).User()
 
 	project, err := pc.projectService.Create(&request, authUser)
 	if err != nil {
@@ -71,15 +71,15 @@ func (pc *ProjectController) Store(c echo.Context) error {
 
 func (pc *ProjectController) Update(c echo.Context) error {
 	var request project_requests.UpdateRequest
+	if err := request.BindAndValidate(c); err != nil {
+		return responses.UnprocessableResponse(c, err)
+	}
+
 	authUser, _ := utils.NewAuth(c).User()
 
 	projectID, err := utils.GetUUIDPathParam(c, "projectID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
-	}
-
-	if err := request.BindAndValidate(c); err != nil {
-		return responses.UnprocessableResponse(c, err)
 	}
 
 	updatedOrganization, err := pc.projectService.Update(projectID, authUser, &request)

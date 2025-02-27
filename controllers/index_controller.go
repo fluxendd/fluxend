@@ -57,11 +57,11 @@ func (pc *IndexController) Show(c echo.Context) error {
 
 func (pc *IndexController) Store(c echo.Context) error {
 	var request requests.IndexCreateRequest
-	authUser, _ := utils.NewAuth(c).User()
-
 	if err := request.BindAndValidate(c); err != nil {
 		return responses.UnprocessableResponse(c, err)
 	}
+
+	authUser, _ := utils.NewAuth(c).User()
 
 	projectID, tableID, err := pc.parseRequest(c)
 	if err != nil {

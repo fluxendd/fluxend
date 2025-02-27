@@ -50,13 +50,13 @@ func (nc *OrganizationController) Show(c echo.Context) error {
 
 func (nc *OrganizationController) Store(c echo.Context) error {
 	var request organization_requests.CreateRequest
+	if err := request.BindAndValidate(c); err != nil {
+		return responses.UnprocessableResponse(c, err)
+	}
+
 	authUser, err := utils.NewAuth(c).User()
 	if err != nil {
 		return responses.UnauthorizedResponse(c, err.Error())
-	}
-
-	if err := request.BindAndValidate(c); err != nil {
-		return responses.UnprocessableResponse(c, err)
 	}
 
 	organization, err := nc.organizationService.Create(&request, authUser)
@@ -69,15 +69,15 @@ func (nc *OrganizationController) Store(c echo.Context) error {
 
 func (nc *OrganizationController) Update(c echo.Context) error {
 	var request organization_requests.CreateRequest
+	if err := request.BindAndValidate(c); err != nil {
+		return responses.UnprocessableResponse(c, err)
+	}
+
 	authUser, _ := utils.NewAuth(c).User()
 
 	organizationUUID, err := utils.GetUUIDPathParam(c, "organizationUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
-	}
-
-	if err := c.Bind(&request); err != nil {
-		return responses.BadRequestResponse(c, "organization.error.invalidPayload")
 	}
 
 	updatedOrganization, err := nc.organizationService.Update(organizationUUID, authUser, &request)
