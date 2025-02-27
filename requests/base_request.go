@@ -4,6 +4,34 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
+var (
+	reservedTableNames = map[string]bool{
+		"pg_catalog":         true,
+		"information_schema": true,
+	}
+
+	reservedColumnNames = map[string]bool{
+		"oid":      true,
+		"xmin":     true,
+		"cmin":     true,
+		"xmax":     true,
+		"cmax":     true,
+		"tableoid": true,
+	}
+
+	allowedColumnTypes = map[string]bool{
+		"int":       true,
+		"serial":    true,
+		"varchar":   true,
+		"text":      true,
+		"boolean":   true,
+		"date":      true,
+		"timestamp": true,
+		"float":     true,
+		"uuid":      true,
+	}
+)
+
 type BaseRequest struct{}
 
 func (r *BaseRequest) ExtractValidationErrors(err error) []string {
@@ -19,4 +47,40 @@ func (r *BaseRequest) ExtractValidationErrors(err error) []string {
 	}
 
 	return errors
+}
+
+func GetReservedTableNames() map[string]bool {
+	return reservedTableNames
+}
+
+func IsReservedTableName(name string) bool {
+	if _, ok := reservedTableNames[name]; ok {
+		return true
+	}
+
+	return false
+}
+
+func GetReservedColumnNames() map[string]bool {
+	return reservedColumnNames
+}
+
+func IsReservedColumnName(name string) bool {
+	if _, ok := reservedColumnNames[name]; ok {
+		return true
+	}
+
+	return false
+}
+
+func GetAllowedColumnTypes() map[string]bool {
+	return allowedColumnTypes
+}
+
+func IsAllowedColumnType(columnType string) bool {
+	if _, ok := allowedColumnTypes[columnType]; ok {
+		return true
+	}
+
+	return false
 }

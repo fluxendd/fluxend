@@ -3,7 +3,6 @@ package column_requests
 import (
 	"fluxton/types"
 	"fluxton/utils"
-	"fmt"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/labstack/echo/v4"
 	"regexp"
@@ -21,31 +20,28 @@ func (r *ColumnCreateRequest) BindAndValidate(c echo.Context) []string {
 	var errors []string
 
 	for _, column := range r.Columns {
-		// Validate column name and type
-		err := validation.ValidateStruct(&column,
-			validation.Field(
-				&column.Name,
-				validation.Required.Error("Column name is required"),
-				validation.Match(
-					regexp.MustCompile(utils.AlphanumericWithUnderscoreAndDashPattern()),
-				).Error("Column name must be alphanumeric and start with a letter"),
-				validation.By(validateName),
-			),
-			validation.Field(
-				&column.Type,
-				validation.Required.Error("Column type is required"),
-				validation.By(validateType),
-			),
-		)
-
-		if err != nil {
-			if ve, ok := err.(validation.Errors); ok {
-				for _, validationErr := range ve {
-					errors = append(errors, fmt.Sprintf("Column '%s': %s", column.Name, validationErr.Error()))
-				}
-			}
+		if err := ValidateColumn(column); err != nil {
+			errors = append(errors, err.Error())
 		}
 	}
 
 	return errors
+}
+
+func ValidateColumn(column types.TableColumn) error {
+	return validation.ValidateStruct(&column,
+		validation.Field(
+			&column.Name,
+			validation.Required.Error("Column name is required"),
+			validation.Match(
+				regexp.MustCompile(utils.AlphanumericWithUnderscoreAndDashPattern()),
+			).Error("Column name must be alphanumeric and start with a letter"),
+			validation.By(validateName),
+		),
+		validation.Field(
+			&column.Type,
+			validation.Required.Error("Column type is required"),
+			validation.By(validateType),
+		),
+	)
 }
