@@ -1,11 +1,13 @@
 package column_requests
 
 import (
+	"fluxton/requests"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/labstack/echo/v4"
 )
 
 type ColumnRenameRequest struct {
+	requests.BaseRequest
 	Name string `json:"name"`
 }
 
@@ -14,9 +16,6 @@ func (r *ColumnRenameRequest) BindAndValidate(c echo.Context) []string {
 		return []string{"Invalid request payload"}
 	}
 
-	var errors []string
-
-	// Validate base request columns
 	err := validation.ValidateStruct(r,
 		validation.Field(
 			&r.Name,
@@ -25,15 +24,5 @@ func (r *ColumnRenameRequest) BindAndValidate(c echo.Context) []string {
 		),
 	)
 
-	if err != nil {
-		if ve, ok := err.(validation.Errors); ok {
-			for _, validationErr := range ve {
-				errors = append(errors, validationErr.Error())
-			}
-		}
-
-		return errors
-	}
-
-	return errors
+	return r.ExtractValidationErrors(err)
 }

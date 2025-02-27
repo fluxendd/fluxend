@@ -1,11 +1,13 @@
 package user_requests
 
 import (
+	"fluxton/requests"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/go-ozzo/ozzo-validation/v4/is"
 )
 
 type UserLoginRequest struct {
+	requests.BaseRequest
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }
@@ -24,16 +26,5 @@ func (r *UserLoginRequest) Validate() []string {
 		),
 	)
 
-	if err == nil {
-		return nil
-	}
-
-	var errors []string
-	if ve, ok := err.(validation.Errors); ok {
-		for _, validationErr := range ve {
-			errors = append(errors, validationErr.Error())
-		}
-	}
-
-	return errors
+	return r.ExtractValidationErrors(err)
 }

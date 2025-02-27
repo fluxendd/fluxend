@@ -1,6 +1,7 @@
 package table_requests
 
 import (
+	"fluxton/requests"
 	"fluxton/types"
 	"fmt"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -10,6 +11,7 @@ import (
 )
 
 type TableCreateRequest struct {
+	requests.BaseRequest
 	Name    string              `json:"name"`
 	Columns []types.TableColumn `json:"columns"`
 }

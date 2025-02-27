@@ -1,6 +1,7 @@
 package organization_requests
 
 import (
+	"fluxton/requests"
 	"fluxton/utils"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/labstack/echo/v4"
@@ -8,6 +9,7 @@ import (
 )
 
 type OrganizationCreateRequest struct {
+	requests.BaseRequest
 	Name string `json:"name"`
 }
 
@@ -27,17 +29,5 @@ func (r *OrganizationCreateRequest) BindAndValidate(c echo.Context) []string {
 		),
 	)
 
-	// If no errors, return nil
-	if err == nil {
-		return nil
-	}
-
-	var errors []string
-	if ve, ok := err.(validation.Errors); ok {
-		for _, validationErr := range ve {
-			errors = append(errors, validationErr.Error())
-		}
-	}
-
-	return errors
+	return r.ExtractValidationErrors(err)
 }
