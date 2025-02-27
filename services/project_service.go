@@ -5,7 +5,7 @@ import (
 	"fluxton/models"
 	"fluxton/policies"
 	"fluxton/repositories"
-	"fluxton/requests"
+	"fluxton/requests/project_requests"
 	"fluxton/utils"
 	"github.com/google/uuid"
 	"github.com/samber/do"
@@ -17,8 +17,8 @@ import (
 type ProjectService interface {
 	List(paginationParams utils.PaginationParams, organizationUUID uuid.UUID, authUser models.AuthUser) ([]models.Project, error)
 	GetByID(projectID uuid.UUID, authUser models.AuthUser) (models.Project, error)
-	Create(request *requests.ProjectCreateRequest, authUser models.AuthUser) (models.Project, error)
-	Update(projectID uuid.UUID, authUser models.AuthUser, request *requests.ProjectUpdateRequest) (*models.Project, error)
+	Create(request *project_requests.ProjectCreateRequest, authUser models.AuthUser) (models.Project, error)
+	Update(projectID uuid.UUID, authUser models.AuthUser, request *project_requests.ProjectUpdateRequest) (*models.Project, error)
 	Delete(projectID uuid.UUID, authUser models.AuthUser) (bool, error)
 }
 
@@ -61,7 +61,7 @@ func (s *ProjectServiceImpl) GetByID(projectID uuid.UUID, authUser models.AuthUs
 	return project, nil
 }
 
-func (s *ProjectServiceImpl) Create(request *requests.ProjectCreateRequest, authUser models.AuthUser) (models.Project, error) {
+func (s *ProjectServiceImpl) Create(request *project_requests.ProjectCreateRequest, authUser models.AuthUser) (models.Project, error) {
 	if !s.projectPolicy.CanCreate(request.OrganizationUUID, authUser) {
 		return models.Project{}, errs.NewForbiddenError("project.error.createForbidden")
 	}
@@ -96,7 +96,7 @@ func (s *ProjectServiceImpl) Create(request *requests.ProjectCreateRequest, auth
 	return project, nil
 }
 
-func (s *ProjectServiceImpl) Update(projectID uuid.UUID, authUser models.AuthUser, request *requests.ProjectUpdateRequest) (*models.Project, error) {
+func (s *ProjectServiceImpl) Update(projectID uuid.UUID, authUser models.AuthUser, request *project_requests.ProjectUpdateRequest) (*models.Project, error) {
 	project, err := s.projectRepo.GetByUUID(projectID)
 	if err != nil {
 		return nil, err

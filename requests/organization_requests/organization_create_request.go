@@ -1,4 +1,4 @@
-package requests
+package organization_requests
 
 import (
 	"fluxton/utils"

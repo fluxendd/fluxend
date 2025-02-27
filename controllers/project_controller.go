@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"fluxton/requests"
+	"fluxton/requests/project_requests"
 	"fluxton/resources"
 	"fluxton/responses"
 	"fluxton/services"
@@ -54,7 +54,7 @@ func (pc *ProjectController) Show(c echo.Context) error {
 }
 
 func (pc *ProjectController) Store(c echo.Context) error {
-	var request requests.ProjectCreateRequest
+	var request project_requests.ProjectCreateRequest
 	authUser, _ := utils.NewAuth(c).User()
 
 	if err := request.BindAndValidate(c); err != nil {
@@ -70,7 +70,7 @@ func (pc *ProjectController) Store(c echo.Context) error {
 }
 
 func (pc *ProjectController) Update(c echo.Context) error {
-	var request requests.ProjectUpdateRequest
+	var request project_requests.ProjectUpdateRequest
 	authUser, _ := utils.NewAuth(c).User()
 
 	projectID, err := utils.GetUUIDPathParam(c, "projectID", true)

@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"fluxton/requests"
+	"fluxton/requests/user_requests"
 	"fluxton/resources"
 	"fluxton/responses"
 	"fluxton/services"
@@ -35,7 +35,7 @@ func (uc *UserController) Show(c echo.Context) error {
 }
 
 func (uc *UserController) Login(c echo.Context) error {
-	var request requests.UserLoginRequest
+	var request user_requests.UserLoginRequest
 	if err := c.Bind(&request); err != nil {
 		return responses.BadRequestResponse(c, "user.error.invalidPayload")
 	}
@@ -56,7 +56,7 @@ func (uc *UserController) Login(c echo.Context) error {
 }
 
 func (uc *UserController) Store(c echo.Context) error {
-	var request requests.UserCreateRequest
+	var request user_requests.UserCreateRequest
 	if err := c.Bind(&request); err != nil {
 		return responses.BadRequestResponse(c, "user.error.invalidPayload")
 	}
@@ -79,7 +79,7 @@ func (uc *UserController) Update(c echo.Context) error {
 		return responses.UnauthorizedResponse(c, err.Error())
 	}
 
-	var request requests.UserUpdateRequest
+	var request user_requests.UserUpdateRequest
 	userUUID, err := utils.GetUUIDPathParam(c, "userUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
