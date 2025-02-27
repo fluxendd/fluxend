@@ -1,7 +1,9 @@
 package column_requests
 
 import (
+	"fluxton/configs"
 	"fluxton/requests"
+	"fmt"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/labstack/echo/v4"
 )
@@ -20,6 +22,15 @@ func (r *ColumnRenameRequest) BindAndValidate(c echo.Context) []string {
 		validation.Field(
 			&r.Name,
 			validation.Required.Error("New name is required for column"),
+			validation.Length(
+				configs.MinColumnNameLength, configs.MaxColumnNameLength,
+			).Error(
+				fmt.Sprintf(
+					"Column name be between %d and %d characters",
+					configs.MinColumnNameLength,
+					configs.MaxColumnNameLength,
+				),
+			),
 			validation.By(validateName),
 		),
 	)

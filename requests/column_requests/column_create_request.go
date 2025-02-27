@@ -1,8 +1,10 @@
 package column_requests
 
 import (
+	"fluxton/configs"
 	"fluxton/types"
 	"fluxton/utils"
+	"fmt"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/labstack/echo/v4"
 	"regexp"
@@ -33,6 +35,15 @@ func ValidateColumn(column types.TableColumn) error {
 		validation.Field(
 			&column.Name,
 			validation.Required.Error("Column name is required"),
+			validation.Length(
+				configs.MinColumnNameLength, configs.MaxColumnNameLength,
+			).Error(
+				fmt.Sprintf(
+					"Column name be between %d and %d characters",
+					configs.MinColumnNameLength,
+					configs.MaxTableNameLength,
+				),
+			),
 			validation.Match(
 				regexp.MustCompile(utils.AlphanumericWithUnderscoreAndDashPattern()),
 			).Error("Column name must be alphanumeric and start with a letter"),

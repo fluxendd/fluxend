@@ -1,8 +1,10 @@
 package project_requests
 
 import (
+	"fluxton/configs"
 	"fluxton/requests"
 	"fluxton/utils"
+	"fmt"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
@@ -24,7 +26,15 @@ func (r *ProjectCreateRequest) BindAndValidate(c echo.Context) []string {
 		validation.Field(
 			&r.Name,
 			validation.Required.Error("Name is required"),
-			validation.Length(3, 100).Error("Name must be between 3 and 100 characters"),
+			validation.Length(
+				configs.MinProjectNameLength, configs.MaxProjectNameLength,
+			).Error(
+				fmt.Sprintf(
+					"Project name be between %d and %d characters",
+					configs.MinProjectNameLength,
+					configs.MaxProjectNameLength,
+				),
+			),
 			validation.Match(
 				regexp.MustCompile(utils.AlphanumericWithSpaceUnderScoreAndDashPattern()),
 			).Error("Project name must be alphanumeric with underscores, spaces and dashes")),
