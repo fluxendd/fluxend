@@ -3,6 +3,7 @@
 CREATE TABLE storage.buckets (
     uuid UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name varchar NOT NULL,
+    description TEXT,
     is_public BOOLEAN DEFAULT FALSE,
     project_uuid UUID NOT NULL REFERENCES fluxton.projects(uuid) ON DELETE CASCADE,
     created_by UUID NOT NULL REFERENCES authentication.users(uuid) ON DELETE CASCADE,
