@@ -13,10 +13,10 @@ import (
 )
 
 type FormFieldService interface {
-	List(formUUID, projectUUID uuid.UUID, authUser models.AuthUser) ([]models.FormFiled, error)
-	GetByUUID(formUUID, projectUUID uuid.UUID, authUser models.AuthUser) (models.FormFiled, error)
-	Create(formUUID, projectUUID uuid.UUID, request *form_requests.CreateFieldRequest, authUser models.AuthUser) (models.FormFiled, error)
-	Update(formUUID, formFieldUUID, projectUUID uuid.UUID, authUser models.AuthUser, request *form_requests.CreateFieldRequest) (*models.FormFiled, error)
+	List(formUUID, projectUUID uuid.UUID, authUser models.AuthUser) ([]models.FormField, error)
+	GetByUUID(formUUID, projectUUID uuid.UUID, authUser models.AuthUser) (models.FormField, error)
+	CreateMany(formUUID, projectUUID uuid.UUID, request *form_requests.CreateFormFieldsRequest, authUser models.AuthUser) ([]models.FormField, error)
+	Update(formUUID, formFieldUUID, projectUUID uuid.UUID, authUser models.AuthUser, request *form_requests.UpdateFormFieldRequest) (*models.FormField, error)
 	Delete(formUUID, formFieldUUID, projectUUID uuid.UUID, authUser models.AuthUser) (bool, error)
 }
 
@@ -41,109 +41,111 @@ func NewFormFieldService(injector *do.Injector) (FormFieldService, error) {
 	}, nil
 }
 
-func (s *FormFieldServiceImpl) List(formUUID, projectUUID uuid.UUID, authUser models.AuthUser) ([]models.FormFiled, error) {
+func (s *FormFieldServiceImpl) List(formUUID, projectUUID uuid.UUID, authUser models.AuthUser) ([]models.FormField, error) {
 	exists, err := s.formRepo.ExistsByUUID(formUUID)
 	if err != nil {
-		return []models.FormFiled{}, err
+		return []models.FormField{}, err
 	}
 
 	if !exists {
-		return []models.FormFiled{}, errs.NewNotFoundError("form.error.notFound")
+		return []models.FormField{}, errs.NewNotFoundError("form.error.notFound")
 	}
 
 	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(projectUUID)
 	if err != nil {
-		return []models.FormFiled{}, err
+		return []models.FormField{}, err
 	}
 
 	if !s.projectPolicy.CanAccess(organizationUUID, authUser) {
-		return []models.FormFiled{}, errs.NewForbiddenError("formField.error.listForbidden")
+		return []models.FormField{}, errs.NewForbiddenError("formField.error.listForbidden")
 	}
 
 	return s.formFieldRepo.ListForForm(formUUID)
 }
 
-func (s *FormFieldServiceImpl) GetByUUID(formFieldUUID, projectUUID uuid.UUID, authUser models.AuthUser) (models.FormFiled, error) {
+func (s *FormFieldServiceImpl) GetByUUID(formFieldUUID, projectUUID uuid.UUID, authUser models.AuthUser) (models.FormField, error) {
 	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(projectUUID)
 	if err != nil {
-		return models.FormFiled{}, err
+		return models.FormField{}, err
 	}
 
 	if !s.projectPolicy.CanAccess(organizationUUID, authUser) {
-		return models.FormFiled{}, errs.NewForbiddenError("formField.error.viewForbidden")
+		return models.FormField{}, errs.NewForbiddenError("formField.error.viewForbidden")
 	}
 
 	formField, err := s.formFieldRepo.GetByUUID(formFieldUUID)
 	if err != nil {
-		return models.FormFiled{}, err
+		return models.FormField{}, err
 	}
 
 	return formField, nil
 }
 
-func (s *FormFieldServiceImpl) Create(formUUID, projectUUID uuid.UUID, request *form_requests.CreateFieldRequest, authUser models.AuthUser) (models.FormFiled, error) {
+func (s *FormFieldServiceImpl) CreateMany(formUUID, projectUUID uuid.UUID, request *form_requests.CreateFormFieldsRequest, authUser models.AuthUser) ([]models.FormField, error) {
 	exists, err := s.formRepo.ExistsByUUID(formUUID)
 	if err != nil {
-		return models.FormFiled{}, err
+		return []models.FormField{}, err
 	}
 
 	if !exists {
-		return models.FormFiled{}, errs.NewNotFoundError("form.error.notFound")
+		return []models.FormField{}, errs.NewNotFoundError("form.error.notFound")
 	}
 
 	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(projectUUID)
 	if err != nil {
-		return models.FormFiled{}, err
+		return []models.FormField{}, err
 	}
 
 	if !s.projectPolicy.CanCreate(organizationUUID, authUser) {
-		return models.FormFiled{}, errs.NewForbiddenError("formField.error.createForbidden")
+		return []models.FormField{}, errs.NewForbiddenError("formField.error.createForbidden")
 	}
 
-	err = s.validateLabelForDuplication(request.Label, formUUID)
+	err = s.validateManyForLabelDuplication(request, formUUID)
 	if err != nil {
-		return models.FormFiled{}, err
+		return []models.FormField{}, err
 	}
 
-	formField := models.FormFiled{
-		FormUuid:    formUUID,
-		Label:       request.Label,
-		Description: request.Description,
-		Type:        request.Type,
-		IsRequired:  request.IsRequired,
-		Options:     request.Options,
+	formFields := make([]models.FormField, len(request.Fields))
+	for i, field := range request.Fields {
+		formFields[i] = models.FormField{
+			FormUuid:   formUUID,
+			Label:      field.Label,
+			Type:       field.Type,
+			IsRequired: field.IsRequired,
+			Options:    field.Options,
+		}
 	}
 
-	_, err = s.formFieldRepo.Create(&formField)
+	_, err = s.formFieldRepo.CreateMany(formFields, formUUID)
 	if err != nil {
-		return models.FormFiled{}, err
+		return []models.FormField{}, err
 	}
 
-	return formField, nil
+	return formFields, nil
 }
 
-func (s *FormFieldServiceImpl) Update(formUUID, formFieldUUID, projectUUID uuid.UUID, authUser models.AuthUser, request *form_requests.CreateFieldRequest) (*models.FormFiled, error) {
+func (s *FormFieldServiceImpl) Update(formUUID, formFieldUUID, projectUUID uuid.UUID, authUser models.AuthUser, request *form_requests.UpdateFormFieldRequest) (*models.FormField, error) {
 	exists, err := s.formRepo.ExistsByUUID(formUUID)
 	if err != nil {
-		return &models.FormFiled{}, err
+		return &models.FormField{}, err
 	}
 
 	if !exists {
-		return &models.FormFiled{}, errs.NewNotFoundError("form.error.notFound")
+		return &models.FormField{}, errs.NewNotFoundError("form.error.notFound")
 	}
 
 	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(projectUUID)
 	if err != nil {
-		return &models.FormFiled{}, err
+		return &models.FormField{}, err
 	}
 
 	if !s.projectPolicy.CanUpdate(organizationUUID, authUser) {
-		return &models.FormFiled{}, errs.NewForbiddenError("formField.error.updateForbidden")
+		return &models.FormField{}, errs.NewForbiddenError("formField.error.updateForbidden")
 	}
 
 	formField, err := s.formFieldRepo.GetByUUID(formFieldUUID)
 	if err != nil {
-		return &models.FormFiled{}, err
+		return &models.FormField{}, err
 	}
 
 	err = utils.PopulateModel(&formField, request)
@@ -153,9 +155,9 @@ func (s *FormFieldServiceImpl) Update(formUUID, formFieldUUID, projectUUID uuid.
 
 	formField.UpdatedAt = time.Now()
 
-	err = s.validateLabelForDuplication(request.Label, formField.FormUuid)
+	err = s.validateOneForLabelDuplication(request.Label, formField.FormUuid)
 	if err != nil {
-		return &models.FormFiled{}, err
+		return &models.FormField{}, err
 	}
 
 	return s.formFieldRepo.Update(&formField)
@@ -183,14 +185,33 @@ func (s *FormFieldServiceImpl) Delete(formUUID, formFieldUUID, projectUUID uuid.
 	return s.formFieldRepo.Delete(formFieldUUID)
 }
 
-func (s *FormFieldServiceImpl) validateLabelForDuplication(name string, formUUID uuid.UUID) error {
-	exists, err := s.formFieldRepo.ExistsByLabelForForm(name, formUUID)
+func (s *FormFieldServiceImpl) validateManyForLabelDuplication(request *form_requests.CreateFormFieldsRequest, formUUID uuid.UUID) error {
+	labels := make([]string, len(request.Fields))
+
+	for i, field := range request.Fields {
+		labels[i] = field.Label
+	}
+
+	exists, err := s.formFieldRepo.ExistsByAnyLabelForForm(labels, formUUID)
 	if err != nil {
 		return err
 	}
 
 	if exists {
-		return errs.NewUnprocessableError("formField.error.duplicateName")
+		return errs.NewUnprocessableError("formField.error.someDuplicateLabels")
+	}
+
+	return nil
+}
+
+func (s *FormFieldServiceImpl) validateOneForLabelDuplication(label string, formUUID uuid.UUID) error {
+	exists, err := s.formFieldRepo.ExistsByLabelForForm(label, formUUID)
+	if err != nil {
+		return err
+	}
+
+	if exists {
+		return errs.NewUnprocessableError("formField.error.duplicateLabel")
 	}
 
 	return nil

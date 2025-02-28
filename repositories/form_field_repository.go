@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
+	"github.com/lib/pq"
 	"github.com/samber/do"
 )
 
@@ -22,7 +23,7 @@ func NewFormFieldRepository(injector *do.Injector) (*FormFieldRepository, error)
 	return &FormFieldRepository{db: db}, nil
 }
 
-func (r *FormFieldRepository) ListForForm(formUUID uuid.UUID) ([]models.FormFiled, error) {
+func (r *FormFieldRepository) ListForForm(formUUID uuid.UUID) ([]models.FormField, error) {
 	query := "SELECT * FROM fluxton.form_fields WHERE form_uuid = $1;"
 
 	rows, err := r.db.Queryx(query, formUUID)
@@ -31,9 +32,9 @@ func (r *FormFieldRepository) ListForForm(formUUID uuid.UUID) ([]models.FormFile
 	}
 	defer rows.Close()
 
-	var forms []models.FormFiled
+	var forms []models.FormField
 	for rows.Next() {
-		var form models.FormFiled
+		var form models.FormField
 		if err := rows.StructScan(&form); err != nil {
 			return nil, fmt.Errorf("could not scan row: %v", err)
 		}
@@ -47,28 +48,40 @@ func (r *FormFieldRepository) ListForForm(formUUID uuid.UUID) ([]models.FormFile
 	return forms, nil
 }
 
-func (r *FormFieldRepository) GetByUUID(formUUID uuid.UUID) (models.FormFiled, error) {
+func (r *FormFieldRepository) GetByUUID(formUUID uuid.UUID) (models.FormField, error) {
 	query := "SELECT %s FROM fluxton.form_fields WHERE uuid = $1"
-	query = fmt.Sprintf(query, utils.GetColumns[models.FormFiled]())
+	query = fmt.Sprintf(query, utils.GetColumns[models.FormField]())
 
-	var form models.FormFiled
+	var form models.FormField
 	err := r.db.Get(&form, query, formUUID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return models.FormFiled{}, errs.NewNotFoundError("form.error.notFound")
+			return models.FormField{}, errs.NewNotFoundError("form.error.notFound")
 		}
 
-		return models.FormFiled{}, fmt.Errorf("could not fetch row: %v", err)
+		return models.FormField{}, fmt.Errorf("could not fetch row: %v", err)
 	}
 
 	return form, nil
 }
 
-func (r *FormFieldRepository) ExistsByUUID(formUUID uuid.UUID) (bool, error) {
+func (r *FormFieldRepository) ExistsByUUID(formFieldUUID uuid.UUID) (bool, error) {
 	query := "SELECT EXISTS(SELECT 1 FROM fluxton.form_fields WHERE uuid = $1)"
 
 	var exists bool
-	err := r.db.Get(&exists, query, formUUID)
+	err := r.db.Get(&exists, query, formFieldUUID)
+	if err != nil {
+		return false, fmt.Errorf("could not fetch row: %v", err)
+	}
+
+	return exists, nil
+}
+
+func (r *FormFieldRepository) ExistsByAnyLabelForForm(labels []string, formUUID uuid.UUID) (bool, error) {
+	query := "SELECT EXISTS(SELECT 1 FROM fluxton.form_fields WHERE label = ANY($1) AND form_uuid = $2)"
+
+	var exists bool
+	err := r.db.Get(&exists, query, pq.Array(labels), formUUID)
 	if err != nil {
 		return false, fmt.Errorf("could not fetch row: %v", err)
 	}
@@ -88,7 +101,7 @@ func (r *FormFieldRepository) ExistsByLabelForForm(label string, formUUID uuid.U
 	return exists, nil
 }
 
-func (r *FormFieldRepository) Create(formField *models.FormFiled) (*models.FormFiled, error) {
+func (r *FormFieldRepository) Create(formField *models.FormField) (*models.FormField, error) {
 	tx, err := r.db.Beginx()
 	if err != nil {
 		return nil, fmt.Errorf("could not begin transaction: %v", err)
@@ -123,7 +136,23 @@ func (r *FormFieldRepository) Create(formField *models.FormFiled) (*models.FormF
 	return formField, nil
 }
 
-func (r *FormFieldRepository) Update(formField *models.FormFiled) (*models.FormFiled, error) {
+func (r *FormFieldRepository) CreateMany(formFields []models.FormField, formUUID uuid.UUID) ([]models.FormField, error) {
+	createdFields := make([]models.FormField, 0, len(formFields))
+	for i, formField := range formFields {
+		formField.FormUuid = formUUID
+
+		createdField, err := r.Create(&formField)
+		if err != nil {
+			return nil, fmt.Errorf("could not create form field at index %d: %v", i, err)
+		}
+
+		createdFields = append(createdFields, *createdField)
+	}
+
+	return createdFields, nil
+}
+
+func (r *FormFieldRepository) Update(formField *models.FormField) (*models.FormField, error) {
 	query := `
 		UPDATE fluxton.form_fields 
 		SET 
@@ -137,12 +166,12 @@ func (r *FormFieldRepository) Update(formField *models.FormFiled) (*models.FormF
 
 	res, err := r.db.NamedExec(query, formField)
 	if err != nil {
-		return &models.FormFiled{}, fmt.Errorf("could not update row: %v", err)
+		return &models.FormField{}, fmt.Errorf("could not update row: %v", err)
 	}
 
 	_, err = res.RowsAffected()
 	if err != nil {
-		return &models.FormFiled{}, fmt.Errorf("could not determine affected rows: %v", err)
+		return &models.FormField{}, fmt.Errorf("could not determine affected rows: %v", err)
 	}
 
 	return formField, nil
