@@ -116,15 +116,25 @@ func (r *FormRepository) Create(form *models.Form) (*models.Form, error) {
 		return nil, fmt.Errorf("could not begin transaction: %v", err)
 	}
 
-	query := "INSERT INTO fluxton.projects (project_uuid, name, description, created_by, updated_by) VALUES ($1, $2, $3, $4, $5, $6) RETURNING uuid"
-	queryErr := tx.QueryRowx(query, form.ProjectUuid, form.Name, form.Description, form.CreatedBy, form.UpdatedBy).Scan(&form.Uuid)
+	query := `
+    INSERT INTO fluxton.forms (
+        project_uuid, name, description, created_by, updated_by
+    ) VALUES (
+        $1, $2, $3, $4, $5
+    )
+    RETURNING uuid
+`
+
+	queryErr := tx.QueryRowx(
+		query,
+		form.ProjectUuid, form.Name, form.Description, form.CreatedBy, form.UpdatedBy,
+	).Scan(&form.Uuid)
+
 	if queryErr != nil {
-		err := tx.Rollback()
-		if err != nil {
+		if err := tx.Rollback(); err != nil {
 			return nil, err
 		}
-
-		return nil, fmt.Errorf("could not create project: %v", queryErr)
+		return nil, fmt.Errorf("could not create form: %v", queryErr)
 	}
 
 	// Commit transaction
