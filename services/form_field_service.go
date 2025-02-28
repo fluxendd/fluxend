@@ -16,8 +16,8 @@ type FormFieldService interface {
 	List(formUUID, projectUUID uuid.UUID, authUser models.AuthUser) ([]models.FormFiled, error)
 	GetByUUID(formUUID, projectUUID uuid.UUID, authUser models.AuthUser) (models.FormFiled, error)
 	Create(formUUID, projectUUID uuid.UUID, request *form_requests.CreateFieldRequest, authUser models.AuthUser) (models.FormFiled, error)
-	Update(formUUID, projectUUID uuid.UUID, authUser models.AuthUser, request *form_requests.CreateFieldRequest) (*models.FormFiled, error)
-	Delete(formUUID uuid.UUID, authUser models.AuthUser) (bool, error)
+	Update(formUUID, formFieldUUID, projectUUID uuid.UUID, authUser models.AuthUser, request *form_requests.CreateFieldRequest) (*models.FormFiled, error)
+	Delete(formUUID, formFieldUUID, projectUUID uuid.UUID, authUser models.AuthUser) (bool, error)
 }
 
 type FormFieldServiceImpl struct {
@@ -122,7 +122,7 @@ func (s *FormFieldServiceImpl) Create(formUUID, projectUUID uuid.UUID, request *
 	return formField, nil
 }
 
-func (s *FormFieldServiceImpl) Update(formUUID, formFieldUUID uuid.UUID, authUser models.AuthUser, request *form_requests.CreateFieldRequest) (*models.FormFiled, error) {
+func (s *FormFieldServiceImpl) Update(formUUID, formFieldUUID, projectUUID uuid.UUID, authUser models.AuthUser, request *form_requests.CreateFieldRequest) (*models.FormFiled, error) {
 	exists, err := s.formRepo.ExistsByUUID(formUUID)
 	if err != nil {
 		return &models.FormFiled{}, err
@@ -132,7 +132,7 @@ func (s *FormFieldServiceImpl) Update(formUUID, formFieldUUID uuid.UUID, authUse
 		return &models.FormFiled{}, errs.NewNotFoundError("form.error.notFound")
 	}
 
-	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(formUUID)
+	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(projectUUID)
 	if err != nil {
 		return &models.FormFiled{}, err
 	}
@@ -161,13 +161,17 @@ func (s *FormFieldServiceImpl) Update(formUUID, formFieldUUID uuid.UUID, authUse
 	return s.formFieldRepo.Update(&formField)
 }
 
-func (s *FormFieldServiceImpl) Delete(formUUID uuid.UUID, authUser models.AuthUser) (bool, error) {
-	form, err := s.formRepo.GetByUUID(formUUID)
+func (s *FormFieldServiceImpl) Delete(formUUID, formFieldUUID, projectUUID uuid.UUID, authUser models.AuthUser) (bool, error) {
+	exists, err := s.formRepo.ExistsByUUID(formUUID)
 	if err != nil {
 		return false, err
 	}
 
-	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(form.ProjectUuid)
+	if !exists {
+		return false, errs.NewNotFoundError("form.error.notFound")
+	}
+
+	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(projectUUID)
 	if err != nil {
 		return false, err
 	}
@@ -176,7 +180,7 @@ func (s *FormFieldServiceImpl) Delete(formUUID uuid.UUID, authUser models.AuthUs
 		return false, errs.NewForbiddenError("formField.error.deleteForbidden")
 	}
 
-	return s.formRepo.Delete(formUUID)
+	return s.formFieldRepo.Delete(formFieldUUID)
 }
 
 func (s *FormFieldServiceImpl) validateLabelForDuplication(name string, formUUID uuid.UUID) error {
