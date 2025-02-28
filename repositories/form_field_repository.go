@@ -109,16 +109,16 @@ func (r *FormFieldRepository) Create(formField *models.FormField) (*models.FormF
 
 	query := `
     INSERT INTO fluxton.form_fields (
-        form_uuid, label, type, is_required, options, created_at, updated_at
+        form_uuid, label, type, description, is_required, options
     ) VALUES (
-        $1, $2, $3, $4, $5
+        $1, $2, $3, $4, $5, $6
     )
     RETURNING uuid
 `
 
 	queryErr := tx.QueryRowx(
 		query,
-		formField.FormUuid, formField.Label, formField.Type, formField.IsRequired, formField.Options,
+		formField.FormUuid, formField.Label, formField.Type, formField.Description, formField.IsRequired, formField.Options,
 	).Scan(&formField.Uuid)
 
 	if queryErr != nil {
@@ -146,6 +146,7 @@ func (r *FormFieldRepository) CreateMany(formFields []models.FormField, formUUID
 			return nil, fmt.Errorf("could not create form field at index %d: %v", i, err)
 		}
 
+		utils.DumpJSON(createdField)
 		createdFields = append(createdFields, *createdField)
 	}
 

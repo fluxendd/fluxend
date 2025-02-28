@@ -82,7 +82,7 @@ func (ffc *FormFieldController) Update(c echo.Context) error {
 
 	authUser, _ := utils.NewAuth(c).User()
 
-	formFieldUUID, err := utils.GetUUIDPathParam(c, "formFieldUUID", true)
+	fieldUUID, err := utils.GetUUIDPathParam(c, "fieldUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
@@ -92,7 +92,7 @@ func (ffc *FormFieldController) Update(c echo.Context) error {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	updatedFormField, err := ffc.formFieldService.Update(formUUID, formFieldUUID, projectUUID, authUser, &request)
+	updatedFormField, err := ffc.formFieldService.Update(formUUID, fieldUUID, projectUUID, authUser, &request)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -103,7 +103,7 @@ func (ffc *FormFieldController) Update(c echo.Context) error {
 func (ffc *FormFieldController) Delete(c echo.Context) error {
 	authUser, _ := utils.NewAuth(c).User()
 
-	formFieldUUID, err := utils.GetUUIDPathParam(c, "formFieldUUID", true)
+	fieldUUID, err := utils.GetUUIDPathParam(c, "fieldUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
@@ -113,7 +113,7 @@ func (ffc *FormFieldController) Delete(c echo.Context) error {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	if _, err := ffc.formFieldService.Delete(formUUID, formFieldUUID, projectUUID, authUser); err != nil {
+	if _, err := ffc.formFieldService.Delete(formUUID, fieldUUID, projectUUID, authUser); err != nil {
 		return responses.ErrorResponse(c, err)
 	}
 
