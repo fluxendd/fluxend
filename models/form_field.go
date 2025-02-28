@@ -13,8 +13,6 @@ type FormField struct {
 	Type        string    `db:"type" json:"type"`
 	IsRequired  bool      `db:"is_required" json:"isRequired"`
 	Options     string    `db:"options" json:"options"`
-	CreatedBy   uuid.UUID `db:"created_by" json:"createdBy"`
-	UpdatedBy   uuid.UUID `db:"updated_by" json:"updatedBy"`
 	CreatedAt   time.Time `db:"created_at" json:"createdAt"`
 	UpdatedAt   time.Time `db:"updated_at" json:"updatedAt"`
 }

@@ -13,8 +13,6 @@ type FormFieldResponse struct {
 	Type        string    `json:"type"`
 	IsRequired  bool      `json:"isRequired"`
 	Options     string    `json:"options"`
-	CreatedBy   uuid.UUID `json:"createdBy"`
-	UpdatedBy   uuid.UUID `json:"updatedBy"`
 	CreatedAt   string    `json:"createdAt"`
 	UpdatedAt   string    `json:"updatedAt"`
 }
@@ -28,8 +26,6 @@ func FormFieldResource(formField *models.FormField) FormFieldResponse {
 		Type:        formField.Type,
 		IsRequired:  formField.IsRequired,
 		Options:     formField.Options,
-		CreatedBy:   formField.CreatedBy,
-		UpdatedBy:   formField.UpdatedBy,
 		CreatedAt:   formField.CreatedAt.Format("2006-01-02 15:04:05"),
 		UpdatedAt:   formField.UpdatedAt.Format("2006-01-02 15:04:05"),
 	}
