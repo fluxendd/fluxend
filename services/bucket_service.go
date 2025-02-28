@@ -91,7 +91,6 @@ func (s *BucketServiceImpl) Create(projectUUID uuid.UUID, request *bucket_reques
 		Description: request.Description,
 		CreatedBy:   authUser.Uuid,
 		UpdatedBy:   authUser.Uuid,
-		CreatedAt:   time.Now(),
 	}
 
 	_, err = s.bucketRepo.Create(&bucket)

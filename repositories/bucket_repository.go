@@ -118,16 +118,16 @@ func (r *BucketRepository) Create(bucket *models.Bucket) (*models.Bucket, error)
 
 	query := `
     INSERT INTO storage.buckets (
-        project_uuid, name, description, is_public, created_by
+        project_uuid, name, description, is_public, created_by, updated_by
     ) VALUES (
-        $1, $2, $3, $4, $5
+        $1, $2, $3, $4, $5, $6
     )
     RETURNING uuid
 `
 
 	queryErr := tx.QueryRowx(
 		query,
-		bucket.ProjectUuid, bucket.Name, bucket.Description, bucket.IsPublic, bucket.CreatedBy,
+		bucket.ProjectUuid, bucket.Name, bucket.Description, bucket.IsPublic, bucket.CreatedBy, bucket.UpdatedBy,
 	).Scan(&bucket.Uuid)
 
 	if queryErr != nil {

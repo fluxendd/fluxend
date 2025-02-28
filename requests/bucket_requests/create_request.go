@@ -14,7 +14,7 @@ type CreateRequest struct {
 	requests.BaseRequest
 	Name        string `json:"name"`
 	Description string `json:"description"`
-	IsPublic    bool   `json:"isPublic"`
+	IsPublic    bool   `json:"is_public"`
 }
 
 func (r *CreateRequest) BindAndValidate(c echo.Context) []string {
