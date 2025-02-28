@@ -55,11 +55,11 @@ func (r *FormRepository) ListForProject(paginationParams utils.PaginationParams,
 
 	var forms []models.Form
 	for rows.Next() {
-		var organization models.Form
-		if err := rows.StructScan(&organization); err != nil {
+		var form models.Form
+		if err := rows.StructScan(&form); err != nil {
 			return nil, fmt.Errorf("could not scan row: %v", err)
 		}
-		forms = append(forms, organization)
+		forms = append(forms, form)
 	}
 
 	if err := rows.Err(); err != nil {
