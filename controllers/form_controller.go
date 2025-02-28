@@ -92,12 +92,12 @@ func (fc *FormController) Update(c echo.Context) error {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	updatedOrganization, err := fc.formService.Update(formUUID, authUser, &request)
+	updatedForm, err := fc.formService.Update(formUUID, authUser, &request)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
 
-	return responses.SuccessResponse(c, resources.FormResource(updatedOrganization))
+	return responses.SuccessResponse(c, resources.FormResource(updatedForm))
 }
 
 func (fc *FormController) Delete(c echo.Context) error {
