@@ -66,10 +66,6 @@ func (s *FormServiceImpl) GetByUUID(formUUID, projectUUID uuid.UUID, authUser mo
 		return models.Form{}, err
 	}
 
-	if form.Uuid == uuid.Nil {
-		return models.Form{}, errs.NewNotFoundError("form.error.notFound")
-	}
-
 	return form, nil
 }
 
