@@ -5,7 +5,12 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func RegisterFormRoutes(e *echo.Echo, authMiddleware echo.MiddlewareFunc, FormController *controllers.FormController) {
+func RegisterFormRoutes(
+	e *echo.Echo,
+	authMiddleware echo.MiddlewareFunc,
+	FormController *controllers.FormController,
+	FormFieldController *controllers.FormFieldController,
+) {
 	projectsGroup := e.Group("api/projects/:projectUUID/forms", authMiddleware)
 
 	projectsGroup.POST("", FormController.Store)
@@ -13,4 +18,13 @@ func RegisterFormRoutes(e *echo.Echo, authMiddleware echo.MiddlewareFunc, FormCo
 	projectsGroup.GET("/:formUUID", FormController.Show)
 	projectsGroup.PUT("/:formUUID", FormController.Update)
 	projectsGroup.DELETE("/:formUUID", FormController.Delete)
+
+	// Form Field routes
+	formFieldsGroup := e.Group("api/projects/:projectUUID/forms/:formUUID/fields", authMiddleware)
+
+	formFieldsGroup.POST("", FormFieldController.Store)
+	formFieldsGroup.GET("", FormFieldController.List)
+	formFieldsGroup.GET("/:fieldUUID", FormFieldController.Show)
+	formFieldsGroup.PUT("/:fieldUUID", FormFieldController.Update)
+	formFieldsGroup.DELETE("/:fieldUUID", FormFieldController.Delete)
 }
