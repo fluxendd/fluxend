@@ -12,7 +12,7 @@ type UpdateFormFieldRequest struct {
 
 func (r *UpdateFormFieldRequest) BindAndValidate(c echo.Context) []string {
 	if err := c.Bind(r); err != nil {
-		return []string{"Invalid request payload"}
+		return []string{"Invalid request payload" + err.Error()}
 	}
 
 	err := validateField(r.FieldRequest)

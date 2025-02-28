@@ -157,7 +157,7 @@ func (r *FormFieldRepository) Update(formField *models.FormField) (*models.FormF
 	query := `
 		UPDATE fluxton.form_fields 
 		SET 
-		    label = :name, 
+		    label = :label, 
 		    description = :description, 
 		    type = :type, 
 		    is_required = :is_required, 

@@ -136,11 +136,12 @@ func (s *FormFieldServiceImpl) Update(formUUID, fieldUUID, projectUUID uuid.UUID
 		return &models.FormField{}, err
 	}
 
-	err = utils.PopulateModel(&formField, request)
+	err = utils.PopulateModel(&formField, request.FieldRequest)
 	if err != nil {
 		return nil, err
 	}
 
+	formField.Options = "{}" // TODO: Implement options
 	formField.UpdatedAt = time.Now()
 
 	err = s.validateOneForLabelDuplication(request.Label, formField.FormUuid)
