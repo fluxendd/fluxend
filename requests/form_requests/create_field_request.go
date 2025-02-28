@@ -10,23 +10,43 @@ import (
 	"regexp"
 )
 
-type CreateFieldRequest struct {
-	requests.BaseRequest
-	Label       string `json:"label"`
-	Description string `json:"description"`
-	Type        string `json:"type"`
-	IsRequired  bool   `json:"isRequired"`
-	Options     string `json:"options"`
+type FieldRequest struct {
+	Label      string `json:"label"`
+	Type       string `json:"type"`
+	IsRequired bool   `json:"is_required"`
+	Options    string `json:"options,omitempty"` // Optional for select/radio types
 }
 
-func (r *CreateFieldRequest) BindAndValidate(c echo.Context) []string {
+// CreateFormFieldsRequest represents multiple fields in a request
+type CreateFormFieldsRequest struct {
+	requests.BaseRequest
+	Fields []FieldRequest `json:"fields"`
+}
+
+// BindAndValidate binds and validates the request
+func (r *CreateFormFieldsRequest) BindAndValidate(c echo.Context) []string {
 	if err := c.Bind(r); err != nil {
 		return []string{"Invalid request payload"}
 	}
 
 	err := validation.ValidateStruct(r,
+		validation.Field(&r.Fields, validation.Required.Error("Fields array is required"), validation.Each(
+			validation.By(validateField),
+		)),
+	)
+
+	return r.ExtractValidationErrors(err)
+}
+
+func validateField(value interface{}) error {
+	field, ok := value.(FieldRequest)
+	if !ok {
+		return fmt.Errorf("invalid field format")
+	}
+
+	return validation.ValidateStruct(&field,
 		validation.Field(
-			&r.Label,
+			&field.Label,
 			validation.Required.Error("Label is required"),
 			validation.Length(
 				configs.MinFormFieldLabelLength, configs.MaxFormFieldLabelLength,
@@ -39,26 +59,12 @@ func (r *CreateFieldRequest) BindAndValidate(c echo.Context) []string {
 			),
 			validation.Match(
 				regexp.MustCompile(utils.AlphanumericWithUnderscoreAndDashPattern()),
-			).Error("Form name must be alphanumeric with underscores and dashes"),
+			).Error("Label must be alphanumeric with underscores and dashes"),
 		),
 		validation.Field(
-			&r.Description,
-			validation.Length(
-				configs.MinFormFieldDescriptionLength, configs.MaxFormFieldDescriptionLength,
-			).Error(
-				fmt.Sprintf(
-					"Description name must be between %d and %d characters",
-					configs.MinFormFieldDescriptionLength,
-					configs.MaxFormFieldDescriptionLength,
-				),
-			),
-		),
-		validation.Field(
-			&r.Type,
+			&field.Type,
 			validation.Required.Error("Type is required"),
-			validation.In("text", "textarea", "number", "email", "date", "checkbox", "radio", "select"),
+			validation.In("text", "textarea", "number", "email", "date", "checkbox", "radio", "select").Error("Invalid field type"),
 		),
 	)
-
-	return r.ExtractValidationErrors(err)
 }
