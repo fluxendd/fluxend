@@ -20,10 +20,10 @@ func NewSettingController(injector *do.Injector) (*SettingController, error) {
 	return &SettingController{settingService: settingService}, nil
 }
 
-func (pc *SettingController) List(c echo.Context) error {
+func (sc *SettingController) List(c echo.Context) error {
 	authUser, _ := utils.NewAuth(c).User()
 
-	settings, err := pc.settingService.List(authUser)
+	settings, err := sc.settingService.List(authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -31,7 +31,7 @@ func (pc *SettingController) List(c echo.Context) error {
 	return responses.SuccessResponse(c, resources.SettingResourceCollection(settings))
 }
 
-func (pc *SettingController) Update(c echo.Context) error {
+func (sc *SettingController) Update(c echo.Context) error {
 	var request requests.SettingUpdateRequest
 	authUser, _ := utils.NewAuth(c).User()
 
@@ -39,7 +39,7 @@ func (pc *SettingController) Update(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	updatedSettings, err := pc.settingService.Update(authUser, &request)
+	updatedSettings, err := sc.settingService.Update(authUser, &request)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -47,10 +47,10 @@ func (pc *SettingController) Update(c echo.Context) error {
 	return responses.SuccessResponse(c, resources.SettingResourceCollection(updatedSettings))
 }
 
-func (pc *SettingController) Reset(c echo.Context) error {
+func (sc *SettingController) Reset(c echo.Context) error {
 	authUser, _ := utils.NewAuth(c).User()
 
-	updatedSettings, err := pc.settingService.Reset(authUser)
+	updatedSettings, err := sc.settingService.Reset(authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}

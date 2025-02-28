@@ -21,7 +21,7 @@ func NewColumnController(injector *do.Injector) (*ColumnController, error) {
 	return &ColumnController{columnService: columnService}, nil
 }
 
-func (pc *ColumnController) Store(c echo.Context) error {
+func (cc *ColumnController) Store(c echo.Context) error {
 	var request column_requests.CreateRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return responses.UnprocessableResponse(c, err)
@@ -29,12 +29,12 @@ func (pc *ColumnController) Store(c echo.Context) error {
 
 	authUser, _ := utils.NewAuth(c).User()
 
-	projectID, tableID, _, err := pc.parseRequest(c)
+	projectID, tableID, _, err := cc.parseRequest(c)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	table, err := pc.columnService.CreateMany(projectID, tableID, &request, authUser)
+	table, err := cc.columnService.CreateMany(projectID, tableID, &request, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -42,7 +42,7 @@ func (pc *ColumnController) Store(c echo.Context) error {
 	return responses.CreatedResponse(c, resources.TableResource(&table))
 }
 
-func (pc *ColumnController) Alter(c echo.Context) error {
+func (cc *ColumnController) Alter(c echo.Context) error {
 	var request column_requests.CreateRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return responses.UnprocessableResponse(c, err)
@@ -50,12 +50,12 @@ func (pc *ColumnController) Alter(c echo.Context) error {
 
 	authUser, _ := utils.NewAuth(c).User()
 
-	projectID, tableID, _, err := pc.parseRequest(c)
+	projectID, tableID, _, err := cc.parseRequest(c)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	alteredTable, err := pc.columnService.AlterMany(tableID, projectID, &request, authUser)
+	alteredTable, err := cc.columnService.AlterMany(tableID, projectID, &request, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -63,7 +63,7 @@ func (pc *ColumnController) Alter(c echo.Context) error {
 	return responses.SuccessResponse(c, resources.TableResource(alteredTable))
 }
 
-func (pc *ColumnController) Rename(c echo.Context) error {
+func (cc *ColumnController) Rename(c echo.Context) error {
 	var request column_requests.RenameRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return responses.UnprocessableResponse(c, err)
@@ -71,12 +71,12 @@ func (pc *ColumnController) Rename(c echo.Context) error {
 
 	authUser, _ := utils.NewAuth(c).User()
 
-	projectID, tableID, columnName, err := pc.parseRequest(c)
+	projectID, tableID, columnName, err := cc.parseRequest(c)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	renamedTable, err := pc.columnService.Rename(columnName, tableID, projectID, &request, authUser)
+	renamedTable, err := cc.columnService.Rename(columnName, tableID, projectID, &request, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -84,22 +84,22 @@ func (pc *ColumnController) Rename(c echo.Context) error {
 	return responses.SuccessResponse(c, resources.TableResource(renamedTable))
 }
 
-func (pc *ColumnController) Delete(c echo.Context) error {
+func (cc *ColumnController) Delete(c echo.Context) error {
 	authUser, _ := utils.NewAuth(c).User()
 
-	projectID, tableID, columnName, err := pc.parseRequest(c)
+	projectID, tableID, columnName, err := cc.parseRequest(c)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	if _, err := pc.columnService.Delete(columnName, tableID, projectID, authUser); err != nil {
+	if _, err := cc.columnService.Delete(columnName, tableID, projectID, authUser); err != nil {
 		return responses.ErrorResponse(c, err)
 	}
 
 	return responses.DeletedResponse(c, nil)
 }
 
-func (pc *ColumnController) parseRequest(c echo.Context) (uuid.UUID, uuid.UUID, string, error) {
+func (cc *ColumnController) parseRequest(c echo.Context) (uuid.UUID, uuid.UUID, string, error) {
 	projectID, err := utils.GetUUIDPathParam(c, "projectID", true)
 	if err != nil {
 		return uuid.UUID{}, uuid.UUID{}, "", err

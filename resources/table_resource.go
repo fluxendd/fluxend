@@ -8,13 +8,13 @@ import (
 
 type TableResponse struct {
 	Uuid        uuid.UUID           `json:"uuid"`
-	ProjectUuid uuid.UUID           `json:"project_uuid"`
-	CreatedBy   uuid.UUID           `json:"created_by"`
-	UpdatedBy   uuid.UUID           `json:"updated_by"`
+	ProjectUuid uuid.UUID           `json:"projectUuid"`
+	CreatedBy   uuid.UUID           `json:"createdBy"`
+	UpdatedBy   uuid.UUID           `json:"updatedBy"`
 	Name        string              `json:"name"`
 	Columns     []types.TableColumn `json:"columns"`
-	CreatedAt   string              `json:"created_at"`
-	UpdatedAt   string              `json:"updated_at"`
+	CreatedAt   string              `json:"createdAt"`
+	UpdatedAt   string              `json:"updatedAt"`
 }
 
 func TableResource(table *models.Table) TableResponse {
