@@ -20,11 +20,11 @@ func NewOrganizationController(injector *do.Injector) (*OrganizationController, 
 	return &OrganizationController{organizationService: organizationService}, nil
 }
 
-func (nc *OrganizationController) List(c echo.Context) error {
+func (oc *OrganizationController) List(c echo.Context) error {
 	authUserId, _ := utils.NewAuth(c).Uuid()
 
 	paginationParams := utils.ExtractPaginationParams(c)
-	organizations, err := nc.organizationService.List(paginationParams, authUserId)
+	organizations, err := oc.organizationService.List(paginationParams, authUserId)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -32,7 +32,7 @@ func (nc *OrganizationController) List(c echo.Context) error {
 	return responses.SuccessResponse(c, resources.OrganizationResourceCollection(organizations))
 }
 
-func (nc *OrganizationController) Show(c echo.Context) error {
+func (oc *OrganizationController) Show(c echo.Context) error {
 	authUser, _ := utils.NewAuth(c).User()
 
 	organizationUUID, err := utils.GetUUIDPathParam(c, "organizationUUID", true)
@@ -40,7 +40,7 @@ func (nc *OrganizationController) Show(c echo.Context) error {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	organization, err := nc.organizationService.GetByID(organizationUUID, authUser)
+	organization, err := oc.organizationService.GetByID(organizationUUID, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -48,7 +48,7 @@ func (nc *OrganizationController) Show(c echo.Context) error {
 	return responses.SuccessResponse(c, resources.OrganizationResource(&organization))
 }
 
-func (nc *OrganizationController) Store(c echo.Context) error {
+func (oc *OrganizationController) Store(c echo.Context) error {
 	var request organization_requests.CreateRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return responses.UnprocessableResponse(c, err)
@@ -59,7 +59,7 @@ func (nc *OrganizationController) Store(c echo.Context) error {
 		return responses.UnauthorizedResponse(c, err.Error())
 	}
 
-	organization, err := nc.organizationService.Create(&request, authUser)
+	organization, err := oc.organizationService.Create(&request, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -67,7 +67,7 @@ func (nc *OrganizationController) Store(c echo.Context) error {
 	return responses.CreatedResponse(c, resources.OrganizationResource(&organization))
 }
 
-func (nc *OrganizationController) Update(c echo.Context) error {
+func (oc *OrganizationController) Update(c echo.Context) error {
 	var request organization_requests.CreateRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return responses.UnprocessableResponse(c, err)
@@ -80,7 +80,7 @@ func (nc *OrganizationController) Update(c echo.Context) error {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	updatedOrganization, err := nc.organizationService.Update(organizationUUID, authUser, &request)
+	updatedOrganization, err := oc.organizationService.Update(organizationUUID, authUser, &request)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -88,7 +88,7 @@ func (nc *OrganizationController) Update(c echo.Context) error {
 	return responses.SuccessResponse(c, resources.OrganizationResource(updatedOrganization))
 }
 
-func (nc *OrganizationController) Delete(c echo.Context) error {
+func (oc *OrganizationController) Delete(c echo.Context) error {
 	authUser, _ := utils.NewAuth(c).User()
 
 	organizationUUID, err := utils.GetUUIDPathParam(c, "organizationUUID", true)
@@ -96,7 +96,7 @@ func (nc *OrganizationController) Delete(c echo.Context) error {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	if _, err := nc.organizationService.Delete(organizationUUID, authUser); err != nil {
+	if _, err := oc.organizationService.Delete(organizationUUID, authUser); err != nil {
 		return responses.ErrorResponse(c, err)
 	}
 

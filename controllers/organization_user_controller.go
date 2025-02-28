@@ -20,7 +20,7 @@ func NewOrganizationUserController(injector *do.Injector) (*OrganizationUserCont
 	return &OrganizationUserController{organizationService: organizationService}, nil
 }
 
-func (nc *OrganizationUserController) List(c echo.Context) error {
+func (ouc *OrganizationUserController) List(c echo.Context) error {
 	authUser, _ := utils.NewAuth(c).User()
 
 	organizationUUID, err := utils.GetUUIDPathParam(c, "organizationUUID", true)
@@ -28,7 +28,7 @@ func (nc *OrganizationUserController) List(c echo.Context) error {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	organizationUsers, err := nc.organizationService.ListUsers(organizationUUID, authUser)
+	organizationUsers, err := ouc.organizationService.ListUsers(organizationUUID, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -36,7 +36,7 @@ func (nc *OrganizationUserController) List(c echo.Context) error {
 	return responses.SuccessResponse(c, resources.UserResourceCollection(organizationUsers))
 }
 
-func (nc *OrganizationUserController) Store(c echo.Context) error {
+func (ouc *OrganizationUserController) Store(c echo.Context) error {
 	var request organization_requests.MemberCreateRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return responses.UnprocessableResponse(c, err)
@@ -49,7 +49,7 @@ func (nc *OrganizationUserController) Store(c echo.Context) error {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	organizationUser, err := nc.organizationService.CreateUser(&request, organizationUUID, authUser)
+	organizationUser, err := ouc.organizationService.CreateUser(&request, organizationUUID, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -57,7 +57,7 @@ func (nc *OrganizationUserController) Store(c echo.Context) error {
 	return responses.CreatedResponse(c, resources.UserResource(&organizationUser))
 }
 
-func (nc *OrganizationUserController) Delete(c echo.Context) error {
+func (ouc *OrganizationUserController) Delete(c echo.Context) error {
 	authUser, _ := utils.NewAuth(c).User()
 
 	organizationUUID, err := utils.GetUUIDPathParam(c, "organizationUUID", true)
@@ -70,7 +70,7 @@ func (nc *OrganizationUserController) Delete(c echo.Context) error {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	if err := nc.organizationService.DeleteUser(organizationUUID, userID, authUser); err != nil {
+	if err := ouc.organizationService.DeleteUser(organizationUUID, userID, authUser); err != nil {
 		return responses.ErrorResponse(c, err)
 	}
 
