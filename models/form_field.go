@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-type FormFiled struct {
+type FormField struct {
 	Uuid        uuid.UUID `db:"uuid" json:"uuid"`
 	FormUuid    uuid.UUID `db:"form_uuid" json:"formUuid"`
 	Label       string    `db:"label" json:"label"`
@@ -19,6 +19,6 @@ type FormFiled struct {
 	UpdatedAt   time.Time `db:"updated_at" json:"updatedAt"`
 }
 
-func (ff FormFiled) GetTableName() string {
+func (ff FormField) GetTableName() string {
 	return "fluxton.form_fields"
 }

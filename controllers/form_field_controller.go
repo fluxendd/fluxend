@@ -54,7 +54,7 @@ func (ffc *FormFieldController) Show(c echo.Context) error {
 }
 
 func (ffc *FormFieldController) Store(c echo.Context) error {
-	var request form_requests.CreateFieldRequest
+	var request form_requests.CreateFormFieldsRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return responses.UnprocessableResponse(c, err)
 	}
@@ -66,16 +66,16 @@ func (ffc *FormFieldController) Store(c echo.Context) error {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	formField, err := ffc.formFieldService.Create(formUUID, projectUUID, &request, authUser)
+	formFields, err := ffc.formFieldService.CreateMany(formUUID, projectUUID, &request, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
 
-	return responses.CreatedResponse(c, resources.FormFieldResource(&formField))
+	return responses.CreatedResponse(c, resources.FormFieldResourceCollection(formFields))
 }
 
 func (ffc *FormFieldController) Update(c echo.Context) error {
-	var request form_requests.CreateFieldRequest
+	var request form_requests.UpdateFormFieldRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return responses.UnprocessableResponse(c, err)
 	}
