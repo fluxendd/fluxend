@@ -21,7 +21,7 @@ func NewTableController(injector *do.Injector) (*TableController, error) {
 	return &TableController{tableService: tableService}, nil
 }
 
-func (pc *TableController) List(c echo.Context) error {
+func (tc *TableController) List(c echo.Context) error {
 	authUser, _ := utils.NewAuth(c).User()
 
 	projectID, err := utils.GetUUIDPathParam(c, "projectID", true)
@@ -30,7 +30,7 @@ func (pc *TableController) List(c echo.Context) error {
 	}
 
 	paginationParams := utils.ExtractPaginationParams(c)
-	tables, err := pc.tableService.List(paginationParams, projectID, authUser)
+	tables, err := tc.tableService.List(paginationParams, projectID, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -38,7 +38,7 @@ func (pc *TableController) List(c echo.Context) error {
 	return responses.SuccessResponse(c, resources.TableResourceCollection(tables))
 }
 
-func (pc *TableController) Show(c echo.Context) error {
+func (tc *TableController) Show(c echo.Context) error {
 	authUser, _ := utils.NewAuth(c).User()
 
 	projectID, err := utils.GetUUIDPathParam(c, "projectID", true)
@@ -51,7 +51,7 @@ func (pc *TableController) Show(c echo.Context) error {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	table, err := pc.tableService.GetByID(tableID, projectID, authUser)
+	table, err := tc.tableService.GetByID(tableID, projectID, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -59,7 +59,7 @@ func (pc *TableController) Show(c echo.Context) error {
 	return responses.SuccessResponse(c, resources.TableResource(&table))
 }
 
-func (pc *TableController) Store(c echo.Context) error {
+func (tc *TableController) Store(c echo.Context) error {
 	var request table_requests.CreateRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return responses.UnprocessableResponse(c, err)
@@ -72,7 +72,7 @@ func (pc *TableController) Store(c echo.Context) error {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	table, err := pc.tableService.Create(&request, projectID, authUser)
+	table, err := tc.tableService.Create(&request, projectID, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -80,7 +80,7 @@ func (pc *TableController) Store(c echo.Context) error {
 	return responses.CreatedResponse(c, resources.TableResource(&table))
 }
 
-func (pc *TableController) Duplicate(c echo.Context) error {
+func (tc *TableController) Duplicate(c echo.Context) error {
 	var request table_requests.RenameRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return responses.UnprocessableResponse(c, err)
@@ -98,7 +98,7 @@ func (pc *TableController) Duplicate(c echo.Context) error {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	duplicatedTable, err := pc.tableService.Duplicate(tableID, projectID, authUser, &request)
+	duplicatedTable, err := tc.tableService.Duplicate(tableID, projectID, authUser, &request)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -106,7 +106,7 @@ func (pc *TableController) Duplicate(c echo.Context) error {
 	return responses.SuccessResponse(c, resources.TableResource(duplicatedTable))
 }
 
-func (pc *TableController) Rename(c echo.Context) error {
+func (tc *TableController) Rename(c echo.Context) error {
 	var request table_requests.RenameRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return responses.UnprocessableResponse(c, err)
@@ -124,7 +124,7 @@ func (pc *TableController) Rename(c echo.Context) error {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	renamedTable, err := pc.tableService.Rename(tableID, projectID, authUser, &request)
+	renamedTable, err := tc.tableService.Rename(tableID, projectID, authUser, &request)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -132,7 +132,7 @@ func (pc *TableController) Rename(c echo.Context) error {
 	return responses.SuccessResponse(c, resources.TableResource(&renamedTable))
 }
 
-func (pc *TableController) Delete(c echo.Context) error {
+func (tc *TableController) Delete(c echo.Context) error {
 	var request requests.DefaultRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return responses.UnprocessableResponse(c, err)
@@ -150,7 +150,7 @@ func (pc *TableController) Delete(c echo.Context) error {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	if _, err := pc.tableService.Delete(tableID, projectID, authUser); err != nil {
+	if _, err := tc.tableService.Delete(tableID, projectID, authUser); err != nil {
 		return responses.ErrorResponse(c, err)
 	}
 
