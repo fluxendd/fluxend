@@ -7,13 +7,13 @@ import (
 
 type ProjectResponse struct {
 	Uuid             uuid.UUID `json:"uuid"`
-	OrganizationUuid uuid.UUID `json:"organization_uuid"`
-	CreatedBy        uuid.UUID `json:"created_by"`
-	UpdatedBy        uuid.UUID `json:"updated_by"`
+	OrganizationUuid uuid.UUID `json:"organizationUuid"`
+	CreatedBy        uuid.UUID `json:"createdBy"`
+	UpdatedBy        uuid.UUID `json:"updatedBy"`
 	Name             string    `json:"name"`
-	DBName           string    `json:"db_name"`
-	CreatedAt        string    `json:"created_at"`
-	UpdatedAt        string    `json:"updated_at"`
+	DBName           string    `json:"dbName"`
+	CreatedAt        string    `json:"createdAt"`
+	UpdatedAt        string    `json:"updatedAt"`
 }
 
 func ProjectResource(project *models.Project) ProjectResponse {
