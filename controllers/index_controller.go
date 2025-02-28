@@ -21,15 +21,15 @@ func NewIndexController(injector *do.Injector) (*IndexController, error) {
 	return &IndexController{indexService: indexService}, nil
 }
 
-func (pc *IndexController) List(c echo.Context) error {
+func (ic *IndexController) List(c echo.Context) error {
 	authUser, _ := utils.NewAuth(c).User()
 
-	projectID, tableID, err := pc.parseRequest(c)
+	projectID, tableID, err := ic.parseRequest(c)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	indexes, err := pc.indexService.List(tableID, projectID, authUser)
+	indexes, err := ic.indexService.List(tableID, projectID, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -37,17 +37,17 @@ func (pc *IndexController) List(c echo.Context) error {
 	return responses.SuccessResponse(c, resources.GenericResourceCollection(indexes))
 }
 
-func (pc *IndexController) Show(c echo.Context) error {
+func (ic *IndexController) Show(c echo.Context) error {
 	authUser, _ := utils.NewAuth(c).User()
 
-	projectID, tableID, err := pc.parseRequest(c)
+	projectID, tableID, err := ic.parseRequest(c)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
 	indexName := c.Param("indexName")
 
-	index, err := pc.indexService.GetByName(indexName, tableID, projectID, authUser)
+	index, err := ic.indexService.GetByName(indexName, tableID, projectID, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -55,7 +55,7 @@ func (pc *IndexController) Show(c echo.Context) error {
 	return responses.SuccessResponse(c, resources.GenericResource(&index))
 }
 
-func (pc *IndexController) Store(c echo.Context) error {
+func (ic *IndexController) Store(c echo.Context) error {
 	var request requests.IndexCreateRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return responses.UnprocessableResponse(c, err)
@@ -63,12 +63,12 @@ func (pc *IndexController) Store(c echo.Context) error {
 
 	authUser, _ := utils.NewAuth(c).User()
 
-	projectID, tableID, err := pc.parseRequest(c)
+	projectID, tableID, err := ic.parseRequest(c)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	index, err := pc.indexService.Create(projectID, tableID, &request, authUser)
+	index, err := ic.indexService.Create(projectID, tableID, &request, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -76,24 +76,24 @@ func (pc *IndexController) Store(c echo.Context) error {
 	return responses.CreatedResponse(c, resources.GenericResource(index))
 }
 
-func (pc *IndexController) Delete(c echo.Context) error {
+func (ic *IndexController) Delete(c echo.Context) error {
 	authUser, _ := utils.NewAuth(c).User()
 
-	projectID, tableID, err := pc.parseRequest(c)
+	projectID, tableID, err := ic.parseRequest(c)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
 	indexName := c.Param("indexName")
 
-	if _, err := pc.indexService.Delete(indexName, tableID, projectID, authUser); err != nil {
+	if _, err := ic.indexService.Delete(indexName, tableID, projectID, authUser); err != nil {
 		return responses.ErrorResponse(c, err)
 	}
 
 	return responses.DeletedResponse(c, nil)
 }
 
-func (pc *IndexController) parseRequest(c echo.Context) (uuid.UUID, uuid.UUID, error) {
+func (ic *IndexController) parseRequest(c echo.Context) (uuid.UUID, uuid.UUID, error) {
 	projectID, err := utils.GetUUIDPathParam(c, "projectID", true)
 	if err != nil {
 		return uuid.Nil, uuid.Nil, err

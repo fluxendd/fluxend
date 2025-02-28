@@ -10,10 +10,10 @@ type UserResponse struct {
 	Username  string    `json:"username"`
 	Email     string    `json:"email"`
 	Status    string    `json:"status"`
-	RoleID    int       `json:"role_id"`
+	RoleID    int       `json:"roleId"`
 	Bio       string    `json:"bio"`
-	CreatedAt string    `json:"created_at"`
-	UpdatedAt string    `json:"updated_at"`
+	CreatedAt string    `json:"createdAt"`
+	UpdatedAt string    `json:"updatedAt"`
 }
 
 func UserResource(user *models.User) UserResponse {

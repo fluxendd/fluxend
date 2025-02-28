@@ -8,9 +8,9 @@ type SettingResponse struct {
 	ID           int    `json:"id"`
 	Name         string `json:"name"`
 	Value        string `json:"value"`
-	DefaultValue string `json:"default_value"`
-	CreatedAt    string `json:"created_at"`
-	UpdatedAt    string `json:"updated_at"`
+	DefaultValue string `json:"defaultValue"`
+	CreatedAt    string `json:"createdAt"`
+	UpdatedAt    string `json:"updatedAt"`
 }
 
 func SettingResource(setting *models.Setting) SettingResponse {
