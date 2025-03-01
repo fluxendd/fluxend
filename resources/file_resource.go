@@ -10,6 +10,7 @@ type FileResponse struct {
 	BucketUuid uuid.UUID `json:"bucketUuid"`
 	Name       string    `json:"name"`
 	Size       int       `json:"size"` // in KB
+	MimeType   string    `json:"mimeType"`
 	CreatedBy  uuid.UUID `json:"createdBy"`
 	UpdatedBy  uuid.UUID `json:"updatedBy"`
 	CreatedAt  string    `json:"createdAt"`
@@ -22,6 +23,7 @@ func FileResource(file *models.File) FileResponse {
 		BucketUuid: file.BucketUuid,
 		Name:       file.Name,
 		Size:       file.Size,
+		MimeType:   file.MimeType,
 		CreatedBy:  file.CreatedBy,
 		UpdatedBy:  file.UpdatedBy,
 		CreatedAt:  file.CreatedAt.Format("2006-01-02 15:04:05"),

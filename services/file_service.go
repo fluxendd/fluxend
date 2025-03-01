@@ -7,8 +7,10 @@ import (
 	"fluxton/repositories"
 	"fluxton/requests/bucket_requests"
 	"fluxton/utils"
+	"fmt"
 	"github.com/google/uuid"
 	"github.com/samber/do"
+	"io"
 	"time"
 )
 
@@ -16,7 +18,7 @@ type FileService interface {
 	List(paginationParams utils.PaginationParams, bucketUUID uuid.UUID, authUser models.AuthUser) ([]models.File, error)
 	GetByUUID(fileUUID, bucketUUID uuid.UUID, authUser models.AuthUser) (models.File, error)
 	Create(bucketUUID uuid.UUID, request *bucket_requests.CreateFileRequest, authUser models.AuthUser) (models.File, error)
-	Rename(fileUUID, bucketUUID uuid.UUID, authUser models.AuthUser, request *bucket_requests.CreateFileRequest) (*models.File, error)
+	Rename(fileUUID, bucketUUID uuid.UUID, authUser models.AuthUser, request *bucket_requests.RenameFileRequest) (*models.File, error)
 	Delete(fileUUID, bucketUUID uuid.UUID, authUser models.AuthUser) (bool, error)
 }
 
@@ -104,34 +106,42 @@ func (s *FileServiceImpl) Create(bucketUUID uuid.UUID, request *bucket_requests.
 		return models.File{}, errs.NewForbiddenError("file.error.createForbidden")
 	}
 
-	// TODO: duplication check
+	err = s.validateNameForDuplication(request.Name, bucketUUID)
+	if err != nil {
+		return models.File{}, err
+	}
 
 	file := models.File{
 		BucketUuid: bucketUUID,
 		Name:       request.Name,
+		Size:       int(request.File.Size),
+		MimeType:   request.File.Header.Get("Content-Type"),
+		Path:       request.Name,
 		CreatedBy:  authUser.Uuid,
 		UpdatedBy:  authUser.Uuid,
 		CreatedAt:  time.Now(),
 		UpdatedAt:  time.Now(),
 	}
 
-	createdFile, err := s.s3Service.CreateBucket(bucket.AwsName)
+	fileBytes, err := s.getFileContents(*request)
 	if err != nil {
 		return models.File{}, err
 	}
 
-	utils.DumpJSON(createdFile)
+	err = s.s3Service.UploadFile(bucket.AwsName, request.Name, fileBytes)
+	if err != nil {
+		return models.File{}, err
+	}
 
-	/*bucket.Url = utils.PointerToString(createdBucket.Location)
 	_, err = s.fileRepo.Create(&file)
 	if err != nil {
 		return models.File{}, err
-	}*/
+	}
 
 	return file, nil
 }
 
-func (s *FileServiceImpl) Rename(fileUUID, bucketUUID uuid.UUID, authUser models.AuthUser, request *bucket_requests.CreateFileRequest) (*models.File, error) {
+func (s *FileServiceImpl) Rename(fileUUID, bucketUUID uuid.UUID, authUser models.AuthUser, request *bucket_requests.RenameFileRequest) (*models.File, error) {
 	bucket, err := s.bucketRepo.GetByUUID(bucketUUID)
 	if err != nil {
 		return nil, err
@@ -151,11 +161,7 @@ func (s *FileServiceImpl) Rename(fileUUID, bucketUUID uuid.UUID, authUser models
 		return &models.File{}, errs.NewForbiddenError("file.error.updateForbidden")
 	}
 
-	err = utils.PopulateModel(&file, request)
-	if err != nil {
-		return nil, err
-	}
-
+	bucket.Name = request.Name
 	bucket.UpdatedAt = time.Now()
 	bucket.UpdatedBy = authUser.Uuid
 
@@ -199,14 +205,29 @@ func (s *FileServiceImpl) Delete(fileUUID, bucketUUID uuid.UUID, authUser models
 	return s.bucketRepo.Delete(bucketUUID)
 }
 
-func (s *FileServiceImpl) validateNameForDuplication(name string, projectUUID uuid.UUID) error {
-	exists, err := s.bucketRepo.ExistsByNameForProject(name, projectUUID)
+func (s *FileServiceImpl) getFileContents(request bucket_requests.CreateFileRequest) ([]byte, error) {
+	fileHandler, err := request.File.Open() // Open the file
+	if err != nil {
+		return nil, fmt.Errorf("failed to open file: %w", err)
+	}
+	defer fileHandler.Close()
+
+	fileBytes, err := io.ReadAll(fileHandler) // Read the file content as bytes
+	if err != nil {
+		return nil, fmt.Errorf("failed to read file: %w", err)
+	}
+
+	return fileBytes, nil
+}
+
+func (s *FileServiceImpl) validateNameForDuplication(name string, fileUUID uuid.UUID) error {
+	exists, err := s.fileRepo.ExistsByNameForBucket(name, fileUUID)
 	if err != nil {
 		return err
 	}
 
 	if exists {
-		return errs.NewUnprocessableError("bucket.error.duplicateName")
+		return errs.NewUnprocessableError("file.error.duplicateName")
 	}
 
 	return nil
