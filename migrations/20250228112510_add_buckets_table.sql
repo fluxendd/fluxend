@@ -6,7 +6,7 @@ CREATE TABLE storage.buckets (
     created_by UUID NOT NULL REFERENCES authentication.users(uuid) ON DELETE CASCADE,
     updated_by UUID NOT NULL REFERENCES authentication.users(uuid) ON DELETE CASCADE,
     name varchar NOT NULL,
-    awsName varchar NOT NULL,
+    aws_name varchar NOT NULL,
     description TEXT,
     is_public BOOLEAN DEFAULT FALSE,
     total_files BIGINT DEFAULT 0,
