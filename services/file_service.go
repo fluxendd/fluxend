@@ -16,7 +16,7 @@ type FileService interface {
 	List(paginationParams utils.PaginationParams, bucketUUID uuid.UUID, authUser models.AuthUser) ([]models.File, error)
 	GetByUUID(fileUUID, bucketUUID uuid.UUID, authUser models.AuthUser) (models.File, error)
 	Create(bucketUUID uuid.UUID, request *bucket_requests.CreateFileRequest, authUser models.AuthUser) (models.File, error)
-	Update(fileUUID, bucketUUID uuid.UUID, authUser models.AuthUser, request *bucket_requests.CreateFileRequest) (*models.File, error)
+	Rename(fileUUID, bucketUUID uuid.UUID, authUser models.AuthUser, request *bucket_requests.CreateFileRequest) (*models.File, error)
 	Delete(fileUUID, bucketUUID uuid.UUID, authUser models.AuthUser) (bool, error)
 }
 
@@ -131,7 +131,7 @@ func (s *FileServiceImpl) Create(bucketUUID uuid.UUID, request *bucket_requests.
 	return file, nil
 }
 
-func (s *FileServiceImpl) Update(fileUUID, bucketUUID uuid.UUID, authUser models.AuthUser, request *bucket_requests.CreateFileRequest) (*models.File, error) {
+func (s *FileServiceImpl) Rename(fileUUID, bucketUUID uuid.UUID, authUser models.AuthUser, request *bucket_requests.CreateFileRequest) (*models.File, error) {
 	bucket, err := s.bucketRepo.GetByUUID(bucketUUID)
 	if err != nil {
 		return nil, err
