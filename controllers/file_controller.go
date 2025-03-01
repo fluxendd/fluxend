@@ -80,7 +80,7 @@ func (fc *FileController) Store(c echo.Context) error {
 }
 
 func (fc *FileController) Rename(c echo.Context) error {
-	var request bucket_requests.CreateFileRequest
+	var request bucket_requests.RenameFileRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return responses.UnprocessableResponse(c, err)
 	}

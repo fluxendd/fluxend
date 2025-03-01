@@ -2,7 +2,7 @@
 -- +goose StatementBegin
 CREATE TABLE storage.files (
     uuid UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    bucket_uuid UUID REFERENCES storage.buckets(uuid) ON DELETE CASCADE,
+    bucket_uuid UUID NOT NULL REFERENCES storage.buckets(uuid) ON DELETE CASCADE,
     name varchar NOT NULL,
     path TEXT NOT NULL,
     size BIGINT NOT NULL,
