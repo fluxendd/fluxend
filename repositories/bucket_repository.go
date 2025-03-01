@@ -172,6 +172,26 @@ func (r *BucketRepository) Update(bucket *models.Bucket) (*models.Bucket, error)
 	return bucket, nil
 }
 
+func (r *BucketRepository) IncrementTotalFiles(bucketUUID uuid.UUID) error {
+	query := "UPDATE storage.buckets SET total_files = total_files + 1 WHERE uuid = $1"
+	_, err := r.db.Exec(query, bucketUUID)
+	if err != nil {
+		return fmt.Errorf("could not update row: %v", err)
+	}
+
+	return nil
+}
+
+func (r *BucketRepository) DecrementTotalFiles(bucketUUID uuid.UUID) error {
+	query := "UPDATE storage.buckets SET total_files = total_files - 1 WHERE uuid = $1"
+	_, err := r.db.Exec(query, bucketUUID)
+	if err != nil {
+		return fmt.Errorf("could not update row: %v", err)
+	}
+
+	return nil
+}
+
 func (r *BucketRepository) Delete(bucketUUID uuid.UUID) (bool, error) {
 	query := "DELETE FROM storage.buckets WHERE uuid = $1"
 	res, err := r.db.Exec(query, bucketUUID)
