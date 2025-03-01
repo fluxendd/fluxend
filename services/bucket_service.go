@@ -98,11 +98,12 @@ func (s *BucketServiceImpl) Create(projectUUID uuid.UUID, request *bucket_reques
 		AwsName:     s.generateBucketName(),
 		IsPublic:    request.IsPublic,
 		Description: request.Description,
+		MaxFileSize: request.MaxFileSize,
 		CreatedBy:   authUser.Uuid,
 		UpdatedBy:   authUser.Uuid,
 	}
 
-	createdBucket, err := s.s3Service.CreateBucket(bucket.AwsName, authUser)
+	createdBucket, err := s.s3Service.CreateBucket(bucket.AwsName)
 	if err != nil {
 		return models.Bucket{}, err
 	}
