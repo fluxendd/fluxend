@@ -99,7 +99,7 @@ func (r *FileRepository) ExistsByUUID(bucketUUID uuid.UUID) (bool, error) {
 }
 
 func (r *FileRepository) ExistsByNameForBucket(name string, bucketUUID uuid.UUID) (bool, error) {
-	query := "SELECT EXISTS(SELECT 1 FROM storage.files WHERE name = $1 AND bucket_uuid = $2)"
+	query := "SELECT EXISTS(SELECT 1 FROM storage.files WHERE full_file_name = $1 AND bucket_uuid = $2)"
 
 	var exists bool
 	err := r.db.Get(&exists, query, name, bucketUUID)
@@ -118,7 +118,7 @@ func (r *FileRepository) Create(file *models.File) (*models.File, error) {
 
 	query := `
     INSERT INTO storage.files (
-        bucket_uuid, name, path, size, mime_type, created_by, updated_by, created_at, updated_at
+        bucket_uuid, full_file_name, path, size, mime_type, created_by, updated_by, created_at, updated_at
     ) VALUES (
         $1, $2, $3, $4, $5, $6, $7, $8, $9
     )
@@ -128,8 +128,7 @@ func (r *FileRepository) Create(file *models.File) (*models.File, error) {
 	queryErr := tx.QueryRowx(
 		query,
 		file.BucketUuid,
-		file.Name,
-		file.Path,
+		file.FullFileName,
 		file.Size,
 		file.MimeType,
 		file.CreatedBy,
@@ -156,7 +155,7 @@ func (r *FileRepository) Create(file *models.File) (*models.File, error) {
 func (r *FileRepository) Rename(bucket *models.File) (*models.File, error) {
 	query := `
 		UPDATE storage.files 
-		SET name = :name, updated_at = :updated_at, updated_by = :updated_by
+		SET full_file_name = :full_file_name, updated_at = :updated_at, updated_by = :updated_by
 		WHERE uuid = :uuid`
 
 	res, err := r.db.NamedExec(query, bucket)
