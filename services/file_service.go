@@ -172,9 +172,10 @@ func (s *FileServiceImpl) Rename(fileUUID, bucketUUID uuid.UUID, authUser models
 		return &models.File{}, errs.NewForbiddenError("file.error.updateForbidden")
 	}
 
-	bucket.Name = request.Name
-	bucket.UpdatedAt = time.Now()
-	bucket.UpdatedBy = authUser.Uuid
+	file.Name = request.Name
+	file.Path = request.Name
+	file.UpdatedAt = time.Now()
+	file.UpdatedBy = authUser.Uuid
 
 	err = s.validateNameForDuplication(request.Name, bucket.ProjectUuid)
 	if err != nil {

@@ -50,7 +50,7 @@ func (fc *FileController) Show(c echo.Context) error {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	file, err := fc.fileService.GetByUUID(bucketUUID, fileUUID, authUser)
+	file, err := fc.fileService.GetByUUID(fileUUID, bucketUUID, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
