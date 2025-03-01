@@ -23,20 +23,23 @@ type ProjectService interface {
 }
 
 type ProjectServiceImpl struct {
-	projectPolicy *policies.ProjectPolicy
-	databaseRepo  *repositories.DatabaseRepository
-	projectRepo   *repositories.ProjectRepository
+	projectPolicy    *policies.ProjectPolicy
+	databaseRepo     *repositories.DatabaseRepository
+	projectRepo      *repositories.ProjectRepository
+	postgrestService PostgrestService
 }
 
 func NewProjectService(injector *do.Injector) (ProjectService, error) {
 	policy := do.MustInvoke[*policies.ProjectPolicy](injector)
 	databaseRepo := do.MustInvoke[*repositories.DatabaseRepository](injector)
 	projectRepo := do.MustInvoke[*repositories.ProjectRepository](injector)
+	postgrestService, _ := NewPostgrestService()
 
 	return &ProjectServiceImpl{
-		projectPolicy: policy,
-		databaseRepo:  databaseRepo,
-		projectRepo:   projectRepo,
+		projectPolicy:    policy,
+		databaseRepo:     databaseRepo,
+		projectRepo:      projectRepo,
+		postgrestService: postgrestService,
 	}, nil
 }
 
@@ -93,6 +96,11 @@ func (s *ProjectServiceImpl) Create(request *project_requests.CreateRequest, aut
 		return models.Project{}, err
 	}
 
+	err = s.postgrestService.StartContainer(project.DBName, project.DBPort)
+	if err != nil {
+		return models.Project{}, err
+	}
+
 	return project, nil
 }
 
@@ -133,6 +141,11 @@ func (s *ProjectServiceImpl) Delete(projectID uuid.UUID, authUser models.AuthUse
 	}
 
 	err = s.databaseRepo.DropIfExists(project.DBName)
+	if err != nil {
+		return false, err
+	}
+
+	err = s.postgrestService.RemoveContainer(project.DBName)
 	if err != nil {
 		return false, err
 	}
