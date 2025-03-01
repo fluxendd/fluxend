@@ -138,6 +138,11 @@ func (s *FileServiceImpl) Create(bucketUUID uuid.UUID, request *bucket_requests.
 		return models.File{}, err
 	}
 
+	err = s.bucketRepo.IncrementTotalFiles(bucketUUID)
+	if err != nil {
+		return models.File{}, err
+	}
+
 	return file, nil
 }
 
