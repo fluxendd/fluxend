@@ -112,21 +112,20 @@ func (s *FileServiceImpl) Create(bucketUUID uuid.UUID, request *bucket_requests.
 		return models.File{}, errs.NewForbiddenError("file.error.createForbidden")
 	}
 
-	err = s.validateNameForDuplication(request.Name, bucketUUID)
+	err = s.validateNameForDuplication(request.FullFileName, bucketUUID)
 	if err != nil {
 		return models.File{}, err
 	}
 
 	file := models.File{
-		BucketUuid: bucketUUID,
-		Name:       request.Name,
-		Size:       fileSize,
-		MimeType:   request.File.Header.Get("Content-Type"),
-		Path:       request.Name,
-		CreatedBy:  authUser.Uuid,
-		UpdatedBy:  authUser.Uuid,
-		CreatedAt:  time.Now(),
-		UpdatedAt:  time.Now(),
+		BucketUuid:   bucketUUID,
+		FullFileName: request.FullFileName,
+		Size:         fileSize,
+		MimeType:     request.File.Header.Get("Content-Type"),
+		CreatedBy:    authUser.Uuid,
+		UpdatedBy:    authUser.Uuid,
+		CreatedAt:    time.Now(),
+		UpdatedAt:    time.Now(),
 	}
 
 	fileBytes, err := s.getFileContents(*request)
@@ -134,7 +133,7 @@ func (s *FileServiceImpl) Create(bucketUUID uuid.UUID, request *bucket_requests.
 		return models.File{}, err
 	}
 
-	err = s.s3Service.UploadFile(bucket.AwsName, request.Name, fileBytes)
+	err = s.s3Service.UploadFile(bucket.AwsName, request.FullFileName, fileBytes)
 	if err != nil {
 		return models.File{}, err
 	}
@@ -172,17 +171,16 @@ func (s *FileServiceImpl) Rename(fileUUID, bucketUUID uuid.UUID, authUser models
 		return &models.File{}, errs.NewForbiddenError("file.error.updateForbidden")
 	}
 
-	file.Name = request.Name
-	file.Path = request.Name
+	file.FullFileName = request.FullFileName
 	file.UpdatedAt = time.Now()
 	file.UpdatedBy = authUser.Uuid
 
-	err = s.validateNameForDuplication(request.Name, bucket.ProjectUuid)
+	err = s.validateNameForDuplication(request.FullFileName, bucket.ProjectUuid)
 	if err != nil {
 		return &models.File{}, err
 	}
 
-	err = s.s3Service.RenameFile(bucket.AwsName, file.Path, request.Name)
+	err = s.s3Service.RenameFile(bucket.AwsName, file.FullFileName, request.FullFileName)
 	if err != nil {
 		return nil, err
 	}
@@ -210,7 +208,7 @@ func (s *FileServiceImpl) Delete(fileUUID, bucketUUID uuid.UUID, authUser models
 		return false, err
 	}
 
-	err = s.s3Service.DeleteFile(bucket.AwsName, file.Path)
+	err = s.s3Service.DeleteFile(bucket.AwsName, file.FullFileName)
 	if err != nil {
 		return false, err
 	}

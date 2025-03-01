@@ -11,8 +11,8 @@ import (
 
 type CreateFileRequest struct {
 	requests.BaseRequest
-	Name string                `json:"-" form:"name"`
-	File *multipart.FileHeader `json:"-" form:"file"`
+	FullFileName string                `json:"-" form:"full_file_name"`
+	File         *multipart.FileHeader `json:"-" form:"file"`
 }
 
 func (r *CreateFileRequest) BindAndValidate(c echo.Context) []string {
@@ -22,8 +22,8 @@ func (r *CreateFileRequest) BindAndValidate(c echo.Context) []string {
 
 	err := validation.ValidateStruct(r,
 		validation.Field(
-			&r.Name,
-			validation.Required.Error("Name is required"),
+			&r.FullFileName,
+			validation.Required.Error("full_file_name is required"),
 			validation.Length(
 				configs.MinBucketNameLength, configs.MaxBucketNameLength,
 			).Error(
