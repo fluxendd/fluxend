@@ -39,8 +39,8 @@ func BucketResource(bucket *models.Bucket) BucketResponse {
 
 func BucketResourceCollection(buckets []models.Bucket) []BucketResponse {
 	resourceBuckets := make([]BucketResponse, len(buckets))
-	for i, organization := range buckets {
-		resourceBuckets[i] = BucketResource(&organization)
+	for i, bucket := range buckets {
+		resourceBuckets[i] = BucketResource(&bucket)
 	}
 
 	return resourceBuckets

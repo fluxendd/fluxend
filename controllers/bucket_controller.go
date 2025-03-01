@@ -92,12 +92,12 @@ func (bc *BucketController) Update(c echo.Context) error {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	updatedForm, err := bc.bucketService.Update(bucketUUID, authUser, &request)
+	updatedBucket, err := bc.bucketService.Update(bucketUUID, authUser, &request)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
 
-	return responses.SuccessResponse(c, resources.BucketResource(updatedForm))
+	return responses.SuccessResponse(c, resources.BucketResource(updatedBucket))
 }
 
 func (bc *BucketController) Delete(c echo.Context) error {
