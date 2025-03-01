@@ -86,7 +86,7 @@ func registerRoutes(e *echo.Echo, container *do.Injector) {
 	routes.RegisterProjectRoutes(e, authMiddleware, projectController)
 	routes.RegisterTableRoutes(e, authMiddleware, tableController, columnController, indexController)
 	routes.RegisterFormRoutes(e, authMiddleware, formController, formFieldController)
-	routes.RegisterBucketRoutes(e, authMiddleware, bucketController)
+	routes.RegisterStorageRoutes(e, authMiddleware, bucketController)
 }
 
 // runSeeders runs all seeders defined in the seeders package
