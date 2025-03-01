@@ -118,9 +118,9 @@ func (r *FileRepository) Create(file *models.File) (*models.File, error) {
 
 	query := `
     INSERT INTO storage.files (
-        bucket_uuid, full_file_name, path, size, mime_type, created_by, updated_by, created_at, updated_at
+        bucket_uuid, full_file_name, size, mime_type, created_by, updated_by, created_at, updated_at
     ) VALUES (
-        $1, $2, $3, $4, $5, $6, $7, $8, $9
+        $1, $2, $3, $4, $5, $6, $7, $8
     )
     RETURNING uuid
 `
