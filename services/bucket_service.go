@@ -9,6 +9,7 @@ import (
 	"fluxton/utils"
 	"github.com/google/uuid"
 	"github.com/samber/do"
+	"strings"
 	"time"
 )
 
@@ -21,17 +22,24 @@ type BucketService interface {
 }
 
 type BucketServiceImpl struct {
+	s3Service     S3Service
 	projectPolicy *policies.ProjectPolicy
 	bucketRepo    *repositories.BucketRepository
 	projectRepo   *repositories.ProjectRepository
 }
 
 func NewBucketService(injector *do.Injector) (BucketService, error) {
+	s3Service, err := NewS3Service()
+	if err != nil {
+		return nil, err
+	}
+
 	policy := do.MustInvoke[*policies.ProjectPolicy](injector)
 	bucketRepo := do.MustInvoke[*repositories.BucketRepository](injector)
 	projectRepo := do.MustInvoke[*repositories.ProjectRepository](injector)
 
 	return &BucketServiceImpl{
+		s3Service:     s3Service,
 		projectPolicy: policy,
 		bucketRepo:    bucketRepo,
 		projectRepo:   projectRepo,
@@ -87,12 +95,19 @@ func (s *BucketServiceImpl) Create(projectUUID uuid.UUID, request *bucket_reques
 	bucket := models.Bucket{
 		ProjectUuid: projectUUID,
 		Name:        request.Name,
+		AwsName:     s.generateBucketName(),
 		IsPublic:    request.IsPublic,
 		Description: request.Description,
 		CreatedBy:   authUser.Uuid,
 		UpdatedBy:   authUser.Uuid,
 	}
 
+	createdBucket, err := s.s3Service.CreateBucket(bucket.AwsName, authUser)
+	if err != nil {
+		return models.Bucket{}, err
+	}
+
+	bucket.Url = utils.PointerToString(createdBucket.Location)
 	_, err = s.bucketRepo.Create(&bucket)
 	if err != nil {
 		return models.Bucket{}, err
@@ -148,6 +163,12 @@ func (s *BucketServiceImpl) Delete(bucketUUID uuid.UUID, authUser models.AuthUse
 	}
 
 	return s.bucketRepo.Delete(bucketUUID)
+}
+
+func (s *BucketServiceImpl) generateBucketName() string {
+	bucketUUID := uuid.New()
+
+	return "bucket-" + strings.Replace(bucketUUID.String(), "-", "", -1)
 }
 
 func (s *BucketServiceImpl) validateNameForDuplication(name string, projectUUID uuid.UUID) error {
