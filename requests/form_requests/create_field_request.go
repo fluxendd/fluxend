@@ -11,10 +11,11 @@ import (
 )
 
 type FieldRequest struct {
-	Label      string `json:"label"`
-	Type       string `json:"type"`
-	IsRequired bool   `json:"is_required"`
-	Options    string `json:"options,omitempty"` // Optional for select/radio types
+	Label       string `json:"label"`
+	Type        string `json:"type"`
+	IsRequired  bool   `json:"is_required"`
+	Description string `json:"description,omitempty"`
+	Options     string `json:"options,omitempty"` // Optional for select/radio types
 }
 
 // CreateFormFieldsRequest represents multiple fields in a request
@@ -65,6 +66,13 @@ func validateField(value interface{}) error {
 			&field.Type,
 			validation.Required.Error("Type is required"),
 			validation.In("text", "textarea", "number", "email", "date", "checkbox", "radio", "select").Error("Invalid field type"),
+		),
+		validation.Field(&field.IsRequired, validation.Required.Error("IsRequired is required")),
+		validation.Field(
+			&field.Description,
+			validation.Length(
+				configs.MinFormFieldDescriptionLength, configs.MaxFormFieldDescriptionLength,
+			).Error("Description must be between 0 and 255 characters"),
 		),
 	)
 }
