@@ -9,6 +9,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/aws/aws-sdk-go-v2/service/s3/types"
+	"io"
 	"os"
 	"strings"
 )
@@ -180,6 +181,23 @@ func (s *S3ServiceImpl) RenameFile(bucketName, oldFilePath, newFilePath string) 
 	}
 
 	return nil
+}
+
+func (s *S3ServiceImpl) DownloadFile(bucketName, filePath string) ([]byte, error) {
+	resp, err := s.client.GetObject(context.Background(), &s3.GetObjectInput{
+		Bucket: aws.String(bucketName),
+		Key:    aws.String(filePath),
+	})
+	if err != nil {
+		return nil, fmt.Errorf("unable to download file %q, %v", filePath, err)
+	}
+
+	fileBytes, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("unable to read file %q, %v", filePath, err)
+	}
+
+	return fileBytes, nil
 }
 
 func (s *S3ServiceImpl) transformError(err error) error {
