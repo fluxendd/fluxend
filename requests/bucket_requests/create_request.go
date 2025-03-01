@@ -41,8 +41,8 @@ func (r *CreateRequest) BindAndValidate(c echo.Context) []string {
 			).Error("Bucket name must be alphanumeric with underscores and dashes")),
 		validation.Field(&r.IsPublic, validation.Required.Error("IsPublic is required")),
 		validation.Field(&r.MaxFileSize,
-			validation.Required.Error("MaxFileSize is required"),
-			validation.Min(1).Error("MaxFileSize must be a positive number"),
+			validation.Required.Error("max_file_size is required"),
+			validation.Min(1).Error("max_file_size must be a positive number"),
 		),
 		validation.Field(
 			&r.Description,

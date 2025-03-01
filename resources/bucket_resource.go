@@ -11,6 +11,9 @@ type BucketResponse struct {
 	Name        string    `json:"name"`
 	Description string    `json:"description"`
 	IsPublic    bool      `json:"isPublic"`
+	Url         string    `json:"url"`
+	TotalFiles  int       `json:"totalFiles"`
+	MaxFileSize int       `json:"maxFileSize"`
 	CreatedBy   uuid.UUID `json:"createdBy"`
 	UpdatedBy   uuid.UUID `json:"updatedBy"`
 	CreatedAt   string    `json:"createdAt"`
@@ -24,6 +27,9 @@ func BucketResource(bucket *models.Bucket) BucketResponse {
 		Name:        bucket.Name,
 		Description: bucket.Description,
 		IsPublic:    bucket.IsPublic,
+		Url:         bucket.Url,
+		TotalFiles:  bucket.TotalFiles,
+		MaxFileSize: bucket.MaxFileSize,
 		CreatedBy:   bucket.CreatedBy,
 		UpdatedBy:   bucket.UpdatedBy,
 		CreatedAt:   bucket.CreatedAt.Format("2006-01-02 15:04:05"),
