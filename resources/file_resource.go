@@ -6,26 +6,26 @@ import (
 )
 
 type FileResponse struct {
-	Uuid        uuid.UUID `json:"uuid"`
-	ProjectUuid uuid.UUID `json:"projectUuid"`
-	Name        string    `json:"name"`
-	Size        int       `json:"size"` // in KB
-	CreatedBy   uuid.UUID `json:"createdBy"`
-	UpdatedBy   uuid.UUID `json:"updatedBy"`
-	CreatedAt   string    `json:"createdAt"`
-	UpdatedAt   string    `json:"updatedAt"`
+	Uuid       uuid.UUID `json:"uuid"`
+	BucketUuid uuid.UUID `json:"bucketUuid"`
+	Name       string    `json:"name"`
+	Size       int       `json:"size"` // in KB
+	CreatedBy  uuid.UUID `json:"createdBy"`
+	UpdatedBy  uuid.UUID `json:"updatedBy"`
+	CreatedAt  string    `json:"createdAt"`
+	UpdatedAt  string    `json:"updatedAt"`
 }
 
 func FileResource(file *models.File) FileResponse {
 	return FileResponse{
-		Uuid:        file.Uuid,
-		ProjectUuid: file.ProjectUuid,
-		Name:        file.Name,
-		Size:        file.Size,
-		CreatedBy:   file.CreatedBy,
-		UpdatedBy:   file.UpdatedBy,
-		CreatedAt:   file.CreatedAt.Format("2006-01-02 15:04:05"),
-		UpdatedAt:   file.UpdatedAt.Format("2006-01-02 15:04:05"),
+		Uuid:       file.Uuid,
+		BucketUuid: file.BucketUuid,
+		Name:       file.Name,
+		Size:       file.Size,
+		CreatedBy:  file.CreatedBy,
+		UpdatedBy:  file.UpdatedBy,
+		CreatedAt:  file.CreatedAt.Format("2006-01-02 15:04:05"),
+		UpdatedAt:  file.UpdatedAt.Format("2006-01-02 15:04:05"),
 	}
 }
 
