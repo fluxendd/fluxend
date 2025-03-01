@@ -154,6 +154,10 @@ func (s *BucketServiceImpl) Delete(bucketUUID uuid.UUID, authUser models.AuthUse
 		return false, err
 	}
 
+	if bucket.TotalFiles > 0 {
+		return false, errs.NewUnprocessableError("bucket.error.deleteWithFiles")
+	}
+
 	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(bucket.ProjectUuid)
 	if err != nil {
 		return false, err
