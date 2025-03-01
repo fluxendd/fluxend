@@ -109,3 +109,7 @@ func PointerToString(s *string) string {
 
 	return *s
 }
+
+func BytesToKiloBytes(bytes int) int {
+	return bytes / 1024
+}

@@ -97,6 +97,12 @@ func (s *FileServiceImpl) Create(bucketUUID uuid.UUID, request *bucket_requests.
 		return models.File{}, err
 	}
 
+	fileSize := utils.BytesToKiloBytes(int(request.File.Size))
+
+	if fileSize > bucket.MaxFileSize {
+		return models.File{}, errs.NewUnprocessableError("file.error.sizeExceeded")
+	}
+
 	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(bucket.ProjectUuid)
 	if err != nil {
 		return models.File{}, err
@@ -114,7 +120,7 @@ func (s *FileServiceImpl) Create(bucketUUID uuid.UUID, request *bucket_requests.
 	file := models.File{
 		BucketUuid: bucketUUID,
 		Name:       request.Name,
-		Size:       int(request.File.Size),
+		Size:       fileSize,
 		MimeType:   request.File.Header.Get("Content-Type"),
 		Path:       request.Name,
 		CreatedBy:  authUser.Uuid,
