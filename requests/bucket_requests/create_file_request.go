@@ -3,16 +3,16 @@ package bucket_requests
 import (
 	"fluxton/configs"
 	"fluxton/requests"
-	"fluxton/utils"
 	"fmt"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/labstack/echo/v4"
-	"regexp"
+	"mime/multipart"
 )
 
 type CreateFileRequest struct {
 	requests.BaseRequest
-	Name string `json:"name"`
+	Name string                `json:"-" form:"name"`
+	File *multipart.FileHeader `json:"-" form:"file"`
 }
 
 func (r *CreateFileRequest) BindAndValidate(c echo.Context) []string {
@@ -33,10 +33,19 @@ func (r *CreateFileRequest) BindAndValidate(c echo.Context) []string {
 					configs.MaxBucketNameLength,
 				),
 			),
-			validation.Match(
+			/*validation.Match(
 				regexp.MustCompile(utils.AlphanumericWithSpaceUnderScoreAndDashPattern()),
-			).Error("File name must be alphanumeric with underscores, spaces and dashes")),
+			).Error("File name must be alphanumeric with underscores, spaces and dashes")*/),
+		validation.Field(&r.File, validation.By(fileRequired)),
 	)
 
 	return r.ExtractValidationErrors(err)
+}
+
+func fileRequired(value interface{}) error {
+	file, ok := value.(*multipart.FileHeader)
+	if !ok || file == nil {
+		return fmt.Errorf("file is required")
+	}
+	return nil
 }
