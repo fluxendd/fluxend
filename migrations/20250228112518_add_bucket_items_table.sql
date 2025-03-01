@@ -1,7 +1,7 @@
 -- +goose Up
 -- +goose StatementBegin
 CREATE TABLE storage.files (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    uuid UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     bucket_id UUID REFERENCES storage.buckets(uuid) ON DELETE CASCADE,
     name varchar NOT NULL,
     path TEXT NOT NULL,
@@ -9,7 +9,8 @@ CREATE TABLE storage.files (
     mime_type TEXT NOT NULL,
     created_by UUID NOT NULL REFERENCES authentication.users(uuid) ON DELETE CASCADE,
     updated_by UUID NOT NULL REFERENCES authentication.users(uuid) ON DELETE CASCADE,
-    created_at TIMESTAMP DEFAULT NOW()
+    created_at TIMESTAMP DEFAULT NOW(),
+    UNIQUE (bucket_id, path)
 );
 -- +goose StatementEnd
 
