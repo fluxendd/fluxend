@@ -11,7 +11,6 @@ type FileResponse struct {
 	FullFileName string    `json:"fullFileName"`
 	Size         int       `json:"size"` // in KB
 	MimeType     string    `json:"mimeType"`
-	Path         string    `json:"path"`
 	CreatedBy    uuid.UUID `json:"createdBy"`
 	UpdatedBy    uuid.UUID `json:"updatedBy"`
 	CreatedAt    string    `json:"createdAt"`
