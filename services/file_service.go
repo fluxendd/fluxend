@@ -171,11 +171,7 @@ func (s *FileServiceImpl) Rename(fileUUID, bucketUUID uuid.UUID, authUser models
 		return &models.File{}, errs.NewForbiddenError("file.error.updateForbidden")
 	}
 
-	file.FullFileName = request.FullFileName
-	file.UpdatedAt = time.Now()
-	file.UpdatedBy = authUser.Uuid
-
-	err = s.validateNameForDuplication(request.FullFileName, bucket.ProjectUuid)
+	err = s.validateNameForDuplication(request.FullFileName, bucket.Uuid)
 	if err != nil {
 		return &models.File{}, err
 	}
@@ -184,6 +180,10 @@ func (s *FileServiceImpl) Rename(fileUUID, bucketUUID uuid.UUID, authUser models
 	if err != nil {
 		return nil, err
 	}
+
+	file.FullFileName = request.FullFileName
+	file.UpdatedAt = time.Now()
+	file.UpdatedBy = authUser.Uuid
 
 	return s.fileRepo.Rename(&file)
 }
@@ -243,8 +243,8 @@ func (s *FileServiceImpl) getFileContents(request bucket_requests.CreateFileRequ
 	return fileBytes, nil
 }
 
-func (s *FileServiceImpl) validateNameForDuplication(name string, fileUUID uuid.UUID) error {
-	exists, err := s.fileRepo.ExistsByNameForBucket(name, fileUUID)
+func (s *FileServiceImpl) validateNameForDuplication(name string, bucketUUID uuid.UUID) error {
+	exists, err := s.fileRepo.ExistsByNameForBucket(name, bucketUUID)
 	if err != nil {
 		return err
 	}
