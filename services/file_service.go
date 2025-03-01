@@ -207,7 +207,19 @@ func (s *FileServiceImpl) Delete(fileUUID, bucketUUID uuid.UUID, authUser models
 		return false, err
 	}
 
-	return s.bucketRepo.Delete(bucketUUID)
+	fileDeleted, err := s.fileRepo.Delete(fileUUID)
+	if err != nil {
+		return false, err
+	}
+
+	if fileDeleted {
+		err = s.bucketRepo.DecrementTotalFiles(bucketUUID)
+		if err != nil {
+			return false, err
+		}
+	}
+
+	return fileDeleted, nil
 }
 
 func (s *FileServiceImpl) getFileContents(request bucket_requests.CreateFileRequest) ([]byte, error) {
