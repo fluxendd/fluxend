@@ -118,20 +118,24 @@ func (r *FileRepository) Create(file *models.File) (*models.File, error) {
 
 	query := `
     INSERT INTO storage.files (
-        name, path, size, mime_type, created_by
+        bucket_uuid, name, path, size, mime_type, created_by, updated_by, created_at, updated_at
     ) VALUES (
-        $1, $2, $3, $4, $5
+        $1, $2, $3, $4, $5, $6, $7, $8, $9
     )
     RETURNING uuid
 `
 
 	queryErr := tx.QueryRowx(
 		query,
+		file.BucketUuid,
 		file.Name,
 		file.Path,
 		file.Size,
 		file.MimeType,
 		file.CreatedBy,
+		file.UpdatedBy,
+		file.CreatedAt,
+		file.UpdatedAt,
 	).Scan(&file.Uuid)
 
 	if queryErr != nil {
