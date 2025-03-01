@@ -181,6 +181,11 @@ func (s *FileServiceImpl) Rename(fileUUID, bucketUUID uuid.UUID, authUser models
 		return &models.File{}, err
 	}
 
+	err = s.s3Service.RenameFile(bucket.AwsName, file.Path, request.Name)
+	if err != nil {
+		return nil, err
+	}
+
 	return s.fileRepo.Rename(&file)
 }
 
@@ -199,16 +204,12 @@ func (s *FileServiceImpl) Delete(fileUUID, bucketUUID uuid.UUID, authUser models
 		return false, errs.NewForbiddenError("file.error.deleteForbidden")
 	}
 
-	exists, err := s.fileRepo.ExistsByUUID(fileUUID)
+	file, err := s.fileRepo.GetByUUID(fileUUID)
 	if err != nil {
 		return false, err
 	}
 
-	if !exists {
-		return false, errs.NewNotFoundError("file.error.notFound")
-	}
-
-	err = s.s3Service.DeleteBucket(bucket.AwsName)
+	err = s.s3Service.DeleteFile(bucket.AwsName, file.Path)
 	if err != nil {
 		return false, err
 	}
