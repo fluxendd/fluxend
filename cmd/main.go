@@ -75,6 +75,7 @@ func registerRoutes(e *echo.Echo, container *do.Injector) {
 	formController := do.MustInvoke[*controllers.FormController](container)
 	formFieldController := do.MustInvoke[*controllers.FormFieldController](container)
 	bucketController := do.MustInvoke[*controllers.BucketController](container)
+	fileController := do.MustInvoke[*controllers.FileController](container)
 
 	userRepo := do.MustInvoke[*repositories.UserRepository](container)
 	authMiddleware := middlewares.AuthMiddleware(userRepo)
@@ -86,7 +87,7 @@ func registerRoutes(e *echo.Echo, container *do.Injector) {
 	routes.RegisterProjectRoutes(e, authMiddleware, projectController)
 	routes.RegisterTableRoutes(e, authMiddleware, tableController, columnController, indexController)
 	routes.RegisterFormRoutes(e, authMiddleware, formController, formFieldController)
-	routes.RegisterStorageRoutes(e, authMiddleware, bucketController)
+	routes.RegisterStorageRoutes(e, authMiddleware, bucketController, fileController)
 }
 
 // runSeeders runs all seeders defined in the seeders package
