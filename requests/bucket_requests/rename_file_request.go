@@ -10,7 +10,7 @@ import (
 
 type RenameFileRequest struct {
 	requests.BaseRequest
-	Name string `json:"name"`
+	FullFileName string `json:"full_file_name"`
 }
 
 func (r *RenameFileRequest) BindAndValidate(c echo.Context) []string {
@@ -20,7 +20,7 @@ func (r *RenameFileRequest) BindAndValidate(c echo.Context) []string {
 
 	err := validation.ValidateStruct(r,
 		validation.Field(
-			&r.Name,
+			&r.FullFileName,
 			validation.Required.Error("Name is required"),
 			validation.Length(
 				configs.MinBucketNameLength, configs.MaxBucketNameLength,
