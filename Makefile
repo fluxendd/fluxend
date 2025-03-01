@@ -38,3 +38,9 @@ login-fluxton: ## Login to fluxton container
 
 login-db: ## Login to database container
 	@docker exec -it fluxton_db /bin/bash
+
+postgrest-list: ## List all postgrest containers
+	@docker ps --filter "name=postgrest_" --format "table {{.ID}}\t{{.Names}}\t{{.Ports}}\t{{.CreatedAt}}\t{{.Status}}"
+
+postgrest-destroy: ## Destroy all postgrest containers
+	@docker rm -f $(shell docker ps -a -q --filter "name=postgrest_")
