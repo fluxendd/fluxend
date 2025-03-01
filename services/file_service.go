@@ -97,12 +97,6 @@ func (s *FileServiceImpl) Create(bucketUUID uuid.UUID, request *bucket_requests.
 		return models.File{}, err
 	}
 
-	fileSize := utils.BytesToKiloBytes(int(request.File.Size))
-
-	if fileSize > bucket.MaxFileSize {
-		return models.File{}, errs.NewUnprocessableError("file.error.sizeExceeded")
-	}
-
 	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(bucket.ProjectUuid)
 	if err != nil {
 		return models.File{}, err
@@ -112,7 +106,7 @@ func (s *FileServiceImpl) Create(bucketUUID uuid.UUID, request *bucket_requests.
 		return models.File{}, errs.NewForbiddenError("file.error.createForbidden")
 	}
 
-	err = s.validateNameForDuplication(request.FullFileName, bucketUUID)
+	err = s.validate(request, bucket)
 	if err != nil {
 		return models.File{}, err
 	}
@@ -120,7 +114,7 @@ func (s *FileServiceImpl) Create(bucketUUID uuid.UUID, request *bucket_requests.
 	file := models.File{
 		BucketUuid:   bucketUUID,
 		FullFileName: request.FullFileName,
-		Size:         fileSize,
+		Size:         utils.BytesToKiloBytes(int(request.File.Size)),
 		MimeType:     request.File.Header.Get("Content-Type"),
 		CreatedBy:    authUser.Uuid,
 		UpdatedBy:    authUser.Uuid,
@@ -241,6 +235,44 @@ func (s *FileServiceImpl) getFileContents(request bucket_requests.CreateFileRequ
 	}
 
 	return fileBytes, nil
+}
+
+func (s *FileServiceImpl) validate(request *bucket_requests.CreateFileRequest, bucket models.Bucket) error {
+	fileSize := utils.BytesToKiloBytes(int(request.File.Size))
+
+	err := s.validateMimeType(request.File.Header.Get("Content-Type"), bucket)
+	if err != nil {
+		return err
+	}
+
+	err = s.validateFileSize(fileSize, bucket)
+	if err != nil {
+		return err
+	}
+
+	err = s.validateNameForDuplication(request.FullFileName, bucket.Uuid)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *FileServiceImpl) validateMimeType(mimeType string, bucket models.Bucket) error {
+	// TODO: implement mime type validation
+	// if !bucket.AllowedMimeTypes[mimeType] {
+	//	return errs.NewUnprocessableError("file.error.invalidMimeType")
+	// }
+
+	return nil
+}
+
+func (s *FileServiceImpl) validateFileSize(fileSize int, bucket models.Bucket) error {
+	if fileSize > bucket.MaxFileSize {
+		return errs.NewUnprocessableError("file.error.sizeExceeded")
+	}
+
+	return nil
 }
 
 func (s *FileServiceImpl) validateNameForDuplication(name string, bucketUUID uuid.UUID) error {
