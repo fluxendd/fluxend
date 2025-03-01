@@ -15,4 +15,10 @@ const (
 	MaxFormFieldLabelLength       = 100
 	MinFormFieldDescriptionLength = 0
 	MaxFormFieldDescriptionLength = 255
+	MinBucketNameLength           = 3
+	MaxBucketNameLength           = 63
+	MinBucketDescriptionLength    = 0
+	MaxBucketDescriptionLength    = 255
+	MinFileNameLength             = 3
+	MaxFileNameLength             = 63
 )

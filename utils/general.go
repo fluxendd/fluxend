@@ -101,3 +101,11 @@ func GetColumns[T any]() string {
 
 	return strings.Join(columns, ", ")
 }
+
+func PointerToString(s *string) string {
+	if s == nil {
+		return ""
+	}
+
+	return *s
+}

@@ -14,5 +14,5 @@ CREATE TABLE storage.files (
 
 -- +goose Down
 -- +goose StatementBegin
-SELECT 'down SQL query';
+DROP TABLE storage.files;
 -- +goose StatementEnd
