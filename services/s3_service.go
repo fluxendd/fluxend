@@ -200,6 +200,18 @@ func (s *S3ServiceImpl) DownloadFile(bucketName, filePath string) ([]byte, error
 	return fileBytes, nil
 }
 
+func (s *S3ServiceImpl) DeleteFile(bucketName, filePath string) error {
+	_, err := s.client.DeleteObject(context.Background(), &s3.DeleteObjectInput{
+		Bucket: aws.String(bucketName),
+		Key:    aws.String(filePath),
+	})
+	if err != nil {
+		return fmt.Errorf("unable to delete file %q, %v", filePath, err)
+	}
+
+	return nil
+}
+
 func (s *S3ServiceImpl) transformError(err error) error {
 	if err == nil {
 		return nil
