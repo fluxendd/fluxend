@@ -167,6 +167,11 @@ func (s *BucketServiceImpl) Delete(bucketUUID uuid.UUID, authUser models.AuthUse
 		return false, errs.NewForbiddenError("bucket.error.deleteForbidden")
 	}
 
+	err = s.s3Service.DeleteBucket(bucket.AwsName)
+	if err != nil {
+		return false, err
+	}
+
 	return s.bucketRepo.Delete(bucketUUID)
 }
 
