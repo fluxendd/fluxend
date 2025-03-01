@@ -9,8 +9,11 @@ type Bucket struct {
 	Uuid        uuid.UUID `db:"uuid" json:"uuid"`
 	ProjectUuid uuid.UUID `db:"project_uuid" json:"projectUuid"`
 	Name        string    `db:"name" json:"name"`
+	AwsName     string    `db:"aws_name" json:"awsName"`
 	Description string    `db:"description" json:"description"`
 	IsPublic    bool      `db:"is_public" json:"isPublic"`
+	TotalFiles  int       `db:"total_files" json:"totalFiles"`
+	Url         string    `db:"url" json:"url"`
 	CreatedBy   uuid.UUID `db:"created_by" json:"createdBy"`
 	UpdatedBy   uuid.UUID `db:"updated_by" json:"updatedBy"`
 	CreatedAt   time.Time `db:"created_at" json:"createdAt"`
