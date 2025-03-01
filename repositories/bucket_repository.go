@@ -118,9 +118,9 @@ func (r *BucketRepository) Create(bucket *models.Bucket) (*models.Bucket, error)
 
 	query := `
     INSERT INTO storage.buckets (
-        project_uuid, name, aws_name, description, is_public, url, created_by, updated_by
+        project_uuid, name, aws_name, description, is_public, url, max_file_size, created_by, updated_by
     ) VALUES (
-        $1, $2, $3, $4, $5, $6, $7, $8
+        $1, $2, $3, $4, $5, $6, $7, $8, $9
     )
     RETURNING uuid
 `
@@ -133,6 +133,7 @@ func (r *BucketRepository) Create(bucket *models.Bucket) (*models.Bucket, error)
 		bucket.Description,
 		bucket.IsPublic,
 		bucket.Url,
+		bucket.MaxFileSize,
 		bucket.CreatedBy,
 		bucket.UpdatedBy,
 	).Scan(&bucket.Uuid)

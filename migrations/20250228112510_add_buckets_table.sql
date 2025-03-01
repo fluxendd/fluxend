@@ -9,8 +9,9 @@ CREATE TABLE storage.buckets (
     aws_name varchar NOT NULL,
     description TEXT,
     is_public BOOLEAN DEFAULT FALSE,
-    total_files BIGINT DEFAULT 0,
     url varchar,
+    total_files BIGINT DEFAULT 0,
+    max_file_size BIGINT DEFAULT 2048,
     created_at TIMESTAMP DEFAULT now(),
     updated_at TIMESTAMP DEFAULT now(),
     UNIQUE (project_uuid, name)

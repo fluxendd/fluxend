@@ -15,6 +15,7 @@ type CreateRequest struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
 	IsPublic    bool   `json:"is_public"`
+	MaxFileSize int    `json:"max_file_size"`
 }
 
 func (r *CreateRequest) BindAndValidate(c echo.Context) []string {
@@ -39,6 +40,10 @@ func (r *CreateRequest) BindAndValidate(c echo.Context) []string {
 				regexp.MustCompile(utils.AlphanumericWithUnderscoreAndDashPattern()),
 			).Error("Bucket name must be alphanumeric with underscores and dashes")),
 		validation.Field(&r.IsPublic, validation.Required.Error("IsPublic is required")),
+		validation.Field(&r.MaxFileSize,
+			validation.Required.Error("MaxFileSize is required"),
+			validation.Min(1).Error("MaxFileSize must be a positive number"),
+		),
 		validation.Field(
 			&r.Description,
 			validation.Length(configs.MinBucketDescriptionLength, configs.MaxBucketDescriptionLength).Error(
