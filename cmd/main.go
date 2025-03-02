@@ -16,6 +16,16 @@ import (
 	"strings"
 )
 
+// @title Fluxton API
+// @version 1.0
+// @description Fluxton is backend as-a-service platform that allows you to build, deploy, and scale applications without managing infrastructure.
+
+// @contact.name API Support
+// @contact.url http://github.com/fluxton-io/fluxton
+// @contact.email chief@fluxton.io
+
+// @host fluxton.io/api
+// @BasePath /v2
 func main() {
 	mode := flag.String("cmd", "server", "Possible values: 'server', 'seed', 'routes'")
 	flag.Parse()
