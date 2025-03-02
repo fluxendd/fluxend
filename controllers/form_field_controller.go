@@ -21,6 +21,24 @@ func NewFormFieldController(injector *do.Injector) (*FormFieldController, error)
 	return &FormFieldController{formFieldService: formFieldService}, nil
 }
 
+// List retrieves all fields for a specific form
+//
+// @Summary List all fields for a form
+// @Description Retrieve a list of all fields in a specific form
+// @Tags fields
+//
+// @Accept json
+// @Produce json
+//
+// @Param Authorization header string true "Bearer Token"
+// @Param formId path string true "Form ID"
+//
+// @Success 200 {array} responses.Response{content=[]resources.FormFieldResponse} "List of fields"
+// @Failure 400 "Invalid input"
+// @Failure 401 "Unauthorized"
+// @Failure 500 "Internal server error"
+//
+// @Router /forms/{formId}/fields [get]
 func (ffc *FormFieldController) List(c echo.Context) error {
 	authUser, _ := utils.NewAuth(c).User()
 
@@ -53,6 +71,26 @@ func (ffc *FormFieldController) Show(c echo.Context) error {
 	return responses.SuccessResponse(c, resources.FormFieldResource(&formField))
 }
 
+// Store creates a new field for a form
+//
+// @Summary Create a new field for a form
+// @Description Add a new field to a form
+// @Tags fields
+//
+// @Accept json
+// @Produce json
+//
+// @Param Authorization header string true "Bearer Token"
+// @Param field body form_requests.CreateFormFieldsRequest true "Field details"
+// @Param formId path string true "Form ID"
+//
+// @Success 201 {object} responses.Response{content=resources.FormFieldResponse} "Field created"
+// @Failure 422 "Unprocessable entity"
+// @Failure 400 "Invalid input"
+// @Failure 401 "Unauthorized"
+// @Failure 500 "Internal server error"
+//
+// @Router /forms/{formId}/fields [post]
 func (ffc *FormFieldController) Store(c echo.Context) error {
 	var request form_requests.CreateFormFieldsRequest
 	if err := request.BindAndValidate(c); err != nil {
@@ -74,6 +112,27 @@ func (ffc *FormFieldController) Store(c echo.Context) error {
 	return responses.CreatedResponse(c, resources.FormFieldResourceCollection(formFields))
 }
 
+// Update updates an existing field
+//
+// @Summary Update an existing field
+// @Description Update the details of an existing field
+// @Tags fields
+//
+// @Accept json
+// @Produce json
+//
+// @Param Authorization header string true "Bearer Token"
+// @Param field body form_requests.UpdateFormFieldRequest true "Field details"
+// @Param formId path string true "Form ID"
+// @Param fieldId path string true "Field ID"
+//
+// @Success 200 {object} responses.Response{content=resources.FormFieldResponse} "Field updated"
+// @Failure 422 "Unprocessable entity"
+// @Failure 400 "Invalid input"
+// @Failure 401 "Unauthorized"
+// @Failure 500 "Internal server error"
+//
+// @Router /forms/{formId}/fields/{fieldId} [put]
 func (ffc *FormFieldController) Update(c echo.Context) error {
 	var request form_requests.UpdateFormFieldRequest
 	if err := request.BindAndValidate(c); err != nil {
@@ -100,6 +159,25 @@ func (ffc *FormFieldController) Update(c echo.Context) error {
 	return responses.SuccessResponse(c, resources.FormFieldResource(updatedFormField))
 }
 
+// Delete deletes a field from a form
+//
+// @Summary Delete a field from a form
+// @Description Remove a specific field from the form
+// @Tags fields
+//
+// @Accept json
+// @Produce json
+//
+// @Param Authorization header string true "Bearer Token"
+// @Param formId path string true "Form ID"
+// @Param fieldId path string true "Field ID"
+//
+// @Success 204 "Field deleted"
+// @Failure 400 "Invalid input"
+// @Failure 401 "Unauthorized"
+// @Failure 500 "Internal server error"
+//
+// @Router /forms/{formId}/fields/{fieldId} [delete]
 func (ffc *FormFieldController) Delete(c echo.Context) error {
 	authUser, _ := utils.NewAuth(c).User()
 
