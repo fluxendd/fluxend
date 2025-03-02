@@ -59,7 +59,7 @@ func InitializeContainer() *do.Injector {
 	do.Provide(injector, controllers.NewSettingController)
 	do.Provide(injector, controllers.NewHealthController)
 	do.Provide(injector, controllers.NewOrganizationController)
-	do.Provide(injector, controllers.NewOrganizationUserController)
+	do.Provide(injector, controllers.NewOrganizationMemberController)
 	do.Provide(injector, controllers.NewProjectController)
 	do.Provide(injector, controllers.NewTableController)
 	do.Provide(injector, controllers.NewColumnController)

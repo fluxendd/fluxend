@@ -79,7 +79,7 @@ func registerRoutes(e *echo.Echo, container *do.Injector) {
 	settingController := do.MustInvoke[*controllers.SettingController](container)
 	healthController := do.MustInvoke[*controllers.HealthController](container)
 	organizationController := do.MustInvoke[*controllers.OrganizationController](container)
-	organizationUserController := do.MustInvoke[*controllers.OrganizationUserController](container)
+	organizationUserController := do.MustInvoke[*controllers.OrganizationMemberController](container)
 	projectController := do.MustInvoke[*controllers.ProjectController](container)
 	tableController := do.MustInvoke[*controllers.TableController](container)
 	columnController := do.MustInvoke[*controllers.ColumnController](container)
