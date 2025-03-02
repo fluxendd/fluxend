@@ -1,7 +1,16 @@
 {
     "swagger": "2.0",
     "info": {
-        "contact": {}
+        "description": "Fluxton is backend as-a-service platform that allows you to build, deploy, and scale applications without managing infrastructure.",
+        "title": "Fluxton API",
+        "contact": {
+            "name": "API Support",
+            "url": "http://github.com/fluxton-io/fluxton",
+            "email": "chief@fluxton.io"
+        },
+        "version": "1.0"
     },
+    "host": "fluxton.io/api",
+    "basePath": "/v2",
     "paths": {}
 }
