@@ -1,5 +1,12 @@
 basePath: /v2
 definitions:
+  column_requests.CreateRequest:
+    properties:
+      columns:
+        items:
+          $ref: '#/definitions/types.TableColumn'
+        type: array
+    type: object
   organization_requests.CreateRequest:
     properties:
       name:
@@ -17,6 +24,27 @@ definitions:
       createdBy:
         type: string
       name:
+        type: string
+      updatedAt:
+        type: string
+      updatedBy:
+        type: string
+      uuid:
+        type: string
+    type: object
+  resources.TableResponse:
+    properties:
+      columns:
+        items:
+          $ref: '#/definitions/types.TableColumn'
+        type: array
+      createdAt:
+        type: string
+      createdBy:
+        type: string
+      name:
+        type: string
+      projectUuid:
         type: string
       updatedAt:
         type: string
@@ -52,6 +80,21 @@ definitions:
           type: string
         type: array
       success:
+        type: boolean
+    type: object
+  types.TableColumn:
+    properties:
+      default:
+        type: string
+      name:
+        type: string
+      notNull:
+        type: boolean
+      primary:
+        type: boolean
+      type:
+        type: string
+      unique:
         type: boolean
     type: object
 host: fluxton.io/api
@@ -324,48 +367,12 @@ paths:
               type: object
         "400":
           description: Invalid input
-          schema:
-            allOf:
-            - $ref: '#/definitions/responses.Response'
-            - properties:
-                content:
-                  type: object
-                success:
-                  type: boolean
-              type: object
         "401":
           description: Unauthorized
-          schema:
-            allOf:
-            - $ref: '#/definitions/responses.Response'
-            - properties:
-                content:
-                  type: object
-                success:
-                  type: boolean
-              type: object
         "422":
           description: Unprocessable entity
-          schema:
-            allOf:
-            - $ref: '#/definitions/responses.Response'
-            - properties:
-                content:
-                  type: object
-                success:
-                  type: boolean
-              type: object
         "500":
           description: Internal server error
-          schema:
-            allOf:
-            - $ref: '#/definitions/responses.Response'
-            - properties:
-                content:
-                  type: object
-                success:
-                  type: boolean
-              type: object
       summary: Create a user in an organization
       tags:
       - organizations
@@ -406,4 +413,145 @@ paths:
       summary: Delete a user from an organization
       tags:
       - organizations
+  /projects/{project_id}/tables/{table_id}/columns:
+    post:
+      consumes:
+      - application/json
+      description: Create new columns in a specified table within a project.
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Project ID
+        in: path
+        name: project_id
+        required: true
+        type: string
+      - description: Table ID
+        in: path
+        name: table_id
+        required: true
+        type: string
+      - description: Columns JSON
+        in: body
+        name: columns
+        required: true
+        schema:
+          $ref: '#/definitions/column_requests.CreateRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Columns created
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Response'
+            - properties:
+                content:
+                  $ref: '#/definitions/resources.TableResponse'
+              type: object
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "422":
+          description: Unprocessable entity
+        "500":
+          description: Internal server error
+      summary: Add new columns to a table
+      tags:
+      - columns
+    put:
+      consumes:
+      - application/json
+      description: Alter the data type of existing columns in a specified table.
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Project ID
+        in: path
+        name: project_id
+        required: true
+        type: string
+      - description: Table ID
+        in: path
+        name: table_id
+        required: true
+        type: string
+      - description: Updated column definitions
+        in: body
+        name: columns
+        required: true
+        schema:
+          $ref: '#/definitions/column_requests.CreateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Columns altered
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Response'
+            - properties:
+                content:
+                  $ref: '#/definitions/resources.TableResponse'
+              type: object
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "422":
+          description: Unprocessable entity
+        "500":
+          description: Internal server error
+      summary: Modify column types in a table
+      tags:
+      - columns
+  /projects/{project_id}/tables/{table_id}/columns/{column_name}:
+    delete:
+      consumes:
+      - application/json
+      description: Permanently delete a specific column from a given table.
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Project ID
+        in: path
+        name: project_id
+        required: true
+        type: string
+      - description: Table ID
+        in: path
+        name: table_id
+        required: true
+        type: string
+      - description: Column Name
+        in: path
+        name: column_name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Column deleted successfully
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "404":
+          description: Column not found
+        "500":
+          description: Internal server error
+      summary: Delete a column from a table
+      tags:
+      - columns
 swagger: "2.0"

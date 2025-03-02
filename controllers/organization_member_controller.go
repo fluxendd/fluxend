@@ -69,10 +69,10 @@ func (ouc *OrganizationMemberController) List(c echo.Context) error {
 // @Param user body organization_requests.MemberCreateRequest true "User ID JSON"
 //
 // @Success 201 {object} responses.Response{content=resources.UserResponse} "User created"
-// @Failure 422 {object} responses.Response{content=nil,success=bool} "Unprocessable entity"
-// @Failure 400 {object} responses.Response{content=nil,success=bool} "Invalid input"
-// @Failure 401 {object} responses.Response{content=nil,success=bool} "Unauthorized"
-// @Failure 500 {object} responses.Response{content=nil,success=bool} "Internal server error"
+// @Failure 422 "Unprocessable entity"
+// @Failure 400 "Invalid input"
+// @Failure 401 "Unauthorized"
+// @Failure 500 "Internal server error"
 //
 // @Router /organizations/{organization_id}/users [post]
 func (ouc *OrganizationMemberController) Store(c echo.Context) error {
