@@ -1,8 +1,28 @@
 basePath: /v2
 definitions:
+  organization_requests.CreateRequest:
+    properties:
+      name:
+        type: string
+    type: object
   organization_requests.MemberCreateRequest:
     properties:
       user_id:
+        type: string
+    type: object
+  resources.OrganizationResponse:
+    properties:
+      createdAt:
+        type: string
+      createdBy:
+        type: string
+      name:
+        type: string
+      updatedAt:
+        type: string
+      updatedBy:
+        type: string
+      uuid:
         type: string
     type: object
   resources.UserResponse:
@@ -45,6 +65,189 @@ info:
   title: Fluxton API
   version: "1.0"
 paths:
+  /organizations:
+    get:
+      consumes:
+      - application/json
+      description: Get all organizations
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of organizations
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Response'
+            - properties:
+                content:
+                  items:
+                    $ref: '#/definitions/resources.OrganizationResponse'
+                  type: array
+              type: object
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal server error
+      summary: List all organizations
+      tags:
+      - organizations
+    post:
+      consumes:
+      - application/json
+      description: Add a new organization
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Organization name
+        in: body
+        name: organization
+        required: true
+        schema:
+          $ref: '#/definitions/organization_requests.CreateRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Organization created
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Response'
+            - properties:
+                content:
+                  $ref: '#/definitions/resources.OrganizationResponse'
+              type: object
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "422":
+          description: Unprocessable entity
+        "500":
+          description: Internal server error
+      summary: Create a new organization
+      tags:
+      - organizations
+  /organizations/{organization_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Remove an organization
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Organization ID
+        in: path
+        name: organization_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Organization deleted
+          schema:
+            $ref: '#/definitions/responses.Response'
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal server error
+      summary: Delete an organization
+      tags:
+      - organizations
+    get:
+      consumes:
+      - application/json
+      description: Get details of a specific organization
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Organization ID
+        in: path
+        name: organization_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Organization details
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Response'
+            - properties:
+                content:
+                  $ref: '#/definitions/resources.OrganizationResponse'
+              type: object
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "422":
+          description: Unprocessable entity
+        "500":
+          description: Internal server error
+      summary: Show details of a single organization
+      tags:
+      - organizations
+    put:
+      consumes:
+      - application/json
+      description: Modify an existing organization's details
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Organization ID
+        in: path
+        name: organization_id
+        required: true
+        type: string
+      - description: Updated organization details
+        in: body
+        name: organization
+        required: true
+        schema:
+          $ref: '#/definitions/organization_requests.CreateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Organization updated
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Response'
+            - properties:
+                content:
+                  $ref: '#/definitions/resources.OrganizationResponse'
+              type: object
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "422":
+          description: Unprocessable entity
+        "500":
+          description: Internal server error
+      summary: Update an organization
+      tags:
+      - organizations
   /organizations/{organization_id}/users:
     get:
       consumes:
