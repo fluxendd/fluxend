@@ -1,4 +1,39 @@
 basePath: /v2
+definitions:
+  organization_requests.MemberCreateRequest:
+    properties:
+      user_id:
+        type: string
+    type: object
+  resources.UserResponse:
+    properties:
+      bio:
+        type: string
+      createdAt:
+        type: string
+      email:
+        type: string
+      roleId:
+        type: integer
+      status:
+        type: string
+      updatedAt:
+        type: string
+      username:
+        type: string
+      uuid:
+        type: string
+    type: object
+  responses.Response:
+    properties:
+      content: {}
+      errors:
+        items:
+          type: string
+        type: array
+      success:
+        type: boolean
+    type: object
 host: fluxton.io/api
 info:
   contact:
@@ -9,5 +44,163 @@ info:
     deploy, and scale applications without managing infrastructure.
   title: Fluxton API
   version: "1.0"
-paths: {}
+paths:
+  /organizations/{organization_id}/users:
+    get:
+      consumes:
+      - application/json
+      description: Get all users in an organization
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Organization ID
+        in: path
+        name: organization_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: User created
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Response'
+            - properties:
+                content:
+                  items:
+                    $ref: '#/definitions/resources.UserResponse'
+                  type: array
+              type: object
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "422":
+          description: Unprocessable entity
+        "500":
+          description: Internal server error
+      summary: List all users in an organization
+      tags:
+      - organizations
+    post:
+      consumes:
+      - application/json
+      description: Add a new user to an organization
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Organization ID
+        in: path
+        name: organization_id
+        required: true
+        type: string
+      - description: User ID JSON
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/organization_requests.MemberCreateRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: User created
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Response'
+            - properties:
+                content:
+                  $ref: '#/definitions/resources.UserResponse'
+              type: object
+        "400":
+          description: Invalid input
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Response'
+            - properties:
+                content:
+                  type: object
+                success:
+                  type: boolean
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Response'
+            - properties:
+                content:
+                  type: object
+                success:
+                  type: boolean
+              type: object
+        "422":
+          description: Unprocessable entity
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Response'
+            - properties:
+                content:
+                  type: object
+                success:
+                  type: boolean
+              type: object
+        "500":
+          description: Internal server error
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Response'
+            - properties:
+                content:
+                  type: object
+                success:
+                  type: boolean
+              type: object
+      summary: Create a user in an organization
+      tags:
+      - organizations
+  /organizations/{organization_id}/users/{user_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Remove a user from an organization
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Organization ID
+        in: path
+        name: organization_id
+        required: true
+        type: string
+      - description: User ID
+        in: path
+        name: user_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: User deleted
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "422":
+          description: Unprocessable entity
+        "500":
+          description: Internal server error
+      summary: Delete a user from an organization
+      tags:
+      - organizations
 swagger: "2.0"
