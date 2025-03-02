@@ -17,6 +17,17 @@ definitions:
       user_id:
         type: string
     type: object
+  requests.IndexCreateRequest:
+    properties:
+      columns:
+        items:
+          type: string
+        type: array
+      is_unique:
+        type: boolean
+      name:
+        type: string
+    type: object
   resources.OrganizationResponse:
     properties:
       createdAt:
@@ -554,4 +565,184 @@ paths:
       summary: Delete a column from a table
       tags:
       - columns
+  /projects/{project_id}/tables/{table_id}/indexes:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a list of indexes for a given table.
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Project ID
+        in: path
+        name: project_id
+        required: true
+        type: string
+      - description: Table ID
+        in: path
+        name: table_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of indexes
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Response'
+            - properties:
+                content:
+                  items: {}
+                  type: array
+              type: object
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal server error
+      summary: List indexes for a table
+      tags:
+      - indexes
+    post:
+      consumes:
+      - application/json
+      description: Add an index to a specified table within a project.
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Project ID
+        in: path
+        name: project_id
+        required: true
+        type: string
+      - description: Table ID
+        in: path
+        name: table_id
+        required: true
+        type: string
+      - description: Index details JSON
+        in: body
+        name: index
+        required: true
+        schema:
+          $ref: '#/definitions/requests.IndexCreateRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Index created
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Response'
+            - properties:
+                content: {}
+              type: object
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "422":
+          description: Unprocessable entity
+        "500":
+          description: Internal server error
+      summary: Create a new index
+      tags:
+      - indexes
+  /projects/{project_id}/tables/{table_id}/indexes/{index_name}:
+    delete:
+      consumes:
+      - application/json
+      description: Remove an existing index from a given table.
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Project ID
+        in: path
+        name: project_id
+        required: true
+        type: string
+      - description: Table ID
+        in: path
+        name: table_id
+        required: true
+        type: string
+      - description: Index Name
+        in: path
+        name: index_name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Index deleted successfully
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "404":
+          description: Index not found
+        "500":
+          description: Internal server error
+      summary: Delete an index from a table
+      tags:
+      - indexes
+    get:
+      consumes:
+      - application/json
+      description: Retrieve details for a specific index in a table.
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Project ID
+        in: path
+        name: project_id
+        required: true
+        type: string
+      - description: Table ID
+        in: path
+        name: table_id
+        required: true
+        type: string
+      - description: Index Name
+        in: path
+        name: index_name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Index details
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Response'
+            - properties:
+                content: {}
+              type: object
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "404":
+          description: Index not found
+        "500":
+          description: Internal server error
+      summary: Show details of a specific index
+      tags:
+      - indexes
 swagger: "2.0"
