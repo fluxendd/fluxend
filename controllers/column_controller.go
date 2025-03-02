@@ -127,7 +127,6 @@ func (cc *ColumnController) Alter(c echo.Context) error {
 // @Failure 500 "Internal server error"
 //
 // @Router /projects/{project_id}/tables/{table_id}/columns/{column_name} [put]
-
 func (cc *ColumnController) Rename(c echo.Context) error {
 	var request column_requests.RenameRequest
 	if err := request.BindAndValidate(c); err != nil {
