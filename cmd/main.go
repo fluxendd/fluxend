@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	_ "fluxton/cmd/docs"
 	"fluxton/controllers"
 	"fluxton/database/seeders"
 	"fluxton/middlewares"
@@ -13,6 +14,7 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/gommon/log"
 	"github.com/samber/do"
+	echoSwagger "github.com/swaggo/echo-swagger"
 	"strings"
 )
 
@@ -98,6 +100,8 @@ func registerRoutes(e *echo.Echo, container *do.Injector) {
 	routes.RegisterTableRoutes(e, authMiddleware, tableController, columnController, indexController)
 	routes.RegisterFormRoutes(e, authMiddleware, formController, formFieldController)
 	routes.RegisterStorageRoutes(e, authMiddleware, bucketController, fileController)
+
+	e.GET("/docs/*", echoSwagger.WrapHandler)
 }
 
 // runSeeders runs all seeders defined in the seeders package
