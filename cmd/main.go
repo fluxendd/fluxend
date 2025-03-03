@@ -55,7 +55,7 @@ func handleMode(container *do.Injector, mode string) {
 func startServer(container *do.Injector) {
 	e := setupServer(container)
 
-	e.Logger.Fatal(e.Start(":8080"))
+	e.Logger.Fatal(e.Start(":80"))
 }
 
 // setupServer sets up the Echo server with controllers, routes, and middleware

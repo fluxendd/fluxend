@@ -5,13 +5,32 @@ services:
     image: postgres:latest
     container_name: fluxton_db
     environment:
-      - POSTGRES_USER=${DATABASE_USER:-postgres}  # Fallback to 'postgres' if not set
-      - POSTGRES_PASSWORD=${DATABASE_PASSWORD:-yourpassword}  # Fallback to 'yourpassword' if not set
-      - POSTGRES_DB=${DATABASE_NAME:-fluxton_db}  # Fallback to 'fluxton_db' if not set
+      - POSTGRES_USER=${DATABASE_USER:-postgres}
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD:-yourpassword}
+      - POSTGRES_DB=${DATABASE_NAME:-fluxton_db}
     volumes:
       - fluxton_db_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
+    networks:
+      - fluxton_network
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "${DATABASE_USER:-postgres}" ]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 5s
+
+  fluxton_app:
+    build:
+      context: .
+    container_name: fluxton_app
+    environment:
+      - DATABASE_URL=postgres://${DATABASE_USER:-postgres}:${DATABASE_PASSWORD:-yourpassword}@fluxton_db:5432/${DATABASE_NAME:-fluxton_db}
+    ports: # on port 80
+        - "80:80"
+    depends_on:
+      - fluxton_db  # Ensures the database is started before the Go app
     networks:
       - fluxton_network
 
