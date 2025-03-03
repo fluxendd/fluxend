@@ -1,0 +1,2468 @@
+basePath: /v2
+definitions:
+  bucket_requests.CreateFileRequest:
+    type: object
+  bucket_requests.CreateRequest:
+    properties:
+      description:
+        type: string
+      is_public:
+        type: boolean
+      max_file_size:
+        type: integer
+      name:
+        type: string
+    type: object
+  bucket_requests.RenameFileRequest:
+    properties:
+      full_file_name:
+        type: string
+    type: object
+  column_requests.CreateRequest:
+    properties:
+      columns:
+        items:
+          $ref: '#/definitions/types.TableColumn'
+        type: array
+    type: object
+  column_requests.RenameRequest:
+    properties:
+      name:
+        type: string
+    type: object
+  form_requests.CreateFormFieldsRequest:
+    properties:
+      fields:
+        items:
+          $ref: '#/definitions/form_requests.FieldRequest'
+        type: array
+    type: object
+  form_requests.CreateRequest:
+    properties:
+      description:
+        type: string
+      name:
+        type: string
+    type: object
+  form_requests.FieldRequest:
+    properties:
+      description:
+        type: string
+      is_required:
+        type: boolean
+      label:
+        type: string
+      options:
+        description: Optional for select/radio types
+        type: string
+      type:
+        type: string
+    type: object
+  form_requests.UpdateFormFieldRequest:
+    properties:
+      description:
+        type: string
+      is_required:
+        type: boolean
+      label:
+        type: string
+      options:
+        description: Optional for select/radio types
+        type: string
+      type:
+        type: string
+    type: object
+  organization_requests.CreateRequest:
+    properties:
+      name:
+        type: string
+    type: object
+  organization_requests.MemberCreateRequest:
+    properties:
+      user_id:
+        type: string
+    type: object
+  project_requests.CreateRequest:
+    properties:
+      name:
+        type: string
+      organization_uuid:
+        type: string
+    type: object
+  project_requests.UpdateRequest:
+    properties:
+      name:
+        type: string
+    type: object
+  requests.IndexCreateRequest:
+    properties:
+      columns:
+        items:
+          type: string
+        type: array
+      is_unique:
+        type: boolean
+      name:
+        type: string
+    type: object
+  resources.BucketResponse:
+    properties:
+      createdAt:
+        type: string
+      createdBy:
+        type: string
+      description:
+        type: string
+      isPublic:
+        type: boolean
+      maxFileSize:
+        type: integer
+      name:
+        type: string
+      projectUuid:
+        type: string
+      totalFiles:
+        type: integer
+      updatedAt:
+        type: string
+      updatedBy:
+        type: string
+      url:
+        type: string
+      uuid:
+        type: string
+    type: object
+  resources.FileResponse:
+    properties:
+      bucketUuid:
+        type: string
+      createdAt:
+        type: string
+      createdBy:
+        type: string
+      fullFileName:
+        type: string
+      mimeType:
+        type: string
+      size:
+        description: in KB
+        type: integer
+      updatedAt:
+        type: string
+      updatedBy:
+        type: string
+      uuid:
+        type: string
+    type: object
+  resources.FormFieldResponse:
+    properties:
+      createdAt:
+        type: string
+      description:
+        type: string
+      formUuid:
+        type: string
+      isRequired:
+        type: boolean
+      label:
+        type: string
+      options:
+        type: string
+      type:
+        type: string
+      updatedAt:
+        type: string
+      uuid:
+        type: string
+    type: object
+  resources.FormResponse:
+    properties:
+      createdAt:
+        type: string
+      createdB:
+        type: string
+      description:
+        type: string
+      name:
+        type: string
+      projectUuid:
+        type: string
+      updatedAt:
+        type: string
+      updatedBy:
+        type: string
+      uuid:
+        type: string
+    type: object
+  resources.OrganizationResponse:
+    properties:
+      createdAt:
+        type: string
+      createdBy:
+        type: string
+      name:
+        type: string
+      updatedAt:
+        type: string
+      updatedBy:
+        type: string
+      uuid:
+        type: string
+    type: object
+  resources.ProjectResponse:
+    properties:
+      createdAt:
+        type: string
+      createdBy:
+        type: string
+      dbName:
+        type: string
+      name:
+        type: string
+      organizationUuid:
+        type: string
+      updatedAt:
+        type: string
+      updatedBy:
+        type: string
+      uuid:
+        type: string
+    type: object
+  resources.TableResponse:
+    properties:
+      columns:
+        items:
+          $ref: '#/definitions/types.TableColumn'
+        type: array
+      createdAt:
+        type: string
+      createdBy:
+        type: string
+      name:
+        type: string
+      projectUuid:
+        type: string
+      updatedAt:
+        type: string
+      updatedBy:
+        type: string
+      uuid:
+        type: string
+    type: object
+  resources.UserResponse:
+    properties:
+      bio:
+        type: string
+      createdAt:
+        type: string
+      email:
+        type: string
+      roleId:
+        type: integer
+      status:
+        type: string
+      updatedAt:
+        type: string
+      username:
+        type: string
+      uuid:
+        type: string
+    type: object
+  responses.Response:
+    properties:
+      content: {}
+      errors:
+        items:
+          type: string
+        type: array
+      success:
+        type: boolean
+    type: object
+  table_requests.CreateRequest:
+    properties:
+      columns:
+        items:
+          $ref: '#/definitions/types.TableColumn'
+        type: array
+      name:
+        type: string
+    type: object
+  table_requests.RenameRequest:
+    properties:
+      name:
+        type: string
+    type: object
+  types.TableColumn:
+    properties:
+      default:
+        type: string
+      name:
+        type: string
+      notNull:
+        type: boolean
+      primary:
+        type: boolean
+      type:
+        type: string
+      unique:
+        type: boolean
+    type: object
+  user_requests.CreateRequest:
+    properties:
+      bio:
+        type: string
+      email:
+        type: string
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  user_requests.LoginRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  user_requests.UpdateRequest:
+    properties:
+      bio:
+        type: string
+    type: object
+host: fluxton.io/api
+info:
+  contact:
+    email: chief@fluxton.io
+    name: API Support
+    url: http://github.com/fluxton-io/fluxton
+  description: Fluxton is backend as-a-service platform that allows you to build,
+    deploy, and scale applications without managing infrastructure.
+  title: Fluxton API
+  version: "1.0"
+paths:
+  /buckets/{bucketUUID}/files:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a list of all files in a specific bucket
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Bucket UUID
+        in: path
+        name: bucketUUID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of files
+          schema:
+            items:
+              allOf:
+              - $ref: '#/definitions/responses.Response'
+              - properties:
+                  content:
+                    items:
+                      $ref: '#/definitions/resources.FileResponse'
+                    type: array
+                type: object
+            type: array
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal server error
+      summary: List all files in a bucket
+      tags:
+      - files
+    post:
+      consumes:
+      - application/json
+      description: Create a new file in a specific bucket
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Bucket UUID
+        in: path
+        name: bucketUUID
+        required: true
+        type: string
+      - description: File details
+        in: body
+        name: file
+        required: true
+        schema:
+          $ref: '#/definitions/bucket_requests.CreateFileRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: File details
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Response'
+            - properties:
+                content:
+                  $ref: '#/definitions/resources.FileResponse'
+              type: object
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal server error
+      summary: Create a new file
+      tags:
+      - files
+  /buckets/{bucketUUID}/files/{fileUUID}:
+    delete:
+      consumes:
+      - application/json
+      description: Permanently remove a specific file from a bucket
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Bucket UUID
+        in: path
+        name: bucketUUID
+        required: true
+        type: string
+      - description: File UUID
+        in: path
+        name: fileUUID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: File deleted
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal server error
+      summary: Delete a file
+      tags:
+      - files
+    get:
+      consumes:
+      - application/json
+      description: Get details of a specific file
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Bucket UUID
+        in: path
+        name: bucketUUID
+        required: true
+        type: string
+      - description: File UUID
+        in: path
+        name: fileUUID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: File details
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Response'
+            - properties:
+                content:
+                  $ref: '#/definitions/resources.FileResponse'
+              type: object
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal server error
+      summary: Show details of a single file
+      tags:
+      - files
+  /buckets/{bucketUUID}/files/{fileUUID}/rename:
+    put:
+      consumes:
+      - application/json
+      description: Update the name of a specific file. In other words, moves the file
+        to a new location.
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Bucket UUID
+        in: path
+        name: bucketUUID
+        required: true
+        type: string
+      - description: File UUID
+        in: path
+        name: fileUUID
+        required: true
+        type: string
+      - description: New file name
+        in: body
+        name: file
+        required: true
+        schema:
+          $ref: '#/definitions/bucket_requests.RenameFileRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: File details
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Response'
+            - properties:
+                content:
+                  $ref: '#/definitions/resources.FileResponse'
+              type: object
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal server error
+      summary: Rename a file
+      tags:
+      - files
+  /forms:
+    post:
+      consumes:
+      - application/json
+      description: Add a new form with a name and description
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Form name and description
+        in: body
+        name: form
+        required: true
+        schema:
+          $ref: '#/definitions/form_requests.CreateRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Form created
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Response'
+            - properties:
+                content:
+                  $ref: '#/definitions/resources.FormResponse'
+              type: object
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "422":
+          description: Unprocessable entity
+        "500":
+          description: Internal server error
+      summary: Create a new form
+      tags:
+      - forms
+  /forms/{formUUID}:
+    delete:
+      consumes:
+      - application/json
+      description: Remove a form from the project
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Form UUID
+        in: path
+        name: formUUID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Form deleted
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal server error
+      summary: Delete a form
+      tags:
+      - forms
+    get:
+      consumes:
+      - application/json
+      description: Get details of a specific form
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Form UUID
+        in: path
+        name: formUUID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Form details
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Response'
+            - properties:
+                content:
+                  $ref: '#/definitions/resources.FormResponse'
+              type: object
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal server error
+      summary: Show details of a single form
+      tags:
+      - forms
+    put:
+      consumes:
+      - application/json
+      description: Update form details such as name and description
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Form name and description
+        in: body
+        name: form
+        required: true
+        schema:
+          $ref: '#/definitions/form_requests.CreateRequest'
+      - description: Form UUID
+        in: path
+        name: formUUID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Form updated
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Response'
+            - properties:
+                content:
+                  $ref: '#/definitions/resources.FormResponse'
+              type: object
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "422":
+          description: Unprocessable entity
+        "500":
+          description: Internal server error
+      summary: Update an existing form
+      tags:
+      - forms
+  /forms/{formUUID}/fields:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a list of all fields in a specific form
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Form UUID
+        in: path
+        name: formUUID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of fields
+          schema:
+            items:
+              allOf:
+              - $ref: '#/definitions/responses.Response'
+              - properties:
+                  content:
+                    items:
+                      $ref: '#/definitions/resources.FormFieldResponse'
+                    type: array
+                type: object
+            type: array
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal server error
+      summary: List all fields for a form
+      tags:
+      - fields
+    post:
+      consumes:
+      - application/json
+      description: Add a new field to a form
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Field details
+        in: body
+        name: field
+        required: true
+        schema:
+          $ref: '#/definitions/form_requests.CreateFormFieldsRequest'
+      - description: Form UUID
+        in: path
+        name: formUUID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Field created
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Response'
+            - properties:
+                content:
+                  $ref: '#/definitions/resources.FormFieldResponse'
+              type: object
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "422":
+          description: Unprocessable entity
+        "500":
+          description: Internal server error
+      summary: Create a new field for a form
+      tags:
+      - fields
+  /forms/{formUUID}/fields/{fieldUUID}:
+    delete:
+      consumes:
+      - application/json
+      description: Remove a specific field from the form
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Form UUID
+        in: path
+        name: formUUID
+        required: true
+        type: string
+      - description: Field UUID
+        in: path
+        name: fieldUUID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Field deleted
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal server error
+      summary: Delete a field from a form
+      tags:
+      - fields
+    get:
+      consumes:
+      - application/json
+      description: Get details of a specific field
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Form UUID
+        in: path
+        name: formUUID
+        required: true
+        type: string
+      - description: Field UUID
+        in: path
+        name: fieldUUID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Field details
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Response'
+            - properties:
+                content:
+                  $ref: '#/definitions/resources.FormFieldResponse'
+              type: object
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal server error
+      summary: Show details of a single field
+      tags:
+      - fields
+    put:
+      consumes:
+      - application/json
+      description: Update the details of an existing field
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Field details
+        in: body
+        name: field
+        required: true
+        schema:
+          $ref: '#/definitions/form_requests.UpdateFormFieldRequest'
+      - description: Form UUID
+        in: path
+        name: formUUID
+        required: true
+        type: string
+      - description: Field UUID
+        in: path
+        name: fieldUUID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Field updated
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Response'
+            - properties:
+                content:
+                  $ref: '#/definitions/resources.FormFieldResponse'
+              type: object
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "422":
+          description: Unprocessable entity
+        "500":
+          description: Internal server error
+      summary: Update an existing field
+      tags:
+      - fields
+  /organizations:
+    get:
+      consumes:
+      - application/json
+      description: Get all organizations
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of organizations
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Response'
+            - properties:
+                content:
+                  items:
+                    $ref: '#/definitions/resources.OrganizationResponse'
+                  type: array
+              type: object
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal server error
+      summary: List all organizations
+      tags:
+      - organizations
+    post:
+      consumes:
+      - application/json
+      description: Add a new organization
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Organization name
+        in: body
+        name: organization
+        required: true
+        schema:
+          $ref: '#/definitions/organization_requests.CreateRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Organization created
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Response'
+            - properties:
+                content:
+                  $ref: '#/definitions/resources.OrganizationResponse'
+              type: object
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "422":
+          description: Unprocessable entity
+        "500":
+          description: Internal server error
+      summary: Create a new organization
+      tags:
+      - organizations
+  /organizations/{organization_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Remove an organization
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Organization ID
+        in: path
+        name: organization_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Organization deleted
+          schema:
+            $ref: '#/definitions/responses.Response'
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal server error
+      summary: Delete an organization
+      tags:
+      - organizations
+    get:
+      consumes:
+      - application/json
+      description: Get details of a specific organization
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Organization ID
+        in: path
+        name: organization_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Organization details
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Response'
+            - properties:
+                content:
+                  $ref: '#/definitions/resources.OrganizationResponse'
+              type: object
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "422":
+          description: Unprocessable entity
+        "500":
+          description: Internal server error
+      summary: Show details of a single organization
+      tags:
+      - organizations
+    put:
+      consumes:
+      - application/json
+      description: Modify an existing organization's details
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Organization ID
+        in: path
+        name: organization_id
+        required: true
+        type: string
+      - description: Updated organization details
+        in: body
+        name: organization
+        required: true
+        schema:
+          $ref: '#/definitions/organization_requests.CreateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Organization updated
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Response'
+            - properties:
+                content:
+                  $ref: '#/definitions/resources.OrganizationResponse'
+              type: object
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "422":
+          description: Unprocessable entity
+        "500":
+          description: Internal server error
+      summary: Update an organization
+      tags:
+      - organizations
+  /organizations/{organization_id}/users:
+    get:
+      consumes:
+      - application/json
+      description: Get all users in an organization
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Organization ID
+        in: path
+        name: organization_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: User created
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Response'
+            - properties:
+                content:
+                  items:
+                    $ref: '#/definitions/resources.UserResponse'
+                  type: array
+              type: object
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "422":
+          description: Unprocessable entity
+        "500":
+          description: Internal server error
+      summary: List all users in an organization
+      tags:
+      - organizations
+    post:
+      consumes:
+      - application/json
+      description: Add a new user to an organization
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Organization ID
+        in: path
+        name: organization_id
+        required: true
+        type: string
+      - description: User ID JSON
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/organization_requests.MemberCreateRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: User created
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Response'
+            - properties:
+                content:
+                  $ref: '#/definitions/resources.UserResponse'
+              type: object
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "422":
+          description: Unprocessable entity
+        "500":
+          description: Internal server error
+      summary: Create a user in an organization
+      tags:
+      - organizations
+  /organizations/{organization_id}/users/{user_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Remove a user from an organization
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Organization ID
+        in: path
+        name: organization_id
+        required: true
+        type: string
+      - description: User ID
+        in: path
+        name: user_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: User deleted
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "422":
+          description: Unprocessable entity
+        "500":
+          description: Internal server error
+      summary: Delete a user from an organization
+      tags:
+      - organizations
+  /projects:
+    get:
+      consumes:
+      - application/json
+      description: Get all projects for a specific organization
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Organization UUID
+        in: query
+        name: organizationUUID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of projects
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Response'
+            - properties:
+                content:
+                  items:
+                    $ref: '#/definitions/resources.ProjectResponse'
+                  type: array
+              type: object
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal server error
+      summary: List all projects
+      tags:
+      - projects
+    post:
+      consumes:
+      - application/json
+      description: Create a new project for a specific organization
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Organization UUID
+        in: query
+        name: organizationUUID
+        required: true
+        type: string
+      - description: Project name
+        in: body
+        name: name
+        required: true
+        schema:
+          $ref: '#/definitions/project_requests.CreateRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Project details
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Response'
+            - properties:
+                content:
+                  $ref: '#/definitions/resources.ProjectResponse'
+              type: object
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "422":
+          description: Unprocessable entity
+        "500":
+          description: Internal server error
+      summary: Create a new project
+      tags:
+      - projects
+  /projects/{project_id}/tables:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a list of tables in a specified project.
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Project ID
+        in: path
+        name: project_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of tables
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Response'
+            - properties:
+                content:
+                  items:
+                    $ref: '#/definitions/resources.TableResponse'
+                  type: array
+              type: object
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal server error
+      summary: List all tables
+      tags:
+      - tables
+    post:
+      consumes:
+      - application/json
+      description: Define and create a new table within a specified project.
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Project ID
+        in: path
+        name: project_id
+        required: true
+        type: string
+      - description: Table definition JSON
+        in: body
+        name: table
+        required: true
+        schema:
+          $ref: '#/definitions/table_requests.CreateRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Table created
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Response'
+            - properties:
+                content:
+                  $ref: '#/definitions/resources.TableResponse'
+              type: object
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "422":
+          description: Unprocessable entity
+        "500":
+          description: Internal server error
+      summary: Create a new table
+      tags:
+      - tables
+  /projects/{project_id}/tables/{table_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Permanently delete a specific table from a given project.
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Project ID
+        in: path
+        name: project_id
+        required: true
+        type: string
+      - description: Table ID
+        in: path
+        name: table_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Table deleted successfully
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "404":
+          description: Table not found
+        "500":
+          description: Internal server error
+      summary: Delete a table
+      tags:
+      - tables
+    get:
+      consumes:
+      - application/json
+      description: Retrieve details of a specific table within a project.
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Project ID
+        in: path
+        name: project_id
+        required: true
+        type: string
+      - description: Table ID
+        in: path
+        name: table_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Table details
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Response'
+            - properties:
+                content:
+                  $ref: '#/definitions/resources.TableResponse'
+              type: object
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "404":
+          description: Table not found
+        "500":
+          description: Internal server error
+      summary: Get table details
+      tags:
+      - tables
+  /projects/{project_id}/tables/{table_id}/columns:
+    post:
+      consumes:
+      - application/json
+      description: Create new columns in a specified table within a project.
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Project ID
+        in: path
+        name: project_id
+        required: true
+        type: string
+      - description: Table ID
+        in: path
+        name: table_id
+        required: true
+        type: string
+      - description: Columns JSON
+        in: body
+        name: columns
+        required: true
+        schema:
+          $ref: '#/definitions/column_requests.CreateRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Columns created
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Response'
+            - properties:
+                content:
+                  $ref: '#/definitions/resources.TableResponse'
+              type: object
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "422":
+          description: Unprocessable entity
+        "500":
+          description: Internal server error
+      summary: Add new columns to a table
+      tags:
+      - columns
+    put:
+      consumes:
+      - application/json
+      description: Alter the data type of existing columns in a specified table.
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Project ID
+        in: path
+        name: project_id
+        required: true
+        type: string
+      - description: Table ID
+        in: path
+        name: table_id
+        required: true
+        type: string
+      - description: Updated column definitions
+        in: body
+        name: columns
+        required: true
+        schema:
+          $ref: '#/definitions/column_requests.CreateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Columns altered
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Response'
+            - properties:
+                content:
+                  $ref: '#/definitions/resources.TableResponse'
+              type: object
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "422":
+          description: Unprocessable entity
+        "500":
+          description: Internal server error
+      summary: Modify column types in a table
+      tags:
+      - columns
+  /projects/{project_id}/tables/{table_id}/columns/{column_name}:
+    delete:
+      consumes:
+      - application/json
+      description: Permanently delete a specific column from a given table.
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Project ID
+        in: path
+        name: project_id
+        required: true
+        type: string
+      - description: Table ID
+        in: path
+        name: table_id
+        required: true
+        type: string
+      - description: Column Name
+        in: path
+        name: column_name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Column deleted successfully
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "404":
+          description: Column not found
+        "500":
+          description: Internal server error
+      summary: Delete a column from a table
+      tags:
+      - columns
+    put:
+      consumes:
+      - application/json
+      description: Change the name of a specific column in a given table.
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Project ID
+        in: path
+        name: project_id
+        required: true
+        type: string
+      - description: Table ID
+        in: path
+        name: table_id
+        required: true
+        type: string
+      - description: Existing Column Name
+        in: path
+        name: column_name
+        required: true
+        type: string
+      - description: New column name JSON
+        in: body
+        name: new_name
+        required: true
+        schema:
+          $ref: '#/definitions/column_requests.RenameRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Column renamed
+          schema:
+            $ref: '#/definitions/responses.Response'
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "422":
+          description: Unprocessable entity
+        "500":
+          description: Internal server error
+      summary: Rename a column in a table
+      tags:
+      - columns
+  /projects/{project_id}/tables/{table_id}/duplicate:
+    put:
+      consumes:
+      - application/json
+      description: Create a copy of a specified table within a project.
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Project ID
+        in: path
+        name: project_id
+        required: true
+        type: string
+      - description: Table ID
+        in: path
+        name: table_id
+        required: true
+        type: string
+      - description: Duplicate table name JSON
+        in: body
+        name: new_name
+        required: true
+        schema:
+          $ref: '#/definitions/table_requests.RenameRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Table duplicated
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Response'
+            - properties:
+                content:
+                  $ref: '#/definitions/resources.TableResponse'
+              type: object
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "422":
+          description: Unprocessable entity
+        "500":
+          description: Internal server error
+      summary: Duplicate a table
+      tags:
+      - tables
+  /projects/{project_id}/tables/{table_id}/indexes:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a list of indexes for a given table.
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Project ID
+        in: path
+        name: project_id
+        required: true
+        type: string
+      - description: Table ID
+        in: path
+        name: table_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of indexes
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Response'
+            - properties:
+                content:
+                  items: {}
+                  type: array
+              type: object
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal server error
+      summary: List indexes for a table
+      tags:
+      - indexes
+    post:
+      consumes:
+      - application/json
+      description: Add an index to a specified table within a project.
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Project ID
+        in: path
+        name: project_id
+        required: true
+        type: string
+      - description: Table ID
+        in: path
+        name: table_id
+        required: true
+        type: string
+      - description: Index details JSON
+        in: body
+        name: index
+        required: true
+        schema:
+          $ref: '#/definitions/requests.IndexCreateRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Index created
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Response'
+            - properties:
+                content: {}
+              type: object
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "422":
+          description: Unprocessable entity
+        "500":
+          description: Internal server error
+      summary: Create a new index
+      tags:
+      - indexes
+  /projects/{project_id}/tables/{table_id}/indexes/{index_name}:
+    delete:
+      consumes:
+      - application/json
+      description: Remove an existing index from a given table.
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Project ID
+        in: path
+        name: project_id
+        required: true
+        type: string
+      - description: Table ID
+        in: path
+        name: table_id
+        required: true
+        type: string
+      - description: Index Name
+        in: path
+        name: index_name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Index deleted successfully
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "404":
+          description: Index not found
+        "500":
+          description: Internal server error
+      summary: Delete an index from a table
+      tags:
+      - indexes
+    get:
+      consumes:
+      - application/json
+      description: Retrieve details for a specific index in a table.
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Project ID
+        in: path
+        name: project_id
+        required: true
+        type: string
+      - description: Table ID
+        in: path
+        name: table_id
+        required: true
+        type: string
+      - description: Index Name
+        in: path
+        name: index_name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Index details
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Response'
+            - properties:
+                content: {}
+              type: object
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "404":
+          description: Index not found
+        "500":
+          description: Internal server error
+      summary: Show details of a specific index
+      tags:
+      - indexes
+  /projects/{project_id}/tables/{table_id}/rename:
+    put:
+      consumes:
+      - application/json
+      description: Change the name of a specific table within a project.
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Project ID
+        in: path
+        name: project_id
+        required: true
+        type: string
+      - description: Table ID
+        in: path
+        name: table_id
+        required: true
+        type: string
+      - description: New table name JSON
+        in: body
+        name: new_name
+        required: true
+        schema:
+          $ref: '#/definitions/table_requests.RenameRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Table renamed
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Response'
+            - properties:
+                content:
+                  $ref: '#/definitions/resources.TableResponse'
+              type: object
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "422":
+          description: Unprocessable entity
+        "500":
+          description: Internal server error
+      summary: Rename a table
+      tags:
+      - tables
+  /projects/{projectID}:
+    delete:
+      consumes:
+      - application/json
+      description: Remove a project from the organization
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Project ID
+        in: path
+        name: projectID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Project deleted
+          schema:
+            $ref: '#/definitions/responses.Response'
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal server error
+      summary: Delete a project
+      tags:
+      - projects
+    get:
+      consumes:
+      - application/json
+      description: Get details of a specific project
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Project ID
+        in: path
+        name: projectID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Project details
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Response'
+            - properties:
+                content:
+                  $ref: '#/definitions/resources.ProjectResponse'
+              type: object
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "422":
+          description: Unprocessable entity
+        "500":
+          description: Internal server error
+      summary: Show details of a single project
+      tags:
+      - projects
+    put:
+      consumes:
+      - application/json
+      description: Update a project for a specific organization
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Project ID
+        in: path
+        name: projectID
+        required: true
+        type: string
+      - description: Project name
+        in: body
+        name: name
+        required: true
+        schema:
+          $ref: '#/definitions/project_requests.UpdateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Project details
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Response'
+            - properties:
+                content:
+                  $ref: '#/definitions/resources.ProjectResponse'
+              type: object
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "422":
+          description: Unprocessable entity
+        "500":
+          description: Internal server error
+      summary: Update a project
+      tags:
+      - projects
+  /projects/{projectId}/forms:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a list of all forms for the specified project
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Project ID
+        in: path
+        name: projectId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of forms
+          schema:
+            items:
+              allOf:
+              - $ref: '#/definitions/responses.Response'
+              - properties:
+                  content:
+                    items:
+                      $ref: '#/definitions/resources.FormResponse'
+                    type: array
+                type: object
+            type: array
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal server error
+      summary: List all forms
+      tags:
+      - forms
+  /projects/{projectUUID}/storage:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a list of buckets in a specified project.
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Project ID
+        in: path
+        name: projectUUID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of buckets
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Response'
+            - properties:
+                content:
+                  items:
+                    $ref: '#/definitions/resources.BucketResponse'
+                  type: array
+              type: object
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal server error
+      summary: List all buckets
+      tags:
+      - buckets
+    post:
+      consumes:
+      - application/json
+      description: Add a new bucket to a project
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Project UUID
+        in: path
+        name: projectUUID
+        required: true
+        type: string
+      - description: Bucket details
+        in: body
+        name: bucket
+        required: true
+        schema:
+          $ref: '#/definitions/bucket_requests.CreateRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Bucket created
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Response'
+            - properties:
+                content:
+                  $ref: '#/definitions/resources.BucketResponse'
+              type: object
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "422":
+          description: Unprocessable entity
+        "500":
+          description: Internal server error
+      summary: Create a new bucket
+      tags:
+      - buckets
+  /projects/{projectUUID}/storage/{bucketUUID}:
+    delete:
+      consumes:
+      - application/json
+      description: Remove a bucket from a project
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Bucket UUID
+        in: path
+        name: bucketUUID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Bucket deleted
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal server error
+      summary: Delete a bucket
+      tags:
+      - buckets
+    get:
+      consumes:
+      - application/json
+      description: Get details of a specific bucket
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Project UUID
+        in: path
+        name: projectUUID
+        required: true
+        type: string
+      - description: Bucket UUID
+        in: path
+        name: bucketUUID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Bucket details
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Response'
+            - properties:
+                content:
+                  $ref: '#/definitions/resources.BucketResponse'
+              type: object
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "422":
+          description: Unprocessable entity
+        "500":
+          description: Internal server error
+      summary: Show details of a single bucket
+      tags:
+      - buckets
+    put:
+      consumes:
+      - application/json
+      description: Modify an existing bucket's details
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Project UUID
+        in: path
+        name: projectUUID
+        required: true
+        type: string
+      - description: Bucket UUID
+        in: path
+        name: bucketUUID
+        required: true
+        type: string
+      - description: Bucket details
+        in: body
+        name: bucket
+        required: true
+        schema:
+          $ref: '#/definitions/bucket_requests.CreateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Bucket updated
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Response'
+            - properties:
+                content:
+                  $ref: '#/definitions/resources.BucketResponse'
+              type: object
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "422":
+          description: Unprocessable entity
+        "500":
+          description: Internal server error
+      summary: Update a bucket
+      tags:
+      - buckets
+  /users:
+    post:
+      consumes:
+      - application/json
+      description: Add a new user with a name, email, and password
+      parameters:
+      - description: User details
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/user_requests.CreateRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: User created
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Response'
+            - properties:
+                content:
+                  $ref: '#/definitions/resources.UserResponse'
+              type: object
+        "400":
+          description: Invalid input
+        "422":
+          description: Unprocessable entity
+        "500":
+          description: Internal server error
+      summary: Create a new user
+      tags:
+      - users
+  /users/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get details of a specific user
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: User UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User details
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Response'
+            - properties:
+                content:
+                  $ref: '#/definitions/resources.UserResponse'
+              type: object
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal server error
+      summary: Show details of a single user
+      tags:
+      - users
+  /users/{userUUID}:
+    put:
+      consumes:
+      - application/json
+      description: Update a user's details such as name, email, and password
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: User UUID
+        in: path
+        name: userUUID
+        required: true
+        type: string
+      - description: User details
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/user_requests.UpdateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User updated
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Response'
+            - properties:
+                content:
+                  $ref: '#/definitions/resources.UserResponse'
+              type: object
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "422":
+          description: Unprocessable entity
+        "500":
+          description: Internal server error
+      summary: Update a user
+      tags:
+      - users
+  /users/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate a user and return a JWT token
+      parameters:
+      - description: Login request
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/user_requests.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User details
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Response'
+            - properties:
+                content:
+                  $ref: '#/definitions/resources.UserResponse'
+              type: object
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal server error
+      summary: Authenticate a user
+      tags:
+      - users
+  /users/logout:
+    post:
+      consumes:
+      - application/json
+      description: Invalidate the JWT token to log out a user
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User logged out
+          schema:
+            $ref: '#/definitions/responses.Response'
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal server error
+      summary: Logout a user
+      tags:
+      - users
+swagger: "2.0"
