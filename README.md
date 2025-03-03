@@ -27,7 +27,7 @@ git clone https://github.com/fluxton-io/fluxton.git fluxton
 cd fluxton
 make setup
    ```
-This will start two Docker containers:
+This might take a while during first run. This will start two Docker containers:
 
 - **Database Container**: A Postgres database to store your data.
 - **Fluxton Server**: A backend server running on port 80.
