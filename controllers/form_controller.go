@@ -55,6 +55,24 @@ func (fc *FormController) List(c echo.Context) error {
 	return responses.SuccessResponse(c, resources.FormResourceCollection(forms))
 }
 
+// Show retrieves details of a specific form
+//
+// @Summary Show details of a single form
+// @Description Get details of a specific form
+// @Tags forms
+//
+// @Accept json
+// @Produce json
+//
+// @Param Authorization header string true "Bearer Token"
+// @Param formUUID path string true "Form UUID"
+//
+// @Success 200 {object} responses.Response{content=resources.FormResponse} "Form details"
+// @Failure 400 "Invalid input"
+// @Failure 401 "Unauthorized"
+// @Failure 500 "Internal server error"
+//
+// @Router /forms/{formUUID} [get]
 func (fc *FormController) Show(c echo.Context) error {
 	authUser, _ := utils.NewAuth(c).User()
 
@@ -127,7 +145,7 @@ func (fc *FormController) Store(c echo.Context) error {
 //
 // @Param Authorization header string true "Bearer Token"
 // @Param form body form_requests.CreateRequest true "Form name and description"
-// @Param formId path string true "Form ID"
+// @Param formUUID path string true "Form UUID"
 //
 // @Success 200 {object} responses.Response{content=resources.FormResponse} "Form updated"
 // @Failure 422 "Unprocessable entity"
@@ -135,7 +153,7 @@ func (fc *FormController) Store(c echo.Context) error {
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
 //
-// @Router /forms/{formId} [put]
+// @Router /forms/{formUUID} [put]
 func (fc *FormController) Update(c echo.Context) error {
 	var request form_requests.CreateRequest
 	if err := request.BindAndValidate(c); err != nil {
@@ -157,6 +175,24 @@ func (fc *FormController) Update(c echo.Context) error {
 	return responses.SuccessResponse(c, resources.FormResource(updatedForm))
 }
 
+// Delete removes a form
+//
+// @Summary Delete a form
+// @Description Remove a form from the project
+// @Tags forms
+//
+// @Accept json
+// @Produce json
+//
+// @Param Authorization header string true "Bearer Token"
+// @Param formUUID path string true "Form UUID"
+//
+// @Success 204 "Form deleted"
+// @Failure 400 "Invalid input"
+// @Failure 401 "Unauthorized"
+// @Failure 500 "Internal server error"
+//
+// @Router /forms/{formUUID} [delete]
 func (fc *FormController) Delete(c echo.Context) error {
 	authUser, _ := utils.NewAuth(c).User()
 
