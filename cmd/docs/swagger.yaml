@@ -1,5 +1,7 @@
 basePath: /v2
 definitions:
+  bucket_requests.CreateFileRequest:
+    type: object
   bucket_requests.CreateRequest:
     properties:
       description:
@@ -9,6 +11,11 @@ definitions:
       max_file_size:
         type: integer
       name:
+        type: string
+    type: object
+  bucket_requests.RenameFileRequest:
+    properties:
+      full_file_name:
         type: string
     type: object
   column_requests.CreateRequest:
@@ -109,6 +116,28 @@ definitions:
       updatedBy:
         type: string
       url:
+        type: string
+      uuid:
+        type: string
+    type: object
+  resources.FileResponse:
+    properties:
+      bucketUuid:
+        type: string
+      createdAt:
+        type: string
+      createdBy:
+        type: string
+      fullFileName:
+        type: string
+      mimeType:
+        type: string
+      size:
+        description: in KB
+        type: integer
+      updatedAt:
+        type: string
+      updatedBy:
         type: string
       uuid:
         type: string
@@ -258,6 +287,214 @@ info:
   title: Fluxton API
   version: "1.0"
 paths:
+  /buckets/{bucketUUID}/files:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a list of all files in a specific bucket
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Bucket UUID
+        in: path
+        name: bucketUUID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of files
+          schema:
+            items:
+              allOf:
+              - $ref: '#/definitions/responses.Response'
+              - properties:
+                  content:
+                    items:
+                      $ref: '#/definitions/resources.FileResponse'
+                    type: array
+                type: object
+            type: array
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal server error
+      summary: List all files in a bucket
+      tags:
+      - files
+    post:
+      consumes:
+      - application/json
+      description: Create a new file in a specific bucket
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Bucket UUID
+        in: path
+        name: bucketUUID
+        required: true
+        type: string
+      - description: File details
+        in: body
+        name: file
+        required: true
+        schema:
+          $ref: '#/definitions/bucket_requests.CreateFileRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: File details
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Response'
+            - properties:
+                content:
+                  $ref: '#/definitions/resources.FileResponse'
+              type: object
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal server error
+      summary: Create a new file
+      tags:
+      - files
+  /buckets/{bucketUUID}/files/{fileUUID}:
+    delete:
+      consumes:
+      - application/json
+      description: Permanently remove a specific file from a bucket
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Bucket UUID
+        in: path
+        name: bucketUUID
+        required: true
+        type: string
+      - description: File UUID
+        in: path
+        name: fileUUID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: File deleted
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal server error
+      summary: Delete a file
+      tags:
+      - files
+    get:
+      consumes:
+      - application/json
+      description: Get details of a specific file
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Bucket UUID
+        in: path
+        name: bucketUUID
+        required: true
+        type: string
+      - description: File UUID
+        in: path
+        name: fileUUID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: File details
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Response'
+            - properties:
+                content:
+                  $ref: '#/definitions/resources.FileResponse'
+              type: object
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal server error
+      summary: Show details of a single file
+      tags:
+      - files
+  /buckets/{bucketUUID}/files/{fileUUID}/rename:
+    put:
+      consumes:
+      - application/json
+      description: Update the name of a specific file. In other words, moves the file
+        to a new location.
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Bucket UUID
+        in: path
+        name: bucketUUID
+        required: true
+        type: string
+      - description: File UUID
+        in: path
+        name: fileUUID
+        required: true
+        type: string
+      - description: New file name
+        in: body
+        name: file
+        required: true
+        schema:
+          $ref: '#/definitions/bucket_requests.RenameFileRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: File details
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Response'
+            - properties:
+                content:
+                  $ref: '#/definitions/resources.FileResponse'
+              type: object
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal server error
+      summary: Rename a file
+      tags:
+      - files
   /forms:
     post:
       consumes:
