@@ -1,5 +1,16 @@
 basePath: /v2
 definitions:
+  bucket_requests.CreateRequest:
+    properties:
+      description:
+        type: string
+      is_public:
+        type: boolean
+      max_file_size:
+        type: integer
+      name:
+        type: string
+    type: object
   column_requests.CreateRequest:
     properties:
       columns:
@@ -73,6 +84,33 @@ definitions:
       is_unique:
         type: boolean
       name:
+        type: string
+    type: object
+  resources.BucketResponse:
+    properties:
+      createdAt:
+        type: string
+      createdBy:
+        type: string
+      description:
+        type: string
+      isPublic:
+        type: boolean
+      maxFileSize:
+        type: integer
+      name:
+        type: string
+      projectUuid:
+        type: string
+      totalFiles:
+        type: integer
+      updatedAt:
+        type: string
+      updatedBy:
+        type: string
+      url:
+        type: string
+      uuid:
         type: string
     type: object
   resources.FormFieldResponse:
@@ -1453,4 +1491,209 @@ paths:
       summary: List all forms
       tags:
       - forms
+  /projects/{projectUUID}/storage:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a list of buckets in a specified project.
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Project ID
+        in: path
+        name: projectUUID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of buckets
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Response'
+            - properties:
+                content:
+                  items:
+                    $ref: '#/definitions/resources.BucketResponse'
+                  type: array
+              type: object
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal server error
+      summary: List all buckets
+      tags:
+      - buckets
+    post:
+      consumes:
+      - application/json
+      description: Add a new bucket to a project
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Project UUID
+        in: path
+        name: projectUUID
+        required: true
+        type: string
+      - description: Bucket details
+        in: body
+        name: bucket
+        required: true
+        schema:
+          $ref: '#/definitions/bucket_requests.CreateRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Bucket created
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Response'
+            - properties:
+                content:
+                  $ref: '#/definitions/resources.BucketResponse'
+              type: object
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "422":
+          description: Unprocessable entity
+        "500":
+          description: Internal server error
+      summary: Create a new bucket
+      tags:
+      - buckets
+  /projects/{projectUUID}/storage/{bucketUUID}:
+    delete:
+      consumes:
+      - application/json
+      description: Remove a bucket from a project
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Bucket UUID
+        in: path
+        name: bucketUUID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Bucket deleted
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal server error
+      summary: Delete a bucket
+      tags:
+      - buckets
+    get:
+      consumes:
+      - application/json
+      description: Get details of a specific bucket
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Project UUID
+        in: path
+        name: projectUUID
+        required: true
+        type: string
+      - description: Bucket UUID
+        in: path
+        name: bucketUUID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Bucket details
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Response'
+            - properties:
+                content:
+                  $ref: '#/definitions/resources.BucketResponse'
+              type: object
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "422":
+          description: Unprocessable entity
+        "500":
+          description: Internal server error
+      summary: Show details of a single bucket
+      tags:
+      - buckets
+    put:
+      consumes:
+      - application/json
+      description: Modify an existing bucket's details
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Project UUID
+        in: path
+        name: projectUUID
+        required: true
+        type: string
+      - description: Bucket UUID
+        in: path
+        name: bucketUUID
+        required: true
+        type: string
+      - description: Bucket details
+        in: body
+        name: bucket
+        required: true
+        schema:
+          $ref: '#/definitions/bucket_requests.CreateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Bucket updated
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Response'
+            - properties:
+                content:
+                  $ref: '#/definitions/resources.BucketResponse'
+              type: object
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "422":
+          description: Unprocessable entity
+        "500":
+          description: Internal server error
+      summary: Update a bucket
+      tags:
+      - buckets
 swagger: "2.0"
