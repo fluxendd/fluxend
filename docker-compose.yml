@@ -28,7 +28,8 @@ services:
     ports: # on port 80
         - "80:80"
     depends_on:
-      - fluxton_db  # Ensures the database is started before the Go app
+      fluxton_db:
+        condition: service_healthy
     networks:
       - fluxton_network
 
