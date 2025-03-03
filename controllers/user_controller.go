@@ -20,6 +20,24 @@ func NewUserController(injector *do.Injector) (*UserController, error) {
 	return &UserController{userService: userService}, nil
 }
 
+// Show retrieves details of a specific user.
+//
+// @Summary Show details of a single user
+// @Description Get details of a specific user
+// @Tags users
+//
+// @Accept json
+// @Produce json
+//
+// @Param Authorization header string true "Bearer Token"
+// @Param id path string true "User UUID"
+//
+// @Success 200 {object} responses.Response{content=resources.UserResponse} "User details"
+// @Failure 400 "Invalid input"
+// @Failure 401 "Unauthorized"
+// @Failure 500 "Internal server error"
+//
+// @Router /users/{id} [get]
 func (uc *UserController) Show(c echo.Context) error {
 	id, err := utils.GetUUIDPathParam(c, "id", true)
 	if err != nil {
@@ -34,6 +52,23 @@ func (uc *UserController) Show(c echo.Context) error {
 	return responses.SuccessResponse(c, resources.UserResource(&user))
 }
 
+// Login authenticates a user and returns a JWT token.
+//
+// @Summary Authenticate a user
+// @Description Authenticate a user and return a JWT token
+// @Tags users
+//
+// @Accept json
+// @Produce json
+//
+// @Param user body user_requests.LoginRequest true "Login request"
+//
+// @Success 200 {object} responses.Response{content=resources.UserResponse} "User details"
+// @Failure 400 "Invalid input"
+// @Failure 401 "Unauthorized"
+// @Failure 500 "Internal server error"
+//
+// @Router /users/login [post]
 func (uc *UserController) Login(c echo.Context) error {
 	var request user_requests.LoginRequest
 	if err := c.Bind(&request); err != nil {
@@ -55,6 +90,23 @@ func (uc *UserController) Login(c echo.Context) error {
 	})
 }
 
+// Store creates a new user.
+//
+// @Summary Create a new user
+// @Description Add a new user with a name, email, and password
+// @Tags users
+//
+// @Accept json
+// @Produce json
+//
+// @Param user body user_requests.CreateRequest true "User details"
+//
+// @Success 201 {object} responses.Response{content=resources.UserResponse} "User created"
+// @Failure 422 "Unprocessable entity"
+// @Failure 400 "Invalid input"
+// @Failure 500 "Internal server error"
+//
+// @Router /users [post]
 func (uc *UserController) Store(c echo.Context) error {
 	var request user_requests.CreateRequest
 	if err := c.Bind(&request); err != nil {
@@ -73,6 +125,26 @@ func (uc *UserController) Store(c echo.Context) error {
 	return responses.CreatedResponse(c, resources.UserResource(&user))
 }
 
+// Update updates a user.
+//
+// @Summary Update a user
+// @Description Update a user's details such as name, email, and password
+// @Tags users
+//
+// @Accept json
+// @Produce json
+//
+// @Param Authorization header string true "Bearer Token"
+// @Param userUUID path string true "User UUID"
+// @Param user body user_requests.UpdateRequest true "User details"
+//
+// @Success 200 {object} responses.Response{content=resources.UserResponse} "User updated"
+// @Failure 422 "Unprocessable entity"
+// @Failure 400 "Invalid input"
+// @Failure 401 "Unauthorized"
+// @Failure 500 "Internal server error"
+//
+// @Router /users/{userUUID} [put]
 func (uc *UserController) Update(c echo.Context) error {
 	authUserUUID, err := utils.NewAuth(c).Uuid()
 	if err != nil {
@@ -97,6 +169,23 @@ func (uc *UserController) Update(c echo.Context) error {
 	return responses.SuccessResponse(c, resources.UserResource(updatedUser))
 }
 
+// Logout logs out a user by invalidating the JWT token.
+//
+// @Summary Logout a user
+// @Description Invalidate the JWT token to log out a user
+// @Tags users
+//
+// @Accept json
+// @Produce json
+//
+// @Param Authorization header string true "Bearer Token"
+//
+// @Success 200 {object} responses.Response{} "User logged out"
+// @Failure 400 "Invalid input"
+// @Failure 401 "Unauthorized"
+// @Failure 500 "Internal server error"
+//
+// @Router /users/logout [post]
 func (uc *UserController) Logout(c echo.Context) error {
 	userUUID, err := utils.NewAuth(c).Uuid()
 	if err != nil {
