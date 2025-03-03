@@ -28,7 +28,7 @@ lint-fix: ## Run linter and fix
 	@golangci-lint run --fix
 
 up: ## Start the project
-	@docker-compose up
+	@docker-compose up -d
 
 down: ## Stop the project
 	@docker-compose down
