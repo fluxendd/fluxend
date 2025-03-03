@@ -1,5 +1,5 @@
 # Variables
-include .env
+-include .env
 export
 DATABASE_CONNECTION="user=${DATABASE_USER} password=${DATABASE_PASSWORD} dbname=${DATABASE_NAME} host=${DATABASE_HOST} sslmode=${DATABASE_SSL_MODE}"
 
@@ -26,6 +26,10 @@ lint: ## Run linter
 
 lint-fix: ## Run linter and fix
 	@golangci-lint run --fix
+
+setup: ## Setup the project
+	cp .env.example .env
+	make up
 
 up: ## Start the project
 	@docker-compose up -d
