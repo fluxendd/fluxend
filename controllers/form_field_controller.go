@@ -31,14 +31,14 @@ func NewFormFieldController(injector *do.Injector) (*FormFieldController, error)
 // @Produce json
 //
 // @Param Authorization header string true "Bearer Token"
-// @Param formId path string true "Form ID"
+// @Param formUUID path string true "Form UUID"
 //
 // @Success 200 {array} responses.Response{content=[]resources.FormFieldResponse} "List of fields"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
 //
-// @Router /forms/{formId}/fields [get]
+// @Router /forms/{formUUID}/fields [get]
 func (ffc *FormFieldController) List(c echo.Context) error {
 	authUser, _ := utils.NewAuth(c).User()
 
@@ -55,6 +55,25 @@ func (ffc *FormFieldController) List(c echo.Context) error {
 	return responses.SuccessResponse(c, resources.FormFieldResourceCollection(formFields))
 }
 
+// Show retrieves details of a specific field
+//
+// @Summary Show details of a single field
+// @Description Get details of a specific field
+// @Tags fields
+//
+// @Accept json
+// @Produce json
+//
+// @Param Authorization header string true "Bearer Token"
+// @Param formUUID path string true "Form UUID"
+// @Param fieldUUID path string true "Field UUID"
+//
+// @Success 200 {object} responses.Response{content=resources.FormFieldResponse} "Field details"
+// @Failure 400 "Invalid input"
+// @Failure 401 "Unauthorized"
+// @Failure 500 "Internal server error"
+//
+// @Router /forms/{formUUID}/fields/{fieldUUID} [get]
 func (ffc *FormFieldController) Show(c echo.Context) error {
 	authUser, _ := utils.NewAuth(c).User()
 
@@ -82,7 +101,7 @@ func (ffc *FormFieldController) Show(c echo.Context) error {
 //
 // @Param Authorization header string true "Bearer Token"
 // @Param field body form_requests.CreateFormFieldsRequest true "Field details"
-// @Param formId path string true "Form ID"
+// @Param formUUID path string true "Form UUID"
 //
 // @Success 201 {object} responses.Response{content=resources.FormFieldResponse} "Field created"
 // @Failure 422 "Unprocessable entity"
@@ -90,7 +109,7 @@ func (ffc *FormFieldController) Show(c echo.Context) error {
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
 //
-// @Router /forms/{formId}/fields [post]
+// @Router /forms/{formUUID}/fields [post]
 func (ffc *FormFieldController) Store(c echo.Context) error {
 	var request form_requests.CreateFormFieldsRequest
 	if err := request.BindAndValidate(c); err != nil {
@@ -123,8 +142,8 @@ func (ffc *FormFieldController) Store(c echo.Context) error {
 //
 // @Param Authorization header string true "Bearer Token"
 // @Param field body form_requests.UpdateFormFieldRequest true "Field details"
-// @Param formId path string true "Form ID"
-// @Param fieldId path string true "Field ID"
+// @Param formUUID path string true "Form UUID"
+// @Param fieldUUID path string true "Field UUID"
 //
 // @Success 200 {object} responses.Response{content=resources.FormFieldResponse} "Field updated"
 // @Failure 422 "Unprocessable entity"
@@ -132,7 +151,7 @@ func (ffc *FormFieldController) Store(c echo.Context) error {
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
 //
-// @Router /forms/{formId}/fields/{fieldId} [put]
+// @Router /forms/{formUUID}/fields/{fieldUUID} [put]
 func (ffc *FormFieldController) Update(c echo.Context) error {
 	var request form_requests.UpdateFormFieldRequest
 	if err := request.BindAndValidate(c); err != nil {
@@ -169,15 +188,15 @@ func (ffc *FormFieldController) Update(c echo.Context) error {
 // @Produce json
 //
 // @Param Authorization header string true "Bearer Token"
-// @Param formId path string true "Form ID"
-// @Param fieldId path string true "Field ID"
+// @Param formUUID path string true "Form UUID"
+// @Param fieldUUID path string true "Field UUID"
 //
 // @Success 204 "Field deleted"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
 //
-// @Router /forms/{formId}/fields/{fieldId} [delete]
+// @Router /forms/{formUUID}/fields/{fieldUUID} [delete]
 func (ffc *FormFieldController) Delete(c echo.Context) error {
 	authUser, _ := utils.NewAuth(c).User()
 

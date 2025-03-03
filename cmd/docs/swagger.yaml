@@ -535,175 +535,6 @@ paths:
       summary: Create a new form
       tags:
       - forms
-  /forms/{formId}/fields:
-    get:
-      consumes:
-      - application/json
-      description: Retrieve a list of all fields in a specific form
-      parameters:
-      - description: Bearer Token
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      - description: Form ID
-        in: path
-        name: formId
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: List of fields
-          schema:
-            items:
-              allOf:
-              - $ref: '#/definitions/responses.Response'
-              - properties:
-                  content:
-                    items:
-                      $ref: '#/definitions/resources.FormFieldResponse'
-                    type: array
-                type: object
-            type: array
-        "400":
-          description: Invalid input
-        "401":
-          description: Unauthorized
-        "500":
-          description: Internal server error
-      summary: List all fields for a form
-      tags:
-      - fields
-    post:
-      consumes:
-      - application/json
-      description: Add a new field to a form
-      parameters:
-      - description: Bearer Token
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      - description: Field details
-        in: body
-        name: field
-        required: true
-        schema:
-          $ref: '#/definitions/form_requests.CreateFormFieldsRequest'
-      - description: Form ID
-        in: path
-        name: formId
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Field created
-          schema:
-            allOf:
-            - $ref: '#/definitions/responses.Response'
-            - properties:
-                content:
-                  $ref: '#/definitions/resources.FormFieldResponse'
-              type: object
-        "400":
-          description: Invalid input
-        "401":
-          description: Unauthorized
-        "422":
-          description: Unprocessable entity
-        "500":
-          description: Internal server error
-      summary: Create a new field for a form
-      tags:
-      - fields
-  /forms/{formId}/fields/{fieldId}:
-    delete:
-      consumes:
-      - application/json
-      description: Remove a specific field from the form
-      parameters:
-      - description: Bearer Token
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      - description: Form ID
-        in: path
-        name: formId
-        required: true
-        type: string
-      - description: Field ID
-        in: path
-        name: fieldId
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "204":
-          description: Field deleted
-        "400":
-          description: Invalid input
-        "401":
-          description: Unauthorized
-        "500":
-          description: Internal server error
-      summary: Delete a field from a form
-      tags:
-      - fields
-    put:
-      consumes:
-      - application/json
-      description: Update the details of an existing field
-      parameters:
-      - description: Bearer Token
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      - description: Field details
-        in: body
-        name: field
-        required: true
-        schema:
-          $ref: '#/definitions/form_requests.UpdateFormFieldRequest'
-      - description: Form ID
-        in: path
-        name: formId
-        required: true
-        type: string
-      - description: Field ID
-        in: path
-        name: fieldId
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Field updated
-          schema:
-            allOf:
-            - $ref: '#/definitions/responses.Response'
-            - properties:
-                content:
-                  $ref: '#/definitions/resources.FormFieldResponse'
-              type: object
-        "400":
-          description: Invalid input
-        "401":
-          description: Unauthorized
-        "422":
-          description: Unprocessable entity
-        "500":
-          description: Internal server error
-      summary: Update an existing field
-      tags:
-      - fields
   /forms/{formUUID}:
     delete:
       consumes:
@@ -814,6 +645,216 @@ paths:
       summary: Update an existing form
       tags:
       - forms
+  /forms/{formUUID}/fields:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a list of all fields in a specific form
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Form UUID
+        in: path
+        name: formUUID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of fields
+          schema:
+            items:
+              allOf:
+              - $ref: '#/definitions/responses.Response'
+              - properties:
+                  content:
+                    items:
+                      $ref: '#/definitions/resources.FormFieldResponse'
+                    type: array
+                type: object
+            type: array
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal server error
+      summary: List all fields for a form
+      tags:
+      - fields
+    post:
+      consumes:
+      - application/json
+      description: Add a new field to a form
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Field details
+        in: body
+        name: field
+        required: true
+        schema:
+          $ref: '#/definitions/form_requests.CreateFormFieldsRequest'
+      - description: Form UUID
+        in: path
+        name: formUUID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Field created
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Response'
+            - properties:
+                content:
+                  $ref: '#/definitions/resources.FormFieldResponse'
+              type: object
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "422":
+          description: Unprocessable entity
+        "500":
+          description: Internal server error
+      summary: Create a new field for a form
+      tags:
+      - fields
+  /forms/{formUUID}/fields/{fieldUUID}:
+    delete:
+      consumes:
+      - application/json
+      description: Remove a specific field from the form
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Form UUID
+        in: path
+        name: formUUID
+        required: true
+        type: string
+      - description: Field UUID
+        in: path
+        name: fieldUUID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Field deleted
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal server error
+      summary: Delete a field from a form
+      tags:
+      - fields
+    get:
+      consumes:
+      - application/json
+      description: Get details of a specific field
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Form UUID
+        in: path
+        name: formUUID
+        required: true
+        type: string
+      - description: Field UUID
+        in: path
+        name: fieldUUID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Field details
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Response'
+            - properties:
+                content:
+                  $ref: '#/definitions/resources.FormFieldResponse'
+              type: object
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal server error
+      summary: Show details of a single field
+      tags:
+      - fields
+    put:
+      consumes:
+      - application/json
+      description: Update the details of an existing field
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Field details
+        in: body
+        name: field
+        required: true
+        schema:
+          $ref: '#/definitions/form_requests.UpdateFormFieldRequest'
+      - description: Form UUID
+        in: path
+        name: formUUID
+        required: true
+        type: string
+      - description: Field UUID
+        in: path
+        name: fieldUUID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Field updated
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Response'
+            - properties:
+                content:
+                  $ref: '#/definitions/resources.FormFieldResponse'
+              type: object
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "422":
+          description: Unprocessable entity
+        "500":
+          description: Internal server error
+      summary: Update an existing field
+      tags:
+      - fields
   /organizations:
     get:
       consumes:
