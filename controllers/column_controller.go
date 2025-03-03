@@ -21,6 +21,27 @@ func NewColumnController(injector *do.Injector) (*ColumnController, error) {
 	return &ColumnController{columnService: columnService}, nil
 }
 
+// Store adds new columns to a table.
+//
+// @Summary Add new columns to a table
+// @Description Create new columns in a specified table within a project.
+// @Tags columns
+//
+// @Accept json
+// @Produce json
+//
+// @Param Authorization header string true "Bearer Token"
+// @Param project_id path string true "Project ID"
+// @Param table_id path string true "Table ID"
+// @Param columns body column_requests.CreateRequest true "Columns JSON"
+//
+// @Success 201 {object} responses.Response{content=resources.TableResponse} "Columns created"
+// @Failure 400 "Invalid input"
+// @Failure 401 "Unauthorized"
+// @Failure 422 "Unprocessable entity"
+// @Failure 500 "Internal server error"
+//
+// @Router /projects/{project_id}/tables/{table_id}/columns [post]
 func (cc *ColumnController) Store(c echo.Context) error {
 	var request column_requests.CreateRequest
 	if err := request.BindAndValidate(c); err != nil {
@@ -42,6 +63,27 @@ func (cc *ColumnController) Store(c echo.Context) error {
 	return responses.CreatedResponse(c, resources.TableResource(&table))
 }
 
+// Alter modifies column types in a table.
+//
+// @Summary Modify column types in a table
+// @Description Alter the data type of existing columns in a specified table.
+// @Tags columns
+//
+// @Accept json
+// @Produce json
+//
+// @Param Authorization header string true "Bearer Token"
+// @Param project_id path string true "Project ID"
+// @Param table_id path string true "Table ID"
+// @Param columns body column_requests.CreateRequest true "Updated column definitions"
+//
+// @Success 200 {object} responses.Response{content=resources.TableResponse} "Columns altered"
+// @Failure 400 "Invalid input"
+// @Failure 401 "Unauthorized"
+// @Failure 422 "Unprocessable entity"
+// @Failure 500 "Internal server error"
+//
+// @Router /projects/{project_id}/tables/{table_id}/columns [put]
 func (cc *ColumnController) Alter(c echo.Context) error {
 	var request column_requests.CreateRequest
 	if err := request.BindAndValidate(c); err != nil {
@@ -63,6 +105,28 @@ func (cc *ColumnController) Alter(c echo.Context) error {
 	return responses.SuccessResponse(c, resources.TableResource(alteredTable))
 }
 
+// Rename updates the name of an existing column.
+//
+// @Summary Rename a column in a table
+// @Description Change the name of a specific column in a given table.
+// @Tags columns
+//
+// @Accept json
+// @Produce json
+//
+// @Param Authorization header string true "Bearer Token"
+// @Param project_id path string true "Project ID"
+// @Param table_id path string true "Table ID"
+// @Param column_name path string true "Existing Column Name"
+// @Param new_name body column_requests.RenameRequest true "New column name JSON"
+//
+// @Success 200 {object} responses.Response "Column renamed"
+// @Failure 400 "Invalid input"
+// @Failure 401 "Unauthorized"
+// @Failure 422 "Unprocessable entity"
+// @Failure 500 "Internal server error"
+//
+// @Router /projects/{project_id}/tables/{table_id}/columns/{column_name} [put]
 func (cc *ColumnController) Rename(c echo.Context) error {
 	var request column_requests.RenameRequest
 	if err := request.BindAndValidate(c); err != nil {
@@ -84,6 +148,27 @@ func (cc *ColumnController) Rename(c echo.Context) error {
 	return responses.SuccessResponse(c, resources.TableResource(renamedTable))
 }
 
+// Delete removes a column from a table.
+//
+// @Summary Delete a column from a table
+// @Description Permanently delete a specific column from a given table.
+// @Tags columns
+//
+// @Accept json
+// @Produce json
+//
+// @Param Authorization header string true "Bearer Token"
+// @Param project_id path string true "Project ID"
+// @Param table_id path string true "Table ID"
+// @Param column_name path string true "Column Name"
+//
+// @Success 204 "Column deleted successfully"
+// @Failure 400 "Invalid input"
+// @Failure 401 "Unauthorized"
+// @Failure 404 "Column not found"
+// @Failure 500 "Internal server error"
+//
+// @Router /projects/{project_id}/tables/{table_id}/columns/{column_name} [delete]
 func (cc *ColumnController) Delete(c echo.Context) error {
 	authUser, _ := utils.NewAuth(c).User()
 

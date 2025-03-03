@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	_ "fluxton/cmd/docs"
 	"fluxton/controllers"
 	"fluxton/database/seeders"
 	"fluxton/middlewares"
@@ -13,9 +14,20 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/gommon/log"
 	"github.com/samber/do"
+	echoSwagger "github.com/swaggo/echo-swagger"
 	"strings"
 )
 
+// @title Fluxton API
+// @version 1.0
+// @description Fluxton is backend as-a-service platform that allows you to build, deploy, and scale applications without managing infrastructure.
+
+// @contact.name API Support
+// @contact.url http://github.com/fluxton-io/fluxton
+// @contact.email chief@fluxton.io
+
+// @host fluxton.io/api
+// @BasePath /v2
 func main() {
 	mode := flag.String("cmd", "server", "Possible values: 'server', 'seed', 'routes'")
 	flag.Parse()
@@ -67,7 +79,7 @@ func registerRoutes(e *echo.Echo, container *do.Injector) {
 	settingController := do.MustInvoke[*controllers.SettingController](container)
 	healthController := do.MustInvoke[*controllers.HealthController](container)
 	organizationController := do.MustInvoke[*controllers.OrganizationController](container)
-	organizationUserController := do.MustInvoke[*controllers.OrganizationUserController](container)
+	organizationUserController := do.MustInvoke[*controllers.OrganizationMemberController](container)
 	projectController := do.MustInvoke[*controllers.ProjectController](container)
 	tableController := do.MustInvoke[*controllers.TableController](container)
 	columnController := do.MustInvoke[*controllers.ColumnController](container)
@@ -88,6 +100,8 @@ func registerRoutes(e *echo.Echo, container *do.Injector) {
 	routes.RegisterTableRoutes(e, authMiddleware, tableController, columnController, indexController)
 	routes.RegisterFormRoutes(e, authMiddleware, formController, formFieldController)
 	routes.RegisterStorageRoutes(e, authMiddleware, bucketController, fileController)
+
+	e.GET("/docs/*", echoSwagger.WrapHandler)
 }
 
 // runSeeders runs all seeders defined in the seeders package

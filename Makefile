@@ -44,3 +44,6 @@ postgrest-list: ## List all postgrest containers
 
 postgrest-destroy: ## Destroy all postgrest containers
 	@docker rm -f $(shell docker ps -a -q --filter "name=postgrest_")
+
+docs: ## Generate docs
+	@swag init --dir cmd,controllers,requests,resources,responses,types --output cmd/docs
