@@ -82,6 +82,18 @@ definitions:
       user_id:
         type: string
     type: object
+  project_requests.CreateRequest:
+    properties:
+      name:
+        type: string
+      organization_uuid:
+        type: string
+    type: object
+  project_requests.UpdateRequest:
+    properties:
+      name:
+        type: string
+    type: object
   requests.IndexCreateRequest:
     properties:
       columns:
@@ -189,6 +201,25 @@ definitions:
       createdBy:
         type: string
       name:
+        type: string
+      updatedAt:
+        type: string
+      updatedBy:
+        type: string
+      uuid:
+        type: string
+    type: object
+  resources.ProjectResponse:
+    properties:
+      createdAt:
+        type: string
+      createdBy:
+        type: string
+      dbName:
+        type: string
+      name:
+        type: string
+      organizationUuid:
         type: string
       updatedAt:
         type: string
@@ -1160,6 +1191,89 @@ paths:
       summary: Delete a user from an organization
       tags:
       - organizations
+  /projects:
+    get:
+      consumes:
+      - application/json
+      description: Get all projects for a specific organization
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Organization UUID
+        in: query
+        name: organizationUUID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of projects
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Response'
+            - properties:
+                content:
+                  items:
+                    $ref: '#/definitions/resources.ProjectResponse'
+                  type: array
+              type: object
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal server error
+      summary: List all projects
+      tags:
+      - projects
+    post:
+      consumes:
+      - application/json
+      description: Create a new project for a specific organization
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Organization UUID
+        in: query
+        name: organizationUUID
+        required: true
+        type: string
+      - description: Project name
+        in: body
+        name: name
+        required: true
+        schema:
+          $ref: '#/definitions/project_requests.CreateRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Project details
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Response'
+            - properties:
+                content:
+                  $ref: '#/definitions/resources.ProjectResponse'
+              type: object
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "422":
+          description: Unprocessable entity
+        "500":
+          description: Internal server error
+      summary: Create a new project
+      tags:
+      - projects
   /projects/{project_id}/tables:
     get:
       consumes:
@@ -1793,6 +1907,120 @@ paths:
       summary: Rename a table
       tags:
       - tables
+  /projects/{projectID}:
+    delete:
+      consumes:
+      - application/json
+      description: Remove a project from the organization
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Project ID
+        in: path
+        name: projectID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Project deleted
+          schema:
+            $ref: '#/definitions/responses.Response'
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal server error
+      summary: Delete a project
+      tags:
+      - projects
+    get:
+      consumes:
+      - application/json
+      description: Get details of a specific project
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Project ID
+        in: path
+        name: projectID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Project details
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Response'
+            - properties:
+                content:
+                  $ref: '#/definitions/resources.ProjectResponse'
+              type: object
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "422":
+          description: Unprocessable entity
+        "500":
+          description: Internal server error
+      summary: Show details of a single project
+      tags:
+      - projects
+    put:
+      consumes:
+      - application/json
+      description: Update a project for a specific organization
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Project ID
+        in: path
+        name: projectID
+        required: true
+        type: string
+      - description: Project name
+        in: body
+        name: name
+        required: true
+        schema:
+          $ref: '#/definitions/project_requests.UpdateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Project details
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Response'
+            - properties:
+                content:
+                  $ref: '#/definitions/resources.ProjectResponse'
+              type: object
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "422":
+          description: Unprocessable entity
+        "500":
+          description: Internal server error
+      summary: Update a project
+      tags:
+      - projects
   /projects/{projectId}/forms:
     get:
       consumes:
