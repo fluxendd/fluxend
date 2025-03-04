@@ -10,6 +10,7 @@ func RegisterFormRoutes(
 	authMiddleware echo.MiddlewareFunc,
 	FormController *controllers.FormController,
 	FormFieldController *controllers.FormFieldController,
+	FormResponseController *controllers.FormResponseController,
 ) {
 	projectsGroup := e.Group("api/projects/:projectUUID/forms", authMiddleware)
 
@@ -27,4 +28,9 @@ func RegisterFormRoutes(
 	formFieldsGroup.GET("/:fieldUUID", FormFieldController.Show)
 	formFieldsGroup.PUT("/:fieldUUID", FormFieldController.Update)
 	formFieldsGroup.DELETE("/:fieldUUID", FormFieldController.Delete)
+
+	// Form Response routes
+	formResponsesGroup := e.Group("api/projects/:projectUUID/forms/:formUUID/responses", authMiddleware)
+
+	formResponsesGroup.GET("", FormResponseController.List)
 }
