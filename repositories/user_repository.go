@@ -38,7 +38,7 @@ func (r *UserRepository) List(paginationParams utils.PaginationParams) ([]models
 
 	rows, err := r.db.NamedQuery(query, params)
 	if err != nil {
-		return nil, fmt.Errorf("could not retrieve rows: %v", err)
+		return nil, utils.FormatError(err, "select", utils.GetMethodName())
 	}
 	defer rows.Close()
 
@@ -46,13 +46,13 @@ func (r *UserRepository) List(paginationParams utils.PaginationParams) ([]models
 	for rows.Next() {
 		var user models.User
 		if err := rows.StructScan(&user); err != nil {
-			return nil, fmt.Errorf("could not scan row: %v", err)
+			return nil, utils.FormatError(err, "scan", utils.GetMethodName())
 		}
 		users = append(users, user)
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, fmt.Errorf("could not iterate over rows: %v", err)
+		return nil, utils.FormatError(err, "iterate", utils.GetMethodName())
 	}
 
 	return users, nil
@@ -67,7 +67,7 @@ func (r *UserRepository) GetByID(userUUID uuid.UUID) (models.User, error) {
 			return models.User{}, errs.NewNotFoundError("user.error.notFound")
 		}
 
-		return models.User{}, fmt.Errorf("could not fetch row: %v", err)
+		return models.User{}, utils.FormatError(err, "fetch", utils.GetMethodName())
 	}
 
 	return user, nil
@@ -78,7 +78,7 @@ func (r *UserRepository) ExistsByID(userUUID uuid.UUID) (bool, error) {
 	var exists bool
 	err := r.db.Get(&exists, query, userUUID)
 	if err != nil {
-		return false, fmt.Errorf("could not fetch row: %v", err)
+		return false, utils.FormatError(err, "fetch", utils.GetMethodName())
 	}
 
 	return exists, nil
@@ -151,12 +151,12 @@ func (r *UserRepository) Update(userUUID uuid.UUID, user *models.User) (*models.
 
 	res, err := r.db.NamedExec(query, user)
 	if err != nil {
-		return &models.User{}, fmt.Errorf("could not update row: %v", err)
+		return &models.User{}, utils.FormatError(err, "update", utils.GetMethodName())
 	}
 
 	_, err = res.RowsAffected()
 	if err != nil {
-		return &models.User{}, fmt.Errorf("could not determine affected rows: %v", err)
+		return &models.User{}, utils.FormatError(err, "affectedRows", utils.GetMethodName())
 	}
 
 	return user, nil
@@ -166,12 +166,12 @@ func (r *UserRepository) Delete(userUUID uuid.UUID) (bool, error) {
 	query := "DELETE FROM authentication.users WHERE uuid = $1"
 	res, err := r.db.Exec(query, userUUID)
 	if err != nil {
-		return false, fmt.Errorf("could not delete row: %v", err)
+		return false, utils.FormatError(err, "delete", utils.GetMethodName())
 	}
 
 	rowsAffected, err := res.RowsAffected()
 	if err != nil {
-		return false, fmt.Errorf("could not determine affected rows: %v", err)
+		return false, utils.FormatError(err, "affectedRows", utils.GetMethodName())
 	}
 
 	return rowsAffected == 1, nil

@@ -53,7 +53,7 @@ func (r *ProjectRepository) ListForUser(paginationParams utils.PaginationParams,
 
 	rows, err := r.db.NamedQuery(query, params)
 	if err != nil {
-		return nil, fmt.Errorf("could not retrieve rows: %v", err)
+		return nil, utils.FormatError(err, "select", utils.GetMethodName())
 	}
 	defer rows.Close()
 
@@ -61,13 +61,13 @@ func (r *ProjectRepository) ListForUser(paginationParams utils.PaginationParams,
 	for rows.Next() {
 		var organization models.Project
 		if err := rows.StructScan(&organization); err != nil {
-			return nil, fmt.Errorf("could not scan row: %v", err)
+			return nil, utils.FormatError(err, "scan", utils.GetMethodName())
 		}
 		projects = append(projects, organization)
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, fmt.Errorf("could not iterate over rows: %v", err)
+		return nil, utils.FormatError(err, "iterate", utils.GetMethodName())
 	}
 
 	return projects, nil
@@ -84,7 +84,7 @@ func (r *ProjectRepository) GetByUUID(projectUUID uuid.UUID) (models.Project, er
 			return models.Project{}, errs.NewNotFoundError("project.error.notFound")
 		}
 
-		return models.Project{}, fmt.Errorf("could not fetch row: %v", err)
+		return models.Project{}, utils.FormatError(err, "fetch", utils.GetMethodName())
 	}
 
 	return project, nil
@@ -100,7 +100,7 @@ func (r *ProjectRepository) GetOrganizationUUIDByProjectUUID(id uuid.UUID) (uuid
 			return uuid.UUID{}, errs.NewNotFoundError("project.error.notFound")
 		}
 
-		return uuid.UUID{}, fmt.Errorf("could not fetch row: %v", err)
+		return uuid.UUID{}, utils.FormatError(err, "fetch", utils.GetMethodName())
 	}
 
 	return organizationUUID, nil
@@ -112,7 +112,7 @@ func (r *ProjectRepository) ExistsByID(id uuid.UUID) (bool, error) {
 	var exists bool
 	err := r.db.Get(&exists, query, id)
 	if err != nil {
-		return false, fmt.Errorf("could not fetch row: %v", err)
+		return false, utils.FormatError(err, "fetch", utils.GetMethodName())
 	}
 
 	return exists, nil
@@ -124,7 +124,7 @@ func (r *ProjectRepository) ExistsByNameForOrganization(name string, organizatio
 	var exists bool
 	err := r.db.Get(&exists, query, name, organizationUUID)
 	if err != nil {
-		return false, fmt.Errorf("could not fetch row: %v", err)
+		return false, utils.FormatError(err, "fetch", utils.GetMethodName())
 	}
 
 	return exists, nil
@@ -133,7 +133,7 @@ func (r *ProjectRepository) ExistsByNameForOrganization(name string, organizatio
 func (r *ProjectRepository) Create(project *models.Project) (*models.Project, error) {
 	tx, err := r.db.Beginx()
 	if err != nil {
-		return nil, fmt.Errorf("could not begin transaction: %v", err)
+		return nil, utils.FormatError(err, "transactionBegin", utils.GetMethodName())
 	}
 
 	query := "INSERT INTO fluxton.projects (name, db_name, db_port, organization_uuid, created_by, updated_by) VALUES ($1, $2, $3, $4, $5, $6) RETURNING uuid"
@@ -149,7 +149,7 @@ func (r *ProjectRepository) Create(project *models.Project) (*models.Project, er
 
 	// Commit transaction
 	if err = tx.Commit(); err != nil {
-		return nil, fmt.Errorf("could not commit transaction: %v", err)
+		return nil, utils.FormatError(err, "transactionCommit", utils.GetMethodName())
 	}
 
 	return project, nil
@@ -163,12 +163,12 @@ func (r *ProjectRepository) Update(project *models.Project) (*models.Project, er
 
 	res, err := r.db.NamedExec(query, project)
 	if err != nil {
-		return &models.Project{}, fmt.Errorf("could not update row: %v", err)
+		return &models.Project{}, utils.FormatError(err, "update", utils.GetMethodName())
 	}
 
 	_, err = res.RowsAffected()
 	if err != nil {
-		return &models.Project{}, fmt.Errorf("could not determine affected rows: %v", err)
+		return &models.Project{}, utils.FormatError(err, "affectedRows", utils.GetMethodName())
 	}
 
 	return project, nil
@@ -178,12 +178,12 @@ func (r *ProjectRepository) Delete(projectId uuid.UUID) (bool, error) {
 	query := "DELETE FROM fluxton.projects WHERE uuid = $1"
 	res, err := r.db.Exec(query, projectId)
 	if err != nil {
-		return false, fmt.Errorf("could not delete row: %v", err)
+		return false, utils.FormatError(err, "delete", utils.GetMethodName())
 	}
 
 	rowsAffected, err := res.RowsAffected()
 	if err != nil {
-		return false, fmt.Errorf("could not determine affected rows: %v", err)
+		return false, utils.FormatError(err, "affectedRows", utils.GetMethodName())
 	}
 
 	return rowsAffected == 1, nil
