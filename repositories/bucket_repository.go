@@ -49,7 +49,7 @@ func (r *BucketRepository) ListForProject(paginationParams utils.PaginationParam
 
 	rows, err := r.db.NamedQuery(query, params)
 	if err != nil {
-		return nil, fmt.Errorf("could not retrieve rows: %v", err)
+		return nil, utils.FormatError(err, "select", utils.GetMethodName())
 	}
 	defer rows.Close()
 
@@ -57,13 +57,13 @@ func (r *BucketRepository) ListForProject(paginationParams utils.PaginationParam
 	for rows.Next() {
 		var bucket models.Bucket
 		if err := rows.StructScan(&bucket); err != nil {
-			return nil, fmt.Errorf("could not scan row: %v", err)
+			return nil, utils.FormatError(err, "scan", utils.GetMethodName())
 		}
 		buckets = append(buckets, bucket)
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, fmt.Errorf("could not iterate over rows: %v", err)
+		return nil, utils.FormatError(err, "iterate", utils.GetMethodName())
 	}
 
 	return buckets, nil
@@ -80,7 +80,7 @@ func (r *BucketRepository) GetByUUID(bucketUUID uuid.UUID) (models.Bucket, error
 			return models.Bucket{}, errs.NewNotFoundError("bucket.error.notFound")
 		}
 
-		return models.Bucket{}, fmt.Errorf("could not fetch row: %v", err)
+		return models.Bucket{}, utils.FormatError(err, "fetch", utils.GetMethodName())
 	}
 
 	return bucket, nil
@@ -92,7 +92,7 @@ func (r *BucketRepository) ExistsByUUID(bucketUUID uuid.UUID) (bool, error) {
 	var exists bool
 	err := r.db.Get(&exists, query, bucketUUID)
 	if err != nil {
-		return false, fmt.Errorf("could not fetch row: %v", err)
+		return false, utils.FormatError(err, "fetch", utils.GetMethodName())
 	}
 
 	return exists, nil
@@ -104,7 +104,7 @@ func (r *BucketRepository) ExistsByNameForProject(name string, projectUUID uuid.
 	var exists bool
 	err := r.db.Get(&exists, query, name, projectUUID)
 	if err != nil {
-		return false, fmt.Errorf("could not fetch row: %v", err)
+		return false, utils.FormatError(err, "fetch", utils.GetMethodName())
 	}
 
 	return exists, nil
@@ -113,7 +113,7 @@ func (r *BucketRepository) ExistsByNameForProject(name string, projectUUID uuid.
 func (r *BucketRepository) Create(bucket *models.Bucket) (*models.Bucket, error) {
 	tx, err := r.db.Beginx()
 	if err != nil {
-		return nil, fmt.Errorf("could not begin transaction: %v", err)
+		return nil, utils.FormatError(err, "transactionBegin", utils.GetMethodName())
 	}
 
 	query := `
@@ -142,12 +142,12 @@ func (r *BucketRepository) Create(bucket *models.Bucket) (*models.Bucket, error)
 		if err := tx.Rollback(); err != nil {
 			return nil, err
 		}
-		return nil, fmt.Errorf("could not create bucket: %v", queryErr)
+		return nil, utils.FormatError(err, "create", utils.GetMethodName())
 	}
 
 	// Commit transaction
 	if err = tx.Commit(); err != nil {
-		return nil, fmt.Errorf("could not commit transaction: %v", err)
+		return nil, utils.FormatError(err, "transactionCommit", utils.GetMethodName())
 	}
 
 	return bucket, nil
@@ -161,12 +161,12 @@ func (r *BucketRepository) Update(bucket *models.Bucket) (*models.Bucket, error)
 
 	res, err := r.db.NamedExec(query, bucket)
 	if err != nil {
-		return &models.Bucket{}, fmt.Errorf("could not update row: %v", err)
+		return &models.Bucket{}, utils.FormatError(err, "update", utils.GetMethodName())
 	}
 
 	_, err = res.RowsAffected()
 	if err != nil {
-		return &models.Bucket{}, fmt.Errorf("could not determine affected rows: %v", err)
+		return &models.Bucket{}, utils.FormatError(err, "affectedRows", utils.GetMethodName())
 	}
 
 	return bucket, nil
@@ -176,7 +176,7 @@ func (r *BucketRepository) IncrementTotalFiles(bucketUUID uuid.UUID) error {
 	query := "UPDATE storage.buckets SET total_files = total_files + 1 WHERE uuid = $1"
 	_, err := r.db.Exec(query, bucketUUID)
 	if err != nil {
-		return fmt.Errorf("could not update row: %v", err)
+		return utils.FormatError(err, "update", utils.GetMethodName())
 	}
 
 	return nil
@@ -186,7 +186,7 @@ func (r *BucketRepository) DecrementTotalFiles(bucketUUID uuid.UUID) error {
 	query := "UPDATE storage.buckets SET total_files = total_files - 1 WHERE uuid = $1"
 	_, err := r.db.Exec(query, bucketUUID)
 	if err != nil {
-		return fmt.Errorf("could not update row: %v", err)
+		return utils.FormatError(err, "update", utils.GetMethodName())
 	}
 
 	return nil
@@ -196,12 +196,12 @@ func (r *BucketRepository) Delete(bucketUUID uuid.UUID) (bool, error) {
 	query := "DELETE FROM storage.buckets WHERE uuid = $1"
 	res, err := r.db.Exec(query, bucketUUID)
 	if err != nil {
-		return false, fmt.Errorf("could not delete row: %v", err)
+		return false, utils.FormatError(err, "delete", utils.GetMethodName())
 	}
 
 	rowsAffected, err := res.RowsAffected()
 	if err != nil {
-		return false, fmt.Errorf("could not determine affected rows: %v", err)
+		return false, utils.FormatError(err, "affectedRows", utils.GetMethodName())
 	}
 
 	return rowsAffected == 1, nil
