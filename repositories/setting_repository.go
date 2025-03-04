@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"fluxton/models"
+	"fluxton/utils"
 	"fmt"
 	"github.com/jmoiron/sqlx"
 	"github.com/samber/do"
@@ -23,7 +24,7 @@ func (r *SettingRepository) List() ([]models.Setting, error) {
 	var settings []models.Setting
 	err := r.db.Select(&settings, query)
 	if err != nil {
-		return nil, fmt.Errorf("could not retrieve rows: %v", err)
+		return nil, utils.FormatError(err, "select", utils.GetMethodName())
 	}
 
 	return settings, nil
@@ -32,7 +33,7 @@ func (r *SettingRepository) List() ([]models.Setting, error) {
 func (r *SettingRepository) Update(settings []models.Setting) (bool, error) {
 	tx, err := r.db.Beginx()
 	if err != nil {
-		return false, fmt.Errorf("could not begin transaction: %v", err)
+		return false, utils.FormatError(err, "transactionBegin", utils.GetMethodName())
 	}
 	defer tx.Rollback()
 
@@ -46,7 +47,7 @@ func (r *SettingRepository) Update(settings []models.Setting) (bool, error) {
 
 	err = tx.Commit()
 	if err != nil {
-		return false, fmt.Errorf("could not commit transaction: %v", err)
+		return false, utils.FormatError(err, "transactionCommit", utils.GetMethodName())
 	}
 
 	return true, nil
