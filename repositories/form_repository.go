@@ -49,7 +49,7 @@ func (r *FormRepository) ListForProject(paginationParams utils.PaginationParams,
 
 	rows, err := r.db.NamedQuery(query, params)
 	if err != nil {
-		return nil, fmt.Errorf("could not retrieve rows: %v", err)
+		return nil, utils.FormatError(err, "select", utils.GetMethodName())
 	}
 	defer rows.Close()
 
@@ -57,13 +57,13 @@ func (r *FormRepository) ListForProject(paginationParams utils.PaginationParams,
 	for rows.Next() {
 		var form models.Form
 		if err := rows.StructScan(&form); err != nil {
-			return nil, fmt.Errorf("could not scan row: %v", err)
+			return nil, utils.FormatError(err, "scan", utils.GetMethodName())
 		}
 		forms = append(forms, form)
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, fmt.Errorf("could not iterate over rows: %v", err)
+		return nil, utils.FormatError(err, "iterate", utils.GetMethodName())
 	}
 
 	return forms, nil
@@ -80,7 +80,7 @@ func (r *FormRepository) GetByUUID(formUUID uuid.UUID) (models.Form, error) {
 			return models.Form{}, errs.NewNotFoundError("form.error.notFound")
 		}
 
-		return models.Form{}, fmt.Errorf("could not fetch row: %v", err)
+		return models.Form{}, utils.FormatError(err, "fetch", utils.GetMethodName())
 	}
 
 	return form, nil
@@ -92,7 +92,7 @@ func (r *FormRepository) ExistsByUUID(formUUID uuid.UUID) (bool, error) {
 	var exists bool
 	err := r.db.Get(&exists, query, formUUID)
 	if err != nil {
-		return false, fmt.Errorf("could not fetch row: %v", err)
+		return false, utils.FormatError(err, "fetch", utils.GetMethodName())
 	}
 
 	return exists, nil
@@ -104,7 +104,7 @@ func (r *FormRepository) ExistsByNameForProject(name string, projectUUID uuid.UU
 	var exists bool
 	err := r.db.Get(&exists, query, name, projectUUID)
 	if err != nil {
-		return false, fmt.Errorf("could not fetch row: %v", err)
+		return false, utils.FormatError(err, "fetch", utils.GetMethodName())
 	}
 
 	return exists, nil
@@ -113,7 +113,7 @@ func (r *FormRepository) ExistsByNameForProject(name string, projectUUID uuid.UU
 func (r *FormRepository) Create(form *models.Form) (*models.Form, error) {
 	tx, err := r.db.Beginx()
 	if err != nil {
-		return nil, fmt.Errorf("could not begin transaction: %v", err)
+		return nil, utils.FormatError(err, "transactionBegin", utils.GetMethodName())
 	}
 
 	query := `
@@ -134,12 +134,12 @@ func (r *FormRepository) Create(form *models.Form) (*models.Form, error) {
 		if err := tx.Rollback(); err != nil {
 			return nil, err
 		}
-		return nil, fmt.Errorf("could not create form: %v", queryErr)
+		return nil, utils.FormatError(queryErr, "insert", utils.GetMethodName())
 	}
 
 	// Commit transaction
 	if err = tx.Commit(); err != nil {
-		return nil, fmt.Errorf("could not commit transaction: %v", err)
+		return nil, utils.FormatError(err, "transactionCommit", utils.GetMethodName())
 	}
 
 	return form, nil
@@ -153,12 +153,12 @@ func (r *FormRepository) Update(form *models.Form) (*models.Form, error) {
 
 	res, err := r.db.NamedExec(query, form)
 	if err != nil {
-		return &models.Form{}, fmt.Errorf("could not update row: %v", err)
+		return &models.Form{}, utils.FormatError(err, "update", utils.GetMethodName())
 	}
 
 	_, err = res.RowsAffected()
 	if err != nil {
-		return &models.Form{}, fmt.Errorf("could not determine affected rows: %v", err)
+		return &models.Form{}, utils.FormatError(err, "affectedRows", utils.GetMethodName())
 	}
 
 	return form, nil
@@ -168,12 +168,12 @@ func (r *FormRepository) Delete(projectId uuid.UUID) (bool, error) {
 	query := "DELETE FROM fluxton.forms WHERE uuid = $1"
 	res, err := r.db.Exec(query, projectId)
 	if err != nil {
-		return false, fmt.Errorf("could not delete row: %v", err)
+		return false, utils.FormatError(err, "delete", utils.GetMethodName())
 	}
 
 	rowsAffected, err := res.RowsAffected()
 	if err != nil {
-		return false, fmt.Errorf("could not determine affected rows: %v", err)
+		return false, utils.FormatError(err, "affectedRows", utils.GetMethodName())
 	}
 
 	return rowsAffected == 1, nil
