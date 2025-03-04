@@ -49,7 +49,7 @@ func (r *FileRepository) ListForBucket(paginationParams utils.PaginationParams, 
 
 	rows, err := r.db.NamedQuery(query, params)
 	if err != nil {
-		return nil, fmt.Errorf("could not retrieve rows: %v", err)
+		return nil, utils.FormatError(err, "select", utils.GetMethodName())
 	}
 	defer rows.Close()
 
@@ -57,13 +57,13 @@ func (r *FileRepository) ListForBucket(paginationParams utils.PaginationParams, 
 	for rows.Next() {
 		var file models.File
 		if err := rows.StructScan(&file); err != nil {
-			return nil, fmt.Errorf("could not scan row: %v", err)
+			return nil, utils.FormatError(err, "scan", utils.GetMethodName())
 		}
 		files = append(files, file)
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, fmt.Errorf("could not iterate over rows: %v", err)
+		return nil, utils.FormatError(err, "iterate", utils.GetMethodName())
 	}
 
 	return files, nil
@@ -80,7 +80,7 @@ func (r *FileRepository) GetByUUID(fileUUID uuid.UUID) (models.File, error) {
 			return models.File{}, errs.NewNotFoundError("file.error.notFound")
 		}
 
-		return models.File{}, fmt.Errorf("could not fetch row: %v", err)
+		return models.File{}, utils.FormatError(err, "fetch", utils.GetMethodName())
 	}
 
 	return file, nil
@@ -92,7 +92,7 @@ func (r *FileRepository) ExistsByUUID(bucketUUID uuid.UUID) (bool, error) {
 	var exists bool
 	err := r.db.Get(&exists, query, bucketUUID)
 	if err != nil {
-		return false, fmt.Errorf("could not fetch row: %v", err)
+		return false, utils.FormatError(err, "fetch", utils.GetMethodName())
 	}
 
 	return exists, nil
@@ -104,7 +104,7 @@ func (r *FileRepository) ExistsByNameForBucket(name string, bucketUUID uuid.UUID
 	var exists bool
 	err := r.db.Get(&exists, query, name, bucketUUID)
 	if err != nil {
-		return false, fmt.Errorf("could not fetch row: %v", err)
+		return false, utils.FormatError(err, "fetch", utils.GetMethodName())
 	}
 
 	return exists, nil
@@ -113,7 +113,7 @@ func (r *FileRepository) ExistsByNameForBucket(name string, bucketUUID uuid.UUID
 func (r *FileRepository) Create(file *models.File) (*models.File, error) {
 	tx, err := r.db.Beginx()
 	if err != nil {
-		return nil, fmt.Errorf("could not begin transaction: %v", err)
+		return nil, utils.FormatError(err, "transactionBegin", utils.GetMethodName())
 	}
 
 	query := `
@@ -141,12 +141,12 @@ func (r *FileRepository) Create(file *models.File) (*models.File, error) {
 		if err := tx.Rollback(); err != nil {
 			return nil, err
 		}
-		return nil, fmt.Errorf("could not create file: %v", queryErr)
+		return nil, utils.FormatError(queryErr, "insert", utils.GetMethodName())
 	}
 
 	// Commit transaction
 	if err = tx.Commit(); err != nil {
-		return nil, fmt.Errorf("could not commit transaction: %v", err)
+		return nil, utils.FormatError(err, "transactionCommit", utils.GetMethodName())
 	}
 
 	return file, nil
@@ -160,12 +160,12 @@ func (r *FileRepository) Rename(bucket *models.File) (*models.File, error) {
 
 	res, err := r.db.NamedExec(query, bucket)
 	if err != nil {
-		return &models.File{}, fmt.Errorf("could not update row: %v", err)
+		return &models.File{}, utils.FormatError(err, "update", utils.GetMethodName())
 	}
 
 	_, err = res.RowsAffected()
 	if err != nil {
-		return &models.File{}, fmt.Errorf("could not determine affected rows: %v", err)
+		return &models.File{}, utils.FormatError(err, "affectedRows", utils.GetMethodName())
 	}
 
 	return bucket, nil
@@ -175,12 +175,12 @@ func (r *FileRepository) Delete(fileUUID uuid.UUID) (bool, error) {
 	query := "DELETE FROM storage.files WHERE uuid = $1"
 	res, err := r.db.Exec(query, fileUUID)
 	if err != nil {
-		return false, fmt.Errorf("could not delete row: %v", err)
+		return false, utils.FormatError(err, "delete", utils.GetMethodName())
 	}
 
 	rowsAffected, err := res.RowsAffected()
 	if err != nil {
-		return false, fmt.Errorf("could not determine affected rows: %v", err)
+		return false, utils.FormatError(err, "affectedRows", utils.GetMethodName())
 	}
 
 	return rowsAffected == 1, nil

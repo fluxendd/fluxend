@@ -54,7 +54,7 @@ func (r *CoreTableRepository) ListForProject(paginationParams utils.PaginationPa
 
 	rows, err := r.db.NamedQuery(query, params)
 	if err != nil {
-		return nil, fmt.Errorf("could not retrieve rows: %v", err)
+		return nil, utils.FormatError(err, "select", utils.GetMethodName())
 	}
 	defer rows.Close()
 
@@ -62,13 +62,13 @@ func (r *CoreTableRepository) ListForProject(paginationParams utils.PaginationPa
 	for rows.Next() {
 		var table models.Table
 		if err := rows.StructScan(&table); err != nil {
-			return nil, fmt.Errorf("could not scan row: %v", err)
+			return nil, utils.FormatError(err, "scan", utils.GetMethodName())
 		}
 		tables = append(tables, table)
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, fmt.Errorf("could not iterate over rows: %v", err)
+		return nil, utils.FormatError(err, "iterate", utils.GetMethodName())
 	}
 
 	return tables, nil
@@ -85,7 +85,7 @@ func (r *CoreTableRepository) ListColumns(tableID uuid.UUID) ([]types.TableColum
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, errs.NewNotFoundError("table.error.notFound")
 		}
-		return nil, fmt.Errorf("could not fetch row: %v", err)
+		return nil, utils.FormatError(err, "fetch", utils.GetMethodName())
 	}
 
 	return columnsJSON, nil
@@ -102,7 +102,7 @@ func (r *CoreTableRepository) GetByID(tableUUID uuid.UUID) (models.Table, error)
 		if errors.Is(err, sql.ErrNoRows) {
 			return models.Table{}, errs.NewNotFoundError("table.error.notFound")
 		}
-		return models.Table{}, fmt.Errorf("could not fetch row: %v", err)
+		return models.Table{}, utils.FormatError(err, "fetch", utils.GetMethodName())
 	}
 
 	return table, nil
@@ -119,7 +119,8 @@ func (r *CoreTableRepository) GetByName(name string) (models.Table, error) {
 		if errors.Is(err, sql.ErrNoRows) {
 			return models.Table{}, errs.NewNotFoundError("table.error.notFound")
 		}
-		return models.Table{}, fmt.Errorf("could not fetch row: %v", err)
+
+		return models.Table{}, utils.FormatError(err, "fetch", utils.GetMethodName())
 	}
 
 	return table, nil
@@ -131,7 +132,7 @@ func (r *CoreTableRepository) ExistsByID(tableUUID uuid.UUID) (bool, error) {
 	var exists bool
 	err := r.db.Get(&exists, query, tableUUID)
 	if err != nil {
-		return false, fmt.Errorf("could not fetch row: %v", err)
+		return false, utils.FormatError(err, "fetch", utils.GetMethodName())
 	}
 
 	return exists, nil
@@ -143,7 +144,7 @@ func (r *CoreTableRepository) ExistsByNameForProject(name string, tableID uuid.U
 	var exists bool
 	err := r.db.Get(&exists, query, name, tableID)
 	if err != nil {
-		return false, fmt.Errorf("could not fetch row: %v", err)
+		return false, utils.FormatError(err, "fetch", utils.GetMethodName())
 	}
 
 	return exists, nil
@@ -169,7 +170,8 @@ func (r *CoreTableRepository) HasColumn(column string, tableID uuid.UUID) (bool,
 		if errors.Is(err, sql.ErrNoRows) {
 			return false, errs.NewNotFoundError("table.error.notFound")
 		}
-		return false, fmt.Errorf("could not fetch row: %v", err)
+
+		return false, utils.FormatError(err, "fetch", utils.GetMethodName())
 	}
 
 	return columnExists, nil
@@ -178,13 +180,13 @@ func (r *CoreTableRepository) HasColumn(column string, tableID uuid.UUID) (bool,
 func (r *CoreTableRepository) Create(table *models.Table) (*models.Table, error) {
 	columnsJSON, err := table.MarshalJSONColumns()
 	if err != nil {
-		return nil, fmt.Errorf("could not marshal columns: %v", err)
+		return nil, utils.FormatError(err, "jsonMarshal", utils.GetMethodName())
 	}
 
 	query := "INSERT INTO fluxton.tables (name, project_uuid, created_by, updated_by, columns) VALUES ($1, $2, $3, $4, $5) RETURNING uuid"
 	queryErr := r.db.QueryRow(query, table.Name, table.ProjectUuid, table.CreatedBy, table.UpdatedBy, columnsJSON).Scan(&table.Uuid)
 	if queryErr != nil {
-		return nil, fmt.Errorf("could not create table: %v", queryErr)
+		return nil, utils.FormatError(queryErr, "insert", utils.GetMethodName())
 	}
 
 	return table, nil
@@ -205,12 +207,12 @@ func (r *CoreTableRepository) Update(table *models.Table) (*models.Table, error)
 
 	rows, queryErr := r.db.Exec(query, table.Name, columnsJSON, time.Now(), table.UpdatedBy, table.Uuid)
 	if queryErr != nil {
-		return nil, fmt.Errorf("could not update table: %v", queryErr)
+		return nil, utils.FormatError(queryErr, "update", utils.GetMethodName())
 	}
 
 	rowsAffected, err := rows.RowsAffected()
 	if err != nil {
-		return nil, fmt.Errorf("could not determine affected rows: %v", err)
+		return nil, utils.FormatError(err, "affectedRows", utils.GetMethodName())
 	}
 
 	if rowsAffected != 1 {
@@ -228,12 +230,12 @@ func (r *CoreTableRepository) Rename(tableID uuid.UUID, name string, authUserID 
 
 	rows, err := r.db.Exec(query, name, time.Now(), authUserID, tableID)
 	if err != nil {
-		return models.Table{}, fmt.Errorf("could not update table: %v", err)
+		return models.Table{}, utils.FormatError(err, "update", utils.GetMethodName())
 	}
 
 	rowsAffected, err := rows.RowsAffected()
 	if err != nil {
-		return models.Table{}, fmt.Errorf("could not determine affected rows: %v", err)
+		return models.Table{}, utils.FormatError(err, "affectedRows", utils.GetMethodName())
 	}
 
 	if rowsAffected != 1 {
@@ -247,12 +249,12 @@ func (r *CoreTableRepository) Delete(tableID uuid.UUID) (bool, error) {
 	query := "DELETE FROM fluxton.tables WHERE uuid = $1"
 	res, err := r.db.Exec(query, tableID)
 	if err != nil {
-		return false, fmt.Errorf("could not delete row: %v", err)
+		return false, utils.FormatError(err, "delete", utils.GetMethodName())
 	}
 
 	rowsAffected, err := res.RowsAffected()
 	if err != nil {
-		return false, fmt.Errorf("could not determine affected rows: %v", err)
+		return false, utils.FormatError(err, "affectedRows", utils.GetMethodName())
 	}
 
 	return rowsAffected == 1, nil
