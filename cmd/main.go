@@ -9,12 +9,15 @@ import (
 	"fluxton/repositories"
 	"fluxton/routes"
 	"fmt"
+	"github.com/getsentry/sentry-go"
+	sentryecho "github.com/getsentry/sentry-go/echo"
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/gommon/log"
 	"github.com/samber/do"
 	echoSwagger "github.com/swaggo/echo-swagger"
+	"os"
 	"strings"
 )
 
@@ -65,6 +68,15 @@ func setupServer(container *do.Injector) *echo.Echo {
 	// Middleware
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
+
+	if err := sentry.Init(sentry.ClientOptions{
+		Dsn:              os.Getenv("SENTRY_DSN"),
+		TracesSampleRate: 1.0,
+	}); err != nil {
+		fmt.Printf("Sentry initialization failed: %v\n", err)
+	}
+
+	e.Use(sentryecho.New(sentryecho.Options{}))
 
 	// Register routes
 	registerRoutes(e, container)

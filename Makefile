@@ -37,8 +37,8 @@ up: ## Start the project
 down: ## Stop the project
 	@docker-compose down
 
-login-fluxton: ## Login to fluxton container
-	@docker exec -it fluxton /bin/sh
+login-app: ## Login to fluxton container
+	@docker exec -it fluxton_app /bin/sh
 
 login-db: ## Login to database container
 	@docker exec -it fluxton_db /bin/bash
