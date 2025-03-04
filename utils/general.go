@@ -5,6 +5,7 @@ import (
 	"github.com/labstack/gommon/log"
 	"golang.org/x/crypto/bcrypt"
 	"reflect"
+	"runtime"
 	"strings"
 )
 
@@ -112,4 +113,19 @@ func PointerToString(s *string) string {
 
 func BytesToKiloBytes(bytes int) int {
 	return bytes / 1024
+}
+
+func GetMethodName() string {
+	pc, _, _, _ := runtime.Caller(1)
+	fn := runtime.FuncForPC(pc)
+	fullName := fn.Name()
+
+	parts := strings.Split(fullName, "/")
+
+	return parts[len(parts)-1]
+}
+
+func FormatError(err error, errType, method string) error {
+	// bucketRepo.ListForProject: select.err => <error>
+	return fmt.Errorf("%s: %s.err => %v", method, errType, err)
 }
