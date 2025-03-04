@@ -13,17 +13,17 @@ import (
 	"github.com/samber/do"
 )
 
-type FormFieldRepository struct {
+type FormResponseRepository struct {
 	db *sqlx.DB
 }
 
-func NewFormFieldRepository(injector *do.Injector) (*FormFieldRepository, error) {
+func NewFormResponseRepository(injector *do.Injector) (*FormResponseRepository, error) {
 	db := do.MustInvoke[*sqlx.DB](injector)
 
-	return &FormFieldRepository{db: db}, nil
+	return &FormResponseRepository{db: db}, nil
 }
 
-func (r *FormFieldRepository) ListForForm(formUUID uuid.UUID) ([]models.FormField, error) {
+func (r *FormResponseRepository) ListForForm(formUUID uuid.UUID) ([]models.FormField, error) {
 	query := "SELECT * FROM fluxton.form_fields WHERE form_uuid = $1;"
 
 	rows, err := r.db.Queryx(query, formUUID)
@@ -48,7 +48,7 @@ func (r *FormFieldRepository) ListForForm(formUUID uuid.UUID) ([]models.FormFiel
 	return forms, nil
 }
 
-func (r *FormFieldRepository) GetByUUID(formUUID uuid.UUID) (models.FormField, error) {
+func (r *FormResponseRepository) GetByUUID(formUUID uuid.UUID) (models.FormField, error) {
 	query := "SELECT %s FROM fluxton.form_fields WHERE uuid = $1"
 	query = fmt.Sprintf(query, utils.GetColumns[models.FormField]())
 
@@ -65,7 +65,7 @@ func (r *FormFieldRepository) GetByUUID(formUUID uuid.UUID) (models.FormField, e
 	return form, nil
 }
 
-func (r *FormFieldRepository) ExistsByUUID(formFieldUUID uuid.UUID) (bool, error) {
+func (r *FormResponseRepository) ExistsByUUID(formFieldUUID uuid.UUID) (bool, error) {
 	query := "SELECT EXISTS(SELECT 1 FROM fluxton.form_fields WHERE uuid = $1)"
 
 	var exists bool
@@ -77,7 +77,7 @@ func (r *FormFieldRepository) ExistsByUUID(formFieldUUID uuid.UUID) (bool, error
 	return exists, nil
 }
 
-func (r *FormFieldRepository) ExistsByAnyLabelForForm(labels []string, formUUID uuid.UUID) (bool, error) {
+func (r *FormResponseRepository) ExistsByAnyLabelForForm(labels []string, formUUID uuid.UUID) (bool, error) {
 	query := "SELECT EXISTS(SELECT 1 FROM fluxton.form_fields WHERE label = ANY($1) AND form_uuid = $2)"
 
 	var exists bool
@@ -89,7 +89,7 @@ func (r *FormFieldRepository) ExistsByAnyLabelForForm(labels []string, formUUID 
 	return exists, nil
 }
 
-func (r *FormFieldRepository) ExistsByLabelForForm(label string, formUUID uuid.UUID) (bool, error) {
+func (r *FormResponseRepository) ExistsByLabelForForm(label string, formUUID uuid.UUID) (bool, error) {
 	query := "SELECT EXISTS(SELECT 1 FROM fluxton.form_fields WHERE label = $1 AND form_uuid = $2)"
 
 	var exists bool
@@ -101,7 +101,7 @@ func (r *FormFieldRepository) ExistsByLabelForForm(label string, formUUID uuid.U
 	return exists, nil
 }
 
-func (r *FormFieldRepository) Create(formField *models.FormField) (*models.FormField, error) {
+func (r *FormResponseRepository) Create(formField *models.FormField) (*models.FormField, error) {
 	tx, err := r.db.Beginx()
 	if err != nil {
 		return nil, utils.FormatError(err, "transactionBegin", utils.GetMethodName())
@@ -136,7 +136,7 @@ func (r *FormFieldRepository) Create(formField *models.FormField) (*models.FormF
 	return formField, nil
 }
 
-func (r *FormFieldRepository) CreateMany(formFields []models.FormField, formUUID uuid.UUID) ([]models.FormField, error) {
+func (r *FormResponseRepository) CreateMany(formFields []models.FormField, formUUID uuid.UUID) ([]models.FormField, error) {
 	createdFields := make([]models.FormField, 0, len(formFields))
 	for i, formField := range formFields {
 		formField.FormUuid = formUUID
@@ -146,13 +146,14 @@ func (r *FormFieldRepository) CreateMany(formFields []models.FormField, formUUID
 			return nil, fmt.Errorf("could not create form field at index %d: %v", i, err)
 		}
 
+		utils.DumpJSON(createdField)
 		createdFields = append(createdFields, *createdField)
 	}
 
 	return createdFields, nil
 }
 
-func (r *FormFieldRepository) Update(formField *models.FormField) (*models.FormField, error) {
+func (r *FormResponseRepository) Update(formField *models.FormField) (*models.FormField, error) {
 	query := `
 		UPDATE fluxton.form_fields 
 		SET 
@@ -177,7 +178,7 @@ func (r *FormFieldRepository) Update(formField *models.FormField) (*models.FormF
 	return formField, nil
 }
 
-func (r *FormFieldRepository) Delete(formFieldUUID uuid.UUID) (bool, error) {
+func (r *FormResponseRepository) Delete(formFieldUUID uuid.UUID) (bool, error) {
 	query := "DELETE FROM fluxton.form_fields WHERE uuid = $1"
 	res, err := r.db.Exec(query, formFieldUUID)
 	if err != nil {
