@@ -4,7 +4,7 @@ export
 DATABASE_CONNECTION="user=${DATABASE_USER} password=${DATABASE_PASSWORD} dbname=${DATABASE_NAME} host=${DATABASE_HOST} sslmode=${DATABASE_SSL_MODE}"
 
 # Include other files
--include Makefiles/*.mk
+include makefiles/*.mk
 
 # Commands
 .PHONY: help run build migrate
