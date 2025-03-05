@@ -21,6 +21,25 @@ func NewFormResponseController(injector *do.Injector) (*FormResponseController, 
 	return &FormResponseController{formResponseService: formResponseService}, nil
 }
 
+// List all form responses for a form
+//
+// @Summary List all form responses for a form
+// @Description Get all form responses for a specific form
+// @Tags formResponses
+//
+// @Accept json
+// @Produce json
+//
+// @Param Authorization header string true "Bearer Token"
+// @Param projectUUID path string true "Project UUID"
+// @Param formUUID path string true "Form UUID"
+//
+// @Success 200 {object} responses.Response{content=[]resources.FormResponse} "List of form responses"
+// @Failure 400 "Invalid input"
+// @Failure 401 "Unauthorized"
+// @Failure 500 "Internal server error"
+//
+// @Router /projects/{projectUUID}/forms/{formUUID}/responses [get]
 func (ffc *FormResponseController) List(c echo.Context) error {
 	authUser, _ := utils.NewAuth(c).User()
 
@@ -42,6 +61,27 @@ func (ffc *FormResponseController) List(c echo.Context) error {
 	return responses.SuccessResponse(c, resources.FormResponseResourceCollection(formResponses))
 }
 
+// Show details of a single form response
+//
+// @Summary Show details of a single form response
+// @Description Get details of a specific form response
+// @Tags formResponses
+//
+// @Accept json
+// @Produce json
+//
+// @Param Authorization header string true "Bearer Token"
+//
+// @Param projectUUID path string true "Project UUID"
+// @Param formUUID path string true "Form UUID"
+// @Param formResponseUUID path string true "Form Response UUID"
+//
+// @Success 200 {object} responses.Response{content=resources.FormResponse} "Form response details"
+// @Failure 400 "Invalid input"
+// @Failure 401 "Unauthorized"
+// @Failure 500 "Internal server error"
+//
+// @Router /projects/{projectUUID}/forms/{formUUID}/responses/{formResponseUUID} [get]
 func (ffc *FormResponseController) Show(c echo.Context) error {
 	authUser, _ := utils.NewAuth(c).User()
 
@@ -58,6 +98,28 @@ func (ffc *FormResponseController) Show(c echo.Context) error {
 	return responses.SuccessResponse(c, resources.FormResponseResource(formResponse))
 }
 
+// Store a new form response
+//
+// @Summary Store a new form response
+// @Description Store a new form response for a specific form
+// @Tags formResponses
+//
+// @Accept json
+// @Produce json
+//
+// @Param Authorization header string true "Bearer Token"
+// @Param projectUUID path string true "Project UUID"
+// @Param formUUID path string true "Form UUID"
+//
+// @Param request body form_requests.CreateResponseRequest true "Request body to create a new form response"
+//
+// @Success 201 {object} responses.Response{content=resources.FormResponse} "Form response details"
+// @Failure 422 "Unprocessable entity"
+// @Failure 400 "Invalid input"
+// @Failure 401 "Unauthorized"
+// @Failure 500 "Internal server error"
+//
+// @Router /projects/{projectUUID}/forms/{formUUID}/responses [post]
 func (ffc *FormResponseController) Store(c echo.Context) error {
 	var request form_requests.CreateResponseRequest
 	if err := request.BindAndValidate(c); err != nil {
@@ -84,6 +146,27 @@ func (ffc *FormResponseController) Store(c echo.Context) error {
 	return responses.CreatedResponse(c, resources.FormResponseResource(&formResponse))
 }
 
+// Delete a form response
+//
+// @Summary Delete a form response
+// @Description Delete a specific form response
+// @Tags formResponses
+//
+// @Accept json
+// @Produce json
+//
+// @Param Authorization header string true "Bearer Token"
+//
+// @Param projectUUID path string true "Project UUID"
+// @Param formUUID path string true "Form UUID"
+// @Param formResponseUUID path string true "Form Response UUID"
+//
+// @Success 204 "Form response deleted"
+// @Failure 400 "Invalid input"
+// @Failure 401 "Unauthorized"
+// @Failure 500 "Internal server error"
+//
+// @Router /projects/{projectUUID}/forms/{formUUID}/responses/{formResponseUUID} [delete]
 func (ffc *FormResponseController) Delete(c echo.Context) error {
 	authUser, _ := utils.NewAuth(c).User()
 
