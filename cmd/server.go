@@ -15,7 +15,6 @@ import (
 	"os"
 )
 
-// serverCmd represents the command to start the server
 var serverCmd = &cobra.Command{
 	Use:   "server",
 	Short: "Start the Fluxton API server",
@@ -45,7 +44,6 @@ func setupServer(container *do.Injector) *echo.Echo {
 
 	e.Use(sentryecho.New(sentryecho.Options{}))
 
-	// Register routes
 	registerRoutes(e, container)
 
 	return e
