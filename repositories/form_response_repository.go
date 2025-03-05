@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"fluxton/errs"
 	"fluxton/models"
 	"fluxton/utils"
 	"github.com/google/uuid"
@@ -168,7 +169,7 @@ func (r *FormResponseRepository) GetByUUID(formResponseUUID uuid.UUID) (*models.
 	}
 
 	if len(formResponseMap) == 0 {
-		return nil, nil
+		return nil, errs.NewNotFoundError("formResponse.error.notFound")
 	}
 
 	formResponse := formResponseMap[formResponseUUID]
@@ -221,4 +222,36 @@ func (r *FormResponseRepository) Create(
 	formResponse.Responses = *formFieldResponse
 
 	return formResponse, nil
+}
+
+func (r *FormResponseRepository) Delete(formResponseUUID uuid.UUID) error {
+	tx, err := r.db.Beginx()
+	if err != nil {
+		return utils.FormatError(err, "transactionBegin", utils.GetMethodName())
+	}
+
+	query := `DELETE FROM fluxton.form_field_responses WHERE form_response_uuid = $1`
+	_, err = tx.Exec(query, formResponseUUID)
+	if err != nil {
+		if err := tx.Rollback(); err != nil {
+			return err
+		}
+		return utils.FormatError(err, "delete", utils.GetMethodName())
+	}
+
+	query = `DELETE FROM fluxton.form_responses WHERE uuid = $1`
+	_, err = tx.Exec(query, formResponseUUID)
+	if err != nil {
+		if err := tx.Rollback(); err != nil {
+			return err
+		}
+		return utils.FormatError(err, "delete", utils.GetMethodName())
+	}
+
+	// Commit transaction
+	if err = tx.Commit(); err != nil {
+		return utils.FormatError(err, "transactionCommit", utils.GetMethodName())
+	}
+
+	return nil
 }

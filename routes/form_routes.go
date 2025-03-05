@@ -35,4 +35,5 @@ func RegisterFormRoutes(
 	formResponsesGroup.GET("", FormResponseController.List)
 	formResponsesGroup.POST("", FormResponseController.Store)
 	formResponsesGroup.GET("/:formResponseUUID", FormResponseController.Show)
+	formResponsesGroup.DELETE("/:formResponseUUID", FormResponseController.Delete)
 }
