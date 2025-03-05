@@ -98,6 +98,7 @@ func registerRoutes(e *echo.Echo, container *do.Injector) {
 	indexController := do.MustInvoke[*controllers.IndexController](container)
 	formController := do.MustInvoke[*controllers.FormController](container)
 	formFieldController := do.MustInvoke[*controllers.FormFieldController](container)
+	formResponseController := do.MustInvoke[*controllers.FormResponseController](container)
 	bucketController := do.MustInvoke[*controllers.BucketController](container)
 	fileController := do.MustInvoke[*controllers.FileController](container)
 
@@ -110,7 +111,7 @@ func registerRoutes(e *echo.Echo, container *do.Injector) {
 	routes.RegisterOrganizationRoutes(e, authMiddleware, organizationController, organizationUserController)
 	routes.RegisterProjectRoutes(e, authMiddleware, projectController)
 	routes.RegisterTableRoutes(e, authMiddleware, tableController, columnController, indexController)
-	routes.RegisterFormRoutes(e, authMiddleware, formController, formFieldController)
+	routes.RegisterFormRoutes(e, authMiddleware, formController, formFieldController, formResponseController)
 	routes.RegisterStorageRoutes(e, authMiddleware, bucketController, fileController)
 
 	e.GET("/docs/*", echoSwagger.WrapHandler)
