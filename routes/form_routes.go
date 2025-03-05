@@ -3,37 +3,36 @@ package routes
 import (
 	"fluxton/controllers"
 	"github.com/labstack/echo/v4"
+	"github.com/samber/do"
 )
 
-func RegisterFormRoutes(
-	e *echo.Echo,
-	authMiddleware echo.MiddlewareFunc,
-	FormController *controllers.FormController,
-	FormFieldController *controllers.FormFieldController,
-	FormResponseController *controllers.FormResponseController,
-) {
+func RegisterFormRoutes(e *echo.Echo, container *do.Injector, authMiddleware echo.MiddlewareFunc) {
+	formController := do.MustInvoke[*controllers.FormController](container)
+	formFieldController := do.MustInvoke[*controllers.FormFieldController](container)
+	formResponseController := do.MustInvoke[*controllers.FormResponseController](container)
+
 	projectsGroup := e.Group("api/projects/:projectUUID/forms", authMiddleware)
 
-	projectsGroup.POST("", FormController.Store)
-	projectsGroup.GET("", FormController.List)
-	projectsGroup.GET("/:formUUID", FormController.Show)
-	projectsGroup.PUT("/:formUUID", FormController.Update)
-	projectsGroup.DELETE("/:formUUID", FormController.Delete)
+	projectsGroup.POST("", formController.Store)
+	projectsGroup.GET("", formController.List)
+	projectsGroup.GET("/:formUUID", formController.Show)
+	projectsGroup.PUT("/:formUUID", formController.Update)
+	projectsGroup.DELETE("/:formUUID", formController.Delete)
 
 	// Form Field routes
 	formFieldsGroup := e.Group("api/projects/:projectUUID/forms/:formUUID/fields", authMiddleware)
 
-	formFieldsGroup.POST("", FormFieldController.Store)
-	formFieldsGroup.GET("", FormFieldController.List)
-	formFieldsGroup.GET("/:fieldUUID", FormFieldController.Show)
-	formFieldsGroup.PUT("/:fieldUUID", FormFieldController.Update)
-	formFieldsGroup.DELETE("/:fieldUUID", FormFieldController.Delete)
+	formFieldsGroup.POST("", formFieldController.Store)
+	formFieldsGroup.GET("", formFieldController.List)
+	formFieldsGroup.GET("/:fieldUUID", formFieldController.Show)
+	formFieldsGroup.PUT("/:fieldUUID", formFieldController.Update)
+	formFieldsGroup.DELETE("/:fieldUUID", formFieldController.Delete)
 
 	// Form Response routes
 	formResponsesGroup := e.Group("api/projects/:projectUUID/forms/:formUUID/responses", authMiddleware)
 
-	formResponsesGroup.GET("", FormResponseController.List)
-	formResponsesGroup.POST("", FormResponseController.Store)
-	formResponsesGroup.GET("/:formResponseUUID", FormResponseController.Show)
-	formResponsesGroup.DELETE("/:formResponseUUID", FormResponseController.Delete)
+	formResponsesGroup.GET("", formResponseController.List)
+	formResponsesGroup.POST("", formResponseController.Store)
+	formResponsesGroup.GET("/:formResponseUUID", formResponseController.Show)
+	formResponsesGroup.DELETE("/:formResponseUUID", formResponseController.Delete)
 }

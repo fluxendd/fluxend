@@ -3,9 +3,13 @@ package routes
 import (
 	"fluxton/controllers"
 	"github.com/labstack/echo/v4"
+	"github.com/samber/do"
 )
 
-func RegisterOrganizationRoutes(e *echo.Echo, authMiddleware echo.MiddlewareFunc, organizationController *controllers.OrganizationController, organizationMemberController *controllers.OrganizationMemberController) {
+func RegisterOrganizationRoutes(e *echo.Echo, container *do.Injector, authMiddleware echo.MiddlewareFunc) {
+	organizationController := do.MustInvoke[*controllers.OrganizationController](container)
+	organizationMemberController := do.MustInvoke[*controllers.OrganizationMemberController](container)
+
 	organizationsGroup := e.Group("api/organizations", authMiddleware)
 
 	organizationsGroup.POST("", organizationController.Store)
