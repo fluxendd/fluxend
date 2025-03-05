@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	_ "fluxton/cmd/docs"
-	"fluxton/controllers"
 	"fluxton/database/seeders"
 	"fluxton/middlewares"
 	"fluxton/repositories"
@@ -86,22 +85,6 @@ func setupServer(container *do.Injector) *echo.Echo {
 
 // registerRoutes registers all routes in the Echo instance
 func registerRoutes(e *echo.Echo, container *do.Injector) {
-	// Controllers
-	userController := do.MustInvoke[*controllers.UserController](container)
-	settingController := do.MustInvoke[*controllers.SettingController](container)
-	healthController := do.MustInvoke[*controllers.HealthController](container)
-	organizationController := do.MustInvoke[*controllers.OrganizationController](container)
-	organizationUserController := do.MustInvoke[*controllers.OrganizationMemberController](container)
-	projectController := do.MustInvoke[*controllers.ProjectController](container)
-	tableController := do.MustInvoke[*controllers.TableController](container)
-	columnController := do.MustInvoke[*controllers.ColumnController](container)
-	indexController := do.MustInvoke[*controllers.IndexController](container)
-	formController := do.MustInvoke[*controllers.FormController](container)
-	formFieldController := do.MustInvoke[*controllers.FormFieldController](container)
-	formResponseController := do.MustInvoke[*controllers.FormResponseController](container)
-	bucketController := do.MustInvoke[*controllers.BucketController](container)
-	fileController := do.MustInvoke[*controllers.FileController](container)
-
 	userRepo := do.MustInvoke[*repositories.UserRepository](container)
 	authMiddleware := middlewares.AuthMiddleware(userRepo)
 
@@ -109,14 +92,13 @@ func registerRoutes(e *echo.Echo, container *do.Injector) {
 	requestLogMiddleware := middlewares.RequestLoggerMiddleware(requestLogRepo)
 	e.Use(requestLogMiddleware)
 
-	// Register routes
-	routes.RegisterUserRoutes(e, authMiddleware, userController)
-	routes.RegisterAdminRoutes(e, authMiddleware, settingController, healthController)
-	routes.RegisterOrganizationRoutes(e, authMiddleware, organizationController, organizationUserController)
-	routes.RegisterProjectRoutes(e, authMiddleware, projectController)
-	routes.RegisterTableRoutes(e, authMiddleware, tableController, columnController, indexController)
-	routes.RegisterFormRoutes(e, authMiddleware, formController, formFieldController, formResponseController)
-	routes.RegisterStorageRoutes(e, authMiddleware, bucketController, fileController)
+	routes.RegisterUserRoutes(e, container, authMiddleware)
+	routes.RegisterAdminRoutes(e, container, authMiddleware)
+	routes.RegisterOrganizationRoutes(e, container, authMiddleware)
+	routes.RegisterProjectRoutes(e, container, authMiddleware)
+	routes.RegisterTableRoutes(e, container, authMiddleware)
+	routes.RegisterFormRoutes(e, container, authMiddleware)
+	routes.RegisterStorageRoutes(e, container, authMiddleware)
 
 	e.GET("/docs/*", echoSwagger.WrapHandler)
 }
