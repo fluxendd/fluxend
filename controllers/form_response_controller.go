@@ -42,6 +42,22 @@ func (ffc *FormResponseController) List(c echo.Context) error {
 	return responses.SuccessResponse(c, resources.FormResponseResourceCollection(formResponses))
 }
 
+func (fc *FormResponseController) Show(c echo.Context) error {
+	authUser, _ := utils.NewAuth(c).User()
+
+	projectUUID, formUUID, formResponseUUID, err := fc.parseRequest(c)
+	if err != nil {
+		return err
+	}
+
+	formResponse, err := fc.formResponseService.GetByUUID(formResponseUUID, formUUID, projectUUID, authUser)
+	if err != nil {
+		return responses.ErrorResponse(c, err)
+	}
+
+	return responses.SuccessResponse(c, resources.FormResponseResource(formResponse))
+}
+
 func (ffc *FormResponseController) Store(c echo.Context) error {
 	var request form_requests.CreateResponseRequest
 	if err := request.BindAndValidate(c); err != nil {
