@@ -33,4 +33,5 @@ func RegisterFormRoutes(
 	formResponsesGroup := e.Group("api/projects/:projectUUID/forms/:formUUID/responses", authMiddleware)
 
 	formResponsesGroup.GET("", FormResponseController.List)
+	formResponsesGroup.POST("", FormResponseController.Store)
 }
