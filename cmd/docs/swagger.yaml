@@ -44,6 +44,12 @@ definitions:
       name:
         type: string
     type: object
+  form_requests.CreateResponseRequest:
+    properties:
+      response:
+        additionalProperties: true
+        type: object
+    type: object
   form_requests.FieldRequest:
     properties:
       description:
@@ -2085,6 +2091,185 @@ paths:
       summary: List all forms
       tags:
       - forms
+  /projects/{projectUUID}/forms/{formUUID}/responses:
+    get:
+      consumes:
+      - application/json
+      description: Get all form responses for a specific form
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Project UUID
+        in: path
+        name: projectUUID
+        required: true
+        type: string
+      - description: Form UUID
+        in: path
+        name: formUUID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of form responses
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Response'
+            - properties:
+                content:
+                  items:
+                    $ref: '#/definitions/resources.FormResponse'
+                  type: array
+              type: object
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal server error
+      summary: List all form responses for a form
+      tags:
+      - formResponses
+    post:
+      consumes:
+      - application/json
+      description: Store a new form response for a specific form
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Project UUID
+        in: path
+        name: projectUUID
+        required: true
+        type: string
+      - description: Form UUID
+        in: path
+        name: formUUID
+        required: true
+        type: string
+      - description: Request body to create a new form response
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/form_requests.CreateResponseRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Form response details
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Response'
+            - properties:
+                content:
+                  $ref: '#/definitions/resources.FormResponse'
+              type: object
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "422":
+          description: Unprocessable entity
+        "500":
+          description: Internal server error
+      summary: Store a new form response
+      tags:
+      - formResponses
+  /projects/{projectUUID}/forms/{formUUID}/responses/{formResponseUUID}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a specific form response
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Project UUID
+        in: path
+        name: projectUUID
+        required: true
+        type: string
+      - description: Form UUID
+        in: path
+        name: formUUID
+        required: true
+        type: string
+      - description: Form Response UUID
+        in: path
+        name: formResponseUUID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Form response deleted
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal server error
+      summary: Delete a form response
+      tags:
+      - formResponses
+    get:
+      consumes:
+      - application/json
+      description: Get details of a specific form response
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Project UUID
+        in: path
+        name: projectUUID
+        required: true
+        type: string
+      - description: Form UUID
+        in: path
+        name: formUUID
+        required: true
+        type: string
+      - description: Form Response UUID
+        in: path
+        name: formResponseUUID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Form response details
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Response'
+            - properties:
+                content:
+                  $ref: '#/definitions/resources.FormResponse'
+              type: object
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal server error
+      summary: Show details of a single form response
+      tags:
+      - formResponses
   /projects/{projectUUID}/storage:
     get:
       consumes:
