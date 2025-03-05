@@ -97,6 +97,85 @@ func (r *FormResponseRepository) ListForForm(formUUID uuid.UUID) ([]models.FormR
 	return formResponses, nil
 }
 
+func (r *FormResponseRepository) GetByUUID(formResponseUUID uuid.UUID) (*models.FormResponse, error) {
+	query := `
+		SELECT 
+			fr.uuid AS form_response_uuid, 
+			fr.form_uuid, 
+			fr.created_at AS form_response_created_at, 
+			fr.updated_at AS form_response_updated_at, 
+			ffr.uuid AS form_field_response_uuid, 
+			ffr.form_response_uuid, 
+			ffr.form_field_uuid, 
+			ffr.value, 
+			ffr.created_at AS form_field_response_created_at, 
+			ffr.updated_at AS form_field_response_updated_at
+		FROM fluxton.form_responses fr
+		LEFT JOIN fluxton.form_field_responses ffr 
+			ON fr.uuid = ffr.form_response_uuid
+		WHERE fr.uuid = $1
+		ORDER BY fr.created_at, ffr.created_at;
+	`
+
+	rows, err := r.db.Queryx(query, formResponseUUID)
+	if err != nil {
+		return nil, utils.FormatError(err, "select", utils.GetMethodName())
+	}
+	defer rows.Close()
+
+	formResponseMap := make(map[uuid.UUID]*models.FormResponse)
+
+	for rows.Next() {
+		var row struct {
+			FormResponseUUID           uuid.UUID  `db:"form_response_uuid"`
+			FormUUID                   uuid.UUID  `db:"form_uuid"`
+			FormResponseCreatedAt      time.Time  `db:"form_response_created_at"`
+			FormResponseUpdatedAt      time.Time  `db:"form_response_updated_at"`
+			FormFieldResponseUUID      *uuid.UUID `db:"form_field_response_uuid"`
+			FormFieldUUID              *uuid.UUID `db:"form_field_uuid"`
+			Value                      *string    `db:"value"`
+			FormFieldResponseCreatedAt *time.Time `db:"form_field_response_created_at"`
+			FormFieldResponseUpdatedAt *time.Time `db:"form_field_response_updated_at"`
+		}
+
+		if err := rows.StructScan(&row); err != nil {
+			return nil, utils.FormatError(err, "scan", utils.GetMethodName())
+		}
+
+		formResponse, exists := formResponseMap[row.FormResponseUUID]
+		if !exists {
+			formResponse = &models.FormResponse{
+				Uuid:      row.FormResponseUUID,
+				FormUuid:  row.FormUUID,
+				CreatedAt: row.FormResponseCreatedAt,
+				UpdatedAt: row.FormResponseUpdatedAt,
+			}
+			formResponseMap[row.FormResponseUUID] = formResponse
+		}
+
+		if row.FormFieldResponseUUID != nil {
+			formResponse.Responses = append(formResponse.Responses, models.FormFieldResponse{
+				Uuid:             *row.FormFieldResponseUUID,
+				FormResponseUuid: row.FormResponseUUID,
+				FormFieldUuid:    *row.FormFieldUUID,
+				Value:            *row.Value,
+				CreatedAt:        *row.FormFieldResponseCreatedAt,
+				UpdatedAt:        *row.FormFieldResponseUpdatedAt,
+			})
+		}
+
+		break
+	}
+
+	if len(formResponseMap) == 0 {
+		return nil, nil
+	}
+
+	formResponse := formResponseMap[formResponseUUID]
+
+	return formResponse, nil
+}
+
 func (r *FormResponseRepository) Create(
 	formResponse *models.FormResponse,
 	formFieldResponse *[]models.FormFieldResponse,

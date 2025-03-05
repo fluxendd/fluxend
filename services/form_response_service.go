@@ -12,6 +12,7 @@ import (
 
 type FormResponseService interface {
 	List(formUUID, projectUUID uuid.UUID, authUser models.AuthUser) ([]models.FormResponse, error)
+	GetByUUID(formResponseUUID, formUUID, projectUUID uuid.UUID, authUser models.AuthUser) (*models.FormResponse, error)
 	Create(formUUID, projectUUID uuid.UUID, request *form_requests.CreateResponseRequest, authUser models.AuthUser) (models.FormResponse, error)
 }
 
@@ -55,6 +56,24 @@ func (s *FormResponseServiceImpl) List(formUUID, projectUUID uuid.UUID, authUser
 	}
 
 	return s.formResponseRepo.ListForForm(formUUID)
+}
+
+func (s *FormResponseServiceImpl) GetByUUID(formResponseUUID, formUUID, projectUUID uuid.UUID, authUser models.AuthUser) (*models.FormResponse, error) {
+	err := s.validateFormExists(formUUID)
+	if err != nil {
+		return &models.FormResponse{}, err
+	}
+
+	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(projectUUID)
+	if err != nil {
+		return &models.FormResponse{}, err
+	}
+
+	if !s.projectPolicy.CanAccess(organizationUUID, authUser) {
+		return &models.FormResponse{}, errs.NewForbiddenError("formFieldResponse.error.showForbidden")
+	}
+
+	return s.formResponseRepo.GetByUUID(formResponseUUID)
 }
 
 func (s *FormResponseServiceImpl) Create(formUUID, projectUUID uuid.UUID, request *form_requests.CreateResponseRequest, authUser models.AuthUser) (models.FormResponse, error) {
