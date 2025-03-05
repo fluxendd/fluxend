@@ -13,12 +13,6 @@ setup: ## Setup the project
 	cp .env.example .env
 	make up
 
-serve: ## Run the project in development mode
-	@go run main.go server
-
-routes: ## Show all the available routes
-	@go run main.go routes
-
 build: ## Build the project
 	@go build -o bin/fluxton main.go
 
