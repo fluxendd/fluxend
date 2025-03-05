@@ -146,7 +146,6 @@ func (r *FormFieldRepository) CreateMany(formFields []models.FormField, formUUID
 			return nil, fmt.Errorf("could not create form field at index %d: %v", i, err)
 		}
 
-		utils.DumpJSON(createdField)
 		createdFields = append(createdFields, *createdField)
 	}
 
