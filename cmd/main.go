@@ -105,6 +105,10 @@ func registerRoutes(e *echo.Echo, container *do.Injector) {
 	userRepo := do.MustInvoke[*repositories.UserRepository](container)
 	authMiddleware := middlewares.AuthMiddleware(userRepo)
 
+	requestLogRepo := do.MustInvoke[*repositories.RequestLogRepository](container)
+	requestLogMiddleware := middlewares.RequestLoggerMiddleware(requestLogRepo)
+	e.Use(requestLogMiddleware)
+
 	// Register routes
 	routes.RegisterUserRoutes(e, authMiddleware, userController)
 	routes.RegisterAdminRoutes(e, authMiddleware, settingController, healthController)
