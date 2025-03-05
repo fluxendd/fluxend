@@ -21,4 +21,5 @@ func init() {
 	RootCmd.AddCommand(serverCmd)
 	RootCmd.AddCommand(seedCmd)
 	RootCmd.AddCommand(routesCmd)
+	RootCmd.AddCommand(userDatabaseStatsCmd)
 }
