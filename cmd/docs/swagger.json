@@ -1818,7 +1818,7 @@
                                         "content": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/resources.FormResponse"
+                                                "$ref": "#/definitions/resources.FormResponseForAPI"
                                             }
                                         }
                                     }
@@ -1893,7 +1893,7 @@
                                     "type": "object",
                                     "properties": {
                                         "content": {
-                                            "$ref": "#/definitions/resources.FormResponse"
+                                            "$ref": "#/definitions/resources.FormResponseForAPI"
                                         }
                                     }
                                 }
@@ -1970,7 +1970,7 @@
                                     "type": "object",
                                     "properties": {
                                         "content": {
-                                            "$ref": "#/definitions/resources.FormResponse"
+                                            "$ref": "#/definitions/resources.FormResponseForAPI"
                                         }
                                     }
                                 }
@@ -3914,6 +3914,29 @@
                 }
             }
         },
+        "resources.FormFieldResponseForAPI": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "formFieldUuid": {
+                    "type": "string"
+                },
+                "formResponseUuid": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "uuid": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
         "resources.FormResponse": {
             "type": "object",
             "properties": {
@@ -3937,6 +3960,23 @@
                 },
                 "updatedBy": {
                     "type": "string"
+                },
+                "uuid": {
+                    "type": "string"
+                }
+            }
+        },
+        "resources.FormResponseForAPI": {
+            "type": "object",
+            "properties": {
+                "formUuid": {
+                    "type": "string"
+                },
+                "responses": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/resources.FormFieldResponseForAPI"
+                    }
                 },
                 "uuid": {
                     "type": "string"

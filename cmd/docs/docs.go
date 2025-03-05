@@ -1824,7 +1824,7 @@ const docTemplate = `{
                                         "content": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/resources.FormResponse"
+                                                "$ref": "#/definitions/resources.FormResponseForAPI"
                                             }
                                         }
                                     }
@@ -1899,7 +1899,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "content": {
-                                            "$ref": "#/definitions/resources.FormResponse"
+                                            "$ref": "#/definitions/resources.FormResponseForAPI"
                                         }
                                     }
                                 }
@@ -1976,7 +1976,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "content": {
-                                            "$ref": "#/definitions/resources.FormResponse"
+                                            "$ref": "#/definitions/resources.FormResponseForAPI"
                                         }
                                     }
                                 }
@@ -3920,6 +3920,29 @@ const docTemplate = `{
                 }
             }
         },
+        "resources.FormFieldResponseForAPI": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "formFieldUuid": {
+                    "type": "string"
+                },
+                "formResponseUuid": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "uuid": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
         "resources.FormResponse": {
             "type": "object",
             "properties": {
@@ -3943,6 +3966,23 @@ const docTemplate = `{
                 },
                 "updatedBy": {
                     "type": "string"
+                },
+                "uuid": {
+                    "type": "string"
+                }
+            }
+        },
+        "resources.FormResponseForAPI": {
+            "type": "object",
+            "properties": {
+                "formUuid": {
+                    "type": "string"
+                },
+                "responses": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/resources.FormFieldResponseForAPI"
+                    }
                 },
                 "uuid": {
                     "type": "string"
