@@ -18,8 +18,10 @@ func Execute() {
 }
 
 func init() {
+	RootCmd.AddCommand(aboutCmd)
 	RootCmd.AddCommand(serverCmd)
 	RootCmd.AddCommand(seedCmd)
 	RootCmd.AddCommand(routesCmd)
 	RootCmd.AddCommand(userDatabaseStatsCmd)
+	RootCmd.AddCommand(optimizeCmd)
 }
