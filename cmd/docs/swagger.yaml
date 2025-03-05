@@ -181,6 +181,21 @@ definitions:
       uuid:
         type: string
     type: object
+  resources.FormFieldResponseForAPI:
+    properties:
+      createdAt:
+        type: string
+      formFieldUuid:
+        type: string
+      formResponseUuid:
+        type: string
+      updatedAt:
+        type: string
+      uuid:
+        type: string
+      value:
+        type: string
+    type: object
   resources.FormResponse:
     properties:
       createdAt:
@@ -197,6 +212,17 @@ definitions:
         type: string
       updatedBy:
         type: string
+      uuid:
+        type: string
+    type: object
+  resources.FormResponseForAPI:
+    properties:
+      formUuid:
+        type: string
+      responses:
+        items:
+          $ref: '#/definitions/resources.FormFieldResponseForAPI'
+        type: array
       uuid:
         type: string
     type: object
@@ -2123,7 +2149,7 @@ paths:
             - properties:
                 content:
                   items:
-                    $ref: '#/definitions/resources.FormResponse'
+                    $ref: '#/definitions/resources.FormResponseForAPI'
                   type: array
               type: object
         "400":
@@ -2171,7 +2197,7 @@ paths:
             - $ref: '#/definitions/responses.Response'
             - properties:
                 content:
-                  $ref: '#/definitions/resources.FormResponse'
+                  $ref: '#/definitions/resources.FormResponseForAPI'
               type: object
         "400":
           description: Invalid input
@@ -2259,7 +2285,7 @@ paths:
             - $ref: '#/definitions/responses.Response'
             - properties:
                 content:
-                  $ref: '#/definitions/resources.FormResponse'
+                  $ref: '#/definitions/resources.FormResponseForAPI'
               type: object
         "400":
           description: Invalid input

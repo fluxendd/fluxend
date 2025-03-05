@@ -34,7 +34,7 @@ func NewFormResponseController(injector *do.Injector) (*FormResponseController, 
 // @Param projectUUID path string true "Project UUID"
 // @Param formUUID path string true "Form UUID"
 //
-// @Success 200 {object} responses.Response{content=[]resources.FormResponse} "List of form responses"
+// @Success 200 {object} responses.Response{content=[]resources.FormResponseForAPI} "List of form responses"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
@@ -76,7 +76,7 @@ func (ffc *FormResponseController) List(c echo.Context) error {
 // @Param formUUID path string true "Form UUID"
 // @Param formResponseUUID path string true "Form Response UUID"
 //
-// @Success 200 {object} responses.Response{content=resources.FormResponse} "Form response details"
+// @Success 200 {object} responses.Response{content=resources.FormResponseForAPI} "Form response details"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
@@ -113,7 +113,7 @@ func (ffc *FormResponseController) Show(c echo.Context) error {
 //
 // @Param request body form_requests.CreateResponseRequest true "Request body to create a new form response"
 //
-// @Success 201 {object} responses.Response{content=resources.FormResponse} "Form response details"
+// @Success 201 {object} responses.Response{content=resources.FormResponseForAPI} "Form response details"
 // @Failure 422 "Unprocessable entity"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
