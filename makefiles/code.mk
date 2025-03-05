@@ -1,5 +1,3 @@
-.PHONY: lint lint.fix
-
 lint: ## Run linter
 	@golangci-lint run
 

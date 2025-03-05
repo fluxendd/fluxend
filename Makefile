@@ -6,9 +6,6 @@ DATABASE_CONNECTION="user=${DATABASE_USER} password=${DATABASE_PASSWORD} dbname=
 # Include other files
 include makefiles/*.mk
 
-# Commands
-.PHONY: help serve routes build setup up down login-app login-db postgrest-list postgrest-destroy docs
-
 help: ## Shows this help
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_\-\.]+:.*?## / {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 

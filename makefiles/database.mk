@@ -1,5 +1,3 @@
-.PHONY: migrate-create migrate-up migrate-down migrate-status migrate-reset migrate-redo migrate-fresh seed seed-fresh
-
 drop.user.dbs: ## Drop all user-created databases
 	@docker exec -i fluxton_db psql -U ${DATABASE_USER} -d ${DATABASE_NAME} -t -c "SELECT datname FROM pg_database WHERE datname LIKE 'udb_%';" | sed 's/^[ \t]*//' | while read dbname; do \
 		if [ ! -z "$$dbname" ]; then \
