@@ -14,6 +14,7 @@ type FormResponseService interface {
 	List(formUUID, projectUUID uuid.UUID, authUser models.AuthUser) ([]models.FormResponse, error)
 	GetByUUID(formResponseUUID, formUUID, projectUUID uuid.UUID, authUser models.AuthUser) (*models.FormResponse, error)
 	Create(formUUID, projectUUID uuid.UUID, request *form_requests.CreateResponseRequest, authUser models.AuthUser) (models.FormResponse, error)
+	Delete(projectUUID, formUUID, formResponseUUID uuid.UUID, authUser models.AuthUser) error
 }
 
 type FormResponseServiceImpl struct {
@@ -119,6 +120,24 @@ func (s *FormResponseServiceImpl) Create(formUUID, projectUUID uuid.UUID, reques
 	}
 
 	return formResponse, nil
+}
+
+func (s *FormResponseServiceImpl) Delete(projectUUID, formUUID, formResponseUUID uuid.UUID, authUser models.AuthUser) error {
+	err := s.validateFormExists(formUUID)
+	if err != nil {
+		return err
+	}
+
+	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(projectUUID)
+	if err != nil {
+		return err
+	}
+
+	if !s.projectPolicy.CanUpdate(organizationUUID, authUser) {
+		return errs.NewForbiddenError("form.error.deleteForbidden")
+	}
+
+	return s.formResponseRepo.Delete(formResponseUUID)
 }
 
 func (s *FormResponseServiceImpl) validateFormExists(formUUID uuid.UUID) error {
