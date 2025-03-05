@@ -5,10 +5,10 @@ import (
 	"log"
 )
 
-// userDatabaseStatsCmd runs in background and populates table with stats
-var userDatabaseStatsCmd = &cobra.Command{
+// udbStats runs in background and populates table with stats
+var udbStats = &cobra.Command{
 	Use:   "udb.stats",
-	Short: "Seed the database with initial data",
+	Short: "Pull stats from the user databases",
 	Run: func(cmd *cobra.Command, args []string) {
 		getDatabaseStats()
 	},
