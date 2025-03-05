@@ -10,22 +10,22 @@ drop-user-databases: ## Drop all user-created databases
 
 migrate-create: ## Create a new database migration
 	@read -p "Enter migration name: " name; \
-	goose -dir migrations create $$name sql
+	goose -dir database/migrations create $$name sql
 
 migrate-up: ## Run database migrations
-	goose -dir migrations postgres ${DATABASE_CONNECTION} up
+	goose -dir database/migrations postgres ${DATABASE_CONNECTION} up
 
 migrate-down: ## Rollback database migrations
-	goose -dir migrations postgres ${DATABASE_CONNECTION} down
+	goose -dir database/migrations postgres ${DATABASE_CONNECTION} down
 
 migrate-status: ## Show the status of the database migrations
-	goose -dir migrations postgres ${DATABASE_CONNECTION} status
+	goose -dir database/migrations postgres ${DATABASE_CONNECTION} status
 
 migrate-reset: ## Rollback all migrations and run them again
-	goose -dir migrations postgres ${DATABASE_CONNECTION} reset
+	goose -dir database/migrations postgres ${DATABASE_CONNECTION} reset
 
 migrate-redo: ## Rollback the last migration and run it again
-	goose -dir migrations postgres ${DATABASE_CONNECTION} redo
+	goose -dir database/migrations postgres ${DATABASE_CONNECTION} redo
 
 migrate-fresh: ## Rollback all migrations and run them again
 	make drop-user-databases
