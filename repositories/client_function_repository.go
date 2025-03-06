@@ -14,7 +14,7 @@ func NewClientFunctionRepository(connection *sqlx.DB) (*ClientFunctionRepository
 	return &ClientFunctionRepository{connection: connection}, nil
 }
 
-func (r *ClientFunctionRepository) ListFunctions(schema string) ([]models.Function, error) {
+func (r *ClientFunctionRepository) List(schema string) ([]models.Function, error) {
 	var functions []models.Function
 	query := `
 		SELECT routine_name, routine_type, data_type, type_udt_name, routine_definition, external_language, sql_data_access
@@ -57,17 +57,7 @@ func (r *ClientFunctionRepository) GetByName(schema, functionName string) (model
 	return function, nil
 }
 
-func (r *ClientFunctionRepository) Update(schema, functionName, newFunctionSQL string) error {
-	err := r.DeleteFunction(schema, functionName)
-	if err != nil {
-		return err
-	}
-
-	// Recreate function
-	return r.Create(newFunctionSQL)
-}
-
-func (r *ClientFunctionRepository) DeleteFunction(schema, functionName string) error {
+func (r *ClientFunctionRepository) Delete(schema, functionName string) error {
 	query := fmt.Sprintf(`DROP FUNCTION IF EXISTS %s.%s CASCADE`, schema, functionName)
 	_, err := r.connection.Exec(query)
 	if err != nil {
