@@ -51,6 +51,7 @@ func InitializeContainer() *do.Injector {
 	do.Provide(injector, services.NewTableService)
 	do.Provide(injector, services.NewColumnService)
 	do.Provide(injector, services.NewIndexService)
+	do.Provide(injector, services.NewFunctionService)
 	do.Provide(injector, services.NewFormService)
 	do.Provide(injector, services.NewFormFieldService)
 	do.Provide(injector, services.NewFormResponseService)
