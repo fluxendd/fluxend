@@ -15,5 +15,5 @@ about: ## Show the project information
 optimize: ## Optimize the project
 	@go run main.go optimize
 
-udb_stats: ## Show the database stats
-	@go run main.go udb_stats
+udb.stats: ## Show the database stats
+	@go run main.go udb.stats
