@@ -43,13 +43,27 @@ func (r *CreateFunctionRequest) BindAndValidate(c echo.Context) []string {
 }
 
 func (r *CreateFunctionRequest) validate() error {
+	validTypes := map[string]bool{
+		"integer": true, "bigint": true, "smallint": true, "serial": true, "bigserial": true,
+		"text": true, "varchar": true, "char": true, "boolean": true,
+		"real": true, "double precision": true, "numeric": true,
+		"json": true, "jsonb": true, "uuid": true,
+		"timestamp": true, "timestamptz": true, "date": true, "time": true,
+		"bytea": true, "void": true, "record": true, "table": true,
+	}
+
+	validLanguages := map[string]bool{
+		"plpgsql": true,
+		"sql":     true,
+	}
+
 	return validation.ValidateStruct(r,
 		validation.Field(
 			&r.Name,
 			validation.Required.Error("Name is required"),
 			validation.Match(
 				regexp.MustCompile(utils.AlphanumericWithUnderscorePattern()),
-			).Error("Table name must be alphanumeric with underscores"),
+			).Error("Function name must be alphanumeric with underscores"),
 			validation.Length(
 				configs.MinTableNameLength, configs.MaxTableNameLength,
 			).Error(
@@ -59,6 +73,47 @@ func (r *CreateFunctionRequest) validate() error {
 					configs.MaxTableNameLength,
 				),
 			),
+		),
+
+		// Validate return type
+		validation.Field(
+			&r.ReturnType,
+			validation.Required.Error("ReturnType is required"),
+			validation.By(func(value interface{}) error {
+				if _, exists := validTypes[value.(string)]; !exists {
+					return fmt.Errorf("invalid return type: %s", value.(string))
+				}
+				return nil
+			}),
+		),
+
+		// Validate language
+		validation.Field(
+			&r.Language,
+			validation.Required.Error("Language is required"),
+			validation.By(func(value interface{}) error {
+				if _, exists := validLanguages[value.(string)]; !exists {
+					return fmt.Errorf("invalid language: %s", value.(string))
+				}
+				return nil
+			}),
+		),
+
+		// Validate function parameters
+		validation.Field(
+			&r.Parameters,
+			validation.By(func(value interface{}) error {
+				params, ok := value.([]functionParameter)
+				if !ok {
+					return fmt.Errorf("invalid parameters format")
+				}
+				for _, param := range params {
+					if _, exists := validTypes[param.Type]; !exists {
+						return fmt.Errorf("invalid parameter type: %s", param.Type)
+					}
+				}
+				return nil
+			}),
 		),
 	)
 }
