@@ -7,7 +7,7 @@ import (
 
 // optimizeCmd Flush all caches and optimize the application
 var optimizeCmd = &cobra.Command{
-	Use:   "about",
+	Use:   "optimize",
 	Short: "Flush all caches and optimize the application",
 	Run: func(cmd *cobra.Command, args []string) {
 		optimize()
