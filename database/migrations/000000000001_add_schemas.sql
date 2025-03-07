@@ -5,6 +5,11 @@ DO $$
         IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'web_anon') THEN
             CREATE ROLE web_anon NOINHERIT;
         END IF;
+
+        IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'authenticator') THEN
+            CREATE ROLE authenticator NOINHERIT LOGIN PASSWORD 'fluxton';
+            GRANT web_anon to authenticator;
+        END IF;
     END $$;
 
 CREATE SCHEMA IF NOT EXISTS fluxton;
