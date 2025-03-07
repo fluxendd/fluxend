@@ -171,7 +171,7 @@ func (fc *FunctionController) Delete(c echo.Context) error {
 		return responses.BadRequestResponse(c, "Function name is required")
 	}
 
-	if _, err := fc.functionService.Delete(functionName, schema, projectUUID, authUser); err != nil {
+	if _, err := fc.functionService.Delete(schema, functionName, projectUUID, authUser); err != nil {
 		return responses.ErrorResponse(c, err)
 	}
 
@@ -184,7 +184,7 @@ func (fc *FunctionController) parseRequest(c echo.Context) (uuid.UUID, string, e
 		return uuid.UUID{}, "", err
 	}
 
-	schema := c.QueryParam("schema")
+	schema := c.Param("schema")
 	if schema == "" {
 		return uuid.UUID{}, "", errs.NewBadRequestError("Schema is required")
 	}
