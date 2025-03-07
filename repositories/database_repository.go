@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"fmt"
+	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 	"github.com/labstack/gommon/log"
 	"github.com/samber/do"
@@ -20,13 +21,17 @@ func NewDatabaseRepository(injector *do.Injector) (*DatabaseRepository, error) {
 	return &DatabaseRepository{db: db}, nil
 }
 
-func (r *DatabaseRepository) Create(name string) error {
+func (r *DatabaseRepository) Create(name string, userUUID uuid.NullUUID) error {
 	_, err := r.db.Exec(fmt.Sprintf(`CREATE DATABASE "%s"`, name))
 	if err != nil {
 		return err
 	}
 
-	return r.importSeedFiles(name)
+	if userUUID.Valid {
+		return r.importSeedFiles(name, userUUID.UUID)
+	}
+
+	return nil
 }
 
 func (r *DatabaseRepository) DropIfExists(name string) error {
@@ -44,7 +49,7 @@ func (r *DatabaseRepository) Recreate(name string) error {
 		return err
 	}
 
-	err = r.Create(name)
+	err = r.Create(name, uuid.NullUUID{})
 	if err != nil {
 		return err
 	}
@@ -86,7 +91,7 @@ func (r *DatabaseRepository) Connect(name string) (*sqlx.DB, error) {
 	return sqlx.Connect("postgres", connStr)
 }
 
-func (r *DatabaseRepository) importSeedFiles(databaseName string) error {
+func (r *DatabaseRepository) importSeedFiles(databaseName string, userUUID uuid.UUID) error {
 	connection, err := r.Connect(databaseName)
 	if err != nil {
 		return fmt.Errorf("could not connect to database: %v", err)
@@ -118,7 +123,7 @@ func (r *DatabaseRepository) importSeedFiles(databaseName string) error {
 
 		sqlQuery := string(sqlContent)
 		if strings.Contains(sqlQuery, "{{USER_ROLE}}") {
-			sqlQuery = strings.ReplaceAll(sqlQuery, "{{USER_ROLE}}", fmt.Sprintf("usr_%s", databaseName))
+			sqlQuery = strings.ReplaceAll(sqlQuery, "{{USER_ROLE}}", fmt.Sprintf(`usr_%s`, strings.ReplaceAll(userUUID.String(), "-", "_")))
 		}
 
 		// Execute the SQL statements

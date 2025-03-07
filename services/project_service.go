@@ -88,7 +88,7 @@ func (s *ProjectServiceImpl) Create(request *project_requests.CreateRequest, aut
 		return models.Project{}, err
 	}
 
-	err = s.databaseRepo.Create(project.DBName)
+	err = s.databaseRepo.Create(project.DBName, uuid.NullUUID{UUID: authUser.Uuid, Valid: true})
 	if err != nil {
 		// TODO: handle better
 		s.projectRepo.Delete(project.Uuid)

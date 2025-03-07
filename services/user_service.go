@@ -11,6 +11,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/samber/do"
 	"os"
+	"strings"
 	"time"
 )
 
@@ -140,7 +141,8 @@ func (s *UserServiceImpl) generateToken(user *models.User, jwtVersion int) (stri
 		"exp":     time.Now().Add(time.Hour * 24).Unix(),
 		"iat":     time.Now().Unix(),
 		"uuid":    user.Uuid.String(),
-		"role_id": user.RoleID,
+		"role_id": user.RoleID,                                               // fluxton role
+		"role":    "usr_" + strings.ReplaceAll(user.Uuid.String(), "-", "_"), // postgrest role
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
