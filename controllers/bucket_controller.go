@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fluxton/requests"
 	"fluxton/requests/bucket_requests"
 	"fluxton/resources"
 	"fluxton/responses"
@@ -29,25 +30,29 @@ func NewBucketController(injector *do.Injector) (*BucketController, error) {
 // @Accept json
 // @Produce json
 //
-// @Param Authorization header string true "Bearer Token"Bearer Token"
-// @Param projectUUID path string true "Project ID"
+// @Param Authorization header string true "Bearer Token"
+// @Param X-Project header string true "Project UUID"
+//
+// @Param page query string false "Page number for pagination"
+// @Param limit query string false "Number of items per page"
+// @Param sort query string false "Field to sort by"
+// @Param order query string false "Sort order (asc or desc)"
 //
 // @Success 200 {object} responses.Response{content=[]resources.BucketResponse} "List of buckets"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
 //
-// @Router /projects/{projectUUID}/storage [get]
+// @Router /storage [get]
 func (bc *BucketController) List(c echo.Context) error {
+	var request requests.DefaultRequestWithProjectHeader
+	if err := request.BindAndValidate(c); err != nil {
+		return responses.UnprocessableResponse(c, err)
+	}
 	authUser, _ := utils.NewAuth(c).User()
 
-	projectUUID, err := utils.GetUUIDPathParam(c, "projectUUID", true)
-	if err != nil {
-		return responses.BadRequestResponse(c, "Invalid project UUID")
-	}
-
 	paginationParams := utils.ExtractPaginationParams(c)
-	buckets, err := bc.bucketService.List(paginationParams, projectUUID, authUser)
+	buckets, err := bc.bucketService.List(paginationParams, request.ProjectUUID, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -65,7 +70,8 @@ func (bc *BucketController) List(c echo.Context) error {
 // @Produce json
 //
 // @Param Authorization header string true "Bearer Token"
-// @Param projectUUID path string true "Project UUID"
+// @Param X-Project header string true "Project UUID"
+//
 // @Param bucketUUID path string true "Bucket UUID"
 //
 // @Success 200 {object} responses.Response{content=resources.BucketResponse} "Bucket details"
@@ -74,21 +80,16 @@ func (bc *BucketController) List(c echo.Context) error {
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
 //
-// @Router /projects/{projectUUID}/storage/{bucketUUID} [get]
+// @Router /storage/{bucketUUID} [get]
 func (bc *BucketController) Show(c echo.Context) error {
 	authUser, _ := utils.NewAuth(c).User()
-
-	projectUUID, err := utils.GetUUIDPathParam(c, "projectUUID", true)
-	if err != nil {
-		return responses.BadRequestResponse(c, err.Error())
-	}
 
 	bucketUUID, err := utils.GetUUIDPathParam(c, "bucketUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	bucket, err := bc.bucketService.GetByUUID(bucketUUID, projectUUID, authUser)
+	bucket, err := bc.bucketService.GetByUUID(bucketUUID, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -106,7 +107,7 @@ func (bc *BucketController) Show(c echo.Context) error {
 // @Produce json
 //
 // @Param Authorization header string true "Bearer Token"
-// @Param projectUUID path string true "Project UUID"
+// @Param X-Project header string true "Project UUID"
 // @Param bucket body bucket_requests.CreateRequest true "Bucket details"
 //
 // @Success 201 {object} responses.Response{content=resources.BucketResponse} "Bucket created"
@@ -115,7 +116,7 @@ func (bc *BucketController) Show(c echo.Context) error {
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
 //
-// @Router /projects/{projectUUID}/storage [post]
+// @Router /storage [post]
 func (bc *BucketController) Store(c echo.Context) error {
 	var request bucket_requests.CreateRequest
 	if err := request.BindAndValidate(c); err != nil {
@@ -124,12 +125,7 @@ func (bc *BucketController) Store(c echo.Context) error {
 
 	authUser, _ := utils.NewAuth(c).User()
 
-	projectUUID, err := utils.GetUUIDPathParam(c, "projectUUID", true)
-	if err != nil {
-		return responses.BadRequestResponse(c, err.Error())
-	}
-
-	bucket, err := bc.bucketService.Create(projectUUID, &request, authUser)
+	bucket, err := bc.bucketService.Create(&request, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -147,7 +143,8 @@ func (bc *BucketController) Store(c echo.Context) error {
 // @Produce json
 //
 // @Param Authorization header string true "Bearer Token"
-// @Param projectUUID path string true "Project UUID"
+// @Param X-Project header string true "Project UUID"
+//
 // @Param bucketUUID path string true "Bucket UUID"
 // @Param bucket body bucket_requests.CreateRequest true "Bucket details"
 //
@@ -157,7 +154,7 @@ func (bc *BucketController) Store(c echo.Context) error {
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
 //
-// @Router /projects/{projectUUID}/storage/{bucketUUID} [put]
+// @Router /storage/{bucketUUID} [put]
 func (bc *BucketController) Update(c echo.Context) error {
 	var request bucket_requests.CreateRequest
 	if err := request.BindAndValidate(c); err != nil {
@@ -189,6 +186,8 @@ func (bc *BucketController) Update(c echo.Context) error {
 // @Produce json
 //
 // @Param Authorization header string true "Bearer Token"
+// @Param X-Project header string true "Project UUID"
+//
 // @Param bucketUUID path string true "Bucket UUID"
 //
 // @Success 204 "Bucket deleted"
@@ -196,7 +195,7 @@ func (bc *BucketController) Update(c echo.Context) error {
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
 //
-// @Router /projects/{projectUUID}/storage/{bucketUUID} [delete]
+// @Router /storage/{bucketUUID} [delete]
 func (bc *BucketController) Delete(c echo.Context) error {
 	authUser, _ := utils.NewAuth(c).User()
 

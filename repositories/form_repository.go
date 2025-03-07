@@ -164,9 +164,9 @@ func (r *FormRepository) Update(form *models.Form) (*models.Form, error) {
 	return form, nil
 }
 
-func (r *FormRepository) Delete(projectId uuid.UUID) (bool, error) {
+func (r *FormRepository) Delete(projectUUID uuid.UUID) (bool, error) {
 	query := "DELETE FROM fluxton.forms WHERE uuid = $1"
-	res, err := r.db.Exec(query, projectId)
+	res, err := r.db.Exec(query, projectUUID)
 	if err != nil {
 		return false, utils.FormatError(err, "delete", utils.GetMethodName())
 	}

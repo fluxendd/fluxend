@@ -16,10 +16,10 @@ import (
 
 type ProjectService interface {
 	List(paginationParams utils.PaginationParams, organizationUUID uuid.UUID, authUser models.AuthUser) ([]models.Project, error)
-	GetByID(projectID uuid.UUID, authUser models.AuthUser) (models.Project, error)
+	GetByID(projectUUID uuid.UUID, authUser models.AuthUser) (models.Project, error)
 	Create(request *project_requests.CreateRequest, authUser models.AuthUser) (models.Project, error)
-	Update(projectID uuid.UUID, authUser models.AuthUser, request *project_requests.UpdateRequest) (*models.Project, error)
-	Delete(projectID uuid.UUID, authUser models.AuthUser) (bool, error)
+	Update(projectUUID uuid.UUID, authUser models.AuthUser, request *project_requests.UpdateRequest) (*models.Project, error)
+	Delete(projectUUID uuid.UUID, authUser models.AuthUser) (bool, error)
 }
 
 type ProjectServiceImpl struct {
@@ -51,8 +51,8 @@ func (s *ProjectServiceImpl) List(paginationParams utils.PaginationParams, organ
 	return s.projectRepo.ListForUser(paginationParams, authUser.Uuid)
 }
 
-func (s *ProjectServiceImpl) GetByID(projectID uuid.UUID, authUser models.AuthUser) (models.Project, error) {
-	project, err := s.projectRepo.GetByUUID(projectID)
+func (s *ProjectServiceImpl) GetByID(projectUUID uuid.UUID, authUser models.AuthUser) (models.Project, error) {
+	project, err := s.projectRepo.GetByUUID(projectUUID)
 	if err != nil {
 		return models.Project{}, err
 	}
@@ -104,8 +104,8 @@ func (s *ProjectServiceImpl) Create(request *project_requests.CreateRequest, aut
 	return project, nil
 }
 
-func (s *ProjectServiceImpl) Update(projectID uuid.UUID, authUser models.AuthUser, request *project_requests.UpdateRequest) (*models.Project, error) {
-	project, err := s.projectRepo.GetByUUID(projectID)
+func (s *ProjectServiceImpl) Update(projectUUID uuid.UUID, authUser models.AuthUser, request *project_requests.UpdateRequest) (*models.Project, error) {
+	project, err := s.projectRepo.GetByUUID(projectUUID)
 	if err != nil {
 		return nil, err
 	}
@@ -130,8 +130,8 @@ func (s *ProjectServiceImpl) Update(projectID uuid.UUID, authUser models.AuthUse
 	return s.projectRepo.Update(&project)
 }
 
-func (s *ProjectServiceImpl) Delete(projectID uuid.UUID, authUser models.AuthUser) (bool, error) {
-	project, err := s.projectRepo.GetByUUID(projectID)
+func (s *ProjectServiceImpl) Delete(projectUUID uuid.UUID, authUser models.AuthUser) (bool, error) {
+	project, err := s.projectRepo.GetByUUID(projectUUID)
 	if err != nil {
 		return false, err
 	}
@@ -150,7 +150,7 @@ func (s *ProjectServiceImpl) Delete(projectID uuid.UUID, authUser models.AuthUse
 		return false, err
 	}
 
-	return s.projectRepo.Delete(projectID)
+	return s.projectRepo.Delete(projectUUID)
 }
 
 func (s *ProjectServiceImpl) generateDBName() string {

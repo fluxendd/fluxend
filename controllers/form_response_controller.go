@@ -39,7 +39,7 @@ func NewFormResponseController(injector *do.Injector) (*FormResponseController, 
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
 //
-// @Router /projects/{projectUUID}/forms/{formUUID}/responses [get]
+// @Router /forms/{formUUID}/responses [get]
 func (ffc *FormResponseController) List(c echo.Context) error {
 	authUser, _ := utils.NewAuth(c).User()
 
@@ -81,7 +81,7 @@ func (ffc *FormResponseController) List(c echo.Context) error {
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
 //
-// @Router /projects/{projectUUID}/forms/{formUUID}/responses/{formResponseUUID} [get]
+// @Router /forms/{formUUID}/responses/{formResponseUUID} [get]
 func (ffc *FormResponseController) Show(c echo.Context) error {
 	authUser, _ := utils.NewAuth(c).User()
 
@@ -119,7 +119,7 @@ func (ffc *FormResponseController) Show(c echo.Context) error {
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
 //
-// @Router /projects/{projectUUID}/forms/{formUUID}/responses [post]
+// @Router /forms/{formUUID}/responses [post]
 func (ffc *FormResponseController) Store(c echo.Context) error {
 	var request form_requests.CreateResponseRequest
 	if err := request.BindAndValidate(c); err != nil {
@@ -166,7 +166,7 @@ func (ffc *FormResponseController) Store(c echo.Context) error {
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
 //
-// @Router /projects/{projectUUID}/forms/{formUUID}/responses/{formResponseUUID} [delete]
+// @Router /forms/{formUUID}/responses/{formResponseUUID} [delete]
 func (ffc *FormResponseController) Delete(c echo.Context) error {
 	authUser, _ := utils.NewAuth(c).User()
 

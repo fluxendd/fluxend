@@ -190,9 +190,9 @@ func (r *ProjectRepository) Update(project *models.Project) (*models.Project, er
 	return project, nil
 }
 
-func (r *ProjectRepository) Delete(projectId uuid.UUID) (bool, error) {
+func (r *ProjectRepository) Delete(projectUUID uuid.UUID) (bool, error) {
 	query := "DELETE FROM fluxton.projects WHERE uuid = $1"
-	res, err := r.db.Exec(query, projectId)
+	res, err := r.db.Exec(query, projectUUID)
 	if err != nil {
 		return false, utils.FormatError(err, "delete", utils.GetMethodName())
 	}

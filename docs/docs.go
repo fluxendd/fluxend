@@ -913,6 +913,551 @@ const docTemplate = `{
                 }
             }
         },
+        "/forms/{formUUID}/responses": {
+            "get": {
+                "description": "Get all form responses for a specific form",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "FormResponsess"
+                ],
+                "summary": "List all form responses for a form",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Project UUID",
+                        "name": "projectUUID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Form UUID",
+                        "name": "formUUID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of form responses",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/responses.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "content": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/resources.FormResponseForAPI"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            },
+            "post": {
+                "description": "Store a new form response for a specific form",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "FormResponsess"
+                ],
+                "summary": "Store a new form response",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Project UUID",
+                        "name": "projectUUID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Form UUID",
+                        "name": "formUUID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Request body to create a new form response",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/form_requests.CreateResponseRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Form response details",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/responses.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "content": {
+                                            "$ref": "#/definitions/resources.FormResponseForAPI"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "422": {
+                        "description": "Unprocessable entity"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/forms/{formUUID}/responses/{formResponseUUID}": {
+            "get": {
+                "description": "Get details of a specific form response",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "FormResponsess"
+                ],
+                "summary": "Show details of a single form response",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Project UUID",
+                        "name": "projectUUID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Form UUID",
+                        "name": "formUUID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Form Response UUID",
+                        "name": "formResponseUUID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Form response details",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/responses.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "content": {
+                                            "$ref": "#/definitions/resources.FormResponseForAPI"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete a specific form response",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "FormResponsess"
+                ],
+                "summary": "Delete a form response",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Project UUID",
+                        "name": "projectUUID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Form UUID",
+                        "name": "formUUID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Form Response UUID",
+                        "name": "formResponseUUID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Form response deleted"
+                    },
+                    "400": {
+                        "description": "Invalid input"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/functions/{schema}": {
+            "get": {
+                "description": "Retrieve a list of all functions for the specified schema",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Schema"
+                ],
+                "summary": "List all functions",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Project UUID",
+                        "name": "projectUUID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Schema to search under",
+                        "name": "schema",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of functions",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "allOf": [
+                                    {
+                                        "$ref": "#/definitions/responses.Response"
+                                    },
+                                    {
+                                        "type": "object",
+                                        "properties": {
+                                            "content": {
+                                                "type": "array",
+                                                "items": {
+                                                    "$ref": "#/definitions/resources.FunctionResponse"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            },
+            "post": {
+                "description": "Add a new function for specific schema",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Functions"
+                ],
+                "summary": "Create a new function",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "Function details",
+                        "name": "form",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/requests.CreateFunctionRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Function created",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/responses.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "content": {
+                                            "$ref": "#/definitions/resources.FunctionResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "422": {
+                        "description": "Unprocessable entity"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/functions/{schema}/{functionName}": {
+            "get": {
+                "description": "Get details of a specific function",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Forms"
+                ],
+                "summary": "Show details of a single function",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Project UUID",
+                        "name": "projectUUID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Schema name",
+                        "name": "schema",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Function name",
+                        "name": "functionName",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Function details",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/responses.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "content": {
+                                            "$ref": "#/definitions/resources.FunctionResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            },
+            "delete": {
+                "description": "Remove a function from the schema",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Functions"
+                ],
+                "summary": "Delete a function",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Project UUID",
+                        "name": "projectUUID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Schema name",
+                        "name": "schema",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Function name",
+                        "name": "functionName",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Form deleted"
+                    },
+                    "400": {
+                        "description": "Invalid input"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
         "/organizations": {
             "get": {
                 "description": "Get all organizations",
@@ -1029,7 +1574,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/organizations/{organization_id}": {
+        "/organizations/{organizationUUID}": {
             "get": {
                 "description": "Get details of a specific organization",
                 "consumes": [
@@ -1205,7 +1750,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/organizations/{organization_id}/users": {
+        "/organizations/{organizationUUID}/users": {
             "get": {
                 "description": "Get all users in an organization",
                 "consumes": [
@@ -1341,7 +1886,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/organizations/{organization_id}/users/{user_id}": {
+        "/organizations/{organizationUUID}/users/{user_id}": {
             "delete": {
                 "description": "Remove a user from an organization",
                 "consumes": [
@@ -1529,7 +2074,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/projects/{projectID}": {
+        "/projects/{projectUUID}": {
             "get": {
                 "description": "Get details of a specific project",
                 "consumes": [
@@ -1553,7 +2098,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Project ID",
-                        "name": "projectID",
+                        "name": "projectUUID",
                         "in": "path",
                         "required": true
                     }
@@ -1614,7 +2159,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Project ID",
-                        "name": "projectID",
+                        "name": "projectUUID",
                         "in": "path",
                         "required": true
                     },
@@ -1684,7 +2229,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Project ID",
-                        "name": "projectID",
+                        "name": "projectUUID",
                         "in": "path",
                         "required": true
                     }
@@ -1708,7 +2253,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/projects/{projectId}/forms": {
+        "/projects/{projectUUID}/forms": {
             "get": {
                 "description": "Retrieve a list of all forms for the specified project",
                 "consumes": [
@@ -1732,7 +2277,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Project ID",
-                        "name": "projectId",
+                        "name": "projectUUID",
                         "in": "path",
                         "required": true
                     }
@@ -1774,552 +2319,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/projects/{projectUUID}/forms/{formUUID}/responses": {
-            "get": {
-                "description": "Get all form responses for a specific form",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "FormResponsess"
-                ],
-                "summary": "List all form responses for a form",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer Token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Project UUID",
-                        "name": "projectUUID",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Form UUID",
-                        "name": "formUUID",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "List of form responses",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/responses.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "content": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/resources.FormResponseForAPI"
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid input"
-                    },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
-                    "500": {
-                        "description": "Internal server error"
-                    }
-                }
-            },
-            "post": {
-                "description": "Store a new form response for a specific form",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "FormResponsess"
-                ],
-                "summary": "Store a new form response",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer Token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Project UUID",
-                        "name": "projectUUID",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Form UUID",
-                        "name": "formUUID",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Request body to create a new form response",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/form_requests.CreateResponseRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Form response details",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/responses.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "content": {
-                                            "$ref": "#/definitions/resources.FormResponseForAPI"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid input"
-                    },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
-                    "422": {
-                        "description": "Unprocessable entity"
-                    },
-                    "500": {
-                        "description": "Internal server error"
-                    }
-                }
-            }
-        },
-        "/projects/{projectUUID}/forms/{formUUID}/responses/{formResponseUUID}": {
-            "get": {
-                "description": "Get details of a specific form response",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "FormResponsess"
-                ],
-                "summary": "Show details of a single form response",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer Token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Project UUID",
-                        "name": "projectUUID",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Form UUID",
-                        "name": "formUUID",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Form Response UUID",
-                        "name": "formResponseUUID",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Form response details",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/responses.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "content": {
-                                            "$ref": "#/definitions/resources.FormResponseForAPI"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid input"
-                    },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
-                    "500": {
-                        "description": "Internal server error"
-                    }
-                }
-            },
-            "delete": {
-                "description": "Delete a specific form response",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "FormResponsess"
-                ],
-                "summary": "Delete a form response",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer Token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Project UUID",
-                        "name": "projectUUID",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Form UUID",
-                        "name": "formUUID",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Form Response UUID",
-                        "name": "formResponseUUID",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "Form response deleted"
-                    },
-                    "400": {
-                        "description": "Invalid input"
-                    },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
-                    "500": {
-                        "description": "Internal server error"
-                    }
-                }
-            }
-        },
-        "/projects/{projectUUID}/functions/{schema}": {
-            "get": {
-                "description": "Retrieve a list of all functions for the specified schema",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Schema"
-                ],
-                "summary": "List all functions",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer Token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Project UUID",
-                        "name": "projectUUID",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Schema to search under",
-                        "name": "schema",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "List of functions",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "allOf": [
-                                    {
-                                        "$ref": "#/definitions/responses.Response"
-                                    },
-                                    {
-                                        "type": "object",
-                                        "properties": {
-                                            "content": {
-                                                "type": "array",
-                                                "items": {
-                                                    "$ref": "#/definitions/resources.FunctionResponse"
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid input"
-                    },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
-                    "500": {
-                        "description": "Internal server error"
-                    }
-                }
-            },
-            "post": {
-                "description": "Add a new function for specific schema",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Functions"
-                ],
-                "summary": "Create a new function",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer Token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "description": "Function details",
-                        "name": "form",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/requests.CreateFunctionRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Function created",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/responses.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "content": {
-                                            "$ref": "#/definitions/resources.FunctionResponse"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid input"
-                    },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
-                    "422": {
-                        "description": "Unprocessable entity"
-                    },
-                    "500": {
-                        "description": "Internal server error"
-                    }
-                }
-            }
-        },
-        "/projects/{projectUUID}/functions/{schema}/{functionName}": {
-            "get": {
-                "description": "Get details of a specific function",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Forms"
-                ],
-                "summary": "Show details of a single function",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer Token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Project UUID",
-                        "name": "projectUUID",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Schema name",
-                        "name": "schema",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Function name",
-                        "name": "functionName",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Function details",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/responses.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "content": {
-                                            "$ref": "#/definitions/resources.FunctionResponse"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid input"
-                    },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
-                    "500": {
-                        "description": "Internal server error"
-                    }
-                }
-            },
-            "delete": {
-                "description": "Remove a function from the schema",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Functions"
-                ],
-                "summary": "Delete a function",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer Token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Project UUID",
-                        "name": "projectUUID",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Schema name",
-                        "name": "schema",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Function name",
-                        "name": "functionName",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "Form deleted"
-                    },
-                    "400": {
-                        "description": "Invalid input"
-                    },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
-                    "500": {
-                        "description": "Internal server error"
-                    }
-                }
-            }
-        },
-        "/projects/{projectUUID}/storage": {
+        "/storage": {
             "get": {
                 "description": "Retrieve a list of buckets in a specified project.",
                 "consumes": [
@@ -2342,10 +2342,34 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Project ID",
-                        "name": "projectUUID",
-                        "in": "path",
+                        "description": "Project UUID",
+                        "name": "X-Project",
+                        "in": "header",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Page number for pagination",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Number of items per page",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Field to sort by",
+                        "name": "sort",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort order (asc or desc)",
+                        "name": "order",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -2404,8 +2428,8 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Project UUID",
-                        "name": "projectUUID",
-                        "in": "path",
+                        "name": "X-Project",
+                        "in": "header",
                         "required": true
                     },
                     {
@@ -2452,7 +2476,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/projects/{projectUUID}/storage/{bucketUUID}": {
+        "/storage/{bucketUUID}": {
             "get": {
                 "description": "Get details of a specific bucket",
                 "consumes": [
@@ -2476,8 +2500,8 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Project UUID",
-                        "name": "projectUUID",
-                        "in": "path",
+                        "name": "X-Project",
+                        "in": "header",
                         "required": true
                     },
                     {
@@ -2544,8 +2568,8 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Project UUID",
-                        "name": "projectUUID",
-                        "in": "path",
+                        "name": "X-Project",
+                        "in": "header",
                         "required": true
                     },
                     {
@@ -2620,6 +2644,13 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "description": "Project UUID",
+                        "name": "X-Project",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
                         "description": "Bucket UUID",
                         "name": "bucketUUID",
                         "in": "path",
@@ -2642,7 +2673,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/projects/{project_id}/tables": {
+        "/tables": {
             "get": {
                 "description": "Retrieve a list of tables in a specified project.",
                 "consumes": [
@@ -2775,7 +2806,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/projects/{project_id}/tables/{table_id}": {
+        "/tables/{tableUUID}": {
             "get": {
                 "description": "Retrieve details of a specific table within a project.",
                 "consumes": [
@@ -2898,7 +2929,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/projects/{project_id}/tables/{table_id}/columns": {
+        "/tables/{tableUUID}/columns": {
             "put": {
                 "description": "Alter the data type of existing columns in a specified table.",
                 "consumes": [
@@ -2921,15 +2952,15 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Project ID",
-                        "name": "project_id",
-                        "in": "path",
+                        "description": "Project UUID",
+                        "name": "X-Project",
+                        "in": "header",
                         "required": true
                     },
                     {
                         "type": "string",
-                        "description": "Table ID",
-                        "name": "table_id",
+                        "description": "Table UUID",
+                        "name": "tableUUID",
                         "in": "path",
                         "required": true
                     },
@@ -2998,15 +3029,15 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Project ID",
-                        "name": "project_id",
-                        "in": "path",
+                        "description": "Project UUID",
+                        "name": "X-Project",
+                        "in": "header",
                         "required": true
                     },
                     {
                         "type": "string",
-                        "description": "Table ID",
-                        "name": "table_id",
+                        "description": "Table UUID",
+                        "name": "tableUUID",
                         "in": "path",
                         "required": true
                     },
@@ -3054,7 +3085,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/projects/{project_id}/tables/{table_id}/columns/{column_name}": {
+        "/tables/{tableUUID}/columns/{column_name}": {
             "put": {
                 "description": "Change the name of a specific column in a given table.",
                 "consumes": [
@@ -3077,15 +3108,15 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Project ID",
-                        "name": "project_id",
-                        "in": "path",
+                        "description": "Project UUID",
+                        "name": "X-Project",
+                        "in": "header",
                         "required": true
                     },
                     {
                         "type": "string",
-                        "description": "Table ID",
-                        "name": "table_id",
+                        "description": "Table UUID",
+                        "name": "tableUUID",
                         "in": "path",
                         "required": true
                     },
@@ -3149,15 +3180,15 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Project ID",
-                        "name": "project_id",
-                        "in": "path",
+                        "description": "Project UUID",
+                        "name": "X-Project",
+                        "in": "header",
                         "required": true
                     },
                     {
                         "type": "string",
-                        "description": "Table ID",
-                        "name": "table_id",
+                        "description": "Table UUID",
+                        "name": "tableUUID",
                         "in": "path",
                         "required": true
                     },
@@ -3188,7 +3219,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/projects/{project_id}/tables/{table_id}/duplicate": {
+        "/tables/{tableUUID}/duplicate": {
             "put": {
                 "description": "Create a copy of a specified table within a project.",
                 "consumes": [
@@ -3267,7 +3298,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/projects/{project_id}/tables/{table_id}/indexes": {
+        "/tables/{tableUUID}/indexes": {
             "get": {
                 "description": "Retrieve a list of indexes for a given table.",
                 "consumes": [
@@ -3410,7 +3441,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/projects/{project_id}/tables/{table_id}/indexes/{index_name}": {
+        "/tables/{tableUUID}/indexes/{index_name}": {
             "get": {
                 "description": "Retrieve details for a specific index in a table.",
                 "consumes": [
@@ -3545,7 +3576,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/projects/{project_id}/tables/{table_id}/rename": {
+        "/tables/{tableUUID}/rename": {
             "put": {
                 "description": "Change the name of a specific table within a project.",
                 "consumes": [
@@ -3956,6 +3987,9 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/types.TableColumn"
                     }
+                },
+                "projectUUID": {
+                    "type": "string"
                 }
             }
         },

@@ -38,7 +38,7 @@ func NewOrganizationMemberController(injector *do.Injector) (*OrganizationMember
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
 //
-// @Router /organizations/{organization_id}/users [get]
+// @Router /organizations/{organizationUUID}/users [get]
 func (ouc *OrganizationMemberController) List(c echo.Context) error {
 	authUser, _ := utils.NewAuth(c).User()
 
@@ -74,7 +74,7 @@ func (ouc *OrganizationMemberController) List(c echo.Context) error {
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
 //
-// @Router /organizations/{organization_id}/users [post]
+// @Router /organizations/{organizationUUID}/users [post]
 func (ouc *OrganizationMemberController) Store(c echo.Context) error {
 	var request organization_requests.MemberCreateRequest
 	if err := request.BindAndValidate(c); err != nil {
@@ -115,7 +115,7 @@ func (ouc *OrganizationMemberController) Store(c echo.Context) error {
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
 //
-// @Router /organizations/{organization_id}/users/{user_id} [delete]
+// @Router /organizations/{organizationUUID}/users/{user_id} [delete]
 func (ouc *OrganizationMemberController) Delete(c echo.Context) error {
 	authUser, _ := utils.NewAuth(c).User()
 

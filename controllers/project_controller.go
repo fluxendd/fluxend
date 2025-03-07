@@ -65,7 +65,7 @@ func (pc *ProjectController) List(c echo.Context) error {
 // @Produce json
 //
 // @Param Authorization header string true "Bearer Token"
-// @Param projectID path string true "Project ID"
+// @Param projectUUID path string true "Project ID"
 //
 // @Success 200 {object} responses.Response{content=resources.ProjectResponse} "Project details"
 // @Failure 422 "Unprocessable entity"
@@ -73,16 +73,16 @@ func (pc *ProjectController) List(c echo.Context) error {
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
 //
-// @Router /projects/{projectID} [get]
+// @Router /projects/{projectUUID} [get]
 func (pc *ProjectController) Show(c echo.Context) error {
 	authUser, _ := utils.NewAuth(c).User()
 
-	projectID, err := utils.GetUUIDPathParam(c, "projectID", true)
+	projectUUID, err := utils.GetUUIDPathParam(c, "projectUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	project, err := pc.projectService.GetByID(projectID, authUser)
+	project, err := pc.projectService.GetByID(projectUUID, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -136,7 +136,7 @@ func (pc *ProjectController) Store(c echo.Context) error {
 // @Produce json
 //
 // @Param Authorization header string true "Bearer Token"
-// @Param projectID path string true "Project ID"
+// @Param projectUUID path string true "Project ID"
 // @Param name body project_requests.UpdateRequest true "Project name"
 //
 // @Success 200 {object} responses.Response{content=resources.ProjectResponse} "Project details"
@@ -145,7 +145,7 @@ func (pc *ProjectController) Store(c echo.Context) error {
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
 //
-// @Router /projects/{projectID} [put]
+// @Router /projects/{projectUUID} [put]
 func (pc *ProjectController) Update(c echo.Context) error {
 	var request project_requests.UpdateRequest
 	if err := request.BindAndValidate(c); err != nil {
@@ -154,12 +154,12 @@ func (pc *ProjectController) Update(c echo.Context) error {
 
 	authUser, _ := utils.NewAuth(c).User()
 
-	projectID, err := utils.GetUUIDPathParam(c, "projectID", true)
+	projectUUID, err := utils.GetUUIDPathParam(c, "projectUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	updatedOrganization, err := pc.projectService.Update(projectID, authUser, &request)
+	updatedOrganization, err := pc.projectService.Update(projectUUID, authUser, &request)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -177,23 +177,23 @@ func (pc *ProjectController) Update(c echo.Context) error {
 // @Produce json
 //
 // @Param Authorization header string true "Bearer Token"
-// @Param projectID path string true "Project ID"
+// @Param projectUUID path string true "Project ID"
 //
 // @Success 200 {object} responses.Response{} "Project deleted"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
 //
-// @Router /projects/{projectID} [delete]
+// @Router /projects/{projectUUID} [delete]
 func (pc *ProjectController) Delete(c echo.Context) error {
 	authUser, _ := utils.NewAuth(c).User()
 
-	projectID, err := utils.GetUUIDPathParam(c, "projectID", true)
+	projectUUID, err := utils.GetUUIDPathParam(c, "projectUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	if _, err := pc.projectService.Delete(projectID, authUser); err != nil {
+	if _, err := pc.projectService.Delete(projectUUID, authUser); err != nil {
 		return responses.ErrorResponse(c, err)
 	}
 

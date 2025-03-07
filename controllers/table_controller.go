@@ -38,17 +38,17 @@ func NewTableController(injector *do.Injector) (*TableController, error) {
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
 //
-// @Router /projects/{project_id}/tables [get]
+// @Router /tables [get]
 func (tc *TableController) List(c echo.Context) error {
 	authUser, _ := utils.NewAuth(c).User()
 
-	projectID, err := utils.GetUUIDPathParam(c, "projectID", true)
+	projectUUID, err := utils.GetUUIDPathParam(c, "projectUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
 	paginationParams := utils.ExtractPaginationParams(c)
-	tables, err := tc.tableService.List(paginationParams, projectID, authUser)
+	tables, err := tc.tableService.List(paginationParams, projectUUID, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -75,21 +75,21 @@ func (tc *TableController) List(c echo.Context) error {
 // @Failure 404 "Table not found"
 // @Failure 500 "Internal server error"
 //
-// @Router /projects/{project_id}/tables/{table_id} [get]
+// @Router /tables/{tableUUID} [get]
 func (tc *TableController) Show(c echo.Context) error {
 	authUser, _ := utils.NewAuth(c).User()
 
-	projectID, err := utils.GetUUIDPathParam(c, "projectID", true)
+	projectUUID, err := utils.GetUUIDPathParam(c, "projectUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	tableID, err := utils.GetUUIDPathParam(c, "tableID", true)
+	tableUUID, err := utils.GetUUIDPathParam(c, "tableUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	table, err := tc.tableService.GetByID(tableID, projectID, authUser)
+	table, err := tc.tableService.GetByID(tableUUID, projectUUID, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -116,7 +116,7 @@ func (tc *TableController) Show(c echo.Context) error {
 // @Failure 422 "Unprocessable entity"
 // @Failure 500 "Internal server error"
 //
-// @Router /projects/{project_id}/tables [post]
+// @Router /tables [post]
 func (tc *TableController) Store(c echo.Context) error {
 	var request table_requests.CreateRequest
 	if err := request.BindAndValidate(c); err != nil {
@@ -125,12 +125,12 @@ func (tc *TableController) Store(c echo.Context) error {
 
 	authUser, _ := utils.NewAuth(c).User()
 
-	projectID, err := utils.GetUUIDPathParam(c, "projectID", true)
+	projectUUID, err := utils.GetUUIDPathParam(c, "projectUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	table, err := tc.tableService.Create(&request, projectID, authUser)
+	table, err := tc.tableService.Create(&request, projectUUID, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -158,7 +158,7 @@ func (tc *TableController) Store(c echo.Context) error {
 // @Failure 422 "Unprocessable entity"
 // @Failure 500 "Internal server error"
 //
-// @Router /projects/{project_id}/tables/{table_id}/duplicate [put]
+// @Router /tables/{tableUUID}/duplicate [put]
 func (tc *TableController) Duplicate(c echo.Context) error {
 	var request table_requests.RenameRequest
 	if err := request.BindAndValidate(c); err != nil {
@@ -167,17 +167,17 @@ func (tc *TableController) Duplicate(c echo.Context) error {
 
 	authUser, _ := utils.NewAuth(c).User()
 
-	projectID, err := utils.GetUUIDPathParam(c, "projectID", true)
+	projectUUID, err := utils.GetUUIDPathParam(c, "projectUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	tableID, err := utils.GetUUIDPathParam(c, "tableID", true)
+	tableUUID, err := utils.GetUUIDPathParam(c, "tableUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	duplicatedTable, err := tc.tableService.Duplicate(tableID, projectID, authUser, &request)
+	duplicatedTable, err := tc.tableService.Duplicate(tableUUID, projectUUID, authUser, &request)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -205,7 +205,7 @@ func (tc *TableController) Duplicate(c echo.Context) error {
 // @Failure 422 "Unprocessable entity"
 // @Failure 500 "Internal server error"
 //
-// @Router /projects/{project_id}/tables/{table_id}/rename [put]
+// @Router /tables/{tableUUID}/rename [put]
 func (tc *TableController) Rename(c echo.Context) error {
 	var request table_requests.RenameRequest
 	if err := request.BindAndValidate(c); err != nil {
@@ -214,17 +214,17 @@ func (tc *TableController) Rename(c echo.Context) error {
 
 	authUser, _ := utils.NewAuth(c).User()
 
-	projectID, err := utils.GetUUIDPathParam(c, "projectID", true)
+	projectUUID, err := utils.GetUUIDPathParam(c, "projectUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	tableID, err := utils.GetUUIDPathParam(c, "tableID", true)
+	tableUUID, err := utils.GetUUIDPathParam(c, "tableUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	renamedTable, err := tc.tableService.Rename(tableID, projectID, authUser, &request)
+	renamedTable, err := tc.tableService.Rename(tableUUID, projectUUID, authUser, &request)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -251,7 +251,7 @@ func (tc *TableController) Rename(c echo.Context) error {
 // @Failure 404 "Table not found"
 // @Failure 500 "Internal server error"
 //
-// @Router /projects/{project_id}/tables/{table_id} [delete]
+// @Router /tables/{tableUUID} [delete]
 func (tc *TableController) Delete(c echo.Context) error {
 	var request requests.DefaultRequest
 	if err := request.BindAndValidate(c); err != nil {
@@ -260,17 +260,17 @@ func (tc *TableController) Delete(c echo.Context) error {
 
 	authUser, _ := utils.NewAuth(c).User()
 
-	projectID, err := utils.GetUUIDPathParam(c, "projectID", true)
+	projectUUID, err := utils.GetUUIDPathParam(c, "projectUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	tableID, err := utils.GetUUIDPathParam(c, "tableID", true)
+	tableUUID, err := utils.GetUUIDPathParam(c, "tableUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	if _, err := tc.tableService.Delete(tableID, projectID, authUser); err != nil {
+	if _, err := tc.tableService.Delete(tableUUID, projectUUID, authUser); err != nil {
 		return responses.ErrorResponse(c, err)
 	}
 

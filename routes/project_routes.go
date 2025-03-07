@@ -13,7 +13,7 @@ func RegisterProjectRoutes(e *echo.Echo, container *do.Injector, authMiddleware 
 
 	projectsGroup.POST("", projectController.Store)
 	projectsGroup.GET("", projectController.List)
-	projectsGroup.GET("/:projectID", projectController.Show)
-	projectsGroup.PUT("/:projectID", projectController.Update)
-	projectsGroup.DELETE("/:projectID", projectController.Delete)
+	projectsGroup.GET("/:projectUUID", projectController.Show)
+	projectsGroup.PUT("/:projectUUID", projectController.Update)
+	projectsGroup.DELETE("/:projectUUID", projectController.Delete)
 }

@@ -11,10 +11,10 @@ import (
 )
 
 type ColumnService interface {
-	CreateMany(projectID, tableID uuid.UUID, request *column_requests.CreateRequest, authUser models.AuthUser) (models.Table, error)
-	AlterMany(tableID, projectID uuid.UUID, request *column_requests.CreateRequest, authUser models.AuthUser) (*models.Table, error)
-	Rename(columnName string, tableID, projectID uuid.UUID, request *column_requests.RenameRequest, authUser models.AuthUser) (*models.Table, error)
-	Delete(columnName string, tableID, projectID uuid.UUID, authUser models.AuthUser) (bool, error)
+	CreateMany(tableUUID uuid.UUID, request *column_requests.CreateRequest, authUser models.AuthUser) (models.Table, error)
+	AlterMany(tableUUID uuid.UUID, request *column_requests.CreateRequest, authUser models.AuthUser) (*models.Table, error)
+	Rename(columnName string, tableUUID uuid.UUID, request *column_requests.RenameRequest, authUser models.AuthUser) (*models.Table, error)
+	Delete(columnName string, tableUUID, projectUUID uuid.UUID, authUser models.AuthUser) (bool, error)
 }
 
 type ColumnServiceImpl struct {
@@ -38,8 +38,8 @@ func NewColumnService(injector *do.Injector) (ColumnService, error) {
 	}, nil
 }
 
-func (s *ColumnServiceImpl) CreateMany(projectID, tableID uuid.UUID, request *column_requests.CreateRequest, authUser models.AuthUser) (models.Table, error) {
-	project, err := s.projectRepo.GetByUUID(projectID)
+func (s *ColumnServiceImpl) CreateMany(tableUUID uuid.UUID, request *column_requests.CreateRequest, authUser models.AuthUser) (models.Table, error) {
+	project, err := s.projectRepo.GetByUUID(request.ProjectUUID)
 	if err != nil {
 		return models.Table{}, err
 	}
@@ -48,7 +48,7 @@ func (s *ColumnServiceImpl) CreateMany(projectID, tableID uuid.UUID, request *co
 		return models.Table{}, errs.NewForbiddenError("table.error.createForbidden")
 	}
 
-	table, err := s.coreTableRepo.GetByID(tableID)
+	table, err := s.coreTableRepo.GetByID(tableUUID)
 	if err != nil {
 		return models.Table{}, err
 	}
@@ -83,8 +83,8 @@ func (s *ColumnServiceImpl) CreateMany(projectID, tableID uuid.UUID, request *co
 	return table, nil
 }
 
-func (s *ColumnServiceImpl) AlterMany(tableID, projectID uuid.UUID, request *column_requests.CreateRequest, authUser models.AuthUser) (*models.Table, error) {
-	project, err := s.projectRepo.GetByUUID(projectID)
+func (s *ColumnServiceImpl) AlterMany(tableUUID uuid.UUID, request *column_requests.CreateRequest, authUser models.AuthUser) (*models.Table, error) {
+	project, err := s.projectRepo.GetByUUID(request.ProjectUUID)
 	if err != nil {
 		return &models.Table{}, err
 	}
@@ -93,7 +93,7 @@ func (s *ColumnServiceImpl) AlterMany(tableID, projectID uuid.UUID, request *col
 		return &models.Table{}, errs.NewForbiddenError("project.error.updateForbidden")
 	}
 
-	table, err := s.coreTableRepo.GetByID(tableID)
+	table, err := s.coreTableRepo.GetByID(tableUUID)
 	if err != nil {
 		return &models.Table{}, err
 	}
@@ -130,8 +130,8 @@ func (s *ColumnServiceImpl) AlterMany(tableID, projectID uuid.UUID, request *col
 	return s.coreTableRepo.Update(&table)
 }
 
-func (s *ColumnServiceImpl) Rename(columnName string, tableID, projectID uuid.UUID, request *column_requests.RenameRequest, authUser models.AuthUser) (*models.Table, error) {
-	project, err := s.projectRepo.GetByUUID(projectID)
+func (s *ColumnServiceImpl) Rename(columnName string, tableUUID uuid.UUID, request *column_requests.RenameRequest, authUser models.AuthUser) (*models.Table, error) {
+	project, err := s.projectRepo.GetByUUID(request.ProjectUUID)
 	if err != nil {
 		return &models.Table{}, err
 	}
@@ -140,7 +140,7 @@ func (s *ColumnServiceImpl) Rename(columnName string, tableID, projectID uuid.UU
 		return &models.Table{}, errs.NewForbiddenError("project.error.updateForbidden")
 	}
 
-	columnExists, err := s.coreTableRepo.HasColumn(columnName, tableID)
+	columnExists, err := s.coreTableRepo.HasColumn(columnName, tableUUID)
 	if err != nil {
 		return &models.Table{}, err
 	}
@@ -149,7 +149,7 @@ func (s *ColumnServiceImpl) Rename(columnName string, tableID, projectID uuid.UU
 		return &models.Table{}, errs.NewNotFoundError("column.error.notFound")
 	}
 
-	table, err := s.coreTableRepo.GetByID(tableID)
+	table, err := s.coreTableRepo.GetByID(tableUUID)
 	if err != nil {
 		return &models.Table{}, err
 	}
@@ -176,8 +176,8 @@ func (s *ColumnServiceImpl) Rename(columnName string, tableID, projectID uuid.UU
 	return s.coreTableRepo.Update(&table)
 }
 
-func (s *ColumnServiceImpl) Delete(columnName string, tableID, projectID uuid.UUID, authUser models.AuthUser) (bool, error) {
-	project, err := s.projectRepo.GetByUUID(projectID)
+func (s *ColumnServiceImpl) Delete(columnName string, tableUUID, projectUUID uuid.UUID, authUser models.AuthUser) (bool, error) {
+	project, err := s.projectRepo.GetByUUID(projectUUID)
 	if err != nil {
 		return false, err
 	}
@@ -186,7 +186,7 @@ func (s *ColumnServiceImpl) Delete(columnName string, tableID, projectID uuid.UU
 		return false, errs.NewForbiddenError("project.error.updateForbidden")
 	}
 
-	table, err := s.coreTableRepo.GetByID(tableID)
+	table, err := s.coreTableRepo.GetByID(tableUUID)
 	if err != nil {
 		return false, err
 	}
@@ -196,7 +196,7 @@ func (s *ColumnServiceImpl) Delete(columnName string, tableID, projectID uuid.UU
 		return false, err
 	}
 
-	hasColumn, err := s.coreTableRepo.HasColumn(columnName, tableID)
+	hasColumn, err := s.coreTableRepo.HasColumn(columnName, tableUUID)
 	if err != nil {
 		return false, err
 	}
@@ -225,8 +225,8 @@ func (s *ColumnServiceImpl) Delete(columnName string, tableID, projectID uuid.UU
 	return err == nil, err
 }
 
-func (s *ColumnServiceImpl) validateNameForDuplication(name string, tableID uuid.UUID) error {
-	exists, err := s.coreTableRepo.HasColumn(name, tableID)
+func (s *ColumnServiceImpl) validateNameForDuplication(name string, tableUUID uuid.UUID) error {
+	exists, err := s.coreTableRepo.HasColumn(name, tableUUID)
 	if err != nil {
 		return err
 	}

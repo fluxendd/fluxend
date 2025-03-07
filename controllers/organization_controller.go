@@ -66,7 +66,7 @@ func (oc *OrganizationController) List(c echo.Context) error {
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
 //
-// @Router /organizations/{organization_id} [get]
+// @Router /organizations/{organizationUUID} [get]
 func (oc *OrganizationController) Show(c echo.Context) error {
 	authUser, _ := utils.NewAuth(c).User()
 
@@ -140,7 +140,7 @@ func (oc *OrganizationController) Store(c echo.Context) error {
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
 //
-// @Router /organizations/{organization_id} [put]
+// @Router /organizations/{organizationUUID} [put]
 func (oc *OrganizationController) Update(c echo.Context) error {
 	var request organization_requests.CreateRequest
 	if err := request.BindAndValidate(c); err != nil {
@@ -178,7 +178,7 @@ func (oc *OrganizationController) Update(c echo.Context) error {
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
 //
-// @Router /organizations/{organization_id} [delete]
+// @Router /organizations/{organizationUUID} [delete]
 func (oc *OrganizationController) Delete(c echo.Context) error {
 	authUser, _ := utils.NewAuth(c).User()
 

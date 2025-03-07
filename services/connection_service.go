@@ -9,7 +9,7 @@ import (
 
 type ConnectionService interface {
 	ConnectByDatabaseName(name string) (*sqlx.DB, error)
-	ConnectByProjectID(projectID uuid.UUID) (*sqlx.DB, error)
+	ConnectByprojectUUID(projectUUID uuid.UUID) (*sqlx.DB, error)
 	GetClientTableRepo(databaseName string) (*repositories.ClientTableRepository, error)
 	GetClientColumnRepo(databaseName string) (*repositories.ClientColumnRepository, error)
 	GetClientIndexRepo(databaseName string) (*repositories.ClientIndexRepository, error)
@@ -34,8 +34,8 @@ func (s *ConnectionServiceImpl) ConnectByDatabaseName(name string) (*sqlx.DB, er
 	return s.databaseRepo.Connect(name)
 }
 
-func (s *ConnectionServiceImpl) ConnectByProjectID(projectID uuid.UUID) (*sqlx.DB, error) {
-	project, err := s.projectRepo.GetByUUID(projectID)
+func (s *ConnectionServiceImpl) ConnectByprojectUUID(projectUUID uuid.UUID) (*sqlx.DB, error) {
+	project, err := s.projectRepo.GetByUUID(projectUUID)
 	if err != nil {
 		return nil, err
 	}

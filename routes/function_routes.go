@@ -9,7 +9,7 @@ import (
 func RegisterFunctionRoutes(e *echo.Echo, container *do.Injector, authMiddleware echo.MiddlewareFunc) {
 	functionController := do.MustInvoke[*controllers.FunctionController](container)
 
-	functionsGroup := e.Group("api/projects/:projectUUID/functions", authMiddleware)
+	functionsGroup := e.Group("api/functions", authMiddleware)
 
 	// table routes
 	functionsGroup.GET("/:schema", functionController.List)

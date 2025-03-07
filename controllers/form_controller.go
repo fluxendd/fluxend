@@ -31,14 +31,14 @@ func NewFormController(injector *do.Injector) (*FormController, error) {
 // @Produce json
 //
 // @Param Authorization header string true "Bearer Token"
-// @Param projectId path string true "Project ID"
+// @Param projectUUID path string true "Project ID"
 //
 // @Success 200 {array} responses.Response{content=[]resources.FormResponse} "List of forms"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
 //
-// @Router /projects/{projectId}/forms [get]
+// @Router /projects/{projectUUID}/forms [get]
 func (fc *FormController) List(c echo.Context) error {
 	var request requests.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {

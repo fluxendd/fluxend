@@ -39,16 +39,16 @@ func NewIndexController(injector *do.Injector) (*IndexController, error) {
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
 //
-// @Router /projects/{project_id}/tables/{table_id}/indexes [get]
+// @Router /tables/{tableUUID}/indexes [get]
 func (ic *IndexController) List(c echo.Context) error {
 	authUser, _ := utils.NewAuth(c).User()
 
-	projectID, tableID, err := ic.parseRequest(c)
+	projectUUID, tableUUID, err := ic.parseRequest(c)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	indexes, err := ic.indexService.List(tableID, projectID, authUser)
+	indexes, err := ic.indexService.List(tableUUID, projectUUID, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -76,18 +76,18 @@ func (ic *IndexController) List(c echo.Context) error {
 // @Failure 404 "Index not found"
 // @Failure 500 "Internal server error"
 //
-// @Router /projects/{project_id}/tables/{table_id}/indexes/{index_name} [get]
+// @Router /tables/{tableUUID}/indexes/{index_name} [get]
 func (ic *IndexController) Show(c echo.Context) error {
 	authUser, _ := utils.NewAuth(c).User()
 
-	projectID, tableID, err := ic.parseRequest(c)
+	projectUUID, tableUUID, err := ic.parseRequest(c)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
 	indexName := c.Param("indexName")
 
-	index, err := ic.indexService.GetByName(indexName, tableID, projectID, authUser)
+	index, err := ic.indexService.GetByName(indexName, tableUUID, projectUUID, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -115,7 +115,7 @@ func (ic *IndexController) Show(c echo.Context) error {
 // @Failure 422 "Unprocessable entity"
 // @Failure 500 "Internal server error"
 //
-// @Router /projects/{project_id}/tables/{table_id}/indexes [post]
+// @Router /tables/{tableUUID}/indexes [post]
 func (ic *IndexController) Store(c echo.Context) error {
 	var request requests.IndexCreateRequest
 	if err := request.BindAndValidate(c); err != nil {
@@ -124,12 +124,12 @@ func (ic *IndexController) Store(c echo.Context) error {
 
 	authUser, _ := utils.NewAuth(c).User()
 
-	projectID, tableID, err := ic.parseRequest(c)
+	projectUUID, tableUUID, err := ic.parseRequest(c)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	index, err := ic.indexService.Create(projectID, tableID, &request, authUser)
+	index, err := ic.indexService.Create(projectUUID, tableUUID, &request, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -157,18 +157,18 @@ func (ic *IndexController) Store(c echo.Context) error {
 // @Failure 404 "Index not found"
 // @Failure 500 "Internal server error"
 //
-// @Router /projects/{project_id}/tables/{table_id}/indexes/{index_name} [delete]
+// @Router /tables/{tableUUID}/indexes/{index_name} [delete]
 func (ic *IndexController) Delete(c echo.Context) error {
 	authUser, _ := utils.NewAuth(c).User()
 
-	projectID, tableID, err := ic.parseRequest(c)
+	projectUUID, tableUUID, err := ic.parseRequest(c)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
 	indexName := c.Param("indexName")
 
-	if _, err := ic.indexService.Delete(indexName, tableID, projectID, authUser); err != nil {
+	if _, err := ic.indexService.Delete(indexName, tableUUID, projectUUID, authUser); err != nil {
 		return responses.ErrorResponse(c, err)
 	}
 
@@ -176,15 +176,15 @@ func (ic *IndexController) Delete(c echo.Context) error {
 }
 
 func (ic *IndexController) parseRequest(c echo.Context) (uuid.UUID, uuid.UUID, error) {
-	projectID, err := utils.GetUUIDPathParam(c, "projectID", true)
+	projectUUID, err := utils.GetUUIDPathParam(c, "projectUUID", true)
 	if err != nil {
 		return uuid.Nil, uuid.Nil, err
 	}
 
-	tableID, err := utils.GetUUIDPathParam(c, "tableID", true)
+	tableUUID, err := utils.GetUUIDPathParam(c, "tableUUID", true)
 	if err != nil {
 		return uuid.Nil, uuid.Nil, err
 	}
 
-	return projectID, tableID, nil
+	return projectUUID, tableUUID, nil
 }

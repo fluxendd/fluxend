@@ -10,7 +10,7 @@ func RegisterStorageRoutes(e *echo.Echo, container *do.Injector, authMiddleware 
 	bucketController := do.MustInvoke[*controllers.BucketController](container)
 	fileController := do.MustInvoke[*controllers.FileController](container)
 
-	projectsGroup := e.Group("api/projects/:projectUUID/buckets", authMiddleware)
+	projectsGroup := e.Group("api/buckets", authMiddleware)
 
 	projectsGroup.POST("", bucketController.Store)
 	projectsGroup.GET("", bucketController.List)

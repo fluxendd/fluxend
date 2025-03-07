@@ -11,25 +11,25 @@ func RegisterTableRoutes(e *echo.Echo, container *do.Injector, authMiddleware ec
 	columnController := do.MustInvoke[*controllers.ColumnController](container)
 	indexController := do.MustInvoke[*controllers.IndexController](container)
 
-	tablesGroup := e.Group("api/projects/:projectID/tables", authMiddleware)
+	tablesGroup := e.Group("api/tables", authMiddleware)
 
 	// table routes
 	tablesGroup.POST("", tableController.Store)
 	tablesGroup.GET("", tableController.List)
-	tablesGroup.GET("/:tableID", tableController.Show)
-	tablesGroup.PUT("/:tableID/duplicate", tableController.Duplicate)
-	tablesGroup.PUT("/:tableID/rename", tableController.Rename)
-	tablesGroup.DELETE("/:tableID", tableController.Delete)
+	tablesGroup.GET("/:tableUUID", tableController.Show)
+	tablesGroup.PUT("/:tableUUID/duplicate", tableController.Duplicate)
+	tablesGroup.PUT("/:tableUUID/rename", tableController.Rename)
+	tablesGroup.DELETE("/:tableUUID", tableController.Delete)
 
 	// column routes
-	tablesGroup.POST("/:tableID/columns", columnController.Store)
-	tablesGroup.PUT("/:tableID/columns", columnController.Alter)
-	tablesGroup.PUT("/:tableID/columns/:columnName", columnController.Rename)
-	tablesGroup.DELETE("/:tableID/columns/:columnName", columnController.Delete)
+	tablesGroup.POST("/:tableUUID/columns", columnController.Store)
+	tablesGroup.PUT("/:tableUUID/columns", columnController.Alter)
+	tablesGroup.PUT("/:tableUUID/columns/:columnName", columnController.Rename)
+	tablesGroup.DELETE("/:tableUUID/columns/:columnName", columnController.Delete)
 
 	// index routes
-	tablesGroup.POST("/:tableID/indexes", indexController.Store)
-	tablesGroup.GET("/:tableID/indexes", indexController.List)
-	tablesGroup.GET("/:tableID/indexes/:indexName", indexController.Show)
-	tablesGroup.DELETE("/:tableID/indexes/:indexName", indexController.Delete)
+	tablesGroup.POST("/:tableUUID/indexes", indexController.Store)
+	tablesGroup.GET("/:tableUUID/indexes", indexController.List)
+	tablesGroup.GET("/:tableUUID/indexes/:indexName", indexController.Show)
+	tablesGroup.DELETE("/:tableUUID/indexes/:indexName", indexController.Delete)
 }

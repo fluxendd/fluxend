@@ -40,7 +40,7 @@ func NewFunctionController(injector *do.Injector) (*FunctionController, error) {
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
 //
-// @Router /projects/{projectUUID}/functions/{schema} [get]
+// @Router /functions/{schema} [get]
 func (fc *FunctionController) List(c echo.Context) error {
 	authUser, _ := utils.NewAuth(c).User()
 
@@ -76,7 +76,7 @@ func (fc *FunctionController) List(c echo.Context) error {
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
 //
-// @Router /projects/{projectUUID}/functions/{schema}/{functionName} [get]
+// @Router /functions/{schema}/{functionName} [get]
 func (fc *FunctionController) Show(c echo.Context) error {
 	authUser, _ := utils.NewAuth(c).User()
 
@@ -116,7 +116,7 @@ func (fc *FunctionController) Show(c echo.Context) error {
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
 //
-// @Router /projects/{projectUUID}/functions/{schema} [post]
+// @Router /functions/{schema} [post]
 func (fc *FunctionController) Store(c echo.Context) error {
 	var request requests.CreateFunctionRequest
 	if err := request.BindAndValidate(c); err != nil {
@@ -157,7 +157,7 @@ func (fc *FunctionController) Store(c echo.Context) error {
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
 //
-// @Router /projects/{projectUUID}/functions/{schema}/{functionName} [delete]
+// @Router /functions/{schema}/{functionName} [delete]
 func (fc *FunctionController) Delete(c echo.Context) error {
 	authUser, _ := utils.NewAuth(c).User()
 

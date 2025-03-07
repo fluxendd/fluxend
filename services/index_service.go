@@ -11,10 +11,10 @@ import (
 )
 
 type IndexService interface {
-	List(tableID, projectID uuid.UUID, authUser models.AuthUser) ([]string, error)
-	GetByName(indexName string, tableID, projectID uuid.UUID, authUser models.AuthUser) (string, error)
-	Create(projectID, tableID uuid.UUID, request *requests.IndexCreateRequest, authUser models.AuthUser) (string, error)
-	Delete(indexName string, tableID, projectID uuid.UUID, authUser models.AuthUser) (bool, error)
+	List(tableUUID, projectUUID uuid.UUID, authUser models.AuthUser) ([]string, error)
+	GetByName(indexName string, tableUUID, projectUUID uuid.UUID, authUser models.AuthUser) (string, error)
+	Create(projectUUID, tableUUID uuid.UUID, request *requests.IndexCreateRequest, authUser models.AuthUser) (string, error)
+	Delete(indexName string, tableUUID, projectUUID uuid.UUID, authUser models.AuthUser) (bool, error)
 }
 
 type IndexServiceImpl struct {
@@ -38,8 +38,8 @@ func NewIndexService(injector *do.Injector) (IndexService, error) {
 	}, nil
 }
 
-func (s *IndexServiceImpl) List(tableID, projectID uuid.UUID, authUser models.AuthUser) ([]string, error) {
-	project, err := s.projectRepo.GetByUUID(projectID)
+func (s *IndexServiceImpl) List(tableUUID, projectUUID uuid.UUID, authUser models.AuthUser) ([]string, error) {
+	project, err := s.projectRepo.GetByUUID(projectUUID)
 	if err != nil {
 		return nil, err
 	}
@@ -48,7 +48,7 @@ func (s *IndexServiceImpl) List(tableID, projectID uuid.UUID, authUser models.Au
 		return nil, errs.NewForbiddenError("project.error.readForbidden")
 	}
 
-	table, err := s.coreTableRepo.GetByID(tableID)
+	table, err := s.coreTableRepo.GetByID(tableUUID)
 	if err != nil {
 		return nil, err
 	}
@@ -61,8 +61,8 @@ func (s *IndexServiceImpl) List(tableID, projectID uuid.UUID, authUser models.Au
 	return clientIndexRepo.List(table.Name)
 }
 
-func (s *IndexServiceImpl) GetByName(indexName string, tableID, projectID uuid.UUID, authUser models.AuthUser) (string, error) {
-	project, err := s.projectRepo.GetByUUID(projectID)
+func (s *IndexServiceImpl) GetByName(indexName string, tableUUID, projectUUID uuid.UUID, authUser models.AuthUser) (string, error) {
+	project, err := s.projectRepo.GetByUUID(projectUUID)
 	if err != nil {
 		return "", err
 	}
@@ -71,7 +71,7 @@ func (s *IndexServiceImpl) GetByName(indexName string, tableID, projectID uuid.U
 		return "", errs.NewForbiddenError("project.error.readForbidden")
 	}
 
-	table, err := s.coreTableRepo.GetByID(tableID)
+	table, err := s.coreTableRepo.GetByID(tableUUID)
 	if err != nil {
 		return "", err
 	}
@@ -84,8 +84,8 @@ func (s *IndexServiceImpl) GetByName(indexName string, tableID, projectID uuid.U
 	return clientIndexRepo.GetByName(table.Name, indexName)
 }
 
-func (s *IndexServiceImpl) Create(projectID, tableID uuid.UUID, request *requests.IndexCreateRequest, authUser models.AuthUser) (string, error) {
-	project, err := s.projectRepo.GetByUUID(projectID)
+func (s *IndexServiceImpl) Create(projectUUID, tableUUID uuid.UUID, request *requests.IndexCreateRequest, authUser models.AuthUser) (string, error) {
+	project, err := s.projectRepo.GetByUUID(projectUUID)
 	if err != nil {
 		return "", err
 	}
@@ -94,7 +94,7 @@ func (s *IndexServiceImpl) Create(projectID, tableID uuid.UUID, request *request
 		return "", errs.NewForbiddenError("table.error.createForbidden")
 	}
 
-	table, err := s.coreTableRepo.GetByID(tableID)
+	table, err := s.coreTableRepo.GetByID(tableUUID)
 	if err != nil {
 		return "", err
 	}
@@ -121,8 +121,8 @@ func (s *IndexServiceImpl) Create(projectID, tableID uuid.UUID, request *request
 	return clientIndexRepo.GetByName(table.Name, request.Name)
 }
 
-func (s *IndexServiceImpl) Delete(indexName string, tableID, projectID uuid.UUID, authUser models.AuthUser) (bool, error) {
-	project, err := s.projectRepo.GetByUUID(projectID)
+func (s *IndexServiceImpl) Delete(indexName string, tableUUID, projectUUID uuid.UUID, authUser models.AuthUser) (bool, error) {
+	project, err := s.projectRepo.GetByUUID(projectUUID)
 	if err != nil {
 		return false, err
 	}
@@ -131,7 +131,7 @@ func (s *IndexServiceImpl) Delete(indexName string, tableID, projectID uuid.UUID
 		return false, errs.NewForbiddenError("project.error.updateForbidden")
 	}
 
-	table, err := s.coreTableRepo.GetByID(tableID)
+	table, err := s.coreTableRepo.GetByID(tableUUID)
 	if err != nil {
 		return false, err
 	}

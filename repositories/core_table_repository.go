@@ -24,7 +24,7 @@ func NewCoreTableRepository(injector *do.Injector) (*CoreTableRepository, error)
 	return &CoreTableRepository{db: db}, nil
 }
 
-func (r *CoreTableRepository) ListForProject(paginationParams utils.PaginationParams, projectID uuid.UUID) ([]models.Table, error) {
+func (r *CoreTableRepository) ListForProject(paginationParams utils.PaginationParams, projectUUID uuid.UUID) ([]models.Table, error) {
 	offset := (paginationParams.Page - 1) * paginationParams.Limit
 
 	query := `
@@ -46,7 +46,7 @@ func (r *CoreTableRepository) ListForProject(paginationParams utils.PaginationPa
 	query = fmt.Sprintf(query, utils.GetColumns[models.Table]())
 
 	params := map[string]interface{}{
-		"project_uuid": projectID,
+		"project_uuid": projectUUID,
 		"sort":         paginationParams.Sort,
 		"limit":        paginationParams.Limit,
 		"offset":       offset,
@@ -74,11 +74,11 @@ func (r *CoreTableRepository) ListForProject(paginationParams utils.PaginationPa
 	return tables, nil
 }
 
-func (r *CoreTableRepository) ListColumns(tableID uuid.UUID) ([]types.TableColumn, error) {
+func (r *CoreTableRepository) ListColumns(tableUUID uuid.UUID) ([]types.TableColumn, error) {
 	query := "SELECT columns FROM fluxton.tables WHERE uuid = $1"
 
 	var columnsJSON models.JSONColumns
-	row := r.db.QueryRow(query, tableID)
+	row := r.db.QueryRow(query, tableUUID)
 
 	err := row.Scan(&columnsJSON)
 	if err != nil {
@@ -138,11 +138,11 @@ func (r *CoreTableRepository) ExistsByID(tableUUID uuid.UUID) (bool, error) {
 	return exists, nil
 }
 
-func (r *CoreTableRepository) ExistsByNameForProject(name string, tableID uuid.UUID) (bool, error) {
+func (r *CoreTableRepository) ExistsByNameForProject(name string, tableUUID uuid.UUID) (bool, error) {
 	query := "SELECT EXISTS(SELECT 1 FROM fluxton.tables WHERE name = $1 AND project_uuid = $2)"
 
 	var exists bool
-	err := r.db.Get(&exists, query, name, tableID)
+	err := r.db.Get(&exists, query, name, tableUUID)
 	if err != nil {
 		return false, utils.FormatError(err, "fetch", utils.GetMethodName())
 	}
@@ -150,7 +150,7 @@ func (r *CoreTableRepository) ExistsByNameForProject(name string, tableID uuid.U
 	return exists, nil
 }
 
-func (r *CoreTableRepository) HasColumn(column string, tableID uuid.UUID) (bool, error) {
+func (r *CoreTableRepository) HasColumn(column string, tableUUID uuid.UUID) (bool, error) {
 	query := `
 		SELECT EXISTS (
 			SELECT 1
@@ -165,7 +165,7 @@ func (r *CoreTableRepository) HasColumn(column string, tableID uuid.UUID) (bool,
 	`
 
 	var columnExists bool
-	err := r.db.QueryRow(query, tableID, column).Scan(&columnExists)
+	err := r.db.QueryRow(query, tableUUID, column).Scan(&columnExists)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return false, errs.NewNotFoundError("table.error.notFound")
@@ -222,13 +222,13 @@ func (r *CoreTableRepository) Update(table *models.Table) (*models.Table, error)
 	return table, nil
 }
 
-func (r *CoreTableRepository) Rename(tableID uuid.UUID, name string, authUserID uuid.UUID) (models.Table, error) {
+func (r *CoreTableRepository) Rename(tableUUID uuid.UUID, name string, authUserID uuid.UUID) (models.Table, error) {
 	query := `
 		UPDATE fluxton.tables 
 		SET name = $1, updated_at = $2, updated_by = $3
 		WHERE uuid = $4`
 
-	rows, err := r.db.Exec(query, name, time.Now(), authUserID, tableID)
+	rows, err := r.db.Exec(query, name, time.Now(), authUserID, tableUUID)
 	if err != nil {
 		return models.Table{}, utils.FormatError(err, "update", utils.GetMethodName())
 	}
@@ -242,12 +242,12 @@ func (r *CoreTableRepository) Rename(tableID uuid.UUID, name string, authUserID 
 		return models.Table{}, errs.NewNotFoundError("table.error.notFound")
 	}
 
-	return r.GetByID(tableID)
+	return r.GetByID(tableUUID)
 }
 
-func (r *CoreTableRepository) Delete(tableID uuid.UUID) (bool, error) {
+func (r *CoreTableRepository) Delete(tableUUID uuid.UUID) (bool, error) {
 	query := "DELETE FROM fluxton.tables WHERE uuid = $1"
-	res, err := r.db.Exec(query, tableID)
+	res, err := r.db.Exec(query, tableUUID)
 	if err != nil {
 		return false, utils.FormatError(err, "delete", utils.GetMethodName())
 	}

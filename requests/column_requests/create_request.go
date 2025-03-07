@@ -2,6 +2,7 @@ package column_requests
 
 import (
 	"fluxton/configs"
+	"fluxton/requests"
 	"fluxton/types"
 	"fluxton/utils"
 	"fmt"
@@ -11,12 +12,18 @@ import (
 )
 
 type CreateRequest struct {
+	requests.BaseRequest
 	Columns []types.TableColumn `json:"columns"`
 }
 
 func (r *CreateRequest) BindAndValidate(c echo.Context) []string {
 	if err := c.Bind(r); err != nil {
 		return []string{"Invalid request payload"}
+	}
+
+	err := r.WithProjectHeader(c)
+	if err != nil {
+		return []string{err.Error()}
 	}
 
 	var errors []string

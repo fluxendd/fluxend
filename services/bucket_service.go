@@ -15,8 +15,8 @@ import (
 
 type BucketService interface {
 	List(paginationParams utils.PaginationParams, projectUUID uuid.UUID, authUser models.AuthUser) ([]models.Bucket, error)
-	GetByUUID(bucketUUID, projectUUID uuid.UUID, authUser models.AuthUser) (models.Bucket, error)
-	Create(projectUUID uuid.UUID, request *bucket_requests.CreateRequest, authUser models.AuthUser) (models.Bucket, error)
+	GetByUUID(bucketUUID uuid.UUID, authUser models.AuthUser) (models.Bucket, error)
+	Create(request *bucket_requests.CreateRequest, authUser models.AuthUser) (models.Bucket, error)
 	Update(bucketUUID uuid.UUID, authUser models.AuthUser, request *bucket_requests.CreateRequest) (*models.Bucket, error)
 	Delete(bucketUUID uuid.UUID, authUser models.AuthUser) (bool, error)
 }
@@ -59,8 +59,13 @@ func (s *BucketServiceImpl) List(paginationParams utils.PaginationParams, projec
 	return s.bucketRepo.ListForProject(paginationParams, projectUUID)
 }
 
-func (s *BucketServiceImpl) GetByUUID(bucketUUID, projectUUID uuid.UUID, authUser models.AuthUser) (models.Bucket, error) {
-	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(projectUUID)
+func (s *BucketServiceImpl) GetByUUID(bucketUUID uuid.UUID, authUser models.AuthUser) (models.Bucket, error) {
+	bucket, err := s.bucketRepo.GetByUUID(bucketUUID)
+	if err != nil {
+		return models.Bucket{}, err
+	}
+
+	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(bucket.ProjectUuid)
 	if err != nil {
 		return models.Bucket{}, err
 	}
@@ -69,16 +74,11 @@ func (s *BucketServiceImpl) GetByUUID(bucketUUID, projectUUID uuid.UUID, authUse
 		return models.Bucket{}, errs.NewForbiddenError("bucket.error.viewForbidden")
 	}
 
-	bucket, err := s.bucketRepo.GetByUUID(bucketUUID)
-	if err != nil {
-		return models.Bucket{}, err
-	}
-
 	return bucket, nil
 }
 
-func (s *BucketServiceImpl) Create(projectUUID uuid.UUID, request *bucket_requests.CreateRequest, authUser models.AuthUser) (models.Bucket, error) {
-	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(projectUUID)
+func (s *BucketServiceImpl) Create(request *bucket_requests.CreateRequest, authUser models.AuthUser) (models.Bucket, error) {
+	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(request.ProjectUUID)
 	if err != nil {
 		return models.Bucket{}, err
 	}
@@ -87,13 +87,13 @@ func (s *BucketServiceImpl) Create(projectUUID uuid.UUID, request *bucket_reques
 		return models.Bucket{}, errs.NewForbiddenError("bucket.error.createForbidden")
 	}
 
-	err = s.validateNameForDuplication(request.Name, projectUUID)
+	err = s.validateNameForDuplication(request.Name, request.ProjectUUID)
 	if err != nil {
 		return models.Bucket{}, err
 	}
 
 	bucket := models.Bucket{
-		ProjectUuid: projectUUID,
+		ProjectUuid: request.ProjectUUID,
 		Name:        request.Name,
 		AwsName:     s.generateBucketName(),
 		IsPublic:    request.IsPublic,
