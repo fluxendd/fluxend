@@ -1,7 +1,10 @@
 package requests
 
 import (
+	"errors"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
+	"github.com/google/uuid"
+	"github.com/labstack/echo/v4"
 )
 
 var (
@@ -39,21 +42,34 @@ var (
 	}
 )
 
-type BaseRequest struct{}
+type BaseRequest struct {
+	ProjectUUID uuid.UUID `json:"projectUUID,omitempty"`
+}
+
+func (r *BaseRequest) WithProjectHeader(c echo.Context) error {
+	projectUUID, err := uuid.Parse(c.Request().Header.Get("X-Project"))
+	if err != nil {
+		return errors.New("invalid project UUID")
+	}
+
+	r.ProjectUUID = projectUUID
+
+	return nil
+}
 
 func (r *BaseRequest) ExtractValidationErrors(err error) []string {
 	if err == nil {
 		return nil
 	}
 
-	var errors []string
+	var errs []string
 	if ve, ok := err.(validation.Errors); ok {
 		for _, validationErr := range ve {
-			errors = append(errors, validationErr.Error())
+			errs = append(errs, validationErr.Error())
 		}
 	}
 
-	return errors
+	return errs
 }
 
 func GetReservedTableNames() map[string]bool {
