@@ -31,7 +31,7 @@ func NewFormController(injector *do.Injector) (*FormController, error) {
 // @Produce json
 //
 // @Param Authorization header string true "Bearer Token"
-// @Param projectUUID path string true "Project ID"
+// @Param X-Project header string true "Project UUID"
 //
 // @Success 200 {array} responses.Response{content=[]resources.FormResponse} "List of forms"
 // @Failure 400 "Invalid input"
@@ -65,6 +65,8 @@ func (fc *FormController) List(c echo.Context) error {
 // @Produce json
 //
 // @Param Authorization header string true "Bearer Token"
+// @Param X-Project header string true "Project UUID"
+//
 // @Param formUUID path string true "Form UUID"
 //
 // @Success 200 {object} responses.Response{content=resources.FormResponse} "Form details"
@@ -99,6 +101,8 @@ func (fc *FormController) Show(c echo.Context) error {
 // @Produce json
 //
 // @Param Authorization header string true "Bearer Token"
+// @Param X-Project header string true "Project UUID"
+//
 // @Param form body form_requests.CreateRequest true "Form name and description"
 //
 // @Success 201 {object} responses.Response{content=resources.FormResponse} "Form created"
@@ -134,8 +138,10 @@ func (fc *FormController) Store(c echo.Context) error {
 // @Produce json
 //
 // @Param Authorization header string true "Bearer Token"
-// @Param form body form_requests.CreateRequest true "Form name and description"
+// @Param X-Project header string true "Project UUID"
+//
 // @Param formUUID path string true "Form UUID"
+// @Param form body form_requests.CreateRequest true "Form name and description"
 //
 // @Success 200 {object} responses.Response{content=resources.FormResponse} "Form updated"
 // @Failure 422 "Unprocessable entity"
@@ -175,6 +181,8 @@ func (fc *FormController) Update(c echo.Context) error {
 // @Produce json
 //
 // @Param Authorization header string true "Bearer Token"
+// @Param X-Project header string true "Project UUID"
+//
 // @Param formUUID path string true "Form UUID"
 //
 // @Success 204 "Form deleted"

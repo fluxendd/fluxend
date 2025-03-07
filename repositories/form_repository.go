@@ -69,6 +69,22 @@ func (r *FormRepository) ListForProject(paginationParams utils.PaginationParams,
 	return forms, nil
 }
 
+func (r *FormRepository) GetProjectUUIDByFormUUID(formUUID uuid.UUID) (uuid.UUID, error) {
+	query := "SELECT project_uuid FROM fluxton.forms WHERE uuid = $1"
+
+	var projectUUID uuid.UUID
+	err := r.db.Get(&projectUUID, query, formUUID)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return uuid.UUID{}, errs.NewNotFoundError("form.error.notFound")
+		}
+
+		return uuid.UUID{}, utils.FormatError(err, "fetch", utils.GetMethodName())
+	}
+
+	return projectUUID, nil
+}
+
 func (r *FormRepository) GetByUUID(formUUID uuid.UUID) (models.Form, error) {
 	query := "SELECT %s FROM fluxton.forms WHERE uuid = $1"
 	query = fmt.Sprintf(query, utils.GetColumns[models.Form]())

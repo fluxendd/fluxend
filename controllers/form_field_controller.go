@@ -6,7 +6,6 @@ import (
 	"fluxton/responses"
 	"fluxton/services"
 	"fluxton/utils"
-	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
 )
@@ -42,12 +41,12 @@ func NewFormFieldController(injector *do.Injector) (*FormFieldController, error)
 func (ffc *FormFieldController) List(c echo.Context) error {
 	authUser, _ := utils.NewAuth(c).User()
 
-	projectUUID, formUUID, err := ffc.parseRequest(c)
+	formUUID, err := utils.GetUUIDPathParam(c, "formUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	formFields, err := ffc.formFieldService.List(formUUID, projectUUID, authUser)
+	formFields, err := ffc.formFieldService.List(formUUID, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -77,7 +76,7 @@ func (ffc *FormFieldController) List(c echo.Context) error {
 func (ffc *FormFieldController) Show(c echo.Context) error {
 	authUser, _ := utils.NewAuth(c).User()
 
-	projectUUID, formUUID, err := ffc.parseRequest(c)
+	formUUID, err := utils.GetUUIDPathParam(c, "formUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
@@ -118,7 +117,7 @@ func (ffc *FormFieldController) Store(c echo.Context) error {
 
 	authUser, _ := utils.NewAuth(c).User()
 
-	projectUUID, formUUID, err := ffc.parseRequest(c)
+	formUUID, err := utils.GetUUIDPathParam(c, "formUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
@@ -165,7 +164,7 @@ func (ffc *FormFieldController) Update(c echo.Context) error {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	projectUUID, formUUID, err := ffc.parseRequest(c)
+	formUUID, err := utils.GetUUIDPathParam(c, "formUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
@@ -205,7 +204,7 @@ func (ffc *FormFieldController) Delete(c echo.Context) error {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	projectUUID, formUUID, err := ffc.parseRequest(c)
+	formUUID, err := utils.GetUUIDPathParam(c, "formUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
@@ -215,18 +214,4 @@ func (ffc *FormFieldController) Delete(c echo.Context) error {
 	}
 
 	return responses.DeletedResponse(c, nil)
-}
-
-func (ffc *FormFieldController) parseRequest(c echo.Context) (uuid.UUID, uuid.UUID, error) {
-	projectUUID, err := utils.GetUUIDPathParam(c, "projectUUID", true)
-	if err != nil {
-		return uuid.Nil, uuid.Nil, err
-	}
-
-	formUUID, err := utils.GetUUIDPathParam(c, "formUUID", true)
-	if err != nil {
-		return uuid.Nil, uuid.Nil, err
-	}
-
-	return projectUUID, formUUID, nil
 }
