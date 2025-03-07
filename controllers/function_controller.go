@@ -24,7 +24,7 @@ func NewFunctionController(injector *do.Injector) (*FunctionController, error) {
 //
 // @Summary List all functions
 // @Description Retrieve a list of all functions for the specified schema
-// @Tags Schema
+// @Tags Functions
 //
 // @Accept json
 // @Produce json
@@ -66,7 +66,7 @@ func (fc *FunctionController) List(c echo.Context) error {
 //
 // @Summary Show details of a single function
 // @Description Get details of a specific function
-// @Tags Forms
+// @Tags Functions
 //
 // @Accept json
 // @Produce json

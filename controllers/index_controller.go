@@ -73,7 +73,7 @@ func (ic *IndexController) List(c echo.Context) error {
 // @Failure 404 "Index not found"
 // @Failure 500 "Internal server error"
 //
-// @Router /tables/{tableUUID}/indexes/{index_name} [get]
+// @Router /tables/{tableUUID}/indexes/{indexName} [get]
 func (ic *IndexController) Show(c echo.Context) error {
 	authUser, _ := utils.NewAuth(c).User()
 
@@ -152,7 +152,7 @@ func (ic *IndexController) Store(c echo.Context) error {
 // @Failure 404 "Index not found"
 // @Failure 500 "Internal server error"
 //
-// @Router /tables/{tableUUID}/indexes/{index_name} [delete]
+// @Router /tables/{tableUUID}/indexes/{indexName} [delete]
 func (ic *IndexController) Delete(c echo.Context) error {
 	authUser, _ := utils.NewAuth(c).User()
 

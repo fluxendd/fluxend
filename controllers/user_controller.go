@@ -37,7 +37,7 @@ func NewUserController(injector *do.Injector) (*UserController, error) {
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
 //
-// @Router /users/{id} [get]
+// @Router /users/{userUUID} [get]
 func (uc *UserController) Show(c echo.Context) error {
 	id, err := utils.GetUUIDPathParam(c, "id", true)
 	if err != nil {

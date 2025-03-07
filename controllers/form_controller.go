@@ -43,7 +43,7 @@ func NewFormController(injector *do.Injector) (*FormController, error) {
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
 //
-// @Router /projects/{projectUUID}/forms [get]
+// @Router /forms [get]
 func (fc *FormController) List(c echo.Context) error {
 	var request requests.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {

@@ -370,6 +370,94 @@ const docTemplate = `{
             }
         },
         "/forms": {
+            "get": {
+                "description": "Retrieve a list of all forms for the specified project",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Forms"
+                ],
+                "summary": "List all forms",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Project UUID",
+                        "name": "X-Project",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Page number for pagination",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Number of items per page",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Field to sort by",
+                        "name": "sort",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort order (asc or desc)",
+                        "name": "order",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of forms",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "allOf": [
+                                    {
+                                        "$ref": "#/definitions/responses.Response"
+                                    },
+                                    {
+                                        "type": "object",
+                                        "properties": {
+                                            "content": {
+                                                "type": "array",
+                                                "items": {
+                                                    "$ref": "#/definitions/resources.FormResponse"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            },
             "post": {
                 "description": "Add a new form with a name and description",
                 "consumes": [
@@ -645,7 +733,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Fields"
+                    "Form Fields"
                 ],
                 "summary": "List all fields for a form",
                 "parameters": [
@@ -709,7 +797,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Fields"
+                    "Form Fields"
                 ],
                 "summary": "Create a new field for a form",
                 "parameters": [
@@ -781,7 +869,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Fields"
+                    "Form Fields"
                 ],
                 "summary": "Show details of a single field",
                 "parameters": [
@@ -846,7 +934,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Fields"
+                    "Form Fields"
                 ],
                 "summary": "Update an existing field",
                 "parameters": [
@@ -923,7 +1011,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Fields"
+                    "Form Fields"
                 ],
                 "summary": "Delete a field from a form",
                 "parameters": [
@@ -975,7 +1063,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "FormResponses"
+                    "Form Responses"
                 ],
                 "summary": "List all form responses for a form",
                 "parameters": [
@@ -1043,7 +1131,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "FormResponses"
+                    "Form Responses"
                 ],
                 "summary": "Store a new form response",
                 "parameters": [
@@ -1122,7 +1210,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "FormResponses"
+                    "Form Responses"
                 ],
                 "summary": "Show details of a single form response",
                 "parameters": [
@@ -1194,7 +1282,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "FormResponses"
+                    "Form Responses"
                 ],
                 "summary": "Delete a form response",
                 "parameters": [
@@ -1253,7 +1341,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Schema"
+                    "Functions"
                 ],
                 "summary": "List all functions",
                 "parameters": [
@@ -1403,7 +1491,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Forms"
+                    "Functions"
                 ],
                 "summary": "Show details of a single function",
                 "parameters": [
@@ -1857,7 +1945,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Organizations"
+                    "Organization Members"
                 ],
                 "summary": "List all users in an organization",
                 "parameters": [
@@ -1921,7 +2009,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Organizations"
+                    "Organization Members"
                 ],
                 "summary": "Create a user in an organization",
                 "parameters": [
@@ -1983,7 +2071,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/organizations/{organizationUUID}/users/{user_id}": {
+        "/organizations/{organizationUUID}/users/{userUUID}": {
             "delete": {
                 "description": "Remove a user from an organization",
                 "consumes": [
@@ -1993,7 +2081,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Organizations"
+                    "Organization Members"
                 ],
                 "summary": "Delete a user from an organization",
                 "parameters": [
@@ -2360,96 +2448,6 @@ const docTemplate = `{
                         "description": "Project deleted",
                         "schema": {
                             "$ref": "#/definitions/responses.Response"
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid input"
-                    },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
-                    "500": {
-                        "description": "Internal server error"
-                    }
-                }
-            }
-        },
-        "/projects/{projectUUID}/forms": {
-            "get": {
-                "description": "Retrieve a list of all forms for the specified project",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Forms"
-                ],
-                "summary": "List all forms",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer Token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Project UUID",
-                        "name": "X-Project",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Page number for pagination",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Number of items per page",
-                        "name": "limit",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Field to sort by",
-                        "name": "sort",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Sort order (asc or desc)",
-                        "name": "order",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "List of forms",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "allOf": [
-                                    {
-                                        "$ref": "#/definitions/responses.Response"
-                                    },
-                                    {
-                                        "type": "object",
-                                        "properties": {
-                                            "content": {
-                                                "type": "array",
-                                                "items": {
-                                                    "$ref": "#/definitions/resources.FormResponse"
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
                         }
                     },
                     "400": {
@@ -3254,7 +3252,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/tables/{tableUUID}/columns/{column_name}": {
+        "/tables/{tableUUID}/columns/{columnName}": {
             "put": {
                 "description": "Change the name of a specific column in a given table.",
                 "consumes": [
@@ -3596,7 +3594,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/tables/{tableUUID}/indexes/{index_name}": {
+        "/tables/{tableUUID}/indexes/{indexName}": {
             "get": {
                 "description": "Retrieve details for a specific index in a table.",
                 "consumes": [
@@ -3947,7 +3945,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/users/{id}": {
+        "/users/{userUUID}": {
             "get": {
                 "description": "Get details of a specific user",
                 "consumes": [
@@ -4005,9 +4003,7 @@ const docTemplate = `{
                         "description": "Internal server error"
                     }
                 }
-            }
-        },
-        "/users/{userUUID}": {
+            },
             "put": {
                 "description": "Update a user's details such as name, email, and password",
                 "consumes": [

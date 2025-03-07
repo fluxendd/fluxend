@@ -129,7 +129,7 @@ func (cc *ColumnController) Alter(c echo.Context) error {
 // @Failure 422 "Unprocessable entity"
 // @Failure 500 "Internal server error"
 //
-// @Router /tables/{tableUUID}/columns/{column_name} [put]
+// @Router /tables/{tableUUID}/columns/{columnName} [put]
 func (cc *ColumnController) Rename(c echo.Context) error {
 	var request column_requests.RenameRequest
 	if err := request.BindAndValidate(c); err != nil {
@@ -172,7 +172,7 @@ func (cc *ColumnController) Rename(c echo.Context) error {
 // @Failure 404 "Column not found"
 // @Failure 500 "Internal server error"
 //
-// @Router /tables/{tableUUID}/columns/{column_name} [delete]
+// @Router /tables/{tableUUID}/columns/{columnName} [delete]
 func (cc *ColumnController) Delete(c echo.Context) error {
 	authUser, _ := utils.NewAuth(c).User()
 
