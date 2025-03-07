@@ -30,7 +30,12 @@ func (r *CreateFormFieldsRequest) BindAndValidate(c echo.Context) []string {
 		return []string{"Invalid request payload"}
 	}
 
-	err := validation.ValidateStruct(r,
+	err := r.WithProjectHeader(c)
+	if err != nil {
+		return []string{err.Error()}
+	}
+
+	err = validation.ValidateStruct(r,
 		validation.Field(&r.Fields, validation.Required.Error("Fields array is required"), validation.Each(
 			validation.By(validateField),
 		)),
