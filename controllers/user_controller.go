@@ -24,7 +24,7 @@ func NewUserController(injector *do.Injector) (*UserController, error) {
 //
 // @Summary Show details of a single user
 // @Description Get details of a specific user
-// @Tags users
+// @Tags Users
 //
 // @Accept json
 // @Produce json
@@ -56,7 +56,7 @@ func (uc *UserController) Show(c echo.Context) error {
 //
 // @Summary Authenticate a user
 // @Description Authenticate a user and return a JWT token
-// @Tags users
+// @Tags Users
 //
 // @Accept json
 // @Produce json
@@ -94,7 +94,7 @@ func (uc *UserController) Login(c echo.Context) error {
 //
 // @Summary Create a new user
 // @Description Add a new user with a name, email, and password
-// @Tags users
+// @Tags Users
 //
 // @Accept json
 // @Produce json
@@ -129,7 +129,7 @@ func (uc *UserController) Store(c echo.Context) error {
 //
 // @Summary Update a user
 // @Description Update a user's details such as name, email, and password
-// @Tags users
+// @Tags Users
 //
 // @Accept json
 // @Produce json
@@ -173,7 +173,7 @@ func (uc *UserController) Update(c echo.Context) error {
 //
 // @Summary Logout a user
 // @Description Invalidate the JWT token to log out a user
-// @Tags users
+// @Tags Users
 //
 // @Accept json
 // @Produce json

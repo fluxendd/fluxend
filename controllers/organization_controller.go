@@ -24,7 +24,7 @@ func NewOrganizationController(injector *do.Injector) (*OrganizationController, 
 //
 // @Summary List all organizations
 // @Description Get all organizations
-// @Tags organizations
+// @Tags Organizations
 //
 // @Accept json
 // @Produce json
@@ -52,7 +52,7 @@ func (oc *OrganizationController) List(c echo.Context) error {
 //
 // @Summary Show details of a single organization
 // @Description Get details of a specific organization
-// @Tags organizations
+// @Tags Organizations
 //
 // @Accept json
 // @Produce json
@@ -87,7 +87,7 @@ func (oc *OrganizationController) Show(c echo.Context) error {
 //
 // @Summary Create a new organization
 // @Description Add a new organization
-// @Tags organizations
+// @Tags Organizations
 //
 // @Accept json
 // @Produce json
@@ -125,7 +125,7 @@ func (oc *OrganizationController) Store(c echo.Context) error {
 //
 // @Summary Update an organization
 // @Description Modify an existing organization's details
-// @Tags organizations
+// @Tags Organizations
 //
 // @Accept json
 // @Produce json
@@ -166,7 +166,7 @@ func (oc *OrganizationController) Update(c echo.Context) error {
 //
 // @Summary Delete an organization
 // @Description Remove an organization
-// @Tags organizations
+// @Tags Organizations
 //
 // @Accept json
 // @Produce json

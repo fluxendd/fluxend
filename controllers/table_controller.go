@@ -25,7 +25,7 @@ func NewTableController(injector *do.Injector) (*TableController, error) {
 //
 // @Summary List all tables
 // @Description Retrieve a list of tables in a specified project.
-// @Tags tables
+// @Tags Tables
 //
 // @Accept json
 // @Produce json
@@ -60,7 +60,7 @@ func (tc *TableController) List(c echo.Context) error {
 //
 // @Summary Get table details
 // @Description Retrieve details of a specific table within a project.
-// @Tags tables
+// @Tags Tables
 //
 // @Accept json
 // @Produce json
@@ -101,7 +101,7 @@ func (tc *TableController) Show(c echo.Context) error {
 //
 // @Summary Create a new table
 // @Description Define and create a new table within a specified project.
-// @Tags tables
+// @Tags Tables
 //
 // @Accept json
 // @Produce json
@@ -142,7 +142,7 @@ func (tc *TableController) Store(c echo.Context) error {
 //
 // @Summary Duplicate a table
 // @Description Create a copy of a specified table within a project.
-// @Tags tables
+// @Tags Tables
 //
 // @Accept json
 // @Produce json
@@ -189,7 +189,7 @@ func (tc *TableController) Duplicate(c echo.Context) error {
 //
 // @Summary Rename a table
 // @Description Change the name of a specific table within a project.
-// @Tags tables
+// @Tags Tables
 //
 // @Accept json
 // @Produce json
@@ -236,7 +236,7 @@ func (tc *TableController) Rename(c echo.Context) error {
 //
 // @Summary Delete a table
 // @Description Permanently delete a specific table from a given project.
-// @Tags tables
+// @Tags Tables
 //
 // @Accept json
 // @Produce json

@@ -24,7 +24,7 @@ func NewProjectController(injector *do.Injector) (*ProjectController, error) {
 //
 // @Summary List all projects
 // @Description Get all projects for a specific organization
-// @Tags projects
+// @Tags Projects
 //
 // @Accept json
 // @Produce json
@@ -59,7 +59,7 @@ func (pc *ProjectController) List(c echo.Context) error {
 //
 // @Summary Show details of a single project
 // @Description Get details of a specific project
-// @Tags projects
+// @Tags Projects
 //
 // @Accept json
 // @Produce json
@@ -94,7 +94,7 @@ func (pc *ProjectController) Show(c echo.Context) error {
 //
 // @Summary Create a new project
 // @Description Create a new project for a specific organization
-// @Tags projects
+// @Tags Projects
 //
 // @Accept json
 // @Produce json
@@ -130,7 +130,7 @@ func (pc *ProjectController) Store(c echo.Context) error {
 //
 // @Summary Update a project
 // @Description Update a project for a specific organization
-// @Tags projects
+// @Tags Projects
 //
 // @Accept json
 // @Produce json
@@ -171,7 +171,7 @@ func (pc *ProjectController) Update(c echo.Context) error {
 //
 // @Summary Delete a project
 // @Description Remove a project from the organization
-// @Tags projects
+// @Tags Projects
 //
 // @Accept json
 // @Produce json
