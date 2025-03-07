@@ -20,7 +20,7 @@ func RegisterFormRoutes(e *echo.Echo, container *do.Injector, authMiddleware ech
 	formsGroup.DELETE("/:formUUID", formController.Delete)
 
 	// Form Field routes
-	formFieldsGroup := e.Group("api/projects/:projectUUID/forms/:formUUID/fields", authMiddleware)
+	formFieldsGroup := e.Group("api/forms/:formUUID/fields", authMiddleware)
 
 	formFieldsGroup.POST("", formFieldController.Store)
 	formFieldsGroup.GET("", formFieldController.List)
@@ -29,7 +29,7 @@ func RegisterFormRoutes(e *echo.Echo, container *do.Injector, authMiddleware ech
 	formFieldsGroup.DELETE("/:fieldUUID", formFieldController.Delete)
 
 	// Form Response routes
-	formResponsesGroup := e.Group("api/projects/:projectUUID/forms/:formUUID/responses", authMiddleware)
+	formResponsesGroup := e.Group("api/forms/:formUUID/responses", authMiddleware)
 
 	formResponsesGroup.GET("", formResponseController.List)
 	formResponsesGroup.POST("", formResponseController.Store)
