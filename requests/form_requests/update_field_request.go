@@ -15,7 +15,10 @@ func (r *UpdateFormFieldRequest) BindAndValidate(c echo.Context) []string {
 		return []string{"Invalid request payload" + err.Error()}
 	}
 
-	err := validateField(r.FieldRequest)
+	err := r.WithProjectHeader(c)
+	if err != nil {
+		return []string{err.Error()}
+	}
 
-	return r.ExtractValidationErrors(err)
+	return r.ExtractValidationErrors(validateField(r.FieldRequest))
 }
