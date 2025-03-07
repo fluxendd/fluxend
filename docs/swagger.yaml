@@ -1,6 +1,9 @@
 basePath: /v2
 definitions:
   bucket_requests.CreateFileRequest:
+    properties:
+      projectUUID:
+        type: string
     type: object
   bucket_requests.CreateRequest:
     properties:
@@ -12,10 +15,14 @@ definitions:
         type: integer
       name:
         type: string
+      projectUUID:
+        type: string
     type: object
   bucket_requests.RenameFileRequest:
     properties:
       full_file_name:
+        type: string
+      projectUUID:
         type: string
     type: object
   column_requests.CreateRequest:
@@ -29,6 +36,8 @@ definitions:
     properties:
       name:
         type: string
+      projectUUID:
+        type: string
     type: object
   form_requests.CreateFormFieldsRequest:
     properties:
@@ -36,6 +45,8 @@ definitions:
         items:
           $ref: '#/definitions/form_requests.FieldRequest'
         type: array
+      projectUUID:
+        type: string
     type: object
   form_requests.CreateRequest:
     properties:
@@ -43,9 +54,13 @@ definitions:
         type: string
       name:
         type: string
+      projectUUID:
+        type: string
     type: object
   form_requests.CreateResponseRequest:
     properties:
+      projectUUID:
+        type: string
       response:
         additionalProperties: true
         type: object
@@ -75,6 +90,8 @@ definitions:
       options:
         description: Optional for select/radio types
         type: string
+      projectUUID:
+        type: string
       type:
         type: string
     type: object
@@ -82,9 +99,13 @@ definitions:
     properties:
       name:
         type: string
+      projectUUID:
+        type: string
     type: object
   organization_requests.MemberCreateRequest:
     properties:
+      projectUUID:
+        type: string
       user_id:
         type: string
     type: object
@@ -94,10 +115,14 @@ definitions:
         type: string
       organization_uuid:
         type: string
+      projectUUID:
+        type: string
     type: object
   project_requests.UpdateRequest:
     properties:
       name:
+        type: string
+      projectUUID:
         type: string
     type: object
   requests.CreateFunctionRequest:
@@ -112,6 +137,8 @@ definitions:
         items:
           $ref: '#/definitions/requests.functionParameter'
         type: array
+      projectUUID:
+        type: string
       return_type:
         type: string
     type: object
@@ -124,6 +151,8 @@ definitions:
       is_unique:
         type: boolean
       name:
+        type: string
+      projectUUID:
         type: string
     type: object
   requests.functionParameter:
@@ -353,10 +382,14 @@ definitions:
         type: array
       name:
         type: string
+      projectUUID:
+        type: string
     type: object
   table_requests.RenameRequest:
     properties:
       name:
+        type: string
+      projectUUID:
         type: string
     type: object
   types.TableColumn:
@@ -382,6 +415,8 @@ definitions:
         type: string
       password:
         type: string
+      projectUUID:
+        type: string
       username:
         type: string
     type: object
@@ -391,10 +426,14 @@ definitions:
         type: string
       password:
         type: string
+      projectUUID:
+        type: string
     type: object
   user_requests.UpdateRequest:
     properties:
       bio:
+        type: string
+      projectUUID:
         type: string
     type: object
 host: fluxton.io/api

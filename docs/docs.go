@@ -3910,7 +3910,12 @@ const docTemplate = `{
     },
     "definitions": {
         "bucket_requests.CreateFileRequest": {
-            "type": "object"
+            "type": "object",
+            "properties": {
+                "projectUUID": {
+                    "type": "string"
+                }
+            }
         },
         "bucket_requests.CreateRequest": {
             "type": "object",
@@ -3926,6 +3931,9 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
+                },
+                "projectUUID": {
+                    "type": "string"
                 }
             }
         },
@@ -3933,6 +3941,9 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "full_file_name": {
+                    "type": "string"
+                },
+                "projectUUID": {
                     "type": "string"
                 }
             }
@@ -3953,6 +3964,9 @@ const docTemplate = `{
             "properties": {
                 "name": {
                     "type": "string"
+                },
+                "projectUUID": {
+                    "type": "string"
                 }
             }
         },
@@ -3964,6 +3978,9 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/form_requests.FieldRequest"
                     }
+                },
+                "projectUUID": {
+                    "type": "string"
                 }
             }
         },
@@ -3975,12 +3992,18 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
+                },
+                "projectUUID": {
+                    "type": "string"
                 }
             }
         },
         "form_requests.CreateResponseRequest": {
             "type": "object",
             "properties": {
+                "projectUUID": {
+                    "type": "string"
+                },
                 "response": {
                     "type": "object",
                     "additionalProperties": true
@@ -4024,6 +4047,9 @@ const docTemplate = `{
                     "description": "Optional for select/radio types",
                     "type": "string"
                 },
+                "projectUUID": {
+                    "type": "string"
+                },
                 "type": {
                     "type": "string"
                 }
@@ -4034,12 +4060,18 @@ const docTemplate = `{
             "properties": {
                 "name": {
                     "type": "string"
+                },
+                "projectUUID": {
+                    "type": "string"
                 }
             }
         },
         "organization_requests.MemberCreateRequest": {
             "type": "object",
             "properties": {
+                "projectUUID": {
+                    "type": "string"
+                },
                 "user_id": {
                     "type": "string"
                 }
@@ -4053,6 +4085,9 @@ const docTemplate = `{
                 },
                 "organization_uuid": {
                     "type": "string"
+                },
+                "projectUUID": {
+                    "type": "string"
                 }
             }
         },
@@ -4060,6 +4095,9 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "name": {
+                    "type": "string"
+                },
+                "projectUUID": {
                     "type": "string"
                 }
             }
@@ -4082,6 +4120,9 @@ const docTemplate = `{
                         "$ref": "#/definitions/requests.functionParameter"
                     }
                 },
+                "projectUUID": {
+                    "type": "string"
+                },
                 "return_type": {
                     "type": "string"
                 }
@@ -4100,6 +4141,9 @@ const docTemplate = `{
                     "type": "boolean"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "projectUUID": {
                     "type": "string"
                 }
             }
@@ -4449,6 +4493,9 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
+                },
+                "projectUUID": {
+                    "type": "string"
                 }
             }
         },
@@ -4456,6 +4503,9 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "name": {
+                    "type": "string"
+                },
+                "projectUUID": {
                     "type": "string"
                 }
             }
@@ -4495,6 +4545,9 @@ const docTemplate = `{
                 "password": {
                     "type": "string"
                 },
+                "projectUUID": {
+                    "type": "string"
+                },
                 "username": {
                     "type": "string"
                 }
@@ -4508,6 +4561,9 @@ const docTemplate = `{
                 },
                 "password": {
                     "type": "string"
+                },
+                "projectUUID": {
+                    "type": "string"
                 }
             }
         },
@@ -4515,6 +4571,9 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "bio": {
+                    "type": "string"
+                },
+                "projectUUID": {
                     "type": "string"
                 }
             }

@@ -3904,7 +3904,12 @@
     },
     "definitions": {
         "bucket_requests.CreateFileRequest": {
-            "type": "object"
+            "type": "object",
+            "properties": {
+                "projectUUID": {
+                    "type": "string"
+                }
+            }
         },
         "bucket_requests.CreateRequest": {
             "type": "object",
@@ -3920,6 +3925,9 @@
                 },
                 "name": {
                     "type": "string"
+                },
+                "projectUUID": {
+                    "type": "string"
                 }
             }
         },
@@ -3927,6 +3935,9 @@
             "type": "object",
             "properties": {
                 "full_file_name": {
+                    "type": "string"
+                },
+                "projectUUID": {
                     "type": "string"
                 }
             }
@@ -3947,6 +3958,9 @@
             "properties": {
                 "name": {
                     "type": "string"
+                },
+                "projectUUID": {
+                    "type": "string"
                 }
             }
         },
@@ -3958,6 +3972,9 @@
                     "items": {
                         "$ref": "#/definitions/form_requests.FieldRequest"
                     }
+                },
+                "projectUUID": {
+                    "type": "string"
                 }
             }
         },
@@ -3969,12 +3986,18 @@
                 },
                 "name": {
                     "type": "string"
+                },
+                "projectUUID": {
+                    "type": "string"
                 }
             }
         },
         "form_requests.CreateResponseRequest": {
             "type": "object",
             "properties": {
+                "projectUUID": {
+                    "type": "string"
+                },
                 "response": {
                     "type": "object",
                     "additionalProperties": true
@@ -4018,6 +4041,9 @@
                     "description": "Optional for select/radio types",
                     "type": "string"
                 },
+                "projectUUID": {
+                    "type": "string"
+                },
                 "type": {
                     "type": "string"
                 }
@@ -4028,12 +4054,18 @@
             "properties": {
                 "name": {
                     "type": "string"
+                },
+                "projectUUID": {
+                    "type": "string"
                 }
             }
         },
         "organization_requests.MemberCreateRequest": {
             "type": "object",
             "properties": {
+                "projectUUID": {
+                    "type": "string"
+                },
                 "user_id": {
                     "type": "string"
                 }
@@ -4047,6 +4079,9 @@
                 },
                 "organization_uuid": {
                     "type": "string"
+                },
+                "projectUUID": {
+                    "type": "string"
                 }
             }
         },
@@ -4054,6 +4089,9 @@
             "type": "object",
             "properties": {
                 "name": {
+                    "type": "string"
+                },
+                "projectUUID": {
                     "type": "string"
                 }
             }
@@ -4076,6 +4114,9 @@
                         "$ref": "#/definitions/requests.functionParameter"
                     }
                 },
+                "projectUUID": {
+                    "type": "string"
+                },
                 "return_type": {
                     "type": "string"
                 }
@@ -4094,6 +4135,9 @@
                     "type": "boolean"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "projectUUID": {
                     "type": "string"
                 }
             }
@@ -4443,6 +4487,9 @@
                 },
                 "name": {
                     "type": "string"
+                },
+                "projectUUID": {
+                    "type": "string"
                 }
             }
         },
@@ -4450,6 +4497,9 @@
             "type": "object",
             "properties": {
                 "name": {
+                    "type": "string"
+                },
+                "projectUUID": {
                     "type": "string"
                 }
             }
@@ -4489,6 +4539,9 @@
                 "password": {
                     "type": "string"
                 },
+                "projectUUID": {
+                    "type": "string"
+                },
                 "username": {
                     "type": "string"
                 }
@@ -4502,6 +4555,9 @@
                 },
                 "password": {
                     "type": "string"
+                },
+                "projectUUID": {
+                    "type": "string"
                 }
             }
         },
@@ -4509,6 +4565,9 @@
             "type": "object",
             "properties": {
                 "bio": {
+                    "type": "string"
+                },
+                "projectUUID": {
                     "type": "string"
                 }
             }
