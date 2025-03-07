@@ -35,6 +35,7 @@ func (s *PostgrestServiceImpl) StartContainer(dbName string, dbPort int) error {
 		),
 		"-e", "PGRST_DB_ANON_ROLE=" + os.Getenv("POSTGREST_DEFAULT_ROLE"),
 		"-e", "PGRST_DB_SCHEMA=" + os.Getenv("POSTGREST_DEFAULT_SCHEMA"),
+		"-e", "PGRST_JWT_SECRET=" + os.Getenv("JWT_SECRET"),
 		"-p", fmt.Sprintf("%d:3000", dbPort),
 		ImageName,
 	}

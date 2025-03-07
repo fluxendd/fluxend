@@ -116,8 +116,13 @@ func (r *DatabaseRepository) importSeedFiles(databaseName string) error {
 			continue
 		}
 
+		sqlQuery := string(sqlContent)
+		if strings.Contains(sqlQuery, "{{USER_ROLE}}") {
+			sqlQuery = strings.ReplaceAll(sqlQuery, "{{USER_ROLE}}", fmt.Sprintf("usr_%s", databaseName))
+		}
+
 		// Execute the SQL statements
-		if _, err := connection.Exec(string(sqlContent)); err != nil {
+		if _, err := connection.Exec(sqlQuery); err != nil {
 			log.Printf("DB: %s => Skipping file %s: could not execute SQL: %v", databaseName, filePath, err)
 
 			continue
