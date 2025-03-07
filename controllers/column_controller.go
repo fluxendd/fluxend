@@ -25,7 +25,7 @@ func NewColumnController(injector *do.Injector) (*ColumnController, error) {
 //
 // @Summary Add new columns to a table
 // @Description Create new columns in a specified table within a project.
-// @Tags columns
+// @Tags Columns
 //
 // @Accept json
 // @Produce json
@@ -67,7 +67,7 @@ func (cc *ColumnController) Store(c echo.Context) error {
 //
 // @Summary Modify column types in a table
 // @Description Alter the data type of existing columns in a specified table.
-// @Tags columns
+// @Tags Columns
 //
 // @Accept json
 // @Produce json
@@ -109,7 +109,7 @@ func (cc *ColumnController) Alter(c echo.Context) error {
 //
 // @Summary Rename a column in a table
 // @Description Change the name of a specific column in a given table.
-// @Tags columns
+// @Tags Columns
 //
 // @Accept json
 // @Produce json
@@ -152,7 +152,7 @@ func (cc *ColumnController) Rename(c echo.Context) error {
 //
 // @Summary Delete a column from a table
 // @Description Permanently delete a specific column from a given table.
-// @Tags columns
+// @Tags Columns
 //
 // @Accept json
 // @Produce json

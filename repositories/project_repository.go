@@ -90,6 +90,22 @@ func (r *ProjectRepository) GetByUUID(projectUUID uuid.UUID) (models.Project, er
 	return project, nil
 }
 
+func (r *ProjectRepository) GetDatabaseNameByUUID(projectUUID uuid.UUID) (string, error) {
+	query := "SELECT db_name FROM fluxton.projects WHERE uuid = $1"
+
+	var dbName string
+	err := r.db.Get(&dbName, query, projectUUID)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return "", errs.NewNotFoundError("project.error.notFound")
+		}
+
+		return "", utils.FormatError(err, "fetch", utils.GetMethodName())
+	}
+
+	return dbName, nil
+}
+
 func (r *ProjectRepository) GetOrganizationUUIDByProjectUUID(id uuid.UUID) (uuid.UUID, error) {
 	query := "SELECT organization_uuid FROM fluxton.projects WHERE uuid = $1"
 

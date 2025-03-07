@@ -24,7 +24,7 @@ func NewBucketController(injector *do.Injector) (*BucketController, error) {
 //
 // @Summary List all buckets
 // @Description Retrieve a list of buckets in a specified project.
-// @Tags buckets
+// @Tags Buckets
 //
 // @Accept json
 // @Produce json
@@ -59,7 +59,7 @@ func (bc *BucketController) List(c echo.Context) error {
 //
 // @Summary Show details of a single bucket
 // @Description Get details of a specific bucket
-// @Tags buckets
+// @Tags Buckets
 //
 // @Accept json
 // @Produce json
@@ -100,7 +100,7 @@ func (bc *BucketController) Show(c echo.Context) error {
 //
 // @Summary Create a new bucket
 // @Description Add a new bucket to a project
-// @Tags buckets
+// @Tags Buckets
 //
 // @Accept json
 // @Produce json
@@ -141,7 +141,7 @@ func (bc *BucketController) Store(c echo.Context) error {
 //
 // @Summary Update a bucket
 // @Description Modify an existing bucket's details
-// @Tags buckets
+// @Tags Buckets
 //
 // @Accept json
 // @Produce json
@@ -183,7 +183,7 @@ func (bc *BucketController) Update(c echo.Context) error {
 //
 // @Summary Delete a bucket
 // @Description Remove a bucket from a project
-// @Tags buckets
+// @Tags Buckets
 //
 // @Accept json
 // @Produce json

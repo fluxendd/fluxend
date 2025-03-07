@@ -25,7 +25,7 @@ func NewFormFieldController(injector *do.Injector) (*FormFieldController, error)
 //
 // @Summary List all fields for a form
 // @Description Retrieve a list of all fields in a specific form
-// @Tags fields
+// @Tags Fields
 //
 // @Accept json
 // @Produce json
@@ -59,7 +59,7 @@ func (ffc *FormFieldController) List(c echo.Context) error {
 //
 // @Summary Show details of a single field
 // @Description Get details of a specific field
-// @Tags fields
+// @Tags Fields
 //
 // @Accept json
 // @Produce json
@@ -94,7 +94,7 @@ func (ffc *FormFieldController) Show(c echo.Context) error {
 //
 // @Summary Create a new field for a form
 // @Description Add a new field to a form
-// @Tags fields
+// @Tags Fields
 //
 // @Accept json
 // @Produce json
@@ -135,7 +135,7 @@ func (ffc *FormFieldController) Store(c echo.Context) error {
 //
 // @Summary Update an existing field
 // @Description Update the details of an existing field
-// @Tags fields
+// @Tags Fields
 //
 // @Accept json
 // @Produce json
@@ -182,7 +182,7 @@ func (ffc *FormFieldController) Update(c echo.Context) error {
 //
 // @Summary Delete a field from a form
 // @Description Remove a specific field from the form
-// @Tags fields
+// @Tags Fields
 //
 // @Accept json
 // @Produce json

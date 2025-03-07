@@ -100,6 +100,21 @@ definitions:
       name:
         type: string
     type: object
+  requests.CreateFunctionRequest:
+    properties:
+      definition:
+        type: string
+      language:
+        type: string
+      name:
+        type: string
+      parameters:
+        items:
+          $ref: '#/definitions/requests.functionParameter'
+        type: array
+      return_type:
+        type: string
+    type: object
   requests.IndexCreateRequest:
     properties:
       columns:
@@ -109,6 +124,13 @@ definitions:
       is_unique:
         type: boolean
       name:
+        type: string
+    type: object
+  requests.functionParameter:
+    properties:
+      name:
+        type: string
+      type:
         type: string
     type: object
   resources.BucketResponse:
@@ -224,6 +246,19 @@ definitions:
           $ref: '#/definitions/resources.FormFieldResponseForAPI'
         type: array
       uuid:
+        type: string
+    type: object
+  resources.FunctionResponse:
+    properties:
+      dataType:
+        type: string
+      definition:
+        type: string
+      language:
+        type: string
+      name:
+        type: string
+      type:
         type: string
     type: object
   resources.OrganizationResponse:
@@ -413,7 +448,7 @@ paths:
           description: Internal server error
       summary: List all files in a bucket
       tags:
-      - files
+      - Files
     post:
       consumes:
       - application/json
@@ -455,7 +490,7 @@ paths:
           description: Internal server error
       summary: Create a new file
       tags:
-      - files
+      - Files
   /buckets/{bucketUUID}/files/{fileUUID}:
     delete:
       consumes:
@@ -490,7 +525,7 @@ paths:
           description: Internal server error
       summary: Delete a file
       tags:
-      - files
+      - Files
     get:
       consumes:
       - application/json
@@ -531,7 +566,7 @@ paths:
           description: Internal server error
       summary: Show details of a single file
       tags:
-      - files
+      - Files
   /buckets/{bucketUUID}/files/{fileUUID}/rename:
     put:
       consumes:
@@ -580,7 +615,7 @@ paths:
           description: Internal server error
       summary: Rename a file
       tags:
-      - files
+      - Files
   /forms:
     post:
       consumes:
@@ -620,7 +655,7 @@ paths:
           description: Internal server error
       summary: Create a new form
       tags:
-      - forms
+      - Forms
   /forms/{formUUID}:
     delete:
       consumes:
@@ -650,7 +685,7 @@ paths:
           description: Internal server error
       summary: Delete a form
       tags:
-      - forms
+      - Forms
     get:
       consumes:
       - application/json
@@ -686,7 +721,7 @@ paths:
           description: Internal server error
       summary: Show details of a single form
       tags:
-      - forms
+      - Forms
     put:
       consumes:
       - application/json
@@ -730,7 +765,7 @@ paths:
           description: Internal server error
       summary: Update an existing form
       tags:
-      - forms
+      - Forms
   /forms/{formUUID}/fields:
     get:
       consumes:
@@ -771,7 +806,7 @@ paths:
           description: Internal server error
       summary: List all fields for a form
       tags:
-      - fields
+      - Fields
     post:
       consumes:
       - application/json
@@ -815,7 +850,7 @@ paths:
           description: Internal server error
       summary: Create a new field for a form
       tags:
-      - fields
+      - Fields
   /forms/{formUUID}/fields/{fieldUUID}:
     delete:
       consumes:
@@ -850,7 +885,7 @@ paths:
           description: Internal server error
       summary: Delete a field from a form
       tags:
-      - fields
+      - Fields
     get:
       consumes:
       - application/json
@@ -891,7 +926,7 @@ paths:
           description: Internal server error
       summary: Show details of a single field
       tags:
-      - fields
+      - Fields
     put:
       consumes:
       - application/json
@@ -940,7 +975,7 @@ paths:
           description: Internal server error
       summary: Update an existing field
       tags:
-      - fields
+      - Fields
   /organizations:
     get:
       consumes:
@@ -972,7 +1007,7 @@ paths:
           description: Internal server error
       summary: List all organizations
       tags:
-      - organizations
+      - Organizations
     post:
       consumes:
       - application/json
@@ -1011,7 +1046,7 @@ paths:
           description: Internal server error
       summary: Create a new organization
       tags:
-      - organizations
+      - Organizations
   /organizations/{organization_id}:
     delete:
       consumes:
@@ -1041,7 +1076,7 @@ paths:
           description: Internal server error
       summary: Delete an organization
       tags:
-      - organizations
+      - Organizations
     get:
       consumes:
       - application/json
@@ -1079,7 +1114,7 @@ paths:
           description: Internal server error
       summary: Show details of a single organization
       tags:
-      - organizations
+      - Organizations
     put:
       consumes:
       - application/json
@@ -1123,7 +1158,7 @@ paths:
           description: Internal server error
       summary: Update an organization
       tags:
-      - organizations
+      - Organizations
   /organizations/{organization_id}/users:
     get:
       consumes:
@@ -1164,7 +1199,7 @@ paths:
           description: Internal server error
       summary: List all users in an organization
       tags:
-      - organizations
+      - Organizations
     post:
       consumes:
       - application/json
@@ -1208,7 +1243,7 @@ paths:
           description: Internal server error
       summary: Create a user in an organization
       tags:
-      - organizations
+      - Organizations
   /organizations/{organization_id}/users/{user_id}:
     delete:
       consumes:
@@ -1245,7 +1280,7 @@ paths:
           description: Internal server error
       summary: Delete a user from an organization
       tags:
-      - organizations
+      - Organizations
   /projects:
     get:
       consumes:
@@ -1284,7 +1319,7 @@ paths:
           description: Internal server error
       summary: List all projects
       tags:
-      - projects
+      - Projects
     post:
       consumes:
       - application/json
@@ -1328,7 +1363,7 @@ paths:
           description: Internal server error
       summary: Create a new project
       tags:
-      - projects
+      - Projects
   /projects/{project_id}/tables:
     get:
       consumes:
@@ -1367,7 +1402,7 @@ paths:
           description: Internal server error
       summary: List all tables
       tags:
-      - tables
+      - Tables
     post:
       consumes:
       - application/json
@@ -1411,7 +1446,7 @@ paths:
           description: Internal server error
       summary: Create a new table
       tags:
-      - tables
+      - Tables
   /projects/{project_id}/tables/{table_id}:
     delete:
       consumes:
@@ -1448,7 +1483,7 @@ paths:
           description: Internal server error
       summary: Delete a table
       tags:
-      - tables
+      - Tables
     get:
       consumes:
       - application/json
@@ -1491,7 +1526,7 @@ paths:
           description: Internal server error
       summary: Get table details
       tags:
-      - tables
+      - Tables
   /projects/{project_id}/tables/{table_id}/columns:
     post:
       consumes:
@@ -1541,7 +1576,7 @@ paths:
           description: Internal server error
       summary: Add new columns to a table
       tags:
-      - columns
+      - Columns
     put:
       consumes:
       - application/json
@@ -1590,7 +1625,7 @@ paths:
           description: Internal server error
       summary: Modify column types in a table
       tags:
-      - columns
+      - Columns
   /projects/{project_id}/tables/{table_id}/columns/{column_name}:
     delete:
       consumes:
@@ -1632,7 +1667,7 @@ paths:
           description: Internal server error
       summary: Delete a column from a table
       tags:
-      - columns
+      - Columns
     put:
       consumes:
       - application/json
@@ -1681,7 +1716,7 @@ paths:
           description: Internal server error
       summary: Rename a column in a table
       tags:
-      - columns
+      - Columns
   /projects/{project_id}/tables/{table_id}/duplicate:
     put:
       consumes:
@@ -1731,7 +1766,7 @@ paths:
           description: Internal server error
       summary: Duplicate a table
       tags:
-      - tables
+      - Tables
   /projects/{project_id}/tables/{table_id}/indexes:
     get:
       consumes:
@@ -1774,7 +1809,7 @@ paths:
           description: Internal server error
       summary: List indexes for a table
       tags:
-      - indexes
+      - Indexes
     post:
       consumes:
       - application/json
@@ -1822,7 +1857,7 @@ paths:
           description: Internal server error
       summary: Create a new index
       tags:
-      - indexes
+      - Indexes
   /projects/{project_id}/tables/{table_id}/indexes/{index_name}:
     delete:
       consumes:
@@ -1864,7 +1899,7 @@ paths:
           description: Internal server error
       summary: Delete an index from a table
       tags:
-      - indexes
+      - Indexes
     get:
       consumes:
       - application/json
@@ -1911,7 +1946,7 @@ paths:
           description: Internal server error
       summary: Show details of a specific index
       tags:
-      - indexes
+      - Indexes
   /projects/{project_id}/tables/{table_id}/rename:
     put:
       consumes:
@@ -1961,7 +1996,7 @@ paths:
           description: Internal server error
       summary: Rename a table
       tags:
-      - tables
+      - Tables
   /projects/{projectID}:
     delete:
       consumes:
@@ -1993,7 +2028,7 @@ paths:
           description: Internal server error
       summary: Delete a project
       tags:
-      - projects
+      - Projects
     get:
       consumes:
       - application/json
@@ -2031,7 +2066,7 @@ paths:
           description: Internal server error
       summary: Show details of a single project
       tags:
-      - projects
+      - Projects
     put:
       consumes:
       - application/json
@@ -2075,7 +2110,7 @@ paths:
           description: Internal server error
       summary: Update a project
       tags:
-      - projects
+      - Projects
   /projects/{projectId}/forms:
     get:
       consumes:
@@ -2116,7 +2151,7 @@ paths:
           description: Internal server error
       summary: List all forms
       tags:
-      - forms
+      - Forms
   /projects/{projectUUID}/forms/{formUUID}/responses:
     get:
       consumes:
@@ -2160,7 +2195,7 @@ paths:
           description: Internal server error
       summary: List all form responses for a form
       tags:
-      - formResponses
+      - FormResponsess
     post:
       consumes:
       - application/json
@@ -2209,7 +2244,7 @@ paths:
           description: Internal server error
       summary: Store a new form response
       tags:
-      - formResponses
+      - FormResponsess
   /projects/{projectUUID}/forms/{formUUID}/responses/{formResponseUUID}:
     delete:
       consumes:
@@ -2249,7 +2284,7 @@ paths:
           description: Internal server error
       summary: Delete a form response
       tags:
-      - formResponses
+      - FormResponsess
     get:
       consumes:
       - application/json
@@ -2295,7 +2330,178 @@ paths:
           description: Internal server error
       summary: Show details of a single form response
       tags:
-      - formResponses
+      - FormResponsess
+  /projects/{projectUUID}/functions/{schema}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a list of all functions for the specified schema
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Project UUID
+        in: path
+        name: projectUUID
+        required: true
+        type: string
+      - description: Schema to search under
+        in: path
+        name: schema
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of functions
+          schema:
+            items:
+              allOf:
+              - $ref: '#/definitions/responses.Response'
+              - properties:
+                  content:
+                    items:
+                      $ref: '#/definitions/resources.FunctionResponse'
+                    type: array
+                type: object
+            type: array
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal server error
+      summary: List all functions
+      tags:
+      - Schema
+    post:
+      consumes:
+      - application/json
+      description: Add a new function for specific schema
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Function details
+        in: body
+        name: form
+        required: true
+        schema:
+          $ref: '#/definitions/requests.CreateFunctionRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Function created
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Response'
+            - properties:
+                content:
+                  $ref: '#/definitions/resources.FunctionResponse'
+              type: object
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "422":
+          description: Unprocessable entity
+        "500":
+          description: Internal server error
+      summary: Create a new function
+      tags:
+      - Functions
+  /projects/{projectUUID}/functions/{schema}/{functionName}:
+    delete:
+      consumes:
+      - application/json
+      description: Remove a function from the schema
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Project UUID
+        in: path
+        name: projectUUID
+        required: true
+        type: string
+      - description: Schema name
+        in: path
+        name: schema
+        required: true
+        type: string
+      - description: Function name
+        in: path
+        name: functionName
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Form deleted
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal server error
+      summary: Delete a function
+      tags:
+      - Functions
+    get:
+      consumes:
+      - application/json
+      description: Get details of a specific function
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Project UUID
+        in: path
+        name: projectUUID
+        required: true
+        type: string
+      - description: Schema name
+        in: path
+        name: schema
+        required: true
+        type: string
+      - description: Function name
+        in: path
+        name: functionName
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Function details
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Response'
+            - properties:
+                content:
+                  $ref: '#/definitions/resources.FunctionResponse'
+              type: object
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal server error
+      summary: Show details of a single function
+      tags:
+      - Forms
   /projects/{projectUUID}/storage:
     get:
       consumes:
@@ -2334,7 +2540,7 @@ paths:
           description: Internal server error
       summary: List all buckets
       tags:
-      - buckets
+      - Buckets
     post:
       consumes:
       - application/json
@@ -2378,7 +2584,7 @@ paths:
           description: Internal server error
       summary: Create a new bucket
       tags:
-      - buckets
+      - Buckets
   /projects/{projectUUID}/storage/{bucketUUID}:
     delete:
       consumes:
@@ -2408,7 +2614,7 @@ paths:
           description: Internal server error
       summary: Delete a bucket
       tags:
-      - buckets
+      - Buckets
     get:
       consumes:
       - application/json
@@ -2451,7 +2657,7 @@ paths:
           description: Internal server error
       summary: Show details of a single bucket
       tags:
-      - buckets
+      - Buckets
     put:
       consumes:
       - application/json
@@ -2500,7 +2706,7 @@ paths:
           description: Internal server error
       summary: Update a bucket
       tags:
-      - buckets
+      - Buckets
   /users:
     post:
       consumes:
@@ -2533,7 +2739,7 @@ paths:
           description: Internal server error
       summary: Create a new user
       tags:
-      - users
+      - Users
   /users/{id}:
     get:
       consumes:
@@ -2570,7 +2776,7 @@ paths:
           description: Internal server error
       summary: Show details of a single user
       tags:
-      - users
+      - Users
   /users/{userUUID}:
     put:
       consumes:
@@ -2615,7 +2821,7 @@ paths:
           description: Internal server error
       summary: Update a user
       tags:
-      - users
+      - Users
   /users/login:
     post:
       consumes:
@@ -2648,7 +2854,7 @@ paths:
           description: Internal server error
       summary: Authenticate a user
       tags:
-      - users
+      - Users
   /users/logout:
     post:
       consumes:
@@ -2675,5 +2881,5 @@ paths:
           description: Internal server error
       summary: Logout a user
       tags:
-      - users
+      - Users
 swagger: "2.0"

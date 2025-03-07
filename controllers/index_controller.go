@@ -25,7 +25,7 @@ func NewIndexController(injector *do.Injector) (*IndexController, error) {
 //
 // @Summary List indexes for a table
 // @Description Retrieve a list of indexes for a given table.
-// @Tags indexes
+// @Tags Indexes
 //
 // @Accept json
 // @Produce json
@@ -60,7 +60,7 @@ func (ic *IndexController) List(c echo.Context) error {
 //
 // @Summary Show details of a specific index
 // @Description Retrieve details for a specific index in a table.
-// @Tags indexes
+// @Tags Indexes
 //
 // @Accept json
 // @Produce json
@@ -99,7 +99,7 @@ func (ic *IndexController) Show(c echo.Context) error {
 //
 // @Summary Create a new index
 // @Description Add an index to a specified table within a project.
-// @Tags indexes
+// @Tags Indexes
 //
 // @Accept json
 // @Produce json
@@ -141,7 +141,7 @@ func (ic *IndexController) Store(c echo.Context) error {
 //
 // @Summary Delete an index from a table
 // @Description Remove an existing index from a given table.
-// @Tags indexes
+// @Tags Indexes
 //
 // @Accept json
 // @Produce json

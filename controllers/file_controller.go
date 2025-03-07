@@ -24,7 +24,7 @@ func NewFileController(injector *do.Injector) (*FileController, error) {
 //
 // @Summary List all files in a bucket
 // @Description Retrieve a list of all files in a specific bucket
-// @Tags files
+// @Tags Files
 //
 // @Accept json
 // @Produce json
@@ -59,7 +59,7 @@ func (fc *FileController) List(c echo.Context) error {
 //
 // @Summary Show details of a single file
 // @Description Get details of a specific file
-// @Tags files
+// @Tags Files
 //
 // @Accept json
 // @Produce json
@@ -99,7 +99,7 @@ func (fc *FileController) Show(c echo.Context) error {
 //
 // @Summary Create a new file
 // @Description Create a new file in a specific bucket
-// @Tags files
+// @Tags Files
 //
 // @Accept json
 // @Produce json
@@ -139,7 +139,7 @@ func (fc *FileController) Store(c echo.Context) error {
 //
 // @Summary Rename a file
 // @Description Update the name of a specific file. In other words, moves the file to a new location.
-// @Tags files
+// @Tags Files
 //
 // @Accept json
 // @Produce json
@@ -185,7 +185,7 @@ func (fc *FileController) Rename(c echo.Context) error {
 //
 // @Summary Delete a file
 // @Description Permanently remove a specific file from a bucket
-// @Tags files
+// @Tags Files
 //
 // @Accept json
 // @Produce json

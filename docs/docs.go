@@ -29,7 +29,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "files"
+                    "Files"
                 ],
                 "summary": "List all files in a bucket",
                 "parameters": [
@@ -93,7 +93,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "files"
+                    "Files"
                 ],
                 "summary": "Create a new file",
                 "parameters": [
@@ -162,7 +162,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "files"
+                    "Files"
                 ],
                 "summary": "Show details of a single file",
                 "parameters": [
@@ -227,7 +227,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "files"
+                    "Files"
                 ],
                 "summary": "Delete a file",
                 "parameters": [
@@ -279,7 +279,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "files"
+                    "Files"
                 ],
                 "summary": "Rename a file",
                 "parameters": [
@@ -355,7 +355,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "forms"
+                    "Forms"
                 ],
                 "summary": "Create a new form",
                 "parameters": [
@@ -420,7 +420,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "forms"
+                    "Forms"
                 ],
                 "summary": "Show details of a single form",
                 "parameters": [
@@ -478,7 +478,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "forms"
+                    "Forms"
                 ],
                 "summary": "Update an existing form",
                 "parameters": [
@@ -548,7 +548,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "forms"
+                    "Forms"
                 ],
                 "summary": "Delete a form",
                 "parameters": [
@@ -593,7 +593,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "fields"
+                    "Fields"
                 ],
                 "summary": "List all fields for a form",
                 "parameters": [
@@ -657,7 +657,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "fields"
+                    "Fields"
                 ],
                 "summary": "Create a new field for a form",
                 "parameters": [
@@ -729,7 +729,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "fields"
+                    "Fields"
                 ],
                 "summary": "Show details of a single field",
                 "parameters": [
@@ -794,7 +794,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "fields"
+                    "Fields"
                 ],
                 "summary": "Update an existing field",
                 "parameters": [
@@ -871,7 +871,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "fields"
+                    "Fields"
                 ],
                 "summary": "Delete a field from a form",
                 "parameters": [
@@ -923,7 +923,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "organizations"
+                    "Organizations"
                 ],
                 "summary": "List all organizations",
                 "parameters": [
@@ -974,7 +974,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "organizations"
+                    "Organizations"
                 ],
                 "summary": "Create a new organization",
                 "parameters": [
@@ -1039,7 +1039,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "organizations"
+                    "Organizations"
                 ],
                 "summary": "Show details of a single organization",
                 "parameters": [
@@ -1100,7 +1100,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "organizations"
+                    "Organizations"
                 ],
                 "summary": "Update an organization",
                 "parameters": [
@@ -1170,7 +1170,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "organizations"
+                    "Organizations"
                 ],
                 "summary": "Delete an organization",
                 "parameters": [
@@ -1215,7 +1215,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "organizations"
+                    "Organizations"
                 ],
                 "summary": "List all users in an organization",
                 "parameters": [
@@ -1279,7 +1279,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "organizations"
+                    "Organizations"
                 ],
                 "summary": "Create a user in an organization",
                 "parameters": [
@@ -1351,7 +1351,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "organizations"
+                    "Organizations"
                 ],
                 "summary": "Delete a user from an organization",
                 "parameters": [
@@ -1406,7 +1406,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "projects"
+                    "Projects"
                 ],
                 "summary": "List all projects",
                 "parameters": [
@@ -1467,7 +1467,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "projects"
+                    "Projects"
                 ],
                 "summary": "Create a new project",
                 "parameters": [
@@ -1539,7 +1539,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "projects"
+                    "Projects"
                 ],
                 "summary": "Show details of a single project",
                 "parameters": [
@@ -1600,7 +1600,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "projects"
+                    "Projects"
                 ],
                 "summary": "Update a project",
                 "parameters": [
@@ -1670,7 +1670,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "projects"
+                    "Projects"
                 ],
                 "summary": "Delete a project",
                 "parameters": [
@@ -1718,7 +1718,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "forms"
+                    "Forms"
                 ],
                 "summary": "List all forms",
                 "parameters": [
@@ -1784,7 +1784,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "formResponses"
+                    "FormResponsess"
                 ],
                 "summary": "List all form responses for a form",
                 "parameters": [
@@ -1852,7 +1852,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "formResponses"
+                    "FormResponsess"
                 ],
                 "summary": "Store a new form response",
                 "parameters": [
@@ -1931,7 +1931,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "formResponses"
+                    "FormResponsess"
                 ],
                 "summary": "Show details of a single form response",
                 "parameters": [
@@ -2003,7 +2003,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "formResponses"
+                    "FormResponsess"
                 ],
                 "summary": "Delete a form response",
                 "parameters": [
@@ -2052,6 +2052,273 @@ const docTemplate = `{
                 }
             }
         },
+        "/projects/{projectUUID}/functions/{schema}": {
+            "get": {
+                "description": "Retrieve a list of all functions for the specified schema",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Schema"
+                ],
+                "summary": "List all functions",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Project UUID",
+                        "name": "projectUUID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Schema to search under",
+                        "name": "schema",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of functions",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "allOf": [
+                                    {
+                                        "$ref": "#/definitions/responses.Response"
+                                    },
+                                    {
+                                        "type": "object",
+                                        "properties": {
+                                            "content": {
+                                                "type": "array",
+                                                "items": {
+                                                    "$ref": "#/definitions/resources.FunctionResponse"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            },
+            "post": {
+                "description": "Add a new function for specific schema",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Functions"
+                ],
+                "summary": "Create a new function",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "Function details",
+                        "name": "form",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/requests.CreateFunctionRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Function created",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/responses.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "content": {
+                                            "$ref": "#/definitions/resources.FunctionResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "422": {
+                        "description": "Unprocessable entity"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/projects/{projectUUID}/functions/{schema}/{functionName}": {
+            "get": {
+                "description": "Get details of a specific function",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Forms"
+                ],
+                "summary": "Show details of a single function",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Project UUID",
+                        "name": "projectUUID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Schema name",
+                        "name": "schema",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Function name",
+                        "name": "functionName",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Function details",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/responses.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "content": {
+                                            "$ref": "#/definitions/resources.FunctionResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            },
+            "delete": {
+                "description": "Remove a function from the schema",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Functions"
+                ],
+                "summary": "Delete a function",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Project UUID",
+                        "name": "projectUUID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Schema name",
+                        "name": "schema",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Function name",
+                        "name": "functionName",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Form deleted"
+                    },
+                    "400": {
+                        "description": "Invalid input"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
         "/projects/{projectUUID}/storage": {
             "get": {
                 "description": "Retrieve a list of buckets in a specified project.",
@@ -2062,7 +2329,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "buckets"
+                    "Buckets"
                 ],
                 "summary": "List all buckets",
                 "parameters": [
@@ -2123,7 +2390,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "buckets"
+                    "Buckets"
                 ],
                 "summary": "Create a new bucket",
                 "parameters": [
@@ -2195,7 +2462,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "buckets"
+                    "Buckets"
                 ],
                 "summary": "Show details of a single bucket",
                 "parameters": [
@@ -2263,7 +2530,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "buckets"
+                    "Buckets"
                 ],
                 "summary": "Update a bucket",
                 "parameters": [
@@ -2340,7 +2607,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "buckets"
+                    "Buckets"
                 ],
                 "summary": "Delete a bucket",
                 "parameters": [
@@ -2385,7 +2652,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "tables"
+                    "Tables"
                 ],
                 "summary": "List all tables",
                 "parameters": [
@@ -2446,7 +2713,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "tables"
+                    "Tables"
                 ],
                 "summary": "Create a new table",
                 "parameters": [
@@ -2518,7 +2785,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "tables"
+                    "Tables"
                 ],
                 "summary": "Get table details",
                 "parameters": [
@@ -2586,7 +2853,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "tables"
+                    "Tables"
                 ],
                 "summary": "Delete a table",
                 "parameters": [
@@ -2641,7 +2908,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "columns"
+                    "Columns"
                 ],
                 "summary": "Modify column types in a table",
                 "parameters": [
@@ -2718,7 +2985,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "columns"
+                    "Columns"
                 ],
                 "summary": "Add new columns to a table",
                 "parameters": [
@@ -2797,7 +3064,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "columns"
+                    "Columns"
                 ],
                 "summary": "Rename a column in a table",
                 "parameters": [
@@ -2869,7 +3136,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "columns"
+                    "Columns"
                 ],
                 "summary": "Delete a column from a table",
                 "parameters": [
@@ -2931,7 +3198,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "tables"
+                    "Tables"
                 ],
                 "summary": "Duplicate a table",
                 "parameters": [
@@ -3010,7 +3277,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "indexes"
+                    "Indexes"
                 ],
                 "summary": "List indexes for a table",
                 "parameters": [
@@ -3076,7 +3343,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "indexes"
+                    "Indexes"
                 ],
                 "summary": "Create a new index",
                 "parameters": [
@@ -3153,7 +3420,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "indexes"
+                    "Indexes"
                 ],
                 "summary": "Show details of a specific index",
                 "parameters": [
@@ -3226,7 +3493,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "indexes"
+                    "Indexes"
                 ],
                 "summary": "Delete an index from a table",
                 "parameters": [
@@ -3288,7 +3555,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "tables"
+                    "Tables"
                 ],
                 "summary": "Rename a table",
                 "parameters": [
@@ -3367,7 +3634,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "Users"
                 ],
                 "summary": "Create a new user",
                 "parameters": [
@@ -3422,7 +3689,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "Users"
                 ],
                 "summary": "Authenticate a user",
                 "parameters": [
@@ -3477,7 +3744,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "Users"
                 ],
                 "summary": "Logout a user",
                 "parameters": [
@@ -3518,7 +3785,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "Users"
                 ],
                 "summary": "Show details of a single user",
                 "parameters": [
@@ -3578,7 +3845,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "Users"
                 ],
                 "summary": "Update a user",
                 "parameters": [
@@ -3797,6 +4064,29 @@ const docTemplate = `{
                 }
             }
         },
+        "requests.CreateFunctionRequest": {
+            "type": "object",
+            "properties": {
+                "definition": {
+                    "type": "string"
+                },
+                "language": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "parameters": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/requests.functionParameter"
+                    }
+                },
+                "return_type": {
+                    "type": "string"
+                }
+            }
+        },
         "requests.IndexCreateRequest": {
             "type": "object",
             "properties": {
@@ -3810,6 +4100,17 @@ const docTemplate = `{
                     "type": "boolean"
                 },
                 "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "requests.functionParameter": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "type": {
                     "type": "string"
                 }
             }
@@ -3985,6 +4286,26 @@ const docTemplate = `{
                     }
                 },
                 "uuid": {
+                    "type": "string"
+                }
+            }
+        },
+        "resources.FunctionResponse": {
+            "type": "object",
+            "properties": {
+                "dataType": {
+                    "type": "string"
+                },
+                "definition": {
+                    "type": "string"
+                },
+                "language": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "type": {
                     "type": "string"
                 }
             }

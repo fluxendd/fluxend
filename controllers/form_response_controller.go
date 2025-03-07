@@ -25,7 +25,7 @@ func NewFormResponseController(injector *do.Injector) (*FormResponseController, 
 //
 // @Summary List all form responses for a form
 // @Description Get all form responses for a specific form
-// @Tags formResponses
+// @Tags FormResponsess
 //
 // @Accept json
 // @Produce json
@@ -65,7 +65,7 @@ func (ffc *FormResponseController) List(c echo.Context) error {
 //
 // @Summary Show details of a single form response
 // @Description Get details of a specific form response
-// @Tags formResponses
+// @Tags FormResponsess
 //
 // @Accept json
 // @Produce json
@@ -102,7 +102,7 @@ func (ffc *FormResponseController) Show(c echo.Context) error {
 //
 // @Summary Store a new form response
 // @Description Store a new form response for a specific form
-// @Tags formResponses
+// @Tags FormResponsess
 //
 // @Accept json
 // @Produce json
@@ -150,7 +150,7 @@ func (ffc *FormResponseController) Store(c echo.Context) error {
 //
 // @Summary Delete a form response
 // @Description Delete a specific form response
-// @Tags formResponses
+// @Tags FormResponsess
 //
 // @Accept json
 // @Produce json

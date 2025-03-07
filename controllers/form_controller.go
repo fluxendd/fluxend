@@ -24,7 +24,7 @@ func NewFormController(injector *do.Injector) (*FormController, error) {
 //
 // @Summary List all forms
 // @Description Retrieve a list of all forms for the specified project
-// @Tags forms
+// @Tags Forms
 //
 // @Accept json
 // @Produce json
@@ -59,7 +59,7 @@ func (fc *FormController) List(c echo.Context) error {
 //
 // @Summary Show details of a single form
 // @Description Get details of a specific form
-// @Tags forms
+// @Tags Forms
 //
 // @Accept json
 // @Produce json
@@ -98,7 +98,7 @@ func (fc *FormController) Show(c echo.Context) error {
 //
 // @Summary Create a new form
 // @Description Add a new form with a name and description
-// @Tags forms
+// @Tags Forms
 //
 // @Accept json
 // @Produce json
@@ -138,7 +138,7 @@ func (fc *FormController) Store(c echo.Context) error {
 //
 // @Summary Update an existing form
 // @Description Update form details such as name and description
-// @Tags forms
+// @Tags Forms
 //
 // @Accept json
 // @Produce json
@@ -179,7 +179,7 @@ func (fc *FormController) Update(c echo.Context) error {
 //
 // @Summary Delete a form
 // @Description Remove a form from the project
-// @Tags forms
+// @Tags Forms
 //
 // @Accept json
 // @Produce json

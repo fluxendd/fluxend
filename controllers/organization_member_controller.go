@@ -24,7 +24,7 @@ func NewOrganizationMemberController(injector *do.Injector) (*OrganizationMember
 //
 // @Summary List all users in an organization
 // @Description Get all users in an organization
-// @Tags organizations
+// @Tags Organizations
 //
 // @Accept json
 // @Produce json
@@ -59,7 +59,7 @@ func (ouc *OrganizationMemberController) List(c echo.Context) error {
 //
 // @Summary Create a user in an organization
 // @Description Add a new user to an organization
-// @Tags organizations
+// @Tags Organizations
 //
 // @Accept json
 // @Produce json
@@ -100,7 +100,7 @@ func (ouc *OrganizationMemberController) Store(c echo.Context) error {
 //
 // @Summary Delete a user from an organization
 // @Description Remove a user from an organization
-// @Tags organizations
+// @Tags Organizations
 //
 // @Accept json
 // @Produce json
