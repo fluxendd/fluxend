@@ -16,7 +16,7 @@ import (
 type FunctionService interface {
 	List(schema string, projectUUID uuid.UUID, authUser models.AuthUser) ([]models.Function, error)
 	GetByName(name, schema string, projectUUID uuid.UUID, authUser models.AuthUser) (models.Function, error)
-	Create(request *requests.CreateFunctionRequest, projectUUID uuid.UUID, authUser models.AuthUser) (models.Function, error)
+	Create(projectUUID uuid.UUID, schema string, request *requests.CreateFunctionRequest, authUser models.AuthUser) (models.Function, error)
 	Delete(name, schema string, projectUUID uuid.UUID, authUser models.AuthUser) (bool, error)
 }
 
@@ -74,7 +74,7 @@ func (s *FunctionServiceImpl) GetByName(name, schema string, projectUUID uuid.UU
 	return clientFunctionRepo.GetByName(schema, name)
 }
 
-func (s *FunctionServiceImpl) Create(request *requests.CreateFunctionRequest, projectUUID uuid.UUID, authUser models.AuthUser) (models.Function, error) {
+func (s *FunctionServiceImpl) Create(projectUUID uuid.UUID, schema string, request *requests.CreateFunctionRequest, authUser models.AuthUser) (models.Function, error) {
 	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(projectUUID)
 	if err != nil {
 		return models.Function{}, err
@@ -89,7 +89,7 @@ func (s *FunctionServiceImpl) Create(request *requests.CreateFunctionRequest, pr
 		return models.Function{}, err
 	}
 
-	definitionQuery, err := s.buildDefinition(request)
+	definitionQuery, err := s.buildDefinition(schema, request)
 	if err != nil {
 		return models.Function{}, err
 	}
@@ -99,7 +99,7 @@ func (s *FunctionServiceImpl) Create(request *requests.CreateFunctionRequest, pr
 		return models.Function{}, err
 	}
 
-	return clientFunctionRepo.GetByName(request.Schema, request.Name)
+	return clientFunctionRepo.GetByName(schema, request.Name)
 }
 
 func (s *FunctionServiceImpl) Delete(schema, name string, projectUUID uuid.UUID, authUser models.AuthUser) (bool, error) {
@@ -125,7 +125,7 @@ func (s *FunctionServiceImpl) Delete(schema, name string, projectUUID uuid.UUID,
 	return true, nil
 }
 
-func (s *FunctionServiceImpl) buildDefinition(request *requests.CreateFunctionRequest) (string, error) {
+func (s *FunctionServiceImpl) buildDefinition(schema string, request *requests.CreateFunctionRequest) (string, error) {
 	var params []string
 	for _, param := range request.Parameters {
 		params = append(params, fmt.Sprintf("%s %s", param.Name, param.Type))
@@ -134,7 +134,7 @@ func (s *FunctionServiceImpl) buildDefinition(request *requests.CreateFunctionRe
 
 	sql := fmt.Sprintf(
 		`CREATE OR REPLACE FUNCTION %s.%s(%s) RETURNS %s AS $$ BEGIN %s END; $$ LANGUAGE %s;`,
-		request.Schema,
+		schema,
 		request.Name,
 		paramList,
 		request.ReturnType,
