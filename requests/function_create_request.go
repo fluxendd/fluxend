@@ -29,6 +29,11 @@ func (r *CreateFunctionRequest) BindAndValidate(c echo.Context) []string {
 		return []string{"Invalid request payload"}
 	}
 
+	err := r.WithProjectHeader(c)
+	if err != nil {
+		return []string{err.Error()}
+	}
+
 	var errors []string
 
 	if err := r.validate(); err != nil {

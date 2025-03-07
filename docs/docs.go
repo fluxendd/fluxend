@@ -367,6 +367,13 @@ const docTemplate = `{
                         "required": true
                     },
                     {
+                        "type": "string",
+                        "description": "Project UUID",
+                        "name": "X-Project",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
                         "description": "Form name and description",
                         "name": "form",
                         "in": "body",
@@ -433,6 +440,13 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "description": "Project UUID",
+                        "name": "X-Project",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
                         "description": "Form UUID",
                         "name": "formUUID",
                         "in": "path",
@@ -490,13 +504,11 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "description": "Form name and description",
-                        "name": "form",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/form_requests.CreateRequest"
-                        }
+                        "type": "string",
+                        "description": "Project UUID",
+                        "name": "X-Project",
+                        "in": "header",
+                        "required": true
                     },
                     {
                         "type": "string",
@@ -504,6 +516,15 @@ const docTemplate = `{
                         "name": "formUUID",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "description": "Form name and description",
+                        "name": "form",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/form_requests.CreateRequest"
+                        }
                     }
                 ],
                 "responses": {
@@ -556,6 +577,13 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Bearer Token",
                         "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Project UUID",
+                        "name": "X-Project",
                         "in": "header",
                         "required": true
                     },
@@ -923,7 +951,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "FormResponsess"
+                    "FormResponses"
                 ],
                 "summary": "List all form responses for a form",
                 "parameters": [
@@ -991,7 +1019,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "FormResponsess"
+                    "FormResponses"
                 ],
                 "summary": "Store a new form response",
                 "parameters": [
@@ -1070,7 +1098,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "FormResponsess"
+                    "FormResponses"
                 ],
                 "summary": "Show details of a single form response",
                 "parameters": [
@@ -1142,7 +1170,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "FormResponsess"
+                    "FormResponses"
                 ],
                 "summary": "Delete a form response",
                 "parameters": [
@@ -1209,6 +1237,13 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Bearer Token",
                         "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Project UUID",
+                        "name": "X-Project",
                         "in": "header",
                         "required": true
                     },
@@ -1284,6 +1319,13 @@ const docTemplate = `{
                         "required": true
                     },
                     {
+                        "type": "string",
+                        "description": "Project UUID",
+                        "name": "X-Project",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
                         "description": "Function details",
                         "name": "form",
                         "in": "body",
@@ -1351,8 +1393,8 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Project UUID",
-                        "name": "projectUUID",
-                        "in": "path",
+                        "name": "X-Project",
+                        "in": "header",
                         "required": true
                     },
                     {
@@ -1417,6 +1459,13 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Bearer Token",
                         "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Project UUID",
+                        "name": "X-Project",
                         "in": "header",
                         "required": true
                     },
@@ -2276,9 +2325,9 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Project ID",
-                        "name": "projectUUID",
-                        "in": "path",
+                        "description": "Project UUID",
+                        "name": "X-Project",
+                        "in": "header",
                         "required": true
                     }
                 ],

@@ -1,13 +1,11 @@
 package controllers
 
 import (
-	"fluxton/errs"
 	"fluxton/requests"
 	"fluxton/resources"
 	"fluxton/responses"
 	"fluxton/services"
 	"fluxton/utils"
-	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
 )
@@ -32,6 +30,8 @@ func NewFunctionController(injector *do.Injector) (*FunctionController, error) {
 // @Produce json
 //
 // @Param Authorization header string true "Bearer Token"
+// @param Header X-Project header string true "Project UUID"
+//
 // @Param projectUUID path string true "Project UUID"
 // @Param schema path string true "Schema to search under"
 //
@@ -42,14 +42,19 @@ func NewFunctionController(injector *do.Injector) (*FunctionController, error) {
 //
 // @Router /functions/{schema} [get]
 func (fc *FunctionController) List(c echo.Context) error {
-	authUser, _ := utils.NewAuth(c).User()
-
-	projectUUID, schema, err := fc.parseRequest(c)
-	if err != nil {
-		return responses.BadRequestResponse(c, err.Error())
+	var request requests.DefaultRequestWithProjectHeader
+	if err := request.BindAndValidate(c); err != nil {
+		return responses.UnprocessableResponse(c, err)
 	}
 
-	functions, err := fc.functionService.List(schema, projectUUID, authUser)
+	authUser, _ := utils.NewAuth(c).User()
+
+	schema := c.Param("schema")
+	if schema == "" {
+		return responses.BadRequestResponse(c, "Schema is required")
+	}
+
+	functions, err := fc.functionService.List(schema, request.ProjectUUID, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -67,7 +72,8 @@ func (fc *FunctionController) List(c echo.Context) error {
 // @Produce json
 //
 // @Param Authorization header string true "Bearer Token"
-// @Param projectUUID path string true "Project UUID"
+// @Param Header X-Project header string true "Project UUID"
+//
 // @Param schema path string true "Schema name"
 // @Param functionName path string true "Function name"
 //
@@ -78,11 +84,16 @@ func (fc *FunctionController) List(c echo.Context) error {
 //
 // @Router /functions/{schema}/{functionName} [get]
 func (fc *FunctionController) Show(c echo.Context) error {
+	var request requests.DefaultRequestWithProjectHeader
+	if err := request.BindAndValidate(c); err != nil {
+		return responses.UnprocessableResponse(c, err)
+	}
+
 	authUser, _ := utils.NewAuth(c).User()
 
-	projectUUID, schema, err := fc.parseRequest(c)
-	if err != nil {
-		return responses.BadRequestResponse(c, err.Error())
+	schema := c.Param("schema")
+	if schema == "" {
+		return responses.BadRequestResponse(c, "Schema is required")
 	}
 
 	functionName := c.Param("functionName")
@@ -90,7 +101,7 @@ func (fc *FunctionController) Show(c echo.Context) error {
 		return responses.BadRequestResponse(c, "Function name is required")
 	}
 
-	function, err := fc.functionService.GetByName(functionName, schema, projectUUID, authUser)
+	function, err := fc.functionService.GetByName(functionName, schema, request.ProjectUUID, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -108,6 +119,8 @@ func (fc *FunctionController) Show(c echo.Context) error {
 // @Produce json
 //
 // @Param Authorization header string true "Bearer Token"
+// @Param Header X-Project header string true "Project UUID"
+//
 // @Param form body requests.CreateFunctionRequest true "Function details"
 //
 // @Success 201 {object} responses.Response{content=resources.FunctionResponse} "Function created"
@@ -125,12 +138,12 @@ func (fc *FunctionController) Store(c echo.Context) error {
 
 	authUser, _ := utils.NewAuth(c).User()
 
-	projectUUID, schema, err := fc.parseRequest(c)
-	if err != nil {
-		return responses.BadRequestResponse(c, err.Error())
+	schema := c.Param("schema")
+	if schema == "" {
+		return responses.BadRequestResponse(c, "Schema is required")
 	}
 
-	function, err := fc.functionService.Create(projectUUID, schema, &request, authUser)
+	function, err := fc.functionService.Create(schema, &request, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -148,6 +161,8 @@ func (fc *FunctionController) Store(c echo.Context) error {
 // @Produce json
 //
 // @Param Authorization header string true "Bearer Token"
+// @Param Header X-Project header string true "Project UUID"
+//
 // @Param projectUUID path string true "Project UUID"
 // @Param schema path string true "Schema name"
 // @Param functionName path string true "Function name"
@@ -159,11 +174,16 @@ func (fc *FunctionController) Store(c echo.Context) error {
 //
 // @Router /functions/{schema}/{functionName} [delete]
 func (fc *FunctionController) Delete(c echo.Context) error {
+	var request requests.DefaultRequestWithProjectHeader
+	if err := request.BindAndValidate(c); err != nil {
+		return responses.UnprocessableResponse(c, err)
+	}
+
 	authUser, _ := utils.NewAuth(c).User()
 
-	projectUUID, schema, err := fc.parseRequest(c)
-	if err != nil {
-		return responses.BadRequestResponse(c, err.Error())
+	schema := c.Param("schema")
+	if schema == "" {
+		return responses.BadRequestResponse(c, "Schema is required")
 	}
 
 	functionName := c.Param("functionName")
@@ -171,23 +191,9 @@ func (fc *FunctionController) Delete(c echo.Context) error {
 		return responses.BadRequestResponse(c, "Function name is required")
 	}
 
-	if _, err := fc.functionService.Delete(schema, functionName, projectUUID, authUser); err != nil {
+	if _, err := fc.functionService.Delete(schema, functionName, request.ProjectUUID, authUser); err != nil {
 		return responses.ErrorResponse(c, err)
 	}
 
 	return responses.DeletedResponse(c, nil)
-}
-
-func (fc *FunctionController) parseRequest(c echo.Context) (uuid.UUID, string, error) {
-	projectUUID, err := utils.GetUUIDPathParam(c, "projectUUID", true)
-	if err != nil {
-		return uuid.UUID{}, "", err
-	}
-
-	schema := c.Param("schema")
-	if schema == "" {
-		return uuid.UUID{}, "", errs.NewBadRequestError("Schema is required")
-	}
-
-	return projectUUID, schema, nil
 }

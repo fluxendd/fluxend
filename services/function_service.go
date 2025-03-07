@@ -16,7 +16,7 @@ import (
 type FunctionService interface {
 	List(schema string, projectUUID uuid.UUID, authUser models.AuthUser) ([]models.Function, error)
 	GetByName(name, schema string, projectUUID uuid.UUID, authUser models.AuthUser) (models.Function, error)
-	Create(projectUUID uuid.UUID, schema string, request *requests.CreateFunctionRequest, authUser models.AuthUser) (models.Function, error)
+	Create(schema string, request *requests.CreateFunctionRequest, authUser models.AuthUser) (models.Function, error)
 	Delete(name, schema string, projectUUID uuid.UUID, authUser models.AuthUser) (bool, error)
 }
 
@@ -74,8 +74,8 @@ func (s *FunctionServiceImpl) GetByName(name, schema string, projectUUID uuid.UU
 	return clientFunctionRepo.GetByName(schema, name)
 }
 
-func (s *FunctionServiceImpl) Create(projectUUID uuid.UUID, schema string, request *requests.CreateFunctionRequest, authUser models.AuthUser) (models.Function, error) {
-	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(projectUUID)
+func (s *FunctionServiceImpl) Create(schema string, request *requests.CreateFunctionRequest, authUser models.AuthUser) (models.Function, error) {
+	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(request.ProjectUUID)
 	if err != nil {
 		return models.Function{}, err
 	}
@@ -84,7 +84,7 @@ func (s *FunctionServiceImpl) Create(projectUUID uuid.UUID, schema string, reque
 		return models.Function{}, errs.NewForbiddenError("function.error.listForbidden")
 	}
 
-	clientFunctionRepo, err := s.getClientFunctionRepoByProjectUUID(projectUUID)
+	clientFunctionRepo, err := s.getClientFunctionRepoByProjectUUID(request.ProjectUUID)
 	if err != nil {
 		return models.Function{}, err
 	}

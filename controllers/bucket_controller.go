@@ -49,6 +49,7 @@ func (bc *BucketController) List(c echo.Context) error {
 	if err := request.BindAndValidate(c); err != nil {
 		return responses.UnprocessableResponse(c, err)
 	}
+
 	authUser, _ := utils.NewAuth(c).User()
 
 	paginationParams := utils.ExtractPaginationParams(c)

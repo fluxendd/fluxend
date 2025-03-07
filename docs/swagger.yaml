@@ -668,6 +668,11 @@ paths:
         name: Authorization
         required: true
         type: string
+      - description: Project UUID
+        in: header
+        name: X-Project
+        required: true
+        type: string
       - description: Form name and description
         in: body
         name: form
@@ -708,6 +713,11 @@ paths:
         name: Authorization
         required: true
         type: string
+      - description: Project UUID
+        in: header
+        name: X-Project
+        required: true
+        type: string
       - description: Form UUID
         in: path
         name: formUUID
@@ -735,6 +745,11 @@ paths:
       - description: Bearer Token
         in: header
         name: Authorization
+        required: true
+        type: string
+      - description: Project UUID
+        in: header
+        name: X-Project
         required: true
         type: string
       - description: Form UUID
@@ -773,17 +788,22 @@ paths:
         name: Authorization
         required: true
         type: string
+      - description: Project UUID
+        in: header
+        name: X-Project
+        required: true
+        type: string
+      - description: Form UUID
+        in: path
+        name: formUUID
+        required: true
+        type: string
       - description: Form name and description
         in: body
         name: form
         required: true
         schema:
           $ref: '#/definitions/form_requests.CreateRequest'
-      - description: Form UUID
-        in: path
-        name: formUUID
-        required: true
-        type: string
       produces:
       - application/json
       responses:
@@ -1060,7 +1080,7 @@ paths:
           description: Internal server error
       summary: List all form responses for a form
       tags:
-      - FormResponsess
+      - FormResponses
     post:
       consumes:
       - application/json
@@ -1109,7 +1129,7 @@ paths:
           description: Internal server error
       summary: Store a new form response
       tags:
-      - FormResponsess
+      - FormResponses
   /forms/{formUUID}/responses/{formResponseUUID}:
     delete:
       consumes:
@@ -1149,7 +1169,7 @@ paths:
           description: Internal server error
       summary: Delete a form response
       tags:
-      - FormResponsess
+      - FormResponses
     get:
       consumes:
       - application/json
@@ -1195,7 +1215,7 @@ paths:
           description: Internal server error
       summary: Show details of a single form response
       tags:
-      - FormResponsess
+      - FormResponses
   /functions/{schema}:
     get:
       consumes:
@@ -1205,6 +1225,11 @@ paths:
       - description: Bearer Token
         in: header
         name: Authorization
+        required: true
+        type: string
+      - description: Project UUID
+        in: header
+        name: X-Project
         required: true
         type: string
       - description: Project UUID
@@ -1252,6 +1277,11 @@ paths:
         name: Authorization
         required: true
         type: string
+      - description: Project UUID
+        in: header
+        name: X-Project
+        required: true
+        type: string
       - description: Function details
         in: body
         name: form
@@ -1290,6 +1320,11 @@ paths:
       - description: Bearer Token
         in: header
         name: Authorization
+        required: true
+        type: string
+      - description: Project UUID
+        in: header
+        name: X-Project
         required: true
         type: string
       - description: Project UUID
@@ -1332,8 +1367,8 @@ paths:
         required: true
         type: string
       - description: Project UUID
-        in: path
-        name: projectUUID
+        in: header
+        name: X-Project
         required: true
         type: string
       - description: Schema name
@@ -1880,9 +1915,9 @@ paths:
         name: Authorization
         required: true
         type: string
-      - description: Project ID
-        in: path
-        name: projectUUID
+      - description: Project UUID
+        in: header
+        name: X-Project
         required: true
         type: string
       produces:

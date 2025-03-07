@@ -361,6 +361,13 @@
                         "required": true
                     },
                     {
+                        "type": "string",
+                        "description": "Project UUID",
+                        "name": "X-Project",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
                         "description": "Form name and description",
                         "name": "form",
                         "in": "body",
@@ -427,6 +434,13 @@
                     },
                     {
                         "type": "string",
+                        "description": "Project UUID",
+                        "name": "X-Project",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
                         "description": "Form UUID",
                         "name": "formUUID",
                         "in": "path",
@@ -484,13 +498,11 @@
                         "required": true
                     },
                     {
-                        "description": "Form name and description",
-                        "name": "form",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/form_requests.CreateRequest"
-                        }
+                        "type": "string",
+                        "description": "Project UUID",
+                        "name": "X-Project",
+                        "in": "header",
+                        "required": true
                     },
                     {
                         "type": "string",
@@ -498,6 +510,15 @@
                         "name": "formUUID",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "description": "Form name and description",
+                        "name": "form",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/form_requests.CreateRequest"
+                        }
                     }
                 ],
                 "responses": {
@@ -550,6 +571,13 @@
                         "type": "string",
                         "description": "Bearer Token",
                         "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Project UUID",
+                        "name": "X-Project",
                         "in": "header",
                         "required": true
                     },
@@ -917,7 +945,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "FormResponsess"
+                    "FormResponses"
                 ],
                 "summary": "List all form responses for a form",
                 "parameters": [
@@ -985,7 +1013,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "FormResponsess"
+                    "FormResponses"
                 ],
                 "summary": "Store a new form response",
                 "parameters": [
@@ -1064,7 +1092,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "FormResponsess"
+                    "FormResponses"
                 ],
                 "summary": "Show details of a single form response",
                 "parameters": [
@@ -1136,7 +1164,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "FormResponsess"
+                    "FormResponses"
                 ],
                 "summary": "Delete a form response",
                 "parameters": [
@@ -1203,6 +1231,13 @@
                         "type": "string",
                         "description": "Bearer Token",
                         "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Project UUID",
+                        "name": "X-Project",
                         "in": "header",
                         "required": true
                     },
@@ -1278,6 +1313,13 @@
                         "required": true
                     },
                     {
+                        "type": "string",
+                        "description": "Project UUID",
+                        "name": "X-Project",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
                         "description": "Function details",
                         "name": "form",
                         "in": "body",
@@ -1345,8 +1387,8 @@
                     {
                         "type": "string",
                         "description": "Project UUID",
-                        "name": "projectUUID",
-                        "in": "path",
+                        "name": "X-Project",
+                        "in": "header",
                         "required": true
                     },
                     {
@@ -1411,6 +1453,13 @@
                         "type": "string",
                         "description": "Bearer Token",
                         "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Project UUID",
+                        "name": "X-Project",
                         "in": "header",
                         "required": true
                     },
@@ -2270,9 +2319,9 @@
                     },
                     {
                         "type": "string",
-                        "description": "Project ID",
-                        "name": "projectUUID",
-                        "in": "path",
+                        "description": "Project UUID",
+                        "name": "X-Project",
+                        "in": "header",
                         "required": true
                     }
                 ],
