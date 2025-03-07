@@ -81,7 +81,7 @@ func (ffc *FormFieldController) Show(c echo.Context) error {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	formField, err := ffc.formFieldService.GetByUUID(formUUID, projectUUID, authUser)
+	formField, err := ffc.formFieldService.GetByUUID(formUUID, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -122,7 +122,7 @@ func (ffc *FormFieldController) Store(c echo.Context) error {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	formFields, err := ffc.formFieldService.CreateMany(formUUID, projectUUID, &request, authUser)
+	formFields, err := ffc.formFieldService.CreateMany(formUUID, &request, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -169,7 +169,7 @@ func (ffc *FormFieldController) Update(c echo.Context) error {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	updatedFormField, err := ffc.formFieldService.Update(formUUID, fieldUUID, projectUUID, authUser, &request)
+	updatedFormField, err := ffc.formFieldService.Update(formUUID, fieldUUID, authUser, &request)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -209,7 +209,7 @@ func (ffc *FormFieldController) Delete(c echo.Context) error {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	if _, err := ffc.formFieldService.Delete(formUUID, fieldUUID, projectUUID, authUser); err != nil {
+	if _, err := ffc.formFieldService.Delete(formUUID, fieldUUID, authUser); err != nil {
 		return responses.ErrorResponse(c, err)
 	}
 
