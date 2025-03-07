@@ -14,9 +14,11 @@ setup: ## Setup the project
 	make up
 
 build: ## Build the project
-	@go build -o bin/fluxton main.go
+	@make down
+	@docker-compose up -d --build
 
 up: ## Start the project
+	@make down
 	@docker-compose up -d
 
 down: ## Stop the project

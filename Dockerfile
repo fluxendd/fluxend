@@ -8,10 +8,10 @@ COPY . .
 RUN go mod tidy
 
 # Build the Go app using your specific build command
-RUN go build -o bin/fluxton cmd/*.go
+RUN go build -o bin/fluxton main.go
 
 # Expose the port Echo is running on (change if needed)
 EXPOSE 80
 
 # Run the Go binary
-CMD ["./bin/fluxton"]
+CMD ["./bin/fluxton", "server"]

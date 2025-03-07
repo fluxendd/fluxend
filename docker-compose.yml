@@ -24,6 +24,7 @@ services:
       context: .
     container_name: fluxton_app
     environment:
+      - APP_ENV=${APP_ENV:-development}
       - DATABASE_URL=postgres://${DATABASE_USER:-postgres}:${DATABASE_PASSWORD:-yourpassword}@fluxton_db:5432/${DATABASE_NAME:-fluxton_db}
     ports: # on port 80
         - "80:80"
