@@ -17,7 +17,6 @@ type functionParameter struct {
 type CreateFunctionRequest struct {
 	BaseRequest
 	Name       string              `json:"name"`
-	Schema     string              `json:"schema"`
 	Parameters []functionParameter `json:"parameters"`
 	Definition string              `json:"definition"`
 	Language   string              `json:"language"`
