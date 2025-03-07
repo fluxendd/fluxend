@@ -11,10 +11,10 @@ import (
 )
 
 type IndexService interface {
-	List(tableUUID, projectUUID uuid.UUID, authUser models.AuthUser) ([]string, error)
-	GetByName(indexName string, tableUUID, projectUUID uuid.UUID, authUser models.AuthUser) (string, error)
-	Create(projectUUID, tableUUID uuid.UUID, request *requests.IndexCreateRequest, authUser models.AuthUser) (string, error)
-	Delete(indexName string, tableUUID, projectUUID uuid.UUID, authUser models.AuthUser) (bool, error)
+	List(tableUUID uuid.UUID, authUser models.AuthUser) ([]string, error)
+	GetByName(indexName string, tableUUID uuid.UUID, authUser models.AuthUser) (string, error)
+	Create(tableUUID uuid.UUID, request *requests.IndexCreateRequest, authUser models.AuthUser) (string, error)
+	Delete(indexName string, tableUUID uuid.UUID, authUser models.AuthUser) (bool, error)
 }
 
 type IndexServiceImpl struct {
@@ -38,19 +38,19 @@ func NewIndexService(injector *do.Injector) (IndexService, error) {
 	}, nil
 }
 
-func (s *IndexServiceImpl) List(tableUUID, projectUUID uuid.UUID, authUser models.AuthUser) ([]string, error) {
-	project, err := s.projectRepo.GetByUUID(projectUUID)
+func (s *IndexServiceImpl) List(tableUUID uuid.UUID, authUser models.AuthUser) ([]string, error) {
+	table, err := s.coreTableRepo.GetByID(tableUUID)
+	if err != nil {
+		return nil, err
+	}
+
+	project, err := s.projectRepo.GetByUUID(table.ProjectUuid)
 	if err != nil {
 		return nil, err
 	}
 
 	if !s.projectPolicy.CanAccess(project.OrganizationUuid, authUser) {
 		return nil, errs.NewForbiddenError("project.error.readForbidden")
-	}
-
-	table, err := s.coreTableRepo.GetByID(tableUUID)
-	if err != nil {
-		return nil, err
 	}
 
 	clientIndexRepo, err := s.connectionService.GetClientIndexRepo(project.DBName)
@@ -61,19 +61,19 @@ func (s *IndexServiceImpl) List(tableUUID, projectUUID uuid.UUID, authUser model
 	return clientIndexRepo.List(table.Name)
 }
 
-func (s *IndexServiceImpl) GetByName(indexName string, tableUUID, projectUUID uuid.UUID, authUser models.AuthUser) (string, error) {
-	project, err := s.projectRepo.GetByUUID(projectUUID)
+func (s *IndexServiceImpl) GetByName(indexName string, tableUUID uuid.UUID, authUser models.AuthUser) (string, error) {
+	table, err := s.coreTableRepo.GetByID(tableUUID)
+	if err != nil {
+		return "", err
+	}
+
+	project, err := s.projectRepo.GetByUUID(table.ProjectUuid)
 	if err != nil {
 		return "", err
 	}
 
 	if !s.projectPolicy.CanAccess(project.OrganizationUuid, authUser) {
 		return "", errs.NewForbiddenError("project.error.readForbidden")
-	}
-
-	table, err := s.coreTableRepo.GetByID(tableUUID)
-	if err != nil {
-		return "", err
 	}
 
 	clientIndexRepo, err := s.connectionService.GetClientIndexRepo(project.DBName)
@@ -84,19 +84,19 @@ func (s *IndexServiceImpl) GetByName(indexName string, tableUUID, projectUUID uu
 	return clientIndexRepo.GetByName(table.Name, indexName)
 }
 
-func (s *IndexServiceImpl) Create(projectUUID, tableUUID uuid.UUID, request *requests.IndexCreateRequest, authUser models.AuthUser) (string, error) {
-	project, err := s.projectRepo.GetByUUID(projectUUID)
+func (s *IndexServiceImpl) Create(tableUUID uuid.UUID, request *requests.IndexCreateRequest, authUser models.AuthUser) (string, error) {
+	table, err := s.coreTableRepo.GetByID(tableUUID)
+	if err != nil {
+		return "", err
+	}
+
+	project, err := s.projectRepo.GetByUUID(table.ProjectUuid)
 	if err != nil {
 		return "", err
 	}
 
 	if !s.projectPolicy.CanCreate(project.OrganizationUuid, authUser) {
 		return "", errs.NewForbiddenError("table.error.createForbidden")
-	}
-
-	table, err := s.coreTableRepo.GetByID(tableUUID)
-	if err != nil {
-		return "", err
 	}
 
 	clientIndexRepo, err := s.connectionService.GetClientIndexRepo(project.DBName)
@@ -121,19 +121,19 @@ func (s *IndexServiceImpl) Create(projectUUID, tableUUID uuid.UUID, request *req
 	return clientIndexRepo.GetByName(table.Name, request.Name)
 }
 
-func (s *IndexServiceImpl) Delete(indexName string, tableUUID, projectUUID uuid.UUID, authUser models.AuthUser) (bool, error) {
-	project, err := s.projectRepo.GetByUUID(projectUUID)
+func (s *IndexServiceImpl) Delete(indexName string, tableUUID uuid.UUID, authUser models.AuthUser) (bool, error) {
+	table, err := s.coreTableRepo.GetByID(tableUUID)
+	if err != nil {
+		return false, err
+	}
+
+	project, err := s.projectRepo.GetByUUID(table.ProjectUuid)
 	if err != nil {
 		return false, err
 	}
 
 	if !s.projectPolicy.CanUpdate(project.OrganizationUuid, authUser) {
 		return false, errs.NewForbiddenError("project.error.updateForbidden")
-	}
-
-	table, err := s.coreTableRepo.GetByID(tableUUID)
-	if err != nil {
-		return false, err
 	}
 
 	clientIndexRepo, err := s.connectionService.GetClientIndexRepo(project.DBName)

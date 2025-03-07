@@ -6,7 +6,6 @@ import (
 	"fluxton/responses"
 	"fluxton/services"
 	"fluxton/utils"
-	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
 )
@@ -31,8 +30,7 @@ func NewIndexController(injector *do.Injector) (*IndexController, error) {
 // @Produce json
 //
 // @Param Authorization header string true "Bearer Token"
-// @Param project_id path string true "Project ID"
-// @Param table_id path string true "Table ID"
+// @Param tableUUID path string true "Table UUID"
 //
 // @Success 200 {object} responses.Response{content=[]resources.GenericResponse} "List of indexes"
 // @Failure 400 "Invalid input"
@@ -43,12 +41,12 @@ func NewIndexController(injector *do.Injector) (*IndexController, error) {
 func (ic *IndexController) List(c echo.Context) error {
 	authUser, _ := utils.NewAuth(c).User()
 
-	projectUUID, tableUUID, err := ic.parseRequest(c)
+	tableUUID, err := utils.GetUUIDPathParam(c, "tableUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	indexes, err := ic.indexService.List(tableUUID, projectUUID, authUser)
+	indexes, err := ic.indexService.List(tableUUID, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -66,8 +64,7 @@ func (ic *IndexController) List(c echo.Context) error {
 // @Produce json
 //
 // @Param Authorization header string true "Bearer Token"
-// @Param project_id path string true "Project ID"
-// @Param table_id path string true "Table ID"
+// @Param tableUUID path string true "Table UUID"
 // @Param index_name path string true "Index Name"
 //
 // @Success 200 {object} responses.Response{content=resources.GenericResponse} "Index details"
@@ -80,14 +77,14 @@ func (ic *IndexController) List(c echo.Context) error {
 func (ic *IndexController) Show(c echo.Context) error {
 	authUser, _ := utils.NewAuth(c).User()
 
-	projectUUID, tableUUID, err := ic.parseRequest(c)
+	tableUUID, err := utils.GetUUIDPathParam(c, "tableUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
 	indexName := c.Param("indexName")
 
-	index, err := ic.indexService.GetByName(indexName, tableUUID, projectUUID, authUser)
+	index, err := ic.indexService.GetByName(indexName, tableUUID, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -105,8 +102,7 @@ func (ic *IndexController) Show(c echo.Context) error {
 // @Produce json
 //
 // @Param Authorization header string true "Bearer Token"
-// @Param project_id path string true "Project ID"
-// @Param table_id path string true "Table ID"
+// @Param tableUUID path string true "Table UUID"
 // @Param index body requests.IndexCreateRequest true "Index details JSON"
 //
 // @Success 201 {object} responses.Response{content=resources.GenericResponse} "Index created"
@@ -124,12 +120,12 @@ func (ic *IndexController) Store(c echo.Context) error {
 
 	authUser, _ := utils.NewAuth(c).User()
 
-	projectUUID, tableUUID, err := ic.parseRequest(c)
+	tableUUID, err := utils.GetUUIDPathParam(c, "tableUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	index, err := ic.indexService.Create(projectUUID, tableUUID, &request, authUser)
+	index, err := ic.indexService.Create(tableUUID, &request, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -147,8 +143,7 @@ func (ic *IndexController) Store(c echo.Context) error {
 // @Produce json
 //
 // @Param Authorization header string true "Bearer Token"
-// @Param project_id path string true "Project ID"
-// @Param table_id path string true "Table ID"
+// @Param tableUUID path string true "Table UUID"
 // @Param index_name path string true "Index Name"
 //
 // @Success 204 "Index deleted successfully"
@@ -161,30 +156,16 @@ func (ic *IndexController) Store(c echo.Context) error {
 func (ic *IndexController) Delete(c echo.Context) error {
 	authUser, _ := utils.NewAuth(c).User()
 
-	projectUUID, tableUUID, err := ic.parseRequest(c)
+	tableUUID, err := utils.GetUUIDPathParam(c, "tableUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
 	indexName := c.Param("indexName")
 
-	if _, err := ic.indexService.Delete(indexName, tableUUID, projectUUID, authUser); err != nil {
+	if _, err := ic.indexService.Delete(indexName, tableUUID, authUser); err != nil {
 		return responses.ErrorResponse(c, err)
 	}
 
 	return responses.DeletedResponse(c, nil)
-}
-
-func (ic *IndexController) parseRequest(c echo.Context) (uuid.UUID, uuid.UUID, error) {
-	projectUUID, err := utils.GetUUIDPathParam(c, "projectUUID", true)
-	if err != nil {
-		return uuid.Nil, uuid.Nil, err
-	}
-
-	tableUUID, err := utils.GetUUIDPathParam(c, "tableUUID", true)
-	if err != nil {
-		return uuid.Nil, uuid.Nil, err
-	}
-
-	return projectUUID, tableUUID, nil
 }

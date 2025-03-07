@@ -3370,15 +3370,8 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Project ID",
-                        "name": "project_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Table ID",
-                        "name": "table_id",
+                        "description": "Table UUID",
+                        "name": "tableUUID",
                         "in": "path",
                         "required": true
                     }
@@ -3436,15 +3429,8 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Project ID",
-                        "name": "project_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Table ID",
-                        "name": "table_id",
+                        "description": "Table UUID",
+                        "name": "tableUUID",
                         "in": "path",
                         "required": true
                     },
@@ -3513,15 +3499,8 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Project ID",
-                        "name": "project_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Table ID",
-                        "name": "table_id",
+                        "description": "Table UUID",
+                        "name": "tableUUID",
                         "in": "path",
                         "required": true
                     },
@@ -3586,15 +3565,8 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Project ID",
-                        "name": "project_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Table ID",
-                        "name": "table_id",
+                        "description": "Table UUID",
+                        "name": "tableUUID",
                         "in": "path",
                         "required": true
                     },

@@ -2585,14 +2585,9 @@ paths:
         name: Authorization
         required: true
         type: string
-      - description: Project ID
+      - description: Table UUID
         in: path
-        name: project_id
-        required: true
-        type: string
-      - description: Table ID
-        in: path
-        name: table_id
+        name: tableUUID
         required: true
         type: string
       produces:
@@ -2627,14 +2622,9 @@ paths:
         name: Authorization
         required: true
         type: string
-      - description: Project ID
+      - description: Table UUID
         in: path
-        name: project_id
-        required: true
-        type: string
-      - description: Table ID
-        in: path
-        name: table_id
+        name: tableUUID
         required: true
         type: string
       - description: Index details JSON
@@ -2676,14 +2666,9 @@ paths:
         name: Authorization
         required: true
         type: string
-      - description: Project ID
+      - description: Table UUID
         in: path
-        name: project_id
-        required: true
-        type: string
-      - description: Table ID
-        in: path
-        name: table_id
+        name: tableUUID
         required: true
         type: string
       - description: Index Name
@@ -2717,14 +2702,9 @@ paths:
         name: Authorization
         required: true
         type: string
-      - description: Project ID
+      - description: Table UUID
         in: path
-        name: project_id
-        required: true
-        type: string
-      - description: Table ID
-        in: path
-        name: table_id
+        name: tableUUID
         required: true
         type: string
       - description: Index Name
