@@ -133,7 +133,7 @@ func (s *FunctionServiceImpl) buildDefinition(schema string, request *requests.C
 	paramList := strings.Join(params, ", ")
 
 	sql := fmt.Sprintf(
-		`CREATE OR REPLACE FUNCTION %s.%s(%s) RETURNS %s AS $$ BEGIN %s END; $$ LANGUAGE %s;`,
+		`CREATE OR REPLACE FUNCTION %s.%s(%s) RETURNS %s AS $$ %s; $$ LANGUAGE %s;`,
 		schema,
 		request.Name,
 		paramList,
@@ -142,7 +142,7 @@ func (s *FunctionServiceImpl) buildDefinition(schema string, request *requests.C
 		request.Language,
 	)
 
-	return sql, nil
+	return strings.ReplaceAll(sql, ";;", ";"), nil
 }
 
 func (s *FunctionServiceImpl) getClientFunctionRepoByProjectUUID(projectUUID uuid.UUID) (*repositories.ClientFunctionRepository, error) {
