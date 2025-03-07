@@ -5,6 +5,7 @@ import (
 )
 
 type DefaultRequest struct {
+	BaseRequest
 }
 
 func (r *DefaultRequest) BindAndValidate(c echo.Context) []string {

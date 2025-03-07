@@ -14,8 +14,8 @@ import (
 
 type FormService interface {
 	List(paginationParams utils.PaginationParams, projectUUID uuid.UUID, authUser models.AuthUser) ([]models.Form, error)
-	GetByUUID(formUUID, projectUUID uuid.UUID, authUser models.AuthUser) (models.Form, error)
-	Create(projectUUID uuid.UUID, request *form_requests.CreateRequest, authUser models.AuthUser) (models.Form, error)
+	GetByUUID(formUUID uuid.UUID, authUser models.AuthUser) (models.Form, error)
+	Create(request *form_requests.CreateRequest, authUser models.AuthUser) (models.Form, error)
 	Update(formUUID uuid.UUID, authUser models.AuthUser, request *form_requests.CreateRequest) (*models.Form, error)
 	Delete(formUUID uuid.UUID, authUser models.AuthUser) (bool, error)
 }
@@ -51,8 +51,13 @@ func (s *FormServiceImpl) List(paginationParams utils.PaginationParams, projectU
 	return s.formRepo.ListForProject(paginationParams, projectUUID)
 }
 
-func (s *FormServiceImpl) GetByUUID(formUUID, projectUUID uuid.UUID, authUser models.AuthUser) (models.Form, error) {
-	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(projectUUID)
+func (s *FormServiceImpl) GetByUUID(formUUID uuid.UUID, authUser models.AuthUser) (models.Form, error) {
+	form, err := s.formRepo.GetByUUID(formUUID)
+	if err != nil {
+		return models.Form{}, err
+	}
+
+	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(form.ProjectUuid)
 	if err != nil {
 		return models.Form{}, err
 	}
@@ -61,16 +66,11 @@ func (s *FormServiceImpl) GetByUUID(formUUID, projectUUID uuid.UUID, authUser mo
 		return models.Form{}, errs.NewForbiddenError("form.error.viewForbidden")
 	}
 
-	form, err := s.formRepo.GetByUUID(formUUID)
-	if err != nil {
-		return models.Form{}, err
-	}
-
 	return form, nil
 }
 
-func (s *FormServiceImpl) Create(projectUUID uuid.UUID, request *form_requests.CreateRequest, authUser models.AuthUser) (models.Form, error) {
-	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(projectUUID)
+func (s *FormServiceImpl) Create(request *form_requests.CreateRequest, authUser models.AuthUser) (models.Form, error) {
+	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(request.ProjectUUID)
 	if err != nil {
 		return models.Form{}, err
 	}
@@ -79,13 +79,13 @@ func (s *FormServiceImpl) Create(projectUUID uuid.UUID, request *form_requests.C
 		return models.Form{}, errs.NewForbiddenError("form.error.createForbidden")
 	}
 
-	err = s.validateNameForDuplication(request.Name, projectUUID)
+	err = s.validateNameForDuplication(request.Name, request.ProjectUUID)
 	if err != nil {
 		return models.Form{}, err
 	}
 
 	form := models.Form{
-		ProjectUuid: projectUUID,
+		ProjectUuid: request.ProjectUUID,
 		Name:        request.Name,
 		Description: request.Description,
 		CreatedBy:   authUser.Uuid,

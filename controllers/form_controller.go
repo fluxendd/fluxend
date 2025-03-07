@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fluxton/requests"
 	"fluxton/requests/form_requests"
 	"fluxton/resources"
 	"fluxton/responses"
@@ -39,15 +40,14 @@ func NewFormController(injector *do.Injector) (*FormController, error) {
 //
 // @Router /projects/{projectId}/forms [get]
 func (fc *FormController) List(c echo.Context) error {
+	var request requests.DefaultRequestWithProjectHeader
+	if err := request.BindAndValidate(c); err != nil {
+		return responses.UnprocessableResponse(c, err)
+	}
 	authUser, _ := utils.NewAuth(c).User()
 
-	projectUUID, err := utils.GetUUIDPathParam(c, "projectUUID", true)
-	if err != nil {
-		return responses.BadRequestResponse(c, "Invalid project UUID")
-	}
-
 	paginationParams := utils.ExtractPaginationParams(c)
-	forms, err := fc.formService.List(paginationParams, projectUUID, authUser)
+	forms, err := fc.formService.List(paginationParams, request.ProjectUUID, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -76,17 +76,12 @@ func (fc *FormController) List(c echo.Context) error {
 func (fc *FormController) Show(c echo.Context) error {
 	authUser, _ := utils.NewAuth(c).User()
 
-	projectUUID, err := utils.GetUUIDPathParam(c, "projectUUID", true)
-	if err != nil {
-		return responses.BadRequestResponse(c, err.Error())
-	}
-
 	formUUID, err := utils.GetUUIDPathParam(c, "formUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	form, err := fc.formService.GetByUUID(formUUID, projectUUID, authUser)
+	form, err := fc.formService.GetByUUID(formUUID, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -121,12 +116,7 @@ func (fc *FormController) Store(c echo.Context) error {
 
 	authUser, _ := utils.NewAuth(c).User()
 
-	projectUUID, err := utils.GetUUIDPathParam(c, "projectUUID", true)
-	if err != nil {
-		return responses.BadRequestResponse(c, err.Error())
-	}
-
-	form, err := fc.formService.Create(projectUUID, &request, authUser)
+	form, err := fc.formService.Create(&request, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}

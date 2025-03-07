@@ -11,13 +11,13 @@ func RegisterFormRoutes(e *echo.Echo, container *do.Injector, authMiddleware ech
 	formFieldController := do.MustInvoke[*controllers.FormFieldController](container)
 	formResponseController := do.MustInvoke[*controllers.FormResponseController](container)
 
-	projectsGroup := e.Group("api/projects/:projectUUID/forms", authMiddleware)
+	formsGroup := e.Group("api/forms", authMiddleware)
 
-	projectsGroup.POST("", formController.Store)
-	projectsGroup.GET("", formController.List)
-	projectsGroup.GET("/:formUUID", formController.Show)
-	projectsGroup.PUT("/:formUUID", formController.Update)
-	projectsGroup.DELETE("/:formUUID", formController.Delete)
+	formsGroup.POST("", formController.Store)
+	formsGroup.GET("", formController.List)
+	formsGroup.GET("/:formUUID", formController.Show)
+	formsGroup.PUT("/:formUUID", formController.Update)
+	formsGroup.DELETE("/:formUUID", formController.Delete)
 
 	// Form Field routes
 	formFieldsGroup := e.Group("api/projects/:projectUUID/forms/:formUUID/fields", authMiddleware)
