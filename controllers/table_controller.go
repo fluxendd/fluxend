@@ -31,7 +31,7 @@ func NewTableController(injector *do.Injector) (*TableController, error) {
 // @Produce json
 //
 // @Param Authorization header string true "Bearer Token"
-// @Param project_id path string true "Project ID"
+// @param Header X-Project header string true "Project UUID"
 //
 // @Success 200 {object} responses.Response{content=[]resources.TableResponse} "List of tables"
 // @Failure 400 "Invalid input"
@@ -40,15 +40,15 @@ func NewTableController(injector *do.Injector) (*TableController, error) {
 //
 // @Router /tables [get]
 func (tc *TableController) List(c echo.Context) error {
-	authUser, _ := utils.NewAuth(c).User()
-
-	projectUUID, err := utils.GetUUIDPathParam(c, "projectUUID", true)
-	if err != nil {
-		return responses.BadRequestResponse(c, err.Error())
+	var request requests.DefaultRequestWithProjectHeader
+	if err := request.BindAndValidate(c); err != nil {
+		return responses.UnprocessableResponse(c, err)
 	}
 
+	authUser, _ := utils.NewAuth(c).User()
+
 	paginationParams := utils.ExtractPaginationParams(c)
-	tables, err := tc.tableService.List(paginationParams, projectUUID, authUser)
+	tables, err := tc.tableService.List(paginationParams, request.ProjectUUID, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -66,8 +66,9 @@ func (tc *TableController) List(c echo.Context) error {
 // @Produce json
 //
 // @Param Authorization header string true "Bearer Token"
-// @Param project_id path string true "Project ID"
-// @Param table_id path string true "Table ID"
+// @param Header X-Project header string true "Project UUID"
+//
+// @Param tableUUID path string true "Table UUID"
 //
 // @Success 200 {object} responses.Response{content=resources.TableResponse} "Table details"
 // @Failure 400 "Invalid input"
@@ -79,17 +80,12 @@ func (tc *TableController) List(c echo.Context) error {
 func (tc *TableController) Show(c echo.Context) error {
 	authUser, _ := utils.NewAuth(c).User()
 
-	projectUUID, err := utils.GetUUIDPathParam(c, "projectUUID", true)
-	if err != nil {
-		return responses.BadRequestResponse(c, err.Error())
-	}
-
 	tableUUID, err := utils.GetUUIDPathParam(c, "tableUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	table, err := tc.tableService.GetByID(tableUUID, projectUUID, authUser)
+	table, err := tc.tableService.GetByID(tableUUID, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -107,7 +103,8 @@ func (tc *TableController) Show(c echo.Context) error {
 // @Produce json
 //
 // @Param Authorization header string true "Bearer Token"
-// @Param project_id path string true "Project ID"
+// @param Header X-Project header string true "Project UUID"
+//
 // @Param table body table_requests.CreateRequest true "Table definition JSON"
 //
 // @Success 201 {object} responses.Response{content=resources.TableResponse} "Table created"
@@ -125,12 +122,7 @@ func (tc *TableController) Store(c echo.Context) error {
 
 	authUser, _ := utils.NewAuth(c).User()
 
-	projectUUID, err := utils.GetUUIDPathParam(c, "projectUUID", true)
-	if err != nil {
-		return responses.BadRequestResponse(c, err.Error())
-	}
-
-	table, err := tc.tableService.Create(&request, projectUUID, authUser)
+	table, err := tc.tableService.Create(&request, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -148,8 +140,9 @@ func (tc *TableController) Store(c echo.Context) error {
 // @Produce json
 //
 // @Param Authorization header string true "Bearer Token"
-// @Param project_id path string true "Project ID"
-// @Param table_id path string true "Table ID"
+// @param Header X-Project header string true "Project UUID"
+//
+// @Param tableUUID path string true "Table UUID"
 // @Param new_name body table_requests.RenameRequest true "Duplicate table name JSON"
 //
 // @Success 201 {object} responses.Response{content=resources.TableResponse} "Table duplicated"
@@ -167,17 +160,12 @@ func (tc *TableController) Duplicate(c echo.Context) error {
 
 	authUser, _ := utils.NewAuth(c).User()
 
-	projectUUID, err := utils.GetUUIDPathParam(c, "projectUUID", true)
-	if err != nil {
-		return responses.BadRequestResponse(c, err.Error())
-	}
-
 	tableUUID, err := utils.GetUUIDPathParam(c, "tableUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	duplicatedTable, err := tc.tableService.Duplicate(tableUUID, projectUUID, authUser, &request)
+	duplicatedTable, err := tc.tableService.Duplicate(tableUUID, authUser, &request)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -195,8 +183,9 @@ func (tc *TableController) Duplicate(c echo.Context) error {
 // @Produce json
 //
 // @Param Authorization header string true "Bearer Token"
-// @Param project_id path string true "Project ID"
-// @Param table_id path string true "Table ID"
+// @param Header X-Project header string true "Project UUID"
+//
+// @Param tableUUID path string true "Table UUID"
 // @Param new_name body table_requests.RenameRequest true "New table name JSON"
 //
 // @Success 200 {object} responses.Response{content=resources.TableResponse} "Table renamed"
@@ -214,17 +203,12 @@ func (tc *TableController) Rename(c echo.Context) error {
 
 	authUser, _ := utils.NewAuth(c).User()
 
-	projectUUID, err := utils.GetUUIDPathParam(c, "projectUUID", true)
-	if err != nil {
-		return responses.BadRequestResponse(c, err.Error())
-	}
-
 	tableUUID, err := utils.GetUUIDPathParam(c, "tableUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	renamedTable, err := tc.tableService.Rename(tableUUID, projectUUID, authUser, &request)
+	renamedTable, err := tc.tableService.Rename(tableUUID, authUser, &request)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -242,8 +226,9 @@ func (tc *TableController) Rename(c echo.Context) error {
 // @Produce json
 //
 // @Param Authorization header string true "Bearer Token"
-// @Param project_id path string true "Project ID"
-// @Param table_id path string true "Table ID"
+// @param Header X-Project header string true "Project UUID"
+//
+// @Param tableUUID path string true "Table UUID"
 //
 // @Success 204 "Table deleted successfully"
 // @Failure 400 "Invalid input"
@@ -260,17 +245,12 @@ func (tc *TableController) Delete(c echo.Context) error {
 
 	authUser, _ := utils.NewAuth(c).User()
 
-	projectUUID, err := utils.GetUUIDPathParam(c, "projectUUID", true)
-	if err != nil {
-		return responses.BadRequestResponse(c, err.Error())
-	}
-
 	tableUUID, err := utils.GetUUIDPathParam(c, "tableUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	if _, err := tc.tableService.Delete(tableUUID, projectUUID, authUser); err != nil {
+	if _, err := tc.tableService.Delete(tableUUID, authUser); err != nil {
 		return responses.ErrorResponse(c, err)
 	}
 

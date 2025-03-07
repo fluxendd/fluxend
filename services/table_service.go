@@ -14,11 +14,11 @@ import (
 
 type TableService interface {
 	List(paginationParams utils.PaginationParams, projectUUID uuid.UUID, authUser models.AuthUser) ([]models.Table, error)
-	GetByID(tableUUID, projectUUID uuid.UUID, authUser models.AuthUser) (models.Table, error)
-	Create(request *table_requests.CreateRequest, projectUUID uuid.UUID, authUser models.AuthUser) (models.Table, error)
-	Duplicate(tableUUID, projectUUID uuid.UUID, authUser models.AuthUser, request *table_requests.RenameRequest) (*models.Table, error)
-	Rename(tableUUID, projectUUID uuid.UUID, authUser models.AuthUser, request *table_requests.RenameRequest) (models.Table, error)
-	Delete(tableUUID, projectUUID uuid.UUID, authUser models.AuthUser) (bool, error)
+	GetByID(tableUUID uuid.UUID, authUser models.AuthUser) (models.Table, error)
+	Create(request *table_requests.CreateRequest, authUser models.AuthUser) (models.Table, error)
+	Duplicate(tableUUID uuid.UUID, authUser models.AuthUser, request *table_requests.RenameRequest) (*models.Table, error)
+	Rename(tableUUID uuid.UUID, authUser models.AuthUser, request *table_requests.RenameRequest) (models.Table, error)
+	Delete(tableUUID uuid.UUID, authUser models.AuthUser) (bool, error)
 }
 
 type TableServiceImpl struct {
@@ -55,8 +55,13 @@ func (s *TableServiceImpl) List(paginationParams utils.PaginationParams, project
 	return s.coreTableRepo.ListForProject(paginationParams, projectUUID)
 }
 
-func (s *TableServiceImpl) GetByID(tableUUID, projectUUID uuid.UUID, authUser models.AuthUser) (models.Table, error) {
-	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(projectUUID)
+func (s *TableServiceImpl) GetByID(tableUUID uuid.UUID, authUser models.AuthUser) (models.Table, error) {
+	table, err := s.coreTableRepo.GetByID(tableUUID)
+	if err != nil {
+		return models.Table{}, err
+	}
+
+	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(table.ProjectUuid)
 	if err != nil {
 		return models.Table{}, err
 	}
@@ -65,11 +70,11 @@ func (s *TableServiceImpl) GetByID(tableUUID, projectUUID uuid.UUID, authUser mo
 		return models.Table{}, errs.NewForbiddenError("project.error.viewForbidden")
 	}
 
-	return s.coreTableRepo.GetByID(tableUUID)
+	return table, nil
 }
 
-func (s *TableServiceImpl) Create(request *table_requests.CreateRequest, projectUUID uuid.UUID, authUser models.AuthUser) (models.Table, error) {
-	project, err := s.projectRepo.GetByUUID(projectUUID)
+func (s *TableServiceImpl) Create(request *table_requests.CreateRequest, authUser models.AuthUser) (models.Table, error) {
+	project, err := s.projectRepo.GetByUUID(request.ProjectUUID)
 	if err != nil {
 		return models.Table{}, err
 	}
@@ -78,7 +83,7 @@ func (s *TableServiceImpl) Create(request *table_requests.CreateRequest, project
 		return models.Table{}, errs.NewForbiddenError("table.error.createForbidden")
 	}
 
-	err = s.validateNameForDuplication(request.Name, projectUUID)
+	err = s.validateNameForDuplication(request.Name, request.ProjectUUID)
 	if err != nil {
 		return models.Table{}, err
 	}
@@ -86,7 +91,7 @@ func (s *TableServiceImpl) Create(request *table_requests.CreateRequest, project
 	// TODO: cleanup name and column names for spaces etc
 	table := models.Table{
 		Name:        request.Name,
-		ProjectUuid: projectUUID,
+		ProjectUuid: request.ProjectUUID,
 		CreatedBy:   authUser.Uuid,
 		UpdatedBy:   authUser.Uuid,
 		Columns:     request.Columns,
@@ -110,8 +115,13 @@ func (s *TableServiceImpl) Create(request *table_requests.CreateRequest, project
 	return table, nil
 }
 
-func (s *TableServiceImpl) Duplicate(tableUUID, projectUUID uuid.UUID, authUser models.AuthUser, request *table_requests.RenameRequest) (*models.Table, error) {
-	project, err := s.projectRepo.GetByUUID(projectUUID)
+func (s *TableServiceImpl) Duplicate(tableUUID uuid.UUID, authUser models.AuthUser, request *table_requests.RenameRequest) (*models.Table, error) {
+	table, err := s.coreTableRepo.GetByID(tableUUID)
+	if err != nil {
+		return &models.Table{}, err
+	}
+
+	project, err := s.projectRepo.GetByUUID(table.ProjectUuid)
 	if err != nil {
 		return &models.Table{}, err
 	}
@@ -120,12 +130,7 @@ func (s *TableServiceImpl) Duplicate(tableUUID, projectUUID uuid.UUID, authUser 
 		return &models.Table{}, errs.NewForbiddenError("project.error.updateForbidden")
 	}
 
-	err = s.validateNameForDuplication(request.Name, projectUUID)
-	if err != nil {
-		return &models.Table{}, err
-	}
-
-	table, err := s.coreTableRepo.GetByID(tableUUID)
+	err = s.validateNameForDuplication(request.Name, project.Uuid)
 	if err != nil {
 		return &models.Table{}, err
 	}
@@ -145,8 +150,13 @@ func (s *TableServiceImpl) Duplicate(tableUUID, projectUUID uuid.UUID, authUser 
 	return s.coreTableRepo.Create(&table)
 }
 
-func (s *TableServiceImpl) Rename(tableUUID, projectUUID uuid.UUID, authUser models.AuthUser, request *table_requests.RenameRequest) (models.Table, error) {
-	project, err := s.projectRepo.GetByUUID(projectUUID)
+func (s *TableServiceImpl) Rename(tableUUID uuid.UUID, authUser models.AuthUser, request *table_requests.RenameRequest) (models.Table, error) {
+	table, err := s.coreTableRepo.GetByID(tableUUID)
+	if err != nil {
+		return models.Table{}, err
+	}
+
+	project, err := s.projectRepo.GetByUUID(table.ProjectUuid)
 	if err != nil {
 		return models.Table{}, err
 	}
@@ -155,12 +165,7 @@ func (s *TableServiceImpl) Rename(tableUUID, projectUUID uuid.UUID, authUser mod
 		return models.Table{}, errs.NewForbiddenError("project.error.updateForbidden")
 	}
 
-	err = s.validateNameForDuplication(request.Name, projectUUID)
-	if err != nil {
-		return models.Table{}, err
-	}
-
-	table, err := s.coreTableRepo.GetByID(tableUUID)
+	err = s.validateNameForDuplication(request.Name, project.Uuid)
 	if err != nil {
 		return models.Table{}, err
 	}
@@ -178,19 +183,19 @@ func (s *TableServiceImpl) Rename(tableUUID, projectUUID uuid.UUID, authUser mod
 	return s.coreTableRepo.Rename(tableUUID, request.Name, authUser.Uuid)
 }
 
-func (s *TableServiceImpl) Delete(tableUUID, projectUUID uuid.UUID, authUser models.AuthUser) (bool, error) {
-	project, err := s.projectRepo.GetByUUID(projectUUID)
+func (s *TableServiceImpl) Delete(tableUUID uuid.UUID, authUser models.AuthUser) (bool, error) {
+	table, err := s.coreTableRepo.GetByID(tableUUID)
+	if err != nil {
+		return false, err
+	}
+
+	project, err := s.projectRepo.GetByUUID(table.ProjectUuid)
 	if err != nil {
 		return false, err
 	}
 
 	if !s.projectPolicy.CanUpdate(project.OrganizationUuid, authUser) {
 		return false, errs.NewForbiddenError("project.error.updateForbidden")
-	}
-
-	table, err := s.coreTableRepo.GetByID(tableUUID)
-	if err != nil {
-		return false, err
 	}
 
 	clientTableRepo, err := s.getClientTableRepo(project.DBName)

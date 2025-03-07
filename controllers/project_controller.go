@@ -65,7 +65,7 @@ func (pc *ProjectController) List(c echo.Context) error {
 // @Produce json
 //
 // @Param Authorization header string true "Bearer Token"
-// @Param projectUUID path string true "Project ID"
+// @Param projectUUID path string true "Project UUID"
 //
 // @Success 200 {object} responses.Response{content=resources.ProjectResponse} "Project details"
 // @Failure 422 "Unprocessable entity"
@@ -136,7 +136,7 @@ func (pc *ProjectController) Store(c echo.Context) error {
 // @Produce json
 //
 // @Param Authorization header string true "Bearer Token"
-// @Param projectUUID path string true "Project ID"
+// @Param projectUUID path string true "Project UUID"
 // @Param name body project_requests.UpdateRequest true "Project name"
 //
 // @Success 200 {object} responses.Response{content=resources.ProjectResponse} "Project details"
@@ -177,7 +177,7 @@ func (pc *ProjectController) Update(c echo.Context) error {
 // @Produce json
 //
 // @Param Authorization header string true "Bearer Token"
-// @Param projectUUID path string true "Project ID"
+// @Param projectUUID path string true "Project UUID"
 //
 // @Success 200 {object} responses.Response{} "Project deleted"
 // @Failure 400 "Invalid input"
