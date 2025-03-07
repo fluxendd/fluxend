@@ -7,6 +7,7 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/labstack/echo/v4"
 	"regexp"
+	"strings"
 )
 
 type functionParameter struct {
@@ -36,7 +37,7 @@ func (r *CreateFunctionRequest) BindAndValidate(c echo.Context) []string {
 		return errors
 	}
 
-	errors = append(errors, r.validate().Error())
+	errors = append(errors, r.ExtractValidationErrors(r.validate())...)
 
 	return errors
 }
@@ -59,15 +60,15 @@ func (r *CreateFunctionRequest) validate() error {
 	return validation.ValidateStruct(r,
 		validation.Field(
 			&r.Name,
-			validation.Required.Error("Name is required"),
+			validation.Required.Error("name is required"),
 			validation.Match(
 				regexp.MustCompile(utils.AlphanumericWithUnderscorePattern()),
-			).Error("Function name must be alphanumeric with underscores"),
+			).Error("name must be alphanumeric with underscores"),
 			validation.Length(
 				configs.MinTableNameLength, configs.MaxTableNameLength,
 			).Error(
 				fmt.Sprintf(
-					"Name must be between %d and %d characters",
+					"name must be between %d and %d characters",
 					configs.MinTableNameLength,
 					configs.MaxTableNameLength,
 				),
@@ -77,7 +78,7 @@ func (r *CreateFunctionRequest) validate() error {
 		// Validate return type
 		validation.Field(
 			&r.ReturnType,
-			validation.Required.Error("ReturnType is required"),
+			validation.Required.Error("return_type is required"),
 			validation.By(func(value interface{}) error {
 				if _, exists := validTypes[value.(string)]; !exists {
 					return fmt.Errorf("invalid return type: %s", value.(string))
@@ -89,11 +90,24 @@ func (r *CreateFunctionRequest) validate() error {
 		// Validate language
 		validation.Field(
 			&r.Language,
-			validation.Required.Error("Language is required"),
+			validation.Required.Error("language is required"),
 			validation.By(func(value interface{}) error {
 				if _, exists := validLanguages[value.(string)]; !exists {
 					return fmt.Errorf("invalid language: %s", value.(string))
 				}
+				return nil
+			}),
+		),
+
+		// Validate definition
+		validation.Field(
+			&r.Definition,
+			validation.Required.Error("definition is required"),
+			validation.By(func(value interface{}) error {
+				if !strings.Contains(value.(string), "BEGIN") || !strings.Contains(value.(string), "END") {
+					return fmt.Errorf("invalid definition: %s", value.(string))
+				}
+
 				return nil
 			}),
 		),
