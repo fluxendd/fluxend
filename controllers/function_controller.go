@@ -61,7 +61,7 @@ func (fc *FunctionController) List(c echo.Context) error {
 //
 // @Summary Show details of a single function
 // @Description Get details of a specific function
-// @Tags forms
+// @Tags Forms
 //
 // @Accept json
 // @Produce json
