@@ -31,6 +31,11 @@ func NewOrganizationController(injector *do.Injector) (*OrganizationController, 
 //
 // @Param Authorization header string true "Bearer Token"
 //
+// @Param page query string false "Page number for pagination"
+// @Param limit query string false "Number of items per page"
+// @Param sort query string false "Field to sort by"
+// @Param order query string false "Sort order (asc or desc)"
+//
 // @Success 200 {object} responses.Response{content=[]resources.OrganizationResponse} "List of organizations"
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"

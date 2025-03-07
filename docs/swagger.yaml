@@ -465,6 +465,22 @@ paths:
         name: bucketUUID
         required: true
         type: string
+      - description: Page number for pagination
+        in: query
+        name: page
+        type: string
+      - description: Number of items per page
+        in: query
+        name: limit
+        type: string
+      - description: Field to sort by
+        in: query
+        name: sort
+        type: string
+      - description: Sort order (asc or desc)
+        in: query
+        name: order
+        type: string
       produces:
       - application/json
       responses:
@@ -1413,6 +1429,22 @@ paths:
         name: Authorization
         required: true
         type: string
+      - description: Page number for pagination
+        in: query
+        name: page
+        type: string
+      - description: Number of items per page
+        in: query
+        name: limit
+        type: string
+      - description: Field to sort by
+        in: query
+        name: sort
+        type: string
+      - description: Sort order (asc or desc)
+        in: query
+        name: order
+        type: string
       produces:
       - application/json
       responses:
@@ -1723,6 +1755,22 @@ paths:
         name: organizationUUID
         required: true
         type: string
+      - description: Page number for pagination
+        in: query
+        name: page
+        type: string
+      - description: Number of items per page
+        in: query
+        name: limit
+        type: string
+      - description: Field to sort by
+        in: query
+        name: sort
+        type: string
+      - description: Sort order (asc or desc)
+        in: query
+        name: order
+        type: string
       produces:
       - application/json
       responses:
@@ -1801,7 +1849,7 @@ paths:
         name: Authorization
         required: true
         type: string
-      - description: Project ID
+      - description: Project UUID
         in: path
         name: projectUUID
         required: true
@@ -1832,7 +1880,7 @@ paths:
         name: Authorization
         required: true
         type: string
-      - description: Project ID
+      - description: Project UUID
         in: path
         name: projectUUID
         required: true
@@ -1870,7 +1918,7 @@ paths:
         name: Authorization
         required: true
         type: string
-      - description: Project ID
+      - description: Project UUID
         in: path
         name: projectUUID
         required: true
@@ -1919,6 +1967,22 @@ paths:
         in: header
         name: X-Project
         required: true
+        type: string
+      - description: Page number for pagination
+        in: query
+        name: page
+        type: string
+      - description: Number of items per page
+        in: query
+        name: limit
+        type: string
+      - description: Field to sort by
+        in: query
+        name: sort
+        type: string
+      - description: Sort order (asc or desc)
+        in: query
+        name: order
         type: string
       produces:
       - application/json
@@ -2182,10 +2246,26 @@ paths:
         name: Authorization
         required: true
         type: string
-      - description: Project ID
-        in: path
-        name: project_id
+      - description: Project UUID
+        in: header
+        name: X-Project
         required: true
+        type: string
+      - description: Page number for pagination
+        in: query
+        name: page
+        type: string
+      - description: Number of items per page
+        in: query
+        name: limit
+        type: string
+      - description: Field to sort by
+        in: query
+        name: sort
+        type: string
+      - description: Sort order (asc or desc)
+        in: query
+        name: order
         type: string
       produces:
       - application/json
@@ -2220,9 +2300,9 @@ paths:
         name: Authorization
         required: true
         type: string
-      - description: Project ID
-        in: path
-        name: project_id
+      - description: Project UUID
+        in: header
+        name: X-Project
         required: true
         type: string
       - description: Table definition JSON
@@ -2265,14 +2345,14 @@ paths:
         name: Authorization
         required: true
         type: string
-      - description: Project ID
-        in: path
-        name: project_id
+      - description: Project UUID
+        in: header
+        name: X-Project
         required: true
         type: string
-      - description: Table ID
+      - description: Table UUID
         in: path
-        name: table_id
+        name: tableUUID
         required: true
         type: string
       produces:
@@ -2301,14 +2381,14 @@ paths:
         name: Authorization
         required: true
         type: string
-      - description: Project ID
-        in: path
-        name: project_id
+      - description: Project UUID
+        in: header
+        name: X-Project
         required: true
         type: string
-      - description: Table ID
+      - description: Table UUID
         in: path
-        name: table_id
+        name: tableUUID
         required: true
         type: string
       produces:
@@ -2535,14 +2615,14 @@ paths:
         name: Authorization
         required: true
         type: string
-      - description: Project ID
-        in: path
-        name: project_id
+      - description: Project UUID
+        in: header
+        name: X-Project
         required: true
         type: string
-      - description: Table ID
+      - description: Table UUID
         in: path
-        name: table_id
+        name: tableUUID
         required: true
         type: string
       - description: Duplicate table name JSON
@@ -2745,14 +2825,14 @@ paths:
         name: Authorization
         required: true
         type: string
-      - description: Project ID
-        in: path
-        name: project_id
+      - description: Project UUID
+        in: header
+        name: X-Project
         required: true
         type: string
-      - description: Table ID
+      - description: Table UUID
         in: path
-        name: table_id
+        name: tableUUID
         required: true
         type: string
       - description: New table name JSON

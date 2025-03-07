@@ -32,6 +32,11 @@ func NewProjectController(injector *do.Injector) (*ProjectController, error) {
 // @Param Authorization header string true "Bearer Token"
 // @Param organizationUUID query string true "Organization UUID"
 //
+// @Param page query string false "Page number for pagination"
+// @Param limit query string false "Number of items per page"
+// @Param sort query string false "Field to sort by"
+// @Param order query string false "Sort order (asc or desc)"
+//
 // @Success 200 {object} responses.Response{content=[]resources.ProjectResponse} "List of projects"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"

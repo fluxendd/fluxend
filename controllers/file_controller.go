@@ -32,6 +32,11 @@ func NewFileController(injector *do.Injector) (*FileController, error) {
 // @Param Authorization header string true "Bearer Token"
 // @Param bucketUUID path string true "Bucket UUID"
 //
+// @Param page query string false "Page number for pagination"
+// @Param limit query string false "Number of items per page"
+// @Param sort query string false "Field to sort by"
+// @Param order query string false "Sort order (asc or desc)"
+//
 // @Success 200 {array} responses.Response{content=[]resources.FileResponse} "List of files"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"

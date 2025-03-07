@@ -33,6 +33,11 @@ func NewTableController(injector *do.Injector) (*TableController, error) {
 // @Param Authorization header string true "Bearer Token"
 // @param Header X-Project header string true "Project UUID"
 //
+// @Param page query string false "Page number for pagination"
+// @Param limit query string false "Number of items per page"
+// @Param sort query string false "Field to sort by"
+// @Param order query string false "Sort order (asc or desc)"
+//
 // @Success 200 {object} responses.Response{content=[]resources.TableResponse} "List of tables"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"

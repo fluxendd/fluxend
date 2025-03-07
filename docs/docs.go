@@ -46,6 +46,30 @@ const docTemplate = `{
                         "name": "bucketUUID",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Page number for pagination",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Number of items per page",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Field to sort by",
+                        "name": "sort",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort order (asc or desc)",
+                        "name": "order",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -1527,6 +1551,30 @@ const docTemplate = `{
                         "name": "Authorization",
                         "in": "header",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Page number for pagination",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Number of items per page",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Field to sort by",
+                        "name": "sort",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort order (asc or desc)",
+                        "name": "order",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -2017,6 +2065,30 @@ const docTemplate = `{
                         "name": "organizationUUID",
                         "in": "query",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Page number for pagination",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Number of items per page",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Field to sort by",
+                        "name": "sort",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort order (asc or desc)",
+                        "name": "order",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -2146,7 +2218,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Project ID",
+                        "description": "Project UUID",
                         "name": "projectUUID",
                         "in": "path",
                         "required": true
@@ -2207,7 +2279,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Project ID",
+                        "description": "Project UUID",
                         "name": "projectUUID",
                         "in": "path",
                         "required": true
@@ -2277,7 +2349,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Project ID",
+                        "description": "Project UUID",
                         "name": "projectUUID",
                         "in": "path",
                         "required": true
@@ -2329,6 +2401,30 @@ const docTemplate = `{
                         "name": "X-Project",
                         "in": "header",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Page number for pagination",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Number of items per page",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Field to sort by",
+                        "name": "sort",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort order (asc or desc)",
+                        "name": "order",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -2745,10 +2841,34 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Project ID",
-                        "name": "project_id",
-                        "in": "path",
+                        "description": "Project UUID",
+                        "name": "X-Project",
+                        "in": "header",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Page number for pagination",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Number of items per page",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Field to sort by",
+                        "name": "sort",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort order (asc or desc)",
+                        "name": "order",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -2806,9 +2926,9 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Project ID",
-                        "name": "project_id",
-                        "in": "path",
+                        "description": "Project UUID",
+                        "name": "X-Project",
+                        "in": "header",
                         "required": true
                     },
                     {
@@ -2878,15 +2998,15 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Project ID",
-                        "name": "project_id",
-                        "in": "path",
+                        "description": "Project UUID",
+                        "name": "X-Project",
+                        "in": "header",
                         "required": true
                     },
                     {
                         "type": "string",
-                        "description": "Table ID",
-                        "name": "table_id",
+                        "description": "Table UUID",
+                        "name": "tableUUID",
                         "in": "path",
                         "required": true
                     }
@@ -2946,15 +3066,15 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Project ID",
-                        "name": "project_id",
-                        "in": "path",
+                        "description": "Project UUID",
+                        "name": "X-Project",
+                        "in": "header",
                         "required": true
                     },
                     {
                         "type": "string",
-                        "description": "Table ID",
-                        "name": "table_id",
+                        "description": "Table UUID",
+                        "name": "tableUUID",
                         "in": "path",
                         "required": true
                     }
@@ -3291,15 +3411,15 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Project ID",
-                        "name": "project_id",
-                        "in": "path",
+                        "description": "Project UUID",
+                        "name": "X-Project",
+                        "in": "header",
                         "required": true
                     },
                     {
                         "type": "string",
-                        "description": "Table ID",
-                        "name": "table_id",
+                        "description": "Table UUID",
+                        "name": "tableUUID",
                         "in": "path",
                         "required": true
                     },
@@ -3620,15 +3740,15 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Project ID",
-                        "name": "project_id",
-                        "in": "path",
+                        "description": "Project UUID",
+                        "name": "X-Project",
+                        "in": "header",
                         "required": true
                     },
                     {
                         "type": "string",
-                        "description": "Table ID",
-                        "name": "table_id",
+                        "description": "Table UUID",
+                        "name": "tableUUID",
                         "in": "path",
                         "required": true
                     },

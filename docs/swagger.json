@@ -40,6 +40,30 @@
                         "name": "bucketUUID",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Page number for pagination",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Number of items per page",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Field to sort by",
+                        "name": "sort",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort order (asc or desc)",
+                        "name": "order",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -1521,6 +1545,30 @@
                         "name": "Authorization",
                         "in": "header",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Page number for pagination",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Number of items per page",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Field to sort by",
+                        "name": "sort",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort order (asc or desc)",
+                        "name": "order",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -2011,6 +2059,30 @@
                         "name": "organizationUUID",
                         "in": "query",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Page number for pagination",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Number of items per page",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Field to sort by",
+                        "name": "sort",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort order (asc or desc)",
+                        "name": "order",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -2140,7 +2212,7 @@
                     },
                     {
                         "type": "string",
-                        "description": "Project ID",
+                        "description": "Project UUID",
                         "name": "projectUUID",
                         "in": "path",
                         "required": true
@@ -2201,7 +2273,7 @@
                     },
                     {
                         "type": "string",
-                        "description": "Project ID",
+                        "description": "Project UUID",
                         "name": "projectUUID",
                         "in": "path",
                         "required": true
@@ -2271,7 +2343,7 @@
                     },
                     {
                         "type": "string",
-                        "description": "Project ID",
+                        "description": "Project UUID",
                         "name": "projectUUID",
                         "in": "path",
                         "required": true
@@ -2323,6 +2395,30 @@
                         "name": "X-Project",
                         "in": "header",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Page number for pagination",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Number of items per page",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Field to sort by",
+                        "name": "sort",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort order (asc or desc)",
+                        "name": "order",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -2739,10 +2835,34 @@
                     },
                     {
                         "type": "string",
-                        "description": "Project ID",
-                        "name": "project_id",
-                        "in": "path",
+                        "description": "Project UUID",
+                        "name": "X-Project",
+                        "in": "header",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Page number for pagination",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Number of items per page",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Field to sort by",
+                        "name": "sort",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort order (asc or desc)",
+                        "name": "order",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -2800,9 +2920,9 @@
                     },
                     {
                         "type": "string",
-                        "description": "Project ID",
-                        "name": "project_id",
-                        "in": "path",
+                        "description": "Project UUID",
+                        "name": "X-Project",
+                        "in": "header",
                         "required": true
                     },
                     {
@@ -2872,15 +2992,15 @@
                     },
                     {
                         "type": "string",
-                        "description": "Project ID",
-                        "name": "project_id",
-                        "in": "path",
+                        "description": "Project UUID",
+                        "name": "X-Project",
+                        "in": "header",
                         "required": true
                     },
                     {
                         "type": "string",
-                        "description": "Table ID",
-                        "name": "table_id",
+                        "description": "Table UUID",
+                        "name": "tableUUID",
                         "in": "path",
                         "required": true
                     }
@@ -2940,15 +3060,15 @@
                     },
                     {
                         "type": "string",
-                        "description": "Project ID",
-                        "name": "project_id",
-                        "in": "path",
+                        "description": "Project UUID",
+                        "name": "X-Project",
+                        "in": "header",
                         "required": true
                     },
                     {
                         "type": "string",
-                        "description": "Table ID",
-                        "name": "table_id",
+                        "description": "Table UUID",
+                        "name": "tableUUID",
                         "in": "path",
                         "required": true
                     }
@@ -3285,15 +3405,15 @@
                     },
                     {
                         "type": "string",
-                        "description": "Project ID",
-                        "name": "project_id",
-                        "in": "path",
+                        "description": "Project UUID",
+                        "name": "X-Project",
+                        "in": "header",
                         "required": true
                     },
                     {
                         "type": "string",
-                        "description": "Table ID",
-                        "name": "table_id",
+                        "description": "Table UUID",
+                        "name": "tableUUID",
                         "in": "path",
                         "required": true
                     },
@@ -3614,15 +3734,15 @@
                     },
                     {
                         "type": "string",
-                        "description": "Project ID",
-                        "name": "project_id",
-                        "in": "path",
+                        "description": "Project UUID",
+                        "name": "X-Project",
+                        "in": "header",
                         "required": true
                     },
                     {
                         "type": "string",
-                        "description": "Table ID",
-                        "name": "table_id",
+                        "description": "Table UUID",
+                        "name": "tableUUID",
                         "in": "path",
                         "required": true
                     },
