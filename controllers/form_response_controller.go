@@ -25,7 +25,7 @@ func NewFormResponseController(injector *do.Injector) (*FormResponseController, 
 //
 // @Summary List all form responses for a form
 // @Description Get all form responses for a specific form
-// @Tags FormResponsess
+// @Tags FormResponses
 //
 // @Accept json
 // @Produce json
@@ -43,17 +43,12 @@ func NewFormResponseController(injector *do.Injector) (*FormResponseController, 
 func (ffc *FormResponseController) List(c echo.Context) error {
 	authUser, _ := utils.NewAuth(c).User()
 
-	projectUUID, err := utils.GetUUIDPathParam(c, "projectUUID", true)
-	if err != nil {
-		return responses.BadRequestResponse(c, err.Error())
-	}
-
 	formUUID, err := utils.GetUUIDPathParam(c, "formUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	formResponses, err := ffc.formResponseService.List(formUUID, projectUUID, authUser)
+	formResponses, err := ffc.formResponseService.List(formUUID, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -65,7 +60,7 @@ func (ffc *FormResponseController) List(c echo.Context) error {
 //
 // @Summary Show details of a single form response
 // @Description Get details of a specific form response
-// @Tags FormResponsess
+// @Tags FormResponses
 //
 // @Accept json
 // @Produce json
@@ -85,12 +80,12 @@ func (ffc *FormResponseController) List(c echo.Context) error {
 func (ffc *FormResponseController) Show(c echo.Context) error {
 	authUser, _ := utils.NewAuth(c).User()
 
-	projectUUID, formUUID, formResponseUUID, err := ffc.parseRequest(c)
+	formUUID, formResponseUUID, err := ffc.parseRequest(c)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	formResponse, err := ffc.formResponseService.GetByUUID(formResponseUUID, formUUID, projectUUID, authUser)
+	formResponse, err := ffc.formResponseService.GetByUUID(formResponseUUID, formUUID, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -102,7 +97,7 @@ func (ffc *FormResponseController) Show(c echo.Context) error {
 //
 // @Summary Store a new form response
 // @Description Store a new form response for a specific form
-// @Tags FormResponsess
+// @Tags FormResponses
 //
 // @Accept json
 // @Produce json
@@ -128,17 +123,12 @@ func (ffc *FormResponseController) Store(c echo.Context) error {
 
 	authUser, _ := utils.NewAuth(c).User()
 
-	projectUUID, err := utils.GetUUIDPathParam(c, "projectUUID", true)
-	if err != nil {
-		return responses.BadRequestResponse(c, err.Error())
-	}
-
 	formUUID, err := utils.GetUUIDPathParam(c, "formUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	formResponse, err := ffc.formResponseService.Create(formUUID, projectUUID, &request, authUser)
+	formResponse, err := ffc.formResponseService.Create(formUUID, &request, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -150,7 +140,7 @@ func (ffc *FormResponseController) Store(c echo.Context) error {
 //
 // @Summary Delete a form response
 // @Description Delete a specific form response
-// @Tags FormResponsess
+// @Tags FormResponses
 //
 // @Accept json
 // @Produce json
@@ -170,33 +160,28 @@ func (ffc *FormResponseController) Store(c echo.Context) error {
 func (ffc *FormResponseController) Delete(c echo.Context) error {
 	authUser, _ := utils.NewAuth(c).User()
 
-	projectUUID, formUUID, formResponseUUID, err := ffc.parseRequest(c)
+	formUUID, formResponseUUID, err := ffc.parseRequest(c)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	if err = ffc.formResponseService.Delete(projectUUID, formUUID, formResponseUUID, authUser); err != nil {
+	if err = ffc.formResponseService.Delete(formUUID, formResponseUUID, authUser); err != nil {
 		return responses.ErrorResponse(c, err)
 	}
 
 	return responses.DeletedResponse(c, nil)
 }
 
-func (ffc *FormResponseController) parseRequest(c echo.Context) (uuid.UUID, uuid.UUID, uuid.UUID, error) {
-	projectUUID, err := utils.GetUUIDPathParam(c, "projectUUID", true)
-	if err != nil {
-		return uuid.Nil, uuid.Nil, uuid.Nil, err
-	}
-
+func (ffc *FormResponseController) parseRequest(c echo.Context) (uuid.UUID, uuid.UUID, error) {
 	formUUID, err := utils.GetUUIDPathParam(c, "formUUID", true)
 	if err != nil {
-		return uuid.Nil, uuid.Nil, uuid.Nil, err
+		return uuid.Nil, uuid.Nil, err
 	}
 
 	formResponseUUID, err := utils.GetUUIDPathParam(c, "formResponseUUID", true)
 	if err != nil {
-		return uuid.Nil, uuid.Nil, uuid.Nil, err
+		return uuid.Nil, uuid.Nil, err
 	}
 
-	return projectUUID, formUUID, formResponseUUID, nil
+	return formUUID, formResponseUUID, nil
 }

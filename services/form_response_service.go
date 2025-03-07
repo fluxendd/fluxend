@@ -11,10 +11,10 @@ import (
 )
 
 type FormResponseService interface {
-	List(formUUID, projectUUID uuid.UUID, authUser models.AuthUser) ([]models.FormResponse, error)
-	GetByUUID(formResponseUUID, formUUID, projectUUID uuid.UUID, authUser models.AuthUser) (*models.FormResponse, error)
-	Create(formUUID, projectUUID uuid.UUID, request *form_requests.CreateResponseRequest, authUser models.AuthUser) (models.FormResponse, error)
-	Delete(projectUUID, formUUID, formResponseUUID uuid.UUID, authUser models.AuthUser) error
+	List(formUUID uuid.UUID, authUser models.AuthUser) ([]models.FormResponse, error)
+	GetByUUID(formResponseUUID, formUUID uuid.UUID, authUser models.AuthUser) (*models.FormResponse, error)
+	Create(formUUID uuid.UUID, request *form_requests.CreateResponseRequest, authUser models.AuthUser) (models.FormResponse, error)
+	Delete(formUUID, formResponseUUID uuid.UUID, authUser models.AuthUser) error
 }
 
 type FormResponseServiceImpl struct {
@@ -41,8 +41,8 @@ func NewFormResponseService(injector *do.Injector) (FormResponseService, error) 
 	}, nil
 }
 
-func (s *FormResponseServiceImpl) List(formUUID, projectUUID uuid.UUID, authUser models.AuthUser) ([]models.FormResponse, error) {
-	err := s.validateFormExists(formUUID)
+func (s *FormResponseServiceImpl) List(formUUID uuid.UUID, authUser models.AuthUser) ([]models.FormResponse, error) {
+	projectUUID, err := s.formRepo.GetProjectUUIDByFormUUID(formUUID)
 	if err != nil {
 		return []models.FormResponse{}, err
 	}
@@ -59,8 +59,8 @@ func (s *FormResponseServiceImpl) List(formUUID, projectUUID uuid.UUID, authUser
 	return s.formResponseRepo.ListForForm(formUUID)
 }
 
-func (s *FormResponseServiceImpl) GetByUUID(formResponseUUID, formUUID, projectUUID uuid.UUID, authUser models.AuthUser) (*models.FormResponse, error) {
-	err := s.validateFormExists(formUUID)
+func (s *FormResponseServiceImpl) GetByUUID(formResponseUUID, formUUID uuid.UUID, authUser models.AuthUser) (*models.FormResponse, error) {
+	projectUUID, err := s.formRepo.GetProjectUUIDByFormUUID(formUUID)
 	if err != nil {
 		return &models.FormResponse{}, err
 	}
@@ -77,8 +77,8 @@ func (s *FormResponseServiceImpl) GetByUUID(formResponseUUID, formUUID, projectU
 	return s.formResponseRepo.GetByUUID(formResponseUUID)
 }
 
-func (s *FormResponseServiceImpl) Create(formUUID, projectUUID uuid.UUID, request *form_requests.CreateResponseRequest, authUser models.AuthUser) (models.FormResponse, error) {
-	err := s.validateFormExists(formUUID)
+func (s *FormResponseServiceImpl) Create(formUUID uuid.UUID, request *form_requests.CreateResponseRequest, authUser models.AuthUser) (models.FormResponse, error) {
+	projectUUID, err := s.formRepo.GetProjectUUIDByFormUUID(formUUID)
 	if err != nil {
 		return models.FormResponse{}, err
 	}
@@ -122,8 +122,8 @@ func (s *FormResponseServiceImpl) Create(formUUID, projectUUID uuid.UUID, reques
 	return formResponse, nil
 }
 
-func (s *FormResponseServiceImpl) Delete(projectUUID, formUUID, formResponseUUID uuid.UUID, authUser models.AuthUser) error {
-	err := s.validateFormExists(formUUID)
+func (s *FormResponseServiceImpl) Delete(formUUID, formResponseUUID uuid.UUID, authUser models.AuthUser) error {
+	projectUUID, err := s.formRepo.GetProjectUUIDByFormUUID(formUUID)
 	if err != nil {
 		return err
 	}
@@ -138,17 +138,4 @@ func (s *FormResponseServiceImpl) Delete(projectUUID, formUUID, formResponseUUID
 	}
 
 	return s.formResponseRepo.Delete(formResponseUUID)
-}
-
-func (s *FormResponseServiceImpl) validateFormExists(formUUID uuid.UUID) error {
-	formExists, err := s.formRepo.ExistsByUUID(formUUID)
-	if err != nil {
-		return err
-	}
-
-	if !formExists {
-		return errs.NewNotFoundError("form.error.notFound")
-	}
-
-	return nil
 }
