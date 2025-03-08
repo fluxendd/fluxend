@@ -1,6 +1,13 @@
 # Fluxton
 **Blazing-Fast, Futuristic Backend for the Modern Web – Deploy with Just One File!**
 
+## Table of contents
+- [What is Fluxton](#what-is-fluxton)
+- Why choose Fluxton
+- Installation
+- Commands
+- [Contribute](#want-to-contribute)
+
 ## What is Fluxton?
 **Fluxton** is a cutting-edge backend server that is as fast as it is simple to use. Built with the power of Go and the flexibility of the Echo framework, Fluxton allows you to create scalable and dynamic backend solutions with minimal effort. The best part? You get everything in a single file – no need for complex infrastructure setups or tedious server configurations.
 
@@ -38,6 +45,71 @@ Once the server is up, you can access the API documentation at http://localhost/
 Prefer a single binary to run without Docker? You can easily build Fluxton and run it as a standalone executable:
 
 Build with `make build` and then `./bin/fluxton` to start the server.
+
+## Commands
+Fluxton has several commands to perform operations and make your experience smoother. Fluxton binary supports core commands which is further augmented by make commands
+
+### CLI commands
+```
+Fluxton CLI allows you to start the server, run seeders, and inspect routes.
+
+Usage:
+  fluxton [command]
+
+Available Commands:
+  help        Help about any command
+  about       Prints information about the application
+  optimize    Flush all caches and optimize the application
+  routes      List all registered API routes
+  seed        Seed the database with initial data
+  server      Start the Fluxton API server
+  make:model  Creates a new model file in the models directory
+  udb:stats   Pull stats from given database
+
+Flags:
+  -h, --help   help for fluxton
+
+Use "fluxton [command] --help" for more information about a command.
+```
+
+### Make commands
+```
+make help
+
+help                           Shows this help
+setup                          Setup the project
+build                          Build the project
+up                             Start the project
+down                           Stop the project
+
+login.app                      Login to fluxton container
+login.db                       Login to database container
+
+pgr.list                       List all postgrest containers
+pgr.destroy                    Destroy all postgrest containers
+
+docs.generate                  Generate docs
+lint                           Run linter
+lint.fix                       Run linter and fix
+
+serve                          Run the project in development mode
+seed                           Seed the database
+about                          Show the project information
+optimize                       Optimize the project
+udb.stats                      Show the database stats
+routes.list                    Show all the available routes
+drop.user.dbs                  Drop all user-created databases
+
+migration.create               Create a new database migration
+migration.up                   Run database migrations
+migration.down                 Rollback database migrations
+migration.status               Show the status of the database migrations
+migration.reset                Rollback all migrations and run them again
+migration.redo                 Rollback the last migration and run it again
+migration.fresh                Rollback all migrations and run them again
+
+seed.fresh                     Seed the database with fresh data
+```
 
 ### Want to Contribute?
 Fluxton is open-source! If you're passionate about building a blazing-fast backend and want to make Fluxton even better, we welcome contributions. Please send PRs our way.
