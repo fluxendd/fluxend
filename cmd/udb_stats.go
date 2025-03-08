@@ -9,7 +9,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// udbStats runs in background and populates table with stats
 var udbStats = &cobra.Command{
 	Use:   "udb:stats [database_name]",
 	Short: "Pull stats from given database",
