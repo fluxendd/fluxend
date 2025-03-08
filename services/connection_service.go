@@ -14,6 +14,7 @@ type ConnectionService interface {
 	GetClientTableRepo(databaseName string) (*repositories.ClientTableRepository, error)
 	GetClientColumnRepo(databaseName string) (*repositories.ClientColumnRepository, error)
 	GetClientIndexRepo(databaseName string) (*repositories.ClientIndexRepository, error)
+	GetClientFunctionRepoByProjectUUID(projectUUID uuid.UUID) (*repositories.ClientFunctionRepository, error)
 }
 
 type ConnectionServiceImpl struct {
@@ -98,4 +99,27 @@ func (s *ConnectionServiceImpl) GetClientIndexRepo(databaseName string) (*reposi
 	}
 
 	return clientIndexRepo, nil
+}
+
+func (s *ConnectionServiceImpl) GetClientFunctionRepoByProjectUUID(projectUUID uuid.UUID) (*repositories.ClientFunctionRepository, error) {
+	databaseName, err := s.projectRepo.GetDatabaseNameByUUID(projectUUID)
+	if err != nil {
+		return nil, err
+	}
+
+	return s.getClientFunctionRepo(databaseName)
+}
+
+func (s *ConnectionServiceImpl) getClientFunctionRepo(databaseName string) (*repositories.ClientFunctionRepository, error) {
+	clientDatabaseConnection, err := s.databaseRepo.Connect(databaseName)
+	if err != nil {
+		return nil, err
+	}
+
+	clientFunctionRepo, err := repositories.NewClientFunctionRepository(clientDatabaseConnection)
+	if err != nil {
+		return nil, err
+	}
+
+	return clientFunctionRepo, nil
 }
