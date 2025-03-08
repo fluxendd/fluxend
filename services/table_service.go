@@ -22,23 +22,26 @@ type TableService interface {
 }
 
 type TableServiceImpl struct {
-	projectPolicy *policies.ProjectPolicy
-	databaseRepo  *repositories.DatabaseRepository
-	projectRepo   *repositories.ProjectRepository
-	coreTableRepo *repositories.CoreTableRepository
+	connectionService ConnectionService
+	projectPolicy     *policies.ProjectPolicy
+	databaseRepo      *repositories.DatabaseRepository
+	projectRepo       *repositories.ProjectRepository
+	coreTableRepo     *repositories.CoreTableRepository
 }
 
 func NewTableService(injector *do.Injector) (TableService, error) {
+	connectionService := do.MustInvoke[ConnectionService](injector)
 	policy := do.MustInvoke[*policies.ProjectPolicy](injector)
 	databaseRepo := do.MustInvoke[*repositories.DatabaseRepository](injector)
 	projectRepo := do.MustInvoke[*repositories.ProjectRepository](injector)
 	coreTableRepo := do.MustInvoke[*repositories.CoreTableRepository](injector)
 
 	return &TableServiceImpl{
-		projectPolicy: policy,
-		databaseRepo:  databaseRepo,
-		projectRepo:   projectRepo,
-		coreTableRepo: coreTableRepo,
+		connectionService: connectionService,
+		projectPolicy:     policy,
+		databaseRepo:      databaseRepo,
+		projectRepo:       projectRepo,
+		coreTableRepo:     coreTableRepo,
 	}, nil
 }
 
@@ -102,7 +105,7 @@ func (s *TableServiceImpl) Create(request *table_requests.CreateRequest, authUse
 		return models.Table{}, err
 	}
 
-	clientTableRepo, err := s.getClientTableRepo(project.DBName)
+	clientTableRepo, err := s.connectionService.GetClientTableRepo(project.DBName)
 	if err != nil {
 		return models.Table{}, err
 	}
@@ -135,7 +138,7 @@ func (s *TableServiceImpl) Duplicate(tableUUID uuid.UUID, authUser models.AuthUs
 		return &models.Table{}, err
 	}
 
-	clientTableRepo, err := s.getClientTableRepo(project.DBName)
+	clientTableRepo, err := s.connectionService.GetClientTableRepo(project.DBName)
 	if err != nil {
 		return &models.Table{}, err
 	}
@@ -170,7 +173,7 @@ func (s *TableServiceImpl) Rename(tableUUID uuid.UUID, authUser models.AuthUser,
 		return models.Table{}, err
 	}
 
-	clientTableRepo, err := s.getClientTableRepo(project.DBName)
+	clientTableRepo, err := s.connectionService.GetClientTableRepo(project.DBName)
 	if err != nil {
 		return models.Table{}, err
 	}
@@ -198,7 +201,7 @@ func (s *TableServiceImpl) Delete(tableUUID uuid.UUID, authUser models.AuthUser)
 		return false, errs.NewForbiddenError("project.error.updateForbidden")
 	}
 
-	clientTableRepo, err := s.getClientTableRepo(project.DBName)
+	clientTableRepo, err := s.connectionService.GetClientTableRepo(project.DBName)
 	if err != nil {
 		return false, err
 	}
@@ -222,18 +225,4 @@ func (s *TableServiceImpl) validateNameForDuplication(name string, projectUUID u
 	}
 
 	return nil
-}
-
-func (s *TableServiceImpl) getClientTableRepo(databaseName string) (*repositories.ClientTableRepository, error) {
-	clientDatabaseConnection, err := s.databaseRepo.Connect(databaseName)
-	if err != nil {
-		return nil, err
-	}
-
-	clientTableRepo, err := repositories.NewClientTableRepository(clientDatabaseConnection)
-	if err != nil {
-		return nil, err
-	}
-
-	return clientTableRepo, nil
 }
