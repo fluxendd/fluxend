@@ -24,4 +24,5 @@ func init() {
 	RootCmd.AddCommand(routesCmd)
 	RootCmd.AddCommand(udbStats)
 	RootCmd.AddCommand(optimizeCmd)
+	RootCmd.AddCommand(makeModelCmd)
 }
