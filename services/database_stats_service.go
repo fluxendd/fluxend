@@ -7,6 +7,7 @@ import (
 	"fluxton/repositories"
 	"fluxton/types"
 	"github.com/samber/do"
+	"time"
 )
 
 type DatabaseStatsService interface {
@@ -17,6 +18,7 @@ type DatabaseStatsService interface {
 	GetIndexScansPerTable(databaseName string, authUser models.AuthUser) ([]types.IndexScan, error)
 	GetSizePerTable(databaseName string, authUser models.AuthUser) ([]types.TableSize, error)
 	GetRowCountPerTable(databaseName string, authUser models.AuthUser) ([]types.TableRowCount, error)
+	GetAll(databaseName string, authUser models.AuthUser) (models.DatabaseStat, error)
 }
 
 type DatabaseStatsServiceImpl struct {
@@ -127,4 +129,45 @@ func (s *DatabaseStatsServiceImpl) GetRowCountPerTable(databaseName string, auth
 	}
 
 	return dbStatsRepo.GetRowCountPerTable()
+}
+
+func (s *DatabaseStatsServiceImpl) GetAll(databaseName string, authUser models.AuthUser) (models.DatabaseStat, error) {
+	if !s.adminPolicy.CanAccess(authUser) {
+		return models.DatabaseStat{}, errs.NewForbiddenError("database_stats.error.forbidden")
+	}
+
+	totalDatabaseSize, err := s.GetTotalDatabaseSize(databaseName, authUser)
+	if err != nil {
+		return models.DatabaseStat{}, err
+	}
+
+	totalIndexSize, err := s.GetTotalIndexSize(databaseName, authUser)
+	if err != nil {
+		return models.DatabaseStat{}, err
+	}
+
+	unusedIndexes, err := s.GetUnusedIndexes(databaseName, authUser)
+	if err != nil {
+		return models.DatabaseStat{}, err
+	}
+
+	tableCounts, err := s.GetRowCountPerTable(databaseName, authUser)
+	if err != nil {
+		return models.DatabaseStat{}, err
+	}
+
+	tableSizes, err := s.GetSizePerTable(databaseName, authUser)
+	if err != nil {
+		return models.DatabaseStat{}, err
+	}
+
+	return models.DatabaseStat{
+		DatabaseName: databaseName,
+		TotalSize:    totalDatabaseSize,
+		IndexSize:    totalIndexSize,
+		UnusedIndex:  unusedIndexes,
+		TableCount:   tableCounts,
+		TableSize:    tableSizes,
+		CreatedAt:    time.Now(),
+	}, nil
 }
