@@ -81,7 +81,7 @@ func (r *DatabaseStatsRepository) GetIndexScansPerTable() ([]types.IndexScan, er
 	return indexScans, nil
 }
 
-func (r *DatabaseStatsRepository) GetSizeOfEachTable() ([]types.TableSize, error) {
+func (r *DatabaseStatsRepository) GetSizePerTable() ([]types.TableSize, error) {
 	var tableSizes []types.TableSize
 	err := r.connection.Select(&tableSizes, `
 		SELECT 

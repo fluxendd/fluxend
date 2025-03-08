@@ -9,7 +9,8 @@ import (
 
 type ConnectionService interface {
 	ConnectByDatabaseName(name string) (*sqlx.DB, error)
-	ConnectByprojectUUID(projectUUID uuid.UUID) (*sqlx.DB, error)
+	ConnectByProjectUUID(projectUUID uuid.UUID) (*sqlx.DB, error)
+	GetDatabaseStatsRepo(databaseName string) (*repositories.DatabaseStatsRepository, error)
 	GetClientTableRepo(databaseName string) (*repositories.ClientTableRepository, error)
 	GetClientColumnRepo(databaseName string) (*repositories.ClientColumnRepository, error)
 	GetClientIndexRepo(databaseName string) (*repositories.ClientIndexRepository, error)
@@ -34,13 +35,27 @@ func (s *ConnectionServiceImpl) ConnectByDatabaseName(name string) (*sqlx.DB, er
 	return s.databaseRepo.Connect(name)
 }
 
-func (s *ConnectionServiceImpl) ConnectByprojectUUID(projectUUID uuid.UUID) (*sqlx.DB, error) {
+func (s *ConnectionServiceImpl) ConnectByProjectUUID(projectUUID uuid.UUID) (*sqlx.DB, error) {
 	project, err := s.projectRepo.GetByUUID(projectUUID)
 	if err != nil {
 		return nil, err
 	}
 
 	return s.databaseRepo.Connect(project.DBName)
+}
+
+func (s *ConnectionServiceImpl) GetDatabaseStatsRepo(databaseName string) (*repositories.DatabaseStatsRepository, error) {
+	clientDatabaseConnection, err := s.databaseRepo.Connect(databaseName)
+	if err != nil {
+		return nil, err
+	}
+
+	clientDatabaseStatsRepo, err := repositories.NewDatabaseStatsRepository(clientDatabaseConnection)
+	if err != nil {
+		return nil, err
+	}
+
+	return clientDatabaseStatsRepo, nil
 }
 
 func (s *ConnectionServiceImpl) GetClientTableRepo(databaseName string) (*repositories.ClientTableRepository, error) {
