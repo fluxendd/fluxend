@@ -16,7 +16,8 @@ import (
 
 type ProjectService interface {
 	List(paginationParams utils.PaginationParams, organizationUUID uuid.UUID, authUser models.AuthUser) ([]models.Project, error)
-	GetByID(projectUUID uuid.UUID, authUser models.AuthUser) (models.Project, error)
+	GetByUUID(projectUUID uuid.UUID, authUser models.AuthUser) (models.Project, error)
+	GetDatabaseNameByUUID(projectUUID uuid.UUID, authUser models.AuthUser) (string, error)
 	Create(request *project_requests.CreateRequest, authUser models.AuthUser) (models.Project, error)
 	Update(projectUUID uuid.UUID, authUser models.AuthUser, request *project_requests.UpdateRequest) (*models.Project, error)
 	Delete(projectUUID uuid.UUID, authUser models.AuthUser) (bool, error)
@@ -51,7 +52,7 @@ func (s *ProjectServiceImpl) List(paginationParams utils.PaginationParams, organ
 	return s.projectRepo.ListForUser(paginationParams, authUser.Uuid)
 }
 
-func (s *ProjectServiceImpl) GetByID(projectUUID uuid.UUID, authUser models.AuthUser) (models.Project, error) {
+func (s *ProjectServiceImpl) GetByUUID(projectUUID uuid.UUID, authUser models.AuthUser) (models.Project, error) {
 	project, err := s.projectRepo.GetByUUID(projectUUID)
 	if err != nil {
 		return models.Project{}, err
@@ -62,6 +63,19 @@ func (s *ProjectServiceImpl) GetByID(projectUUID uuid.UUID, authUser models.Auth
 	}
 
 	return project, nil
+}
+
+func (s *ProjectServiceImpl) GetDatabaseNameByUUID(projectUUID uuid.UUID, authUser models.AuthUser) (string, error) {
+	project, err := s.projectRepo.GetByUUID(projectUUID)
+	if err != nil {
+		return "", err
+	}
+
+	if !s.projectPolicy.CanAccess(project.OrganizationUuid, authUser) {
+		return "", errs.NewForbiddenError("project.error.viewForbidden")
+	}
+
+	return project.DBName, nil
 }
 
 func (s *ProjectServiceImpl) Create(request *project_requests.CreateRequest, authUser models.AuthUser) (models.Project, error) {

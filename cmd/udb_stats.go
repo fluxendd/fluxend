@@ -1,14 +1,15 @@
 package cmd
 
 import (
+	"fluxton/services"
 	"github.com/spf13/cobra"
 	"log"
 )
 
 // udbStats runs in background and populates table with stats
 var udbStats = &cobra.Command{
-	Use:   "udb.stats",
-	Short: "Pull stats from the user databases",
+	Use:   "udb.stats [project_uuid]",
+	Short: "Pull stats for a project database",
 	Run: func(cmd *cobra.Command, args []string) {
 		getDatabaseStats()
 	},
@@ -16,7 +17,7 @@ var udbStats = &cobra.Command{
 
 // TODO: implement later
 func getDatabaseStats() {
-	// container := InitializeContainer()
+	container := InitializeContainer()
 
-	log.Println("Starting database stat compilation...")
+	databaseStatsService := services.NewDatabaseStatsService()
 }

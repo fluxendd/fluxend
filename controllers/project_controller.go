@@ -87,7 +87,7 @@ func (pc *ProjectController) Show(c echo.Context) error {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	project, err := pc.projectService.GetByID(projectUUID, authUser)
+	project, err := pc.projectService.GetByUUID(projectUUID, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
