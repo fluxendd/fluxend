@@ -3,9 +3,8 @@
 
 ## Table of contents
 - [What is Fluxton](#what-is-fluxton)
-- Why choose Fluxton
-- Installation
-- Commands
+- [Installation](#installation)
+- [Commands](#commands)
 - [Contribute](#want-to-contribute)
 
 ## What is Fluxton?
