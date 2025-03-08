@@ -121,16 +121,19 @@ func (r *DatabaseRepository) importSeedFiles(databaseName string, userUUID uuid.
 			continue
 		}
 
-		sqlQuery := string(sqlContent)
-		if strings.Contains(sqlQuery, "{{USER_ROLE}}") {
-			sqlQuery = strings.ReplaceAll(sqlQuery, "{{USER_ROLE}}", fmt.Sprintf(`usr_%s`, strings.ReplaceAll(userUUID.String(), "-", "_")))
-		}
+		// Why split: If whole file is executed at once, and there is an error in one of the queries,
+		// the whole file will be skipped. This way, we can execute the queries one by one.
+		sqlCommands := strings.Split(string(sqlContent), ";")
+		for _, query := range sqlCommands {
+			if strings.Contains(query, "{{USER_ROLE}}") {
+				query = strings.ReplaceAll(query, "{{USER_ROLE}}", fmt.Sprintf(`usr_%s`, strings.ReplaceAll(userUUID.String(), "-", "_")))
+			}
 
-		// Execute the SQL statements
-		if _, err := connection.Exec(sqlQuery); err != nil {
-			log.Printf("DB: %s => Skipping file %s: could not execute SQL: %v", databaseName, filePath, err)
+			if _, err := connection.Exec(query); err != nil {
+				log.Printf("DB: %s => Skipping file %s: could not execute SQL: %v", databaseName, filePath, err)
 
-			continue
+				continue
+			}
 		}
 
 		log.Printf("DB: %s => Successfully executed seed file %s", databaseName, filePath)

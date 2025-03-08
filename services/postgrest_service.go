@@ -2,7 +2,7 @@ package services
 
 import (
 	"fmt"
-	"log"
+	"github.com/labstack/gommon/log"
 	"os"
 	"os/exec"
 )
