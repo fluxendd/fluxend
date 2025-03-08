@@ -20,14 +20,14 @@ type DatabaseStatsService interface {
 }
 
 type DatabaseStatsServiceImpl struct {
-	connectionService *ConnectionService
+	connectionService ConnectionService
 	adminPolicy       *policies.AdminPolicy
 	databaseRepo      *repositories.DatabaseRepository
 	databaseStatsRepo *repositories.DatabaseStatsRepository
 }
 
 func NewDatabaseStatsService(injector *do.Injector) (DatabaseStatsService, error) {
-	connectionService := do.MustInvoke[*ConnectionService](injector)
+	connectionService := do.MustInvoke[ConnectionService](injector)
 	policy := policies.NewAdminPolicy()
 	databaseRepo := do.MustInvoke[*repositories.DatabaseRepository](injector)
 
