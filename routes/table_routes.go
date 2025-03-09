@@ -16,20 +16,20 @@ func RegisterTableRoutes(e *echo.Echo, container *do.Injector, authMiddleware ec
 	// table routes
 	tablesGroup.POST("", tableController.Store)
 	tablesGroup.GET("", tableController.List)
-	tablesGroup.GET("/:tableUUID", tableController.Show)
-	tablesGroup.PUT("/:tableUUID/duplicate", tableController.Duplicate)
-	tablesGroup.PUT("/:tableUUID/rename", tableController.Rename)
-	tablesGroup.DELETE("/:tableUUID", tableController.Delete)
+	tablesGroup.GET("/:fullTableName", tableController.Show)
+	tablesGroup.PUT("/:fullTableName/duplicate", tableController.Duplicate)
+	tablesGroup.PUT("/:fullTableName/rename", tableController.Rename)
+	tablesGroup.DELETE("/:fullTableName", tableController.Delete)
 
 	// column routes
-	tablesGroup.POST("/:tableUUID/columns", columnController.Store)
-	tablesGroup.PUT("/:tableUUID/columns", columnController.Alter)
-	tablesGroup.PUT("/:tableUUID/columns/:columnName", columnController.Rename)
-	tablesGroup.DELETE("/:tableUUID/columns/:columnName", columnController.Delete)
+	tablesGroup.POST("/:fullTableName/columns", columnController.Store)
+	tablesGroup.PUT("/:fullTableName/columns", columnController.Alter)
+	tablesGroup.PUT("/:fullTableName/columns/:columnName", columnController.Rename)
+	tablesGroup.DELETE("/:fullTableName/columns/:columnName", columnController.Delete)
 
 	// index routes
-	tablesGroup.POST("/:tableUUID/indexes", indexController.Store)
-	tablesGroup.GET("/:tableUUID/indexes", indexController.List)
-	tablesGroup.GET("/:tableUUID/indexes/:indexName", indexController.Show)
-	tablesGroup.DELETE("/:tableUUID/indexes/:indexName", indexController.Delete)
+	tablesGroup.POST("/:fullTableName/indexes", indexController.Store)
+	tablesGroup.GET("/:fullTableName/indexes", indexController.List)
+	tablesGroup.GET("/:fullTableName/indexes/:indexName", indexController.Show)
+	tablesGroup.DELETE("/:fullTableName/indexes/:indexName", indexController.Delete)
 }

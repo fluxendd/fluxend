@@ -33,11 +33,6 @@ func NewTableController(injector *do.Injector) (*TableController, error) {
 // @Param Authorization header string true "Bearer Token"
 // @param Header X-Project header string true "Project UUID"
 //
-// @Param page query string false "Page number for pagination"
-// @Param limit query string false "Number of items per page"
-// @Param sort query string false "Field to sort by"
-// @Param order query string false "Sort order (asc or desc)"
-//
 // @Success 200 {object} responses.Response{content=[]resources.TableResponse} "List of tables"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
@@ -52,8 +47,7 @@ func (tc *TableController) List(c echo.Context) error {
 
 	authUser, _ := utils.NewAuth(c).User()
 
-	paginationParams := utils.ExtractPaginationParams(c)
-	tables, err := tc.tableService.List(paginationParams, request.ProjectUUID, authUser)
+	tables, err := tc.tableService.List(request.ProjectUUID, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -83,14 +77,19 @@ func (tc *TableController) List(c echo.Context) error {
 //
 // @Router /tables/{tableUUID} [get]
 func (tc *TableController) Show(c echo.Context) error {
-	authUser, _ := utils.NewAuth(c).User()
-
-	tableUUID, err := utils.GetUUIDPathParam(c, "tableUUID", true)
-	if err != nil {
-		return responses.BadRequestResponse(c, err.Error())
+	var request requests.DefaultRequestWithProjectHeader
+	if err := request.BindAndValidate(c); err != nil {
+		return responses.UnprocessableResponse(c, err)
 	}
 
-	table, err := tc.tableService.GetByID(tableUUID, authUser)
+	authUser, _ := utils.NewAuth(c).User()
+
+	fullTableName := c.Param("tableName")
+	if fullTableName == "" {
+		return responses.BadRequestResponse(c, "Table name is required")
+	}
+
+	table, err := tc.tableService.GetByID(fullTableName, request.ProjectUUID, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -165,12 +164,12 @@ func (tc *TableController) Duplicate(c echo.Context) error {
 
 	authUser, _ := utils.NewAuth(c).User()
 
-	tableUUID, err := utils.GetUUIDPathParam(c, "tableUUID", true)
-	if err != nil {
-		return responses.BadRequestResponse(c, err.Error())
+	fullTableName := c.Param("tableName")
+	if fullTableName == "" {
+		return responses.BadRequestResponse(c, "Table name is required")
 	}
 
-	duplicatedTable, err := tc.tableService.Duplicate(tableUUID, authUser, &request)
+	duplicatedTable, err := tc.tableService.Duplicate(fullTableName, authUser, &request)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -208,12 +207,12 @@ func (tc *TableController) Rename(c echo.Context) error {
 
 	authUser, _ := utils.NewAuth(c).User()
 
-	tableUUID, err := utils.GetUUIDPathParam(c, "tableUUID", true)
-	if err != nil {
-		return responses.BadRequestResponse(c, err.Error())
+	fullTableName := c.Param("tableName")
+	if fullTableName == "" {
+		return responses.BadRequestResponse(c, "Table name is required")
 	}
 
-	renamedTable, err := tc.tableService.Rename(tableUUID, authUser, &request)
+	renamedTable, err := tc.tableService.Rename(fullTableName, authUser, &request)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -250,12 +249,12 @@ func (tc *TableController) Delete(c echo.Context) error {
 
 	authUser, _ := utils.NewAuth(c).User()
 
-	tableUUID, err := utils.GetUUIDPathParam(c, "tableUUID", true)
-	if err != nil {
-		return responses.BadRequestResponse(c, err.Error())
+	fullTableName := c.Param("tableName")
+	if fullTableName == "" {
+		return responses.BadRequestResponse(c, "Table name is required")
 	}
 
-	if _, err := tc.tableService.Delete(tableUUID, authUser); err != nil {
+	if _, err := tc.tableService.Delete(fullTableName, request.ProjectUUID, authUser); err != nil {
 		return responses.ErrorResponse(c, err)
 	}
 
