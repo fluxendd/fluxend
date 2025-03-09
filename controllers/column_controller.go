@@ -1,12 +1,12 @@
 package controllers
 
 import (
+	"fluxton/errs"
 	"fluxton/requests/column_requests"
 	"fluxton/resources"
 	"fluxton/responses"
 	"fluxton/services"
 	"fluxton/utils"
-	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
 )
@@ -33,7 +33,7 @@ func NewColumnController(injector *do.Injector) (*ColumnController, error) {
 // @Param Authorization header string true "Bearer Token"
 // @Param X-Project header string true "Project UUID"
 //
-// @Param tableUUID path string true "Table UUID"
+// @Param fullTableName path string true "Full table name"
 // @Param columns body column_requests.CreateRequest true "Columns JSON"
 //
 // @Success 201 {object} responses.Response{content=resources.TableResponse} "Columns created"
@@ -42,7 +42,7 @@ func NewColumnController(injector *do.Injector) (*ColumnController, error) {
 // @Failure 422 "Unprocessable entity"
 // @Failure 500 "Internal server error"
 //
-// @Router /tables/{tableUUID}/columns [post]
+// @Router /tables/{fullTableName}/columns [post]
 func (cc *ColumnController) Store(c echo.Context) error {
 	var request column_requests.CreateRequest
 	if err := request.BindAndValidate(c); err != nil {
@@ -51,12 +51,12 @@ func (cc *ColumnController) Store(c echo.Context) error {
 
 	authUser, _ := utils.NewAuth(c).User()
 
-	tableUUID, err := utils.GetUUIDPathParam(c, "tableUUID", true)
-	if err != nil {
-		return responses.BadRequestResponse(c, err.Error())
+	fullTableName := c.Param("tableName")
+	if fullTableName == "" {
+		return responses.BadRequestResponse(c, "Table name is required")
 	}
 
-	table, err := cc.columnService.CreateMany(tableUUID, &request, authUser)
+	table, err := cc.columnService.CreateMany(fullTableName, &request, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -76,7 +76,7 @@ func (cc *ColumnController) Store(c echo.Context) error {
 // @Param Authorization header string true "Bearer Token"
 // @Param X-Project header string true "Project UUID"
 //
-// @Param tableUUID path string true "Table UUID"
+// @Param fullTableName path string true "Full table name"
 // @Param columns body column_requests.CreateRequest true "Updated column definitions"
 //
 // @Success 200 {object} responses.Response{content=resources.TableResponse} "Columns altered"
@@ -85,7 +85,7 @@ func (cc *ColumnController) Store(c echo.Context) error {
 // @Failure 422 "Unprocessable entity"
 // @Failure 500 "Internal server error"
 //
-// @Router /tables/{tableUUID}/columns [put]
+// @Router /tables/{fullTableName}/columns [put]
 func (cc *ColumnController) Alter(c echo.Context) error {
 	var request column_requests.CreateRequest
 	if err := request.BindAndValidate(c); err != nil {
@@ -94,12 +94,12 @@ func (cc *ColumnController) Alter(c echo.Context) error {
 
 	authUser, _ := utils.NewAuth(c).User()
 
-	tableUUID, err := utils.GetUUIDPathParam(c, "tableUUID", true)
-	if err != nil {
-		return responses.BadRequestResponse(c, err.Error())
+	fullTableName := c.Param("tableName")
+	if fullTableName == "" {
+		return responses.BadRequestResponse(c, "Table name is required")
 	}
 
-	alteredTable, err := cc.columnService.AlterMany(tableUUID, &request, authUser)
+	alteredTable, err := cc.columnService.AlterMany(fullTableName, &request, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -119,7 +119,7 @@ func (cc *ColumnController) Alter(c echo.Context) error {
 // @Param Authorization header string true "Bearer Token"
 // @Param X-Project header string true "Project UUID"
 //
-// @Param tableUUID path string true "Table UUID"
+// @Param fullTableName path string true "Full table name"
 // @Param column_name path string true "Existing Column Name"
 // @Param new_name body column_requests.RenameRequest true "New column name JSON"
 //
@@ -129,7 +129,7 @@ func (cc *ColumnController) Alter(c echo.Context) error {
 // @Failure 422 "Unprocessable entity"
 // @Failure 500 "Internal server error"
 //
-// @Router /tables/{tableUUID}/columns/{columnName} [put]
+// @Router /tables/{fullTableName}/columns/{columnName} [put]
 func (cc *ColumnController) Rename(c echo.Context) error {
 	var request column_requests.RenameRequest
 	if err := request.BindAndValidate(c); err != nil {
@@ -138,12 +138,12 @@ func (cc *ColumnController) Rename(c echo.Context) error {
 
 	authUser, _ := utils.NewAuth(c).User()
 
-	tableUUID, columnName, err := cc.parseRequest(c)
+	fullTableName, columnName, err := cc.parseRequest(c)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	renamedTable, err := cc.columnService.Rename(columnName, tableUUID, &request, authUser)
+	renamedTable, err := cc.columnService.Rename(columnName, fullTableName, &request, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -163,7 +163,7 @@ func (cc *ColumnController) Rename(c echo.Context) error {
 // @Param Authorization header string true "Bearer Token"
 // @Param X-Project header string true "Project UUID"
 //
-// @Param tableUUID path string true "Table UUID"
+// @Param fullTableName path string true "Full table name"
 // @Param column_name path string true "Column Name"
 //
 // @Success 204 "Column deleted successfully"
@@ -172,11 +172,11 @@ func (cc *ColumnController) Rename(c echo.Context) error {
 // @Failure 404 "Column not found"
 // @Failure 500 "Internal server error"
 //
-// @Router /tables/{tableUUID}/columns/{columnName} [delete]
+// @Router /tables/{fullTableName}/columns/{columnName} [delete]
 func (cc *ColumnController) Delete(c echo.Context) error {
 	authUser, _ := utils.NewAuth(c).User()
 
-	tableUUID, columnName, err := cc.parseRequest(c)
+	fullTableName, columnName, err := cc.parseRequest(c)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
@@ -186,20 +186,20 @@ func (cc *ColumnController) Delete(c echo.Context) error {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	if _, err := cc.columnService.Delete(columnName, tableUUID, projectUUID, authUser); err != nil {
+	if _, err := cc.columnService.Delete(columnName, fullTableName, projectUUID, authUser); err != nil {
 		return responses.ErrorResponse(c, err)
 	}
 
 	return responses.DeletedResponse(c, nil)
 }
 
-func (cc *ColumnController) parseRequest(c echo.Context) (uuid.UUID, string, error) {
-	tableUUID, err := utils.GetUUIDPathParam(c, "tableUUID", true)
-	if err != nil {
-		return uuid.UUID{}, "", err
+func (cc *ColumnController) parseRequest(c echo.Context) (string, string, error) {
+	fullTableName := c.Param("tableName")
+	if fullTableName == "" {
+		return "", "", errs.NewBadRequestError("Table name is required")
 	}
 
 	columnName := c.Param("columnName")
 
-	return tableUUID, columnName, nil
+	return fullTableName, columnName, nil
 }
