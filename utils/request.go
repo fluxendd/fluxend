@@ -91,3 +91,12 @@ func ConvertStringToUint(param string) (uint, error) {
 
 	return uint(value), nil
 }
+
+func ParseTableName(fullName string) (schema string, table string) {
+	parts := strings.SplitN(fullName, ".", 2)
+	if len(parts) == 2 {
+		return parts[0], parts[1] // schema, table
+	}
+
+	return "public", fullName // Default to "public" schema if none provided
+}
