@@ -242,7 +242,7 @@ func (tc *TableController) Rename(c echo.Context) error {
 //
 // @Router /tables/{tableUUID} [delete]
 func (tc *TableController) Delete(c echo.Context) error {
-	var request requests.DefaultRequest
+	var request requests.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
 		return responses.UnprocessableResponse(c, err)
 	}
