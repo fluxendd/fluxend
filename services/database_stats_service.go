@@ -45,7 +45,7 @@ func (s *DatabaseStatsServiceImpl) GetTotalDatabaseSize(databaseName string, aut
 		return "", errs.NewForbiddenError("database_stats.error.forbidden")
 	}
 
-	dbStatsRepo, err := s.connectionService.GetDatabaseStatsRepo(databaseName)
+	dbStatsRepo, _, err := s.connectionService.GetDatabaseStatsRepo(databaseName, nil)
 	if err != nil {
 		return "", err
 	}
@@ -58,7 +58,7 @@ func (s *DatabaseStatsServiceImpl) GetTotalIndexSize(databaseName string, authUs
 		return "", errs.NewForbiddenError("database_stats.error.forbidden")
 	}
 
-	dbStatsRepo, err := s.connectionService.GetDatabaseStatsRepo(databaseName)
+	dbStatsRepo, _, err := s.connectionService.GetDatabaseStatsRepo(databaseName, nil)
 	if err != nil {
 		return "", err
 	}
@@ -71,7 +71,7 @@ func (s *DatabaseStatsServiceImpl) GetUnusedIndexes(databaseName string, authUse
 		return []types.UnusedIndex{}, errs.NewForbiddenError("database_stats.error.forbidden")
 	}
 
-	dbStatsRepo, err := s.connectionService.GetDatabaseStatsRepo(databaseName)
+	dbStatsRepo, _, err := s.connectionService.GetDatabaseStatsRepo(databaseName, nil)
 	if err != nil {
 		return []types.UnusedIndex{}, err
 	}
@@ -84,7 +84,7 @@ func (s *DatabaseStatsServiceImpl) GetSlowQueries(databaseName string, authUser 
 		return []types.SlowQuery{}, errs.NewForbiddenError("database_stats.error.forbidden")
 	}
 
-	dbStatsRepo, err := s.connectionService.GetDatabaseStatsRepo(databaseName)
+	dbStatsRepo, _, err := s.connectionService.GetDatabaseStatsRepo(databaseName, nil)
 	if err != nil {
 		return []types.SlowQuery{}, err
 	}
@@ -97,7 +97,7 @@ func (s *DatabaseStatsServiceImpl) GetIndexScansPerTable(databaseName string, au
 		return []types.IndexScan{}, errs.NewForbiddenError("database_stats.error.forbidden")
 	}
 
-	dbStatsRepo, err := s.connectionService.GetDatabaseStatsRepo(databaseName)
+	dbStatsRepo, _, err := s.connectionService.GetDatabaseStatsRepo(databaseName, nil)
 	if err != nil {
 		return []types.IndexScan{}, err
 	}
@@ -110,7 +110,7 @@ func (s *DatabaseStatsServiceImpl) GetSizePerTable(databaseName string, authUser
 		return []types.TableSize{}, errs.NewForbiddenError("database_stats.error.forbidden")
 	}
 
-	dbStatsRepo, err := s.connectionService.GetDatabaseStatsRepo(databaseName)
+	dbStatsRepo, _, err := s.connectionService.GetDatabaseStatsRepo(databaseName, nil)
 	if err != nil {
 		return []types.TableSize{}, err
 	}
@@ -123,7 +123,7 @@ func (s *DatabaseStatsServiceImpl) GetRowCountPerTable(databaseName string, auth
 		return []types.TableRowCount{}, errs.NewForbiddenError("database_stats.error.forbidden")
 	}
 
-	dbStatsRepo, err := s.connectionService.GetDatabaseStatsRepo(databaseName)
+	dbStatsRepo, _, err := s.connectionService.GetDatabaseStatsRepo(databaseName, nil)
 	if err != nil {
 		return []types.TableRowCount{}, err
 	}

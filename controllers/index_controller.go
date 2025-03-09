@@ -39,14 +39,19 @@ func NewIndexController(injector *do.Injector) (*IndexController, error) {
 //
 // @Router /tables/{tableUUID}/indexes [get]
 func (ic *IndexController) List(c echo.Context) error {
-	authUser, _ := utils.NewAuth(c).User()
-
-	tableUUID, err := utils.GetUUIDPathParam(c, "tableUUID", true)
-	if err != nil {
-		return responses.BadRequestResponse(c, err.Error())
+	var request requests.DefaultRequest
+	if err := request.BindAndValidate(c); err != nil {
+		return responses.UnprocessableResponse(c, err)
 	}
 
-	indexes, err := ic.indexService.List(tableUUID, authUser)
+	authUser, _ := utils.NewAuth(c).User()
+
+	fullTableName := c.Param("tableName")
+	if fullTableName == "" {
+		return responses.BadRequestResponse(c, "Table name is required")
+	}
+
+	indexes, err := ic.indexService.List(fullTableName, request.ProjectUUID, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -75,16 +80,21 @@ func (ic *IndexController) List(c echo.Context) error {
 //
 // @Router /tables/{tableUUID}/indexes/{indexName} [get]
 func (ic *IndexController) Show(c echo.Context) error {
+	var request requests.DefaultRequest
+	if err := request.BindAndValidate(c); err != nil {
+		return responses.UnprocessableResponse(c, err)
+	}
+
 	authUser, _ := utils.NewAuth(c).User()
 
-	tableUUID, err := utils.GetUUIDPathParam(c, "tableUUID", true)
-	if err != nil {
-		return responses.BadRequestResponse(c, err.Error())
+	fullTableName := c.Param("tableName")
+	if fullTableName == "" {
+		return responses.BadRequestResponse(c, "Table name is required")
 	}
 
 	indexName := c.Param("indexName")
 
-	index, err := ic.indexService.GetByName(indexName, tableUUID, authUser)
+	index, err := ic.indexService.GetByName(indexName, fullTableName, request.ProjectUUID, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -120,12 +130,12 @@ func (ic *IndexController) Store(c echo.Context) error {
 
 	authUser, _ := utils.NewAuth(c).User()
 
-	tableUUID, err := utils.GetUUIDPathParam(c, "tableUUID", true)
-	if err != nil {
-		return responses.BadRequestResponse(c, err.Error())
+	fullTableName := c.Param("tableName")
+	if fullTableName == "" {
+		return responses.BadRequestResponse(c, "Table name is required")
 	}
 
-	index, err := ic.indexService.Create(tableUUID, &request, authUser)
+	index, err := ic.indexService.Create(fullTableName, &request, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -154,16 +164,21 @@ func (ic *IndexController) Store(c echo.Context) error {
 //
 // @Router /tables/{tableUUID}/indexes/{indexName} [delete]
 func (ic *IndexController) Delete(c echo.Context) error {
+	var request requests.DefaultRequest
+	if err := request.BindAndValidate(c); err != nil {
+		return responses.UnprocessableResponse(c, err)
+	}
+
 	authUser, _ := utils.NewAuth(c).User()
 
-	tableUUID, err := utils.GetUUIDPathParam(c, "tableUUID", true)
-	if err != nil {
-		return responses.BadRequestResponse(c, err.Error())
+	fullTableName := c.Param("tableName")
+	if fullTableName == "" {
+		return responses.BadRequestResponse(c, "Table name is required")
 	}
 
 	indexName := c.Param("indexName")
 
-	if _, err := ic.indexService.Delete(indexName, tableUUID, authUser); err != nil {
+	if _, err := ic.indexService.Delete(indexName, fullTableName, request.ProjectUUID, authUser); err != nil {
 		return responses.ErrorResponse(c, err)
 	}
 
