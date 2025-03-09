@@ -14,7 +14,7 @@ const (
 	MaxTableNameLength            = 60
 	MinTableNameLength            = 3
 	MaxColumnNameLength           = 60
-	MinColumnNameLength           = 3
+	MinColumnNameLength           = 2
 	MaxIndexNameLength            = 60
 	MinIndexNameLength            = 3
 	MaxOrganizationNameLength     = 100

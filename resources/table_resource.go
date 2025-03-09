@@ -5,16 +5,20 @@ import (
 )
 
 type TableResponse struct {
-	Id     int    `json:"id"`
-	Name   string `json:"name"`
-	Schema string `json:"schema"`
+	Id            int    `json:"id"`
+	Name          string `json:"name"`
+	Schema        string `json:"schema"`
+	EstimatedRows int    `json:"estimatedRows"`
+	TotalSize     string `json:"totalSize"`
 }
 
 func TableResource(table *models.Table) TableResponse {
 	return TableResponse{
-		Id:     table.Id,
-		Name:   table.Name,
-		Schema: table.Schema,
+		Id:            table.Id,
+		Name:          table.Name,
+		Schema:        table.Schema,
+		EstimatedRows: table.EstimatedRows,
+		TotalSize:     table.TotalSize,
 	}
 }
 

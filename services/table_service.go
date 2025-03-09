@@ -13,7 +13,7 @@ import (
 
 type TableService interface {
 	List(projectUUID uuid.UUID, authUser models.AuthUser) ([]models.Table, error)
-	GetByID(fullTableName string, projectUUID uuid.UUID, authUser models.AuthUser) (models.Table, error)
+	GetByName(fullTableName string, projectUUID uuid.UUID, authUser models.AuthUser) (models.Table, error)
 	Create(request *table_requests.CreateRequest, authUser models.AuthUser) (models.Table, error)
 	Duplicate(fullTableName string, authUser models.AuthUser, request *table_requests.RenameRequest) (*models.Table, error)
 	Rename(fullTableName string, authUser models.AuthUser, request *table_requests.RenameRequest) (models.Table, error)
@@ -64,7 +64,7 @@ func (s *TableServiceImpl) List(projectUUID uuid.UUID, authUser models.AuthUser)
 	return tables, nil
 }
 
-func (s *TableServiceImpl) GetByID(fullTableName string, projectUUID uuid.UUID, authUser models.AuthUser) (models.Table, error) {
+func (s *TableServiceImpl) GetByName(fullTableName string, projectUUID uuid.UUID, authUser models.AuthUser) (models.Table, error) {
 	project, err := s.projectRepo.GetByUUID(projectUUID)
 	if err != nil {
 		return models.Table{}, err
@@ -79,8 +79,7 @@ func (s *TableServiceImpl) GetByID(fullTableName string, projectUUID uuid.UUID, 
 		return models.Table{}, err
 	}
 
-	tableName, schema := utils.ParseTableName(fullTableName)
-	table, err := clientTableRepo.GetByNameInSchema(tableName, schema)
+	table, err := clientTableRepo.GetByNameInSchema(utils.ParseTableName(fullTableName))
 	if err != nil {
 		return models.Table{}, err
 	}
@@ -98,12 +97,12 @@ func (s *TableServiceImpl) Create(request *table_requests.CreateRequest, authUse
 		return models.Table{}, errs.NewForbiddenError("table.error.createForbidden")
 	}
 
-	/*err = s.validateNameForDuplication(request.Name, request.ProjectUUID)
+	clientTableRepo, _, err := s.connectionService.GetClientTableRepo(project.DBName, nil)
 	if err != nil {
 		return models.Table{}, err
-	}*/
+	}
 
-	clientTableRepo, _, err := s.connectionService.GetClientTableRepo(project.DBName, nil)
+	err = s.validateNameForDuplication(request.Name, clientTableRepo)
 	if err != nil {
 		return models.Table{}, err
 	}
@@ -113,7 +112,7 @@ func (s *TableServiceImpl) Create(request *table_requests.CreateRequest, authUse
 		return models.Table{}, err
 	}
 
-	return models.Table{}, nil
+	return clientTableRepo.GetByNameInSchema(utils.ParseTableName(request.Name))
 }
 
 func (s *TableServiceImpl) Duplicate(fullTableName string, authUser models.AuthUser, request *table_requests.RenameRequest) (*models.Table, error) {
@@ -126,18 +125,17 @@ func (s *TableServiceImpl) Duplicate(fullTableName string, authUser models.AuthU
 		return &models.Table{}, errs.NewForbiddenError("project.error.updateForbidden")
 	}
 
-	/*err = s.validateNameForDuplication(request.Name, project.Uuid)
-	if err != nil {
-		return &models.Table{}, err
-	}*/
-
 	clientTableRepo, _, err := s.connectionService.GetClientTableRepo(project.DBName, nil)
 	if err != nil {
 		return &models.Table{}, err
 	}
 
-	tableName, schema := utils.ParseTableName(fullTableName)
-	table, err := clientTableRepo.GetByNameInSchema(tableName, schema)
+	err = s.validateNameForDuplication(request.Name, clientTableRepo)
+	if err != nil {
+		return &models.Table{}, err
+	}
+
+	table, err := clientTableRepo.GetByNameInSchema(utils.ParseTableName(fullTableName))
 	if err != nil {
 		return &models.Table{}, err
 	}
@@ -162,18 +160,17 @@ func (s *TableServiceImpl) Rename(fullTableName string, authUser models.AuthUser
 		return models.Table{}, errs.NewForbiddenError("project.error.updateForbidden")
 	}
 
-	/*err = s.validateNameForDuplication(request.Name, project.Uuid)
-	if err != nil {
-		return models.Table{}, err
-	}*/
-
 	clientTableRepo, _, err := s.connectionService.GetClientTableRepo(project.DBName, nil)
 	if err != nil {
 		return models.Table{}, err
 	}
 
-	tableName, schema := utils.ParseTableName(fullTableName)
-	table, err := clientTableRepo.GetByNameInSchema(tableName, schema)
+	err = s.validateNameForDuplication(request.Name, clientTableRepo)
+	if err != nil {
+		return models.Table{}, err
+	}
+
+	table, err := clientTableRepo.GetByNameInSchema(utils.ParseTableName(fullTableName))
 	if err != nil {
 		return models.Table{}, err
 	}
@@ -211,15 +208,15 @@ func (s *TableServiceImpl) Delete(fullTableName string, projectUUID uuid.UUID, a
 	return true, nil
 }
 
-/*func (s *TableServiceImpl) validateNameForDuplication(name string, projectUUID uuid.UUID) error {
-	exists, err := s.coreTableRepo.ExistsByNameForProject(name, projectUUID)
+func (s *TableServiceImpl) validateNameForDuplication(name string, clientTableRepo *repositories.ClientTableRepository) error {
+	exists, err := clientTableRepo.Exists(name)
 	if err != nil {
 		return err
 	}
 
 	if exists {
-		return errs.NewUnprocessableError("table.error.duplicateName")
+		return errs.NewUnprocessableError("table.error.alreadyExists")
 	}
 
 	return nil
-}*/
+}

@@ -51,7 +51,7 @@ func (cc *ColumnController) Store(c echo.Context) error {
 
 	authUser, _ := utils.NewAuth(c).User()
 
-	fullTableName := c.Param("tableName")
+	fullTableName := c.Param("fullTableName")
 	if fullTableName == "" {
 		return responses.BadRequestResponse(c, "Table name is required")
 	}
@@ -94,7 +94,7 @@ func (cc *ColumnController) Alter(c echo.Context) error {
 
 	authUser, _ := utils.NewAuth(c).User()
 
-	fullTableName := c.Param("tableName")
+	fullTableName := c.Param("fullTableName")
 	if fullTableName == "" {
 		return responses.BadRequestResponse(c, "Table name is required")
 	}
@@ -194,7 +194,7 @@ func (cc *ColumnController) Delete(c echo.Context) error {
 }
 
 func (cc *ColumnController) parseRequest(c echo.Context) (string, string, error) {
-	fullTableName := c.Param("tableName")
+	fullTableName := c.Param("fullTableName")
 	if fullTableName == "" {
 		return "", "", errs.NewBadRequestError("Table name is required")
 	}

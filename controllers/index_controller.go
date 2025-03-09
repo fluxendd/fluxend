@@ -46,7 +46,7 @@ func (ic *IndexController) List(c echo.Context) error {
 
 	authUser, _ := utils.NewAuth(c).User()
 
-	fullTableName := c.Param("tableName")
+	fullTableName := c.Param("fullTableName")
 	if fullTableName == "" {
 		return responses.BadRequestResponse(c, "Table name is required")
 	}
@@ -87,7 +87,7 @@ func (ic *IndexController) Show(c echo.Context) error {
 
 	authUser, _ := utils.NewAuth(c).User()
 
-	fullTableName := c.Param("tableName")
+	fullTableName := c.Param("fullTableName")
 	if fullTableName == "" {
 		return responses.BadRequestResponse(c, "Table name is required")
 	}
@@ -130,7 +130,7 @@ func (ic *IndexController) Store(c echo.Context) error {
 
 	authUser, _ := utils.NewAuth(c).User()
 
-	fullTableName := c.Param("tableName")
+	fullTableName := c.Param("fullTableName")
 	if fullTableName == "" {
 		return responses.BadRequestResponse(c, "Table name is required")
 	}
@@ -171,7 +171,7 @@ func (ic *IndexController) Delete(c echo.Context) error {
 
 	authUser, _ := utils.NewAuth(c).User()
 
-	fullTableName := c.Param("tableName")
+	fullTableName := c.Param("fullTableName")
 	if fullTableName == "" {
 		return responses.BadRequestResponse(c, "Table name is required")
 	}

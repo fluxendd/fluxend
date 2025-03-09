@@ -92,7 +92,7 @@ func (r *ClientTableRepository) List() ([]models.Table, error) {
 	return tables, nil
 }
 
-func (r *ClientTableRepository) GetByNameInSchema(name string, schema string) (models.Table, error) {
+func (r *ClientTableRepository) GetByNameInSchema(schema, name string) (models.Table, error) {
 	var table models.Table
 	query := `
 		SELECT
@@ -105,7 +105,6 @@ func (r *ClientTableRepository) GetByNameInSchema(name string, schema string) (m
 		JOIN pg_namespace n ON c.relnamespace = n.oid
 		WHERE n.nspname = $1  -- Filter by schema
 		  AND c.relname = $2  -- Filter by table name
-		  AND c.relkind = 'r'  -- Only regular tables
 		LIMIT 1;
 	`
 

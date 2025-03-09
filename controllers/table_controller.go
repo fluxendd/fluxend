@@ -84,12 +84,12 @@ func (tc *TableController) Show(c echo.Context) error {
 
 	authUser, _ := utils.NewAuth(c).User()
 
-	fullTableName := c.Param("tableName")
+	fullTableName := c.Param("fullTableName")
 	if fullTableName == "" {
 		return responses.BadRequestResponse(c, "Table name is required")
 	}
 
-	table, err := tc.tableService.GetByID(fullTableName, request.ProjectUUID, authUser)
+	table, err := tc.tableService.GetByName(fullTableName, request.ProjectUUID, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -164,7 +164,7 @@ func (tc *TableController) Duplicate(c echo.Context) error {
 
 	authUser, _ := utils.NewAuth(c).User()
 
-	fullTableName := c.Param("tableName")
+	fullTableName := c.Param("fullTableName")
 	if fullTableName == "" {
 		return responses.BadRequestResponse(c, "Table name is required")
 	}
@@ -207,7 +207,7 @@ func (tc *TableController) Rename(c echo.Context) error {
 
 	authUser, _ := utils.NewAuth(c).User()
 
-	fullTableName := c.Param("tableName")
+	fullTableName := c.Param("fullTableName")
 	if fullTableName == "" {
 		return responses.BadRequestResponse(c, "Table name is required")
 	}
@@ -249,7 +249,7 @@ func (tc *TableController) Delete(c echo.Context) error {
 
 	authUser, _ := utils.NewAuth(c).User()
 
-	fullTableName := c.Param("tableName")
+	fullTableName := c.Param("fullTableName")
 	if fullTableName == "" {
 		return responses.BadRequestResponse(c, "Table name is required")
 	}
