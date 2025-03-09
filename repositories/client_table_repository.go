@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"fluxton/models"
 	"fluxton/types"
 	"fmt"
 	"github.com/jmoiron/sqlx"
@@ -22,16 +23,6 @@ func (r *ClientTableRepository) Exists(name string) (bool, error) {
 	}
 
 	return count > 0, nil
-}
-
-func (r *ClientTableRepository) GetColumns(name string) ([]types.TableColumn, error) {
-	var columns []types.TableColumn
-	err := r.connection.Select(&columns, "SELECT column_name, data_type, is_nullable, column_default FROM information_schema.columns WHERE table_name = $1", name)
-	if err != nil {
-		return []types.TableColumn{}, err
-	}
-
-	return columns, nil
 }
 
 func (r *ClientTableRepository) Create(name string, columns []types.TableColumn) error {
@@ -78,14 +69,52 @@ func (r *ClientTableRepository) Duplicate(oldName string, newName string) error 
 	return nil
 }
 
-func (r *ClientTableRepository) List() ([]string, error) {
-	var tables []string
-	err := r.connection.Select(&tables, "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public'")
+func (r *ClientTableRepository) List() ([]models.Table, error) {
+	var tables []models.Table
+	query := `
+		SELECT
+			c.oid AS id,
+			c.relname AS name,
+			n.nspname AS schema,
+			c.reltuples AS estimated_rows,  -- Approximate row count
+			pg_size_pretty(pg_total_relation_size(c.oid)) AS total_size -- Table size (including indexes)
+		FROM pg_class c
+				 JOIN pg_namespace n ON c.relnamespace = n.oid
+		WHERE n.nspname = 'public'  -- Only list tables in the "public" schema
+		  AND c.relkind = 'r'  -- 'r' means regular table (excludes views, indexes, etc.)
+		ORDER BY c.relname;
+	`
+	err := r.connection.Select(&tables, query)
 	if err != nil {
-		return []string{}, err
+		return []models.Table{}, err
 	}
 
 	return tables, nil
+}
+
+func (r *ClientTableRepository) GetByNameInSchema(name string, schema string) (models.Table, error) {
+	var table models.Table
+	query := `
+		SELECT
+			c.oid AS id,
+			c.relname AS name,
+			n.nspname AS schema,
+			c.reltuples AS estimated_rows,  -- Approximate row count
+			pg_size_pretty(pg_total_relation_size(c.oid)) AS total_size -- Table size (including indexes)
+		FROM pg_class c
+		JOIN pg_namespace n ON c.relnamespace = n.oid
+		WHERE n.nspname = $1  -- Filter by schema
+		  AND c.relname = $2  -- Filter by table name
+		  AND c.relkind = 'r'  -- Only regular tables
+		LIMIT 1;
+	`
+
+	err := r.connection.Get(&table, query, schema, name)
+	if err != nil {
+		return models.Table{}, err
+	}
+
+	return table, nil
 }
 
 func (r *ClientTableRepository) DropIfExists(name string) error {
