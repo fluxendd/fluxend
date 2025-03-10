@@ -6,6 +6,7 @@ import (
 	"fluxton/policies"
 	"fluxton/repositories"
 	"fluxton/requests"
+	"fluxton/utils"
 	"github.com/google/uuid"
 	"github.com/samber/do"
 )
@@ -50,7 +51,8 @@ func (s *IndexServiceImpl) List(fullTableName string, projectUUID uuid.UUID, aut
 		return nil, err
 	}
 
-	return clientIndexRepo.List(fullTableName)
+	_, tableName := utils.ParseTableName(fullTableName)
+	return clientIndexRepo.List(tableName)
 }
 
 func (s *IndexServiceImpl) GetByName(indexName, fullTableName string, projectUUID uuid.UUID, authUser models.AuthUser) (string, error) {
@@ -68,7 +70,8 @@ func (s *IndexServiceImpl) GetByName(indexName, fullTableName string, projectUUI
 		return "", err
 	}
 
-	return clientIndexRepo.GetByName(fullTableName, indexName)
+	_, tableName := utils.ParseTableName(fullTableName)
+	return clientIndexRepo.GetByName(tableName, indexName)
 }
 
 func (s *IndexServiceImpl) Create(fullTableName string, request *requests.IndexCreateRequest, authUser models.AuthUser) (string, error) {
@@ -100,7 +103,9 @@ func (s *IndexServiceImpl) Create(fullTableName string, request *requests.IndexC
 		return "", err
 	}
 
-	return clientIndexRepo.GetByName(fullTableName, request.Name)
+	_, tableName := utils.ParseTableName(fullTableName)
+
+	return clientIndexRepo.GetByName(tableName, request.Name)
 }
 
 func (s *IndexServiceImpl) Delete(indexName, fullTableName string, projectUUID uuid.UUID, authUser models.AuthUser) (bool, error) {
@@ -118,7 +123,8 @@ func (s *IndexServiceImpl) Delete(indexName, fullTableName string, projectUUID u
 		return false, err
 	}
 
-	hasIndex, err := clientIndexRepo.Has(fullTableName, indexName)
+	_, tableName := utils.ParseTableName(fullTableName)
+	hasIndex, err := clientIndexRepo.Has(tableName, indexName)
 	if err != nil {
 		return false, err
 	}

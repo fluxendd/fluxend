@@ -39,7 +39,7 @@ func NewIndexController(injector *do.Injector) (*IndexController, error) {
 //
 // @Router /tables/{tableUUID}/indexes [get]
 func (ic *IndexController) List(c echo.Context) error {
-	var request requests.DefaultRequest
+	var request requests.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
 		return responses.UnprocessableResponse(c, err)
 	}
@@ -80,7 +80,7 @@ func (ic *IndexController) List(c echo.Context) error {
 //
 // @Router /tables/{tableUUID}/indexes/{indexName} [get]
 func (ic *IndexController) Show(c echo.Context) error {
-	var request requests.DefaultRequest
+	var request requests.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
 		return responses.UnprocessableResponse(c, err)
 	}
@@ -164,7 +164,7 @@ func (ic *IndexController) Store(c echo.Context) error {
 //
 // @Router /tables/{tableUUID}/indexes/{indexName} [delete]
 func (ic *IndexController) Delete(c echo.Context) error {
-	var request requests.DefaultRequest
+	var request requests.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
 		return responses.UnprocessableResponse(c, err)
 	}
