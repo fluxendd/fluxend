@@ -13,9 +13,9 @@ import (
 
 type ColumnService interface {
 	List(fullTableName string, projectUUID uuid.UUID, authUser models.AuthUser) ([]models.Column, error)
-	CreateMany(fullTableName string, request *column_requests.CreateRequest, authUser models.AuthUser) (models.Table, error)
-	AlterMany(fullTableName string, request *column_requests.CreateRequest, authUser models.AuthUser) (*models.Table, error)
-	Rename(columnName, fullTableName string, request *column_requests.RenameRequest, authUser models.AuthUser) (*models.Table, error)
+	CreateMany(fullTableName string, request *column_requests.CreateRequest, authUser models.AuthUser) ([]models.Column, error)
+	AlterMany(fullTableName string, request *column_requests.CreateRequest, authUser models.AuthUser) ([]models.Column, error)
+	Rename(columnName, fullTableName string, request *column_requests.RenameRequest, authUser models.AuthUser) ([]models.Column, error)
 	Delete(columnName, fullTableName string, projectUUID uuid.UUID, authUser models.AuthUser) (bool, error)
 }
 
@@ -70,130 +70,130 @@ func (s *ColumnServiceImpl) List(fullTableName string, projectUUID uuid.UUID, au
 	return columns, nil
 }
 
-func (s *ColumnServiceImpl) CreateMany(fullTableName string, request *column_requests.CreateRequest, authUser models.AuthUser) (models.Table, error) {
+func (s *ColumnServiceImpl) CreateMany(fullTableName string, request *column_requests.CreateRequest, authUser models.AuthUser) ([]models.Column, error) {
 	project, err := s.projectRepo.GetByUUID(request.ProjectUUID)
 	if err != nil {
-		return models.Table{}, err
+		return []models.Column{}, err
 	}
 
 	if !s.projectPolicy.CanCreate(project.OrganizationUuid, authUser) {
-		return models.Table{}, errs.NewForbiddenError("column.error.createForbidden")
+		return []models.Column{}, errs.NewForbiddenError("column.error.createForbidden")
 	}
 
 	clientTableRepo, connection, err := s.connectionService.GetClientTableRepo(project.DBName, nil)
 	if err != nil {
-		return models.Table{}, err
+		return []models.Column{}, err
 	}
 
 	table, err := clientTableRepo.GetByNameInSchema(utils.ParseTableName(fullTableName))
 	if err != nil {
-		return models.Table{}, err
+		return []models.Column{}, err
 	}
 
 	clientColumnRepo, _, err := s.connectionService.GetClientColumnRepo(project.DBName, connection)
 	if err != nil {
-		return models.Table{}, err
+		return []models.Column{}, err
 	}
 
 	anyColumnExists, err := clientColumnRepo.HasAny(table.Name, request.Columns)
 	if err != nil {
-		return models.Table{}, err
+		return []models.Column{}, err
 	}
 
 	if anyColumnExists {
-		return models.Table{}, errs.NewUnprocessableError("column.error.someAlreadyExist")
+		return []models.Column{}, errs.NewUnprocessableError("column.error.someAlreadyExist")
 	}
 
 	err = clientColumnRepo.CreateMany(table.Name, request.Columns)
 	if err != nil {
-		return models.Table{}, err
+		return []models.Column{}, err
 	}
 
-	return table, nil
+	return clientColumnRepo.List(table.Name)
 }
 
-func (s *ColumnServiceImpl) AlterMany(fullTableName string, request *column_requests.CreateRequest, authUser models.AuthUser) (*models.Table, error) {
+func (s *ColumnServiceImpl) AlterMany(fullTableName string, request *column_requests.CreateRequest, authUser models.AuthUser) ([]models.Column, error) {
 	project, err := s.projectRepo.GetByUUID(request.ProjectUUID)
 	if err != nil {
-		return &models.Table{}, err
+		return []models.Column{}, err
 	}
 
 	if !s.projectPolicy.CanUpdate(project.OrganizationUuid, authUser) {
-		return &models.Table{}, errs.NewForbiddenError("project.error.updateForbidden")
+		return []models.Column{}, errs.NewForbiddenError("project.error.updateForbidden")
 	}
 
 	clientTableRepo, connection, err := s.connectionService.GetClientTableRepo(project.DBName, nil)
 	if err != nil {
-		return &models.Table{}, err
+		return []models.Column{}, err
 	}
 
 	table, err := clientTableRepo.GetByNameInSchema(utils.ParseTableName(fullTableName))
 	if err != nil {
-		return &models.Table{}, err
+		return []models.Column{}, err
 	}
 
 	clientColumnRepo, _, err := s.connectionService.GetClientColumnRepo(project.DBName, connection)
 	if err != nil {
-		return &models.Table{}, err
+		return []models.Column{}, err
 	}
 
 	allColumnsExist, err := clientColumnRepo.HasAll(table.Name, request.Columns)
 	if err != nil {
-		return &models.Table{}, err
+		return []models.Column{}, err
 	}
 
 	if !allColumnsExist {
-		return &models.Table{}, errs.NewNotFoundError("column.error.someNotFound")
+		return []models.Column{}, errs.NewNotFoundError("column.error.someNotFound")
 	}
 
 	err = clientColumnRepo.AlterMany(table.Name, request.Columns)
 	if err != nil {
-		return &models.Table{}, err
+		return []models.Column{}, err
 	}
 
-	return &table, nil
+	return clientColumnRepo.List(table.Name)
 }
 
-func (s *ColumnServiceImpl) Rename(columnName string, fullTableName string, request *column_requests.RenameRequest, authUser models.AuthUser) (*models.Table, error) {
+func (s *ColumnServiceImpl) Rename(columnName string, fullTableName string, request *column_requests.RenameRequest, authUser models.AuthUser) ([]models.Column, error) {
 	project, err := s.projectRepo.GetByUUID(request.ProjectUUID)
 	if err != nil {
-		return &models.Table{}, err
+		return []models.Column{}, err
 	}
 
 	if !s.projectPolicy.CanUpdate(project.OrganizationUuid, authUser) {
-		return &models.Table{}, errs.NewForbiddenError("project.error.updateForbidden")
+		return []models.Column{}, errs.NewForbiddenError("project.error.updateForbidden")
 	}
 
 	clientTableRepo, connection, err := s.connectionService.GetClientTableRepo(project.DBName, nil)
 	if err != nil {
-		return &models.Table{}, err
+		return []models.Column{}, err
 	}
 
 	table, err := clientTableRepo.GetByNameInSchema(utils.ParseTableName(fullTableName))
 	if err != nil {
-		return &models.Table{}, err
+		return []models.Column{}, err
 	}
 
 	clientColumnRepo, _, err := s.connectionService.GetClientColumnRepo(project.DBName, connection)
 	if err != nil {
-		return &models.Table{}, err
+		return []models.Column{}, err
 	}
 
-	columnExists, err := clientColumnRepo.Has(fullTableName, columnName)
+	columnExists, err := clientColumnRepo.Has(table.Name, columnName)
 	if err != nil {
-		return &models.Table{}, err
+		return []models.Column{}, err
 	}
 
 	if !columnExists {
-		return &models.Table{}, errs.NewNotFoundError("column.error.notFound")
+		return []models.Column{}, errs.NewNotFoundError("column.error.notFound")
 	}
 
 	err = clientColumnRepo.Rename(table.Name, columnName, request.Name)
 	if err != nil {
-		return &models.Table{}, err
+		return []models.Column{}, err
 	}
 
-	return &table, nil
+	return clientColumnRepo.List(table.Name)
 }
 
 func (s *ColumnServiceImpl) Delete(columnName, fullTableName string, projectUUID uuid.UUID, authUser models.AuthUser) (bool, error) {

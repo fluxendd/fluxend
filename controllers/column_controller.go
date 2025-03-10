@@ -96,12 +96,12 @@ func (cc *ColumnController) Store(c echo.Context) error {
 		return responses.BadRequestResponse(c, "Table name is required")
 	}
 
-	table, err := cc.columnService.CreateMany(fullTableName, &request, authUser)
+	columns, err := cc.columnService.CreateMany(fullTableName, &request, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
 
-	return responses.CreatedResponse(c, resources.TableResource(&table))
+	return responses.CreatedResponse(c, resources.ColumnResourceCollection(columns))
 }
 
 // Alter modifies column types in a table.
@@ -139,12 +139,12 @@ func (cc *ColumnController) Alter(c echo.Context) error {
 		return responses.BadRequestResponse(c, "Table name is required")
 	}
 
-	alteredTable, err := cc.columnService.AlterMany(fullTableName, &request, authUser)
+	columns, err := cc.columnService.AlterMany(fullTableName, &request, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
 
-	return responses.SuccessResponse(c, resources.TableResource(alteredTable))
+	return responses.SuccessResponse(c, resources.ColumnResourceCollection(columns))
 }
 
 // Rename updates the name of an existing column.
@@ -183,12 +183,12 @@ func (cc *ColumnController) Rename(c echo.Context) error {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	renamedTable, err := cc.columnService.Rename(columnName, fullTableName, &request, authUser)
+	columns, err := cc.columnService.Rename(columnName, fullTableName, &request, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
 
-	return responses.SuccessResponse(c, resources.TableResource(renamedTable))
+	return responses.SuccessResponse(c, resources.ColumnResourceCollection(columns))
 }
 
 // Delete removes a column from a table.
