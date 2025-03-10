@@ -2,9 +2,9 @@ package table_requests
 
 import (
 	"fluxton/configs"
+	"fluxton/models"
 	"fluxton/requests"
 	"fluxton/requests/column_requests"
-	"fluxton/types"
 	"fluxton/utils"
 	"fmt"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -14,8 +14,8 @@ import (
 
 type CreateRequest struct {
 	requests.BaseRequest
-	Name    string              `json:"name"`
-	Columns []types.TableColumn `json:"columns"`
+	Name    string          `json:"name"`
+	Columns []models.Column `json:"columns"`
 }
 
 func (r *CreateRequest) BindAndValidate(c echo.Context) []string {

@@ -2,8 +2,8 @@ package column_requests
 
 import (
 	"fluxton/configs"
+	"fluxton/models"
 	"fluxton/requests"
-	"fluxton/types"
 	"fluxton/utils"
 	"fmt"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -13,7 +13,7 @@ import (
 
 type CreateRequest struct {
 	requests.BaseRequest
-	Columns []types.TableColumn `json:"columns"`
+	Columns []models.Column `json:"columns"`
 }
 
 func (r *CreateRequest) BindAndValidate(c echo.Context) []string {
@@ -39,7 +39,7 @@ func (r *CreateRequest) BindAndValidate(c echo.Context) []string {
 	return errors
 }
 
-func ValidateColumn(column types.TableColumn) error {
+func ValidateColumn(column models.Column) error {
 	return validation.ValidateStruct(&column,
 		validation.Field(
 			&column.Name,

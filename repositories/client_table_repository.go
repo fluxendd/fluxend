@@ -2,7 +2,6 @@ package repositories
 
 import (
 	"fluxton/models"
-	"fluxton/types"
 	"fmt"
 	"github.com/jmoiron/sqlx"
 )
@@ -25,7 +24,7 @@ func (r *ClientTableRepository) Exists(name string) (bool, error) {
 	return count > 0, nil
 }
 
-func (r *ClientTableRepository) Create(name string, columns []types.TableColumn) error {
+func (r *ClientTableRepository) Create(name string, columns []models.Column) error {
 	query := "CREATE TABLE " + name + " ("
 
 	for _, column := range columns {

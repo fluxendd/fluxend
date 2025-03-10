@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"fluxton/errs"
+	"fluxton/requests"
 	"fluxton/requests/column_requests"
 	"fluxton/resources"
 	"fluxton/responses"
@@ -19,6 +20,45 @@ func NewColumnController(injector *do.Injector) (*ColumnController, error) {
 	columnService := do.MustInvoke[services.ColumnService](injector)
 
 	return &ColumnController{columnService: columnService}, nil
+}
+
+// List retrieves all columns within a project.
+//
+// @Summary List all columns
+// @Description Retrieve a list of columns in a specified table.
+// @Tags Columns
+//
+// @Accept json
+// @Produce json
+//
+// @Param Authorization header string true "Bearer Token"
+// @param Header X-Project header string true "Project UUID"
+//
+// @Success 200 {object} responses.Response{content=[]resources.ColumnResponse} "List of columns"
+// @Failure 400 "Invalid input"
+// @Failure 401 "Unauthorized"
+// @Failure 500 "Internal server error"
+//
+// @Router /tables/{fullTableName}/columns [get]
+func (cc *ColumnController) List(c echo.Context) error {
+	var request requests.DefaultRequestWithProjectHeader
+	if err := request.BindAndValidate(c); err != nil {
+		return responses.UnprocessableResponse(c, err)
+	}
+
+	authUser, _ := utils.NewAuth(c).User()
+
+	fullTableName := c.Param("fullTableName")
+	if fullTableName == "" {
+		return responses.BadRequestResponse(c, "Table name is required")
+	}
+
+	columns, err := cc.columnService.List(fullTableName, request.ProjectUUID, authUser)
+	if err != nil {
+		return responses.ErrorResponse(c, err)
+	}
+
+	return responses.SuccessResponse(c, resources.ColumnResourceCollection(columns))
 }
 
 // Store adds new columns to a table.

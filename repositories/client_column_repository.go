@@ -1,7 +1,7 @@
 package repositories
 
 import (
-	"fluxton/types"
+	"fluxton/models"
 	"fmt"
 	"github.com/jmoiron/sqlx"
 	"github.com/lib/pq"
@@ -15,11 +15,32 @@ func NewClientColumnRepository(connection *sqlx.DB) (*ClientColumnRepository, er
 	return &ClientColumnRepository{connection: connection}, nil
 }
 
-func (r *ClientColumnRepository) List(tableName string) ([]string, error) {
-	var columns []string
-	err := r.connection.Select(&columns, fmt.Sprintf("SELECT column_name FROM information_schema.columns WHERE table_name = '%s'", tableName))
+func (r *ClientColumnRepository) List(tableName string) ([]models.Column, error) {
+	var columns []models.Column
+	query := `
+		SELECT 
+			a.attname AS column_name,
+			a.attnum AS column_position,
+			a.attnotnull AS not_null,
+			COALESCE(pg_catalog.format_type(a.atttypid, a.atttypmod), '') AS data_type,
+			COALESCE(pg_get_expr(ad.adbin, ad.adrelid), '') AS default_value,
+			CASE 
+				WHEN ct.contype = 'p' THEN 'PRIMARY'
+				WHEN ct.contype = 'u' THEN 'UNIQUE'
+			    WHEN ct.contype = 'f' THEN 'FOREIGN'
+				ELSE ''
+			END AS constraint_type
+		FROM pg_attribute a
+		LEFT JOIN pg_attrdef ad ON a.attrelid = ad.adrelid AND a.attnum = ad.adnum
+		LEFT JOIN pg_constraint ct ON ct.conrelid = a.attrelid AND a.attnum = ANY(ct.conkey)
+		WHERE a.attrelid = $1::regclass
+		AND a.attnum > 0
+		AND NOT a.attisdropped
+		ORDER BY a.attnum;
+	`
+	err := r.connection.Select(&columns, query, tableName)
 	if err != nil {
-		return []string{}, err
+		return nil, err
 	}
 
 	return columns, nil
@@ -35,7 +56,7 @@ func (r *ClientColumnRepository) Has(tableName, columnName string) (bool, error)
 	return count > 0, nil
 }
 
-func (r *ClientColumnRepository) HasAny(tableName string, columns []types.TableColumn) (bool, error) {
+func (r *ClientColumnRepository) HasAny(tableName string, columns []models.Column) (bool, error) {
 	var count int
 	columnNames := r.mapColumnsToNames(columns)
 	query := `
@@ -53,7 +74,7 @@ func (r *ClientColumnRepository) HasAny(tableName string, columns []types.TableC
 	return count > 0, nil
 }
 
-func (r *ClientColumnRepository) HasAll(tableName string, columns []types.TableColumn) (bool, error) {
+func (r *ClientColumnRepository) HasAll(tableName string, columns []models.Column) (bool, error) {
 	var count int
 	columnNames := r.mapColumnsToNames(columns)
 	query := `
@@ -71,7 +92,7 @@ func (r *ClientColumnRepository) HasAll(tableName string, columns []types.TableC
 	return count == len(columns), nil
 }
 
-func (r *ClientColumnRepository) CreateOne(tableName string, column types.TableColumn) error {
+func (r *ClientColumnRepository) CreateOne(tableName string, column models.Column) error {
 	query := fmt.Sprintf("ALTER TABLE %s ADD COLUMN %s %s", tableName, column.Name, column.Type)
 	_, err := r.connection.Exec(query)
 	if err != nil {
@@ -81,7 +102,7 @@ func (r *ClientColumnRepository) CreateOne(tableName string, column types.TableC
 	return nil
 }
 
-func (r *ClientColumnRepository) CreateMany(tableName string, fields []types.TableColumn) error {
+func (r *ClientColumnRepository) CreateMany(tableName string, fields []models.Column) error {
 	for _, field := range fields {
 		err := r.CreateOne(tableName, field)
 		if err != nil {
@@ -92,7 +113,7 @@ func (r *ClientColumnRepository) CreateMany(tableName string, fields []types.Tab
 	return nil
 }
 
-func (r *ClientColumnRepository) AlterOne(tableName string, columns []types.TableColumn) error {
+func (r *ClientColumnRepository) AlterOne(tableName string, columns []models.Column) error {
 	for _, column := range columns {
 		query := fmt.Sprintf("ALTER TABLE %s ALTER COLUMN %s TYPE %s", tableName, column.Name, column.Type)
 		_, err := r.connection.Exec(query)
@@ -104,9 +125,9 @@ func (r *ClientColumnRepository) AlterOne(tableName string, columns []types.Tabl
 	return nil
 }
 
-func (r *ClientColumnRepository) AlterMany(tableName string, fields []types.TableColumn) error {
+func (r *ClientColumnRepository) AlterMany(tableName string, fields []models.Column) error {
 	for _, field := range fields {
-		err := r.AlterOne(tableName, []types.TableColumn{field})
+		err := r.AlterOne(tableName, []models.Column{field})
 		if err != nil {
 			return err
 		}
@@ -135,7 +156,7 @@ func (r *ClientColumnRepository) Drop(tableName, columnName string) error {
 	return nil
 }
 
-func (r *ClientColumnRepository) mapColumnsToNames(columns []types.TableColumn) []string {
+func (r *ClientColumnRepository) mapColumnsToNames(columns []models.Column) []string {
 	columnNames := make([]string, len(columns))
 	for i, column := range columns {
 		columnNames[i] = column.Name

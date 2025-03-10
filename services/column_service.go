@@ -12,6 +12,7 @@ import (
 )
 
 type ColumnService interface {
+	List(fullTableName string, projectUUID uuid.UUID, authUser models.AuthUser) ([]models.Column, error)
 	CreateMany(fullTableName string, request *column_requests.CreateRequest, authUser models.AuthUser) (models.Table, error)
 	AlterMany(fullTableName string, request *column_requests.CreateRequest, authUser models.AuthUser) (*models.Table, error)
 	Rename(columnName, fullTableName string, request *column_requests.RenameRequest, authUser models.AuthUser) (*models.Table, error)
@@ -34,6 +35,39 @@ func NewColumnService(injector *do.Injector) (ColumnService, error) {
 		connectionService: connectionService,
 		projectRepo:       projectRepo,
 	}, nil
+}
+
+func (s *ColumnServiceImpl) List(fullTableName string, projectUUID uuid.UUID, authUser models.AuthUser) ([]models.Column, error) {
+	project, err := s.projectRepo.GetByUUID(projectUUID)
+	if err != nil {
+		return nil, err
+	}
+
+	if !s.projectPolicy.CanAccess(project.OrganizationUuid, authUser) {
+		return nil, errs.NewForbiddenError("project.error.readForbidden")
+	}
+
+	clientTableRepo, connection, err := s.connectionService.GetClientTableRepo(project.DBName, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	table, err := clientTableRepo.GetByNameInSchema(utils.ParseTableName(fullTableName))
+	if err != nil {
+		return nil, err
+	}
+
+	clientColumnRepo, _, err := s.connectionService.GetClientColumnRepo(project.DBName, connection)
+	if err != nil {
+		return nil, err
+	}
+
+	columns, err := clientColumnRepo.List(table.Name)
+	if err != nil {
+		return nil, err
+	}
+
+	return columns, nil
 }
 
 func (s *ColumnServiceImpl) CreateMany(fullTableName string, request *column_requests.CreateRequest, authUser models.AuthUser) (models.Table, error) {

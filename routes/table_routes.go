@@ -22,6 +22,7 @@ func RegisterTableRoutes(e *echo.Echo, container *do.Injector, authMiddleware ec
 	tablesGroup.DELETE("/:fullTableName", tableController.Delete)
 
 	// column routes
+	tablesGroup.GET("/:fullTableName/columns", columnController.List)
 	tablesGroup.POST("/:fullTableName/columns", columnController.Store)
 	tablesGroup.PUT("/:fullTableName/columns", columnController.Alter)
 	tablesGroup.PUT("/:fullTableName/columns/:columnName", columnController.Rename)
