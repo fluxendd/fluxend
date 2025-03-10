@@ -211,7 +211,8 @@ func (s *ColumnServiceImpl) Delete(columnName, fullTableName string, projectUUID
 		return false, err
 	}
 
-	columnExists, err := clientColumnRepo.Has(fullTableName, columnName)
+	_, tableName := utils.ParseTableName(fullTableName)
+	columnExists, err := clientColumnRepo.Has(tableName, columnName)
 	if err != nil {
 		return false, err
 	}

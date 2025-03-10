@@ -214,6 +214,11 @@ func (cc *ColumnController) Rename(c echo.Context) error {
 //
 // @Router /tables/{fullTableName}/columns/{columnName} [delete]
 func (cc *ColumnController) Delete(c echo.Context) error {
+	var request requests.DefaultRequestWithProjectHeader
+	if err := request.BindAndValidate(c); err != nil {
+		return responses.UnprocessableResponse(c, err)
+	}
+
 	authUser, _ := utils.NewAuth(c).User()
 
 	fullTableName, columnName, err := cc.parseRequest(c)
@@ -221,12 +226,7 @@ func (cc *ColumnController) Delete(c echo.Context) error {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	projectUUID, err := utils.GetUUIDPathParam(c, "projectUUID", true)
-	if err != nil {
-		return responses.BadRequestResponse(c, err.Error())
-	}
-
-	if _, err := cc.columnService.Delete(columnName, fullTableName, projectUUID, authUser); err != nil {
+	if _, err := cc.columnService.Delete(columnName, fullTableName, request.ProjectUUID, authUser); err != nil {
 		return responses.ErrorResponse(c, err)
 	}
 
