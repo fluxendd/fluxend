@@ -2,7 +2,7 @@ drop.user.dbs: ## Drop all user-created databases
 	@docker exec -i fluxton_db psql -U ${DATABASE_USER} -d ${DATABASE_NAME} -t -c "SELECT datname FROM pg_database WHERE datname LIKE 'udb_%';" | sed 's/^[ \t]*//' | while read dbname; do \
 		if [ ! -z "$$dbname" ]; then \
 			echo "Dropping database: $$dbname"; \
-			docker exec -i fluxton_db psql -U ${DATABASE_USER} -d ${DATABASE_NAME} -c "DROP DATABASE IF EXISTS \"$$dbname\""; \
+			docker exec -i fluxton_db psql -U ${DATABASE_USER} -d ${DATABASE_NAME} -c "DROP DATABASE IF EXISTS \"$$dbname\" with (force)"; \
 		fi \
 	done
 
