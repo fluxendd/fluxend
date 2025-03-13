@@ -27,14 +27,14 @@ type ProjectServiceImpl struct {
 	projectPolicy    *policies.ProjectPolicy
 	databaseRepo     *repositories.DatabaseRepository
 	projectRepo      *repositories.ProjectRepository
-	postgrestService *PostgrestService
+	postgrestService PostgrestService
 }
 
 func NewProjectService(injector *do.Injector) (ProjectService, error) {
 	policy := do.MustInvoke[*policies.ProjectPolicy](injector)
 	databaseRepo := do.MustInvoke[*repositories.DatabaseRepository](injector)
 	projectRepo := do.MustInvoke[*repositories.ProjectRepository](injector)
-	postgrestService := do.MustInvoke[*PostgrestService](injector)
+	postgrestService := do.MustInvoke[PostgrestService](injector)
 
 	return &ProjectServiceImpl{
 		projectPolicy:    policy,
