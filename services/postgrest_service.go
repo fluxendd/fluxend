@@ -1,8 +1,11 @@
 package services
 
 import (
+	"fluxton/models"
+	"fluxton/repositories"
 	"fmt"
 	"github.com/labstack/gommon/log"
+	"github.com/samber/do"
 	"os"
 	"os/exec"
 )
@@ -12,17 +15,23 @@ const (
 )
 
 type PostgrestService interface {
-	StartContainer(dbName string, dbPort int) error
-	RemoveContainer(dbName string) error
+	StartContainer(dbName string, dbPort int)
+	RemoveContainer(dbName string)
 }
 
-type PostgrestServiceImpl struct{}
-
-func NewPostgrestService() (PostgrestService, error) {
-	return &PostgrestServiceImpl{}, nil
+type PostgrestServiceImpl struct {
+	projectRepo *repositories.ProjectRepository
 }
 
-func (s *PostgrestServiceImpl) StartContainer(dbName string, dbPort int) error {
+func NewPostgrestService(injector *do.Injector) (PostgrestService, error) {
+	projectRepo := do.MustInvoke[*repositories.ProjectRepository](injector)
+
+	return &PostgrestServiceImpl{
+		projectRepo: projectRepo,
+	}, nil
+}
+
+func (s *PostgrestServiceImpl) StartContainer(dbName string, dbPort int) {
 	containerName := fmt.Sprintf("postgrest_%s", dbName)
 	command := []string{
 		"docker", "run", "-d", "--name", containerName,
@@ -41,35 +50,49 @@ func (s *PostgrestServiceImpl) StartContainer(dbName string, dbPort int) error {
 	}
 
 	if err := executeCommand(command); err != nil {
-		return fmt.Errorf("failed to start container: %s", err)
+		_, err := s.projectRepo.UpdateStatusByDatabaseName(dbName, models.ProjectStatusFailed)
+		if err != nil {
+			log.Errorf("failed to update project status: %s", err)
+
+			return
+		}
+
+		log.Errorf("failed to start container: %s", err)
 	}
 
-	return nil
+	_, err := s.projectRepo.UpdateStatusByDatabaseName(dbName, models.ProjectStatusActive)
+	if err != nil {
+		log.Errorf("failed to update project status: %s", err)
+	}
 }
 
-func (s *PostgrestServiceImpl) RemoveContainer(dbName string) error {
+func (s *PostgrestServiceImpl) RemoveContainer(dbName string) {
 	containerName := fmt.Sprintf("postgrest_%s", dbName)
 
 	if err := executeCommand([]string{"docker", "stop", containerName}); err != nil {
-		return fmt.Errorf("failed to stop container: %s", err)
+		log.Errorf("failed to stop container: %s", err)
 	}
 
 	if err := executeCommand([]string{"docker", "rm", containerName}); err != nil {
-		return fmt.Errorf("failed to remove container: %s", err)
+		log.Errorf("failed to remove container: %s", err)
 	}
 
-	return nil
+	_, err := s.projectRepo.UpdateStatusByDatabaseName(dbName, models.ProjectStatusInactive)
+	if err != nil {
+		log.Errorf("failed to update project status: %s", err)
+	}
 }
 
 func executeCommand(command []string) error {
 	cmd := exec.Command(command[0], command[1:]...)
 	output, err := cmd.CombinedOutput()
 	if err != nil {
-		log.Printf("Command failed: %s\nOutput: %s", err, string(output))
+		log.Errorf("Command failed: %s\nOutput: %s", err, string(output))
 
 		return err
 	}
 
 	log.Printf("Command succeeded: %s", string(output))
+
 	return nil
 }

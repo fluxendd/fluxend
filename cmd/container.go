@@ -48,6 +48,7 @@ func InitializeContainer() *do.Injector {
 	do.Provide(injector, services.NewDatabaseStatsService)
 	do.Provide(injector, services.NewOrganizationService)
 	do.Provide(injector, services.NewProjectService)
+	do.Provide(injector, services.NewPostgrestService)
 	do.Provide(injector, services.NewTableService)
 	do.Provide(injector, services.NewColumnService)
 	do.Provide(injector, services.NewIndexService)

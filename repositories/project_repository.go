@@ -106,6 +106,22 @@ func (r *ProjectRepository) GetDatabaseNameByUUID(projectUUID uuid.UUID) (string
 	return dbName, nil
 }
 
+func (r *ProjectRepository) GetUUIDByDatabaseName(dbName string) (uuid.UUID, error) {
+	query := "SELECT uuid FROM fluxton.projects WHERE db_name = $1"
+
+	var projectUUID uuid.UUID
+	err := r.db.Get(&projectUUID, query, dbName)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return uuid.UUID{}, errs.NewNotFoundError("project.error.notFound")
+		}
+
+		return uuid.UUID{}, utils.FormatError(err, "fetch", utils.GetMethodName())
+	}
+
+	return projectUUID, nil
+}
+
 func (r *ProjectRepository) GetOrganizationUUIDByProjectUUID(id uuid.UUID) (uuid.UUID, error) {
 	query := "SELECT organization_uuid FROM fluxton.projects WHERE uuid = $1"
 
@@ -122,7 +138,7 @@ func (r *ProjectRepository) GetOrganizationUUIDByProjectUUID(id uuid.UUID) (uuid
 	return organizationUUID, nil
 }
 
-func (r *ProjectRepository) ExistsByID(id uuid.UUID) (bool, error) {
+func (r *ProjectRepository) ExistsByUUID(id uuid.UUID) (bool, error) {
 	query := "SELECT EXISTS(SELECT 1 FROM fluxton.projects WHERE uuid = $1)"
 
 	var exists bool
@@ -152,8 +168,8 @@ func (r *ProjectRepository) Create(project *models.Project) (*models.Project, er
 		return nil, utils.FormatError(err, "transactionBegin", utils.GetMethodName())
 	}
 
-	query := "INSERT INTO fluxton.projects (name, db_name, db_port, organization_uuid, created_by, updated_by) VALUES ($1, $2, $3, $4, $5, $6) RETURNING uuid"
-	queryErr := tx.QueryRowx(query, project.Name, project.DBName, project.DBPort, project.OrganizationUuid, project.CreatedBy, project.UpdatedBy).Scan(&project.Uuid)
+	query := "INSERT INTO fluxton.projects (name, db_name, description, db_port, organization_uuid, created_by, updated_by) VALUES ($1, $2, $3, $4, $5, $6) RETURNING uuid"
+	queryErr := tx.QueryRowx(query, project.Name, project.DBName, project.Description, project.DBPort, project.OrganizationUuid, project.CreatedBy, project.UpdatedBy).Scan(&project.Uuid)
 	if queryErr != nil {
 		err := tx.Rollback()
 		if err != nil {
@@ -174,7 +190,7 @@ func (r *ProjectRepository) Create(project *models.Project) (*models.Project, er
 func (r *ProjectRepository) Update(project *models.Project) (*models.Project, error) {
 	query := `
 		UPDATE fluxton.projects 
-		SET name = :name, updated_at = :updated_at, updated_by = :updated_by
+		SET name = :name, description = :description, updated_at = :updated_at, updated_by = :updated_by
 		WHERE uuid = :uuid`
 
 	res, err := r.db.NamedExec(query, project)
@@ -188,6 +204,21 @@ func (r *ProjectRepository) Update(project *models.Project) (*models.Project, er
 	}
 
 	return project, nil
+}
+
+func (r *ProjectRepository) UpdateStatusByDatabaseName(databaseName, status string) (bool, error) {
+	query := "UPDATE fluxton.projects SET status = $1 WHERE db_name = $2"
+	res, err := r.db.Exec(query, status, databaseName)
+	if err != nil {
+		return false, utils.FormatError(err, "update", utils.GetMethodName())
+	}
+
+	rowsAffected, err := res.RowsAffected()
+	if err != nil {
+		return false, utils.FormatError(err, "affectedRows", utils.GetMethodName())
+	}
+
+	return rowsAffected == 1, nil
 }
 
 func (r *ProjectRepository) Delete(projectUUID uuid.UUID) (bool, error) {
