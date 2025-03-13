@@ -10,7 +10,8 @@ import (
 
 type UpdateRequest struct {
 	requests.BaseRequest
-	Name string `json:"name"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
 }
 
 func (r *UpdateRequest) BindAndValidate(c echo.Context) []string {

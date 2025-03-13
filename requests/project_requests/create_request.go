@@ -14,6 +14,7 @@ import (
 type CreateRequest struct {
 	requests.BaseRequest
 	Name             string    `json:"name"`
+	Description      string    `json:"description"`
 	OrganizationUUID uuid.UUID `json:"organization_uuid"`
 }
 
