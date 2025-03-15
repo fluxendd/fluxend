@@ -122,7 +122,7 @@ func (r *BackupRepository) Create(backup *models.Backup) (*models.Backup, error)
 }
 
 func (r *BackupRepository) UpdateStatus(backupUUID uuid.UUID, status, error string, completedAt time.Time) error {
-	query := "UPDATE storage.backups SET status = $1, error = $2, completed_at = $3 WHERE uuid = $3"
+	query := "UPDATE storage.backups SET status = $1, error = $2, completed_at = $3 WHERE uuid = $4"
 	_, err := r.db.Exec(query, status, error, completedAt, backupUUID)
 	if err != nil {
 		return utils.FormatError(err, "update", utils.GetMethodName())

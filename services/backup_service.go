@@ -22,14 +22,14 @@ type BackupServiceImpl struct {
 	projectPolicy         *policies.ProjectPolicy
 	backupRepo            *repositories.BackupRepository
 	projectRepo           *repositories.ProjectRepository
-	backupWorkFlowService *BackupWorkflowService
+	backupWorkFlowService BackupWorkflowService
 }
 
 func NewBackupService(injector *do.Injector) (BackupService, error) {
 	policy := do.MustInvoke[*policies.ProjectPolicy](injector)
 	backupRepo := do.MustInvoke[*repositories.BackupRepository](injector)
 	projectRepo := do.MustInvoke[*repositories.ProjectRepository](injector)
-	backupWorkFlowService := do.MustInvoke[*BackupWorkflowService](injector)
+	backupWorkFlowService := do.MustInvoke[BackupWorkflowService](injector)
 
 	return &BackupServiceImpl{
 		projectPolicy:         policy,
