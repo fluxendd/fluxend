@@ -82,7 +82,7 @@ func (s *BackupServiceImpl) Create(request *requests.DefaultRequestWithProjectHe
 
 	backup := models.Backup{
 		ProjectUuid: request.ProjectUUID,
-		Status:      models.BackupStatusPending,
+		Status:      models.BackupStatusCreating,
 		Error:       "",
 		StartedAt:   time.Now(),
 	}
@@ -92,13 +92,18 @@ func (s *BackupServiceImpl) Create(request *requests.DefaultRequestWithProjectHe
 		return models.Backup{}, err
 	}
 
-	go s.backupWorkFlowService.Execute(project.DBName, createdBackup.Uuid, authUser)
+	go s.backupWorkFlowService.Create(project.DBName, createdBackup.Uuid)
 
 	return backup, nil
 }
 
 func (s *BackupServiceImpl) Delete(backupUUID uuid.UUID, authUser models.AuthUser) (bool, error) {
 	backup, err := s.backupRepo.GetByUUID(backupUUID)
+	if err != nil {
+		return false, err
+	}
+
+	databaseName, err := s.projectRepo.GetDatabaseNameByUUID(backup.ProjectUuid)
 	if err != nil {
 		return false, err
 	}
@@ -112,5 +117,16 @@ func (s *BackupServiceImpl) Delete(backupUUID uuid.UUID, authUser models.AuthUse
 		return false, errs.NewForbiddenError("backup.error.deleteForbidden")
 	}
 
-	return s.backupRepo.Delete(backupUUID)
+	if backup.Status == models.BackupStatusDeleting {
+		return false, errs.NewBadRequestError("backup.error.deleteInProgress")
+	}
+
+	err = s.backupRepo.UpdateStatus(backupUUID, models.BackupStatusDeleting, "", time.Now())
+	if err != nil {
+		return false, err
+	}
+
+	go s.backupWorkFlowService.Delete(databaseName, backupUUID)
+
+	return true, nil
 }

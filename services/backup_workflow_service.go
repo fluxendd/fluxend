@@ -15,7 +15,8 @@ import (
 
 // BackupWorkflowService is responsible for executing the backup workflow and runs as go routine
 type BackupWorkflowService interface {
-	Execute(databaseName string, backupUUID uuid.UUID, authUser models.AuthUser)
+	Create(databaseName string, backupUUID uuid.UUID)
+	Delete(databaseName string, backupUUID uuid.UUID)
 }
 
 type BackupWorkflowServiceImpl struct {
@@ -37,34 +38,34 @@ func NewBackupWorkflowService(injector *do.Injector) (BackupWorkflowService, err
 	}, nil
 }
 
-// Execute pg_dump, copy file, ensure bucket exists, and upload to S3
-func (s *BackupWorkflowServiceImpl) Execute(databaseName string, backupUUID uuid.UUID, authUser models.AuthUser) {
+// Create pg_dump, copy file, ensure bucket exists, and upload to S3
+func (s *BackupWorkflowServiceImpl) Create(databaseName string, backupUUID uuid.UUID) {
 	backupFilePath := fmt.Sprintf("/tmp/%s.sql", backupUUID)
 
 	// 1. Execute pg_dump
 	if err := s.executePgDump(databaseName, backupFilePath); err != nil {
-		s.handleBackupFailure(backupUUID, err.Error())
+		s.handleBackupFailure(backupUUID, models.BackupStatusCreatingFailed, err.Error())
 
 		return
 	}
 
 	// 2. Copy backup file to app container
 	if err := s.copyBackupToAppContainer(backupFilePath, backupUUID); err != nil {
-		s.handleBackupFailure(backupUUID, err.Error())
+		s.handleBackupFailure(backupUUID, models.BackupStatusCreatingFailed, err.Error())
 
 		return
 	}
 
 	// 3. Ensure backup bucket exists
 	if err := s.ensureBackupBucketExists(); err != nil {
-		s.handleBackupFailure(backupUUID, err.Error())
+		s.handleBackupFailure(backupUUID, models.BackupStatusCreatingFailed, err.Error())
 
 		return
 	}
 
 	fileBytes, err := s.readBackupFile(backupUUID)
 	if err != nil {
-		s.handleBackupFailure(backupUUID, err.Error())
+		s.handleBackupFailure(backupUUID, models.BackupStatusCreatingFailed, err.Error())
 
 		return
 	}
@@ -72,15 +73,35 @@ func (s *BackupWorkflowServiceImpl) Execute(databaseName string, backupUUID uuid
 	// 4. Upload backup to S3
 	err = s.uploadBackupToS3(databaseName, backupUUID, fileBytes)
 	if err != nil {
-		s.handleBackupFailure(backupUUID, err.Error())
+		s.handleBackupFailure(backupUUID, models.BackupStatusCreatingFailed, err.Error())
 
 		return
 	}
 
 	// 5. Update backup status to completed
-	err = s.backupRepo.UpdateStatus(backupUUID, models.BackupStatusCompleted, "", time.Now())
+	err = s.backupRepo.UpdateStatus(backupUUID, models.BackupStatusCreated, "", time.Now())
 	if err != nil {
-		log.Errorf("failed to update backup status: %s", err.Error())
+		s.handleBackupFailure(backupUUID, models.BackupStatusCreatingFailed, err.Error())
+	}
+
+	// 6. Remove backup file from app container
+	err = os.Remove(backupFilePath)
+	if err != nil {
+		log.Errorf("failed to remove backup file: %s", err)
+	}
+}
+
+// Delete removes the backup file from s3
+func (s *BackupWorkflowServiceImpl) Delete(databaseName string, backupUUID uuid.UUID) {
+	filePath := fmt.Sprintf("%s/%s.sql", databaseName, backupUUID)
+	err := s.s3Service.DeleteFile(configs.BackupBucketName, filePath)
+	if err != nil {
+		s.handleBackupFailure(backupUUID, models.BackupStatusDeletingFailed, err.Error())
+	}
+
+	_, err = s.backupRepo.Delete(backupUUID)
+	if err != nil {
+		log.Errorf("failed to delete backup: %s", err)
 	}
 }
 
@@ -159,9 +180,9 @@ func (s *BackupWorkflowServiceImpl) uploadBackupToS3(databaseName string, backup
 	return err
 }
 
-// handleBackupFailure updates the backup status to failed and logs the error
-func (s *BackupWorkflowServiceImpl) handleBackupFailure(backupUUID uuid.UUID, errorMessage string) {
-	err := s.backupRepo.UpdateStatus(backupUUID, models.BackupStatusFailed, errorMessage, time.Now())
+// handleBackupFailure updates the backup status to appropriate state and logs the error
+func (s *BackupWorkflowServiceImpl) handleBackupFailure(backupUUID uuid.UUID, status, errorMessage string) {
+	err := s.backupRepo.UpdateStatus(backupUUID, status, errorMessage, time.Now())
 	if err != nil {
 		log.Errorf("failed to update backup status: %s", err)
 	}

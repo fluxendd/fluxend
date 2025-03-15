@@ -6,9 +6,16 @@ import (
 )
 
 const (
-	BackupStatusPending   = "pending"
-	BackupStatusCompleted = "completed"
-	BackupStatusFailed    = "failed"
+	BackupStatusCreating       = "creating"
+	BackupStatusCreated        = "created"
+	BackupStatusCreatingFailed = "creating_failed"
+
+	BackupStatusDeleting       = "deleting"
+	BackupStatusDeletingFailed = "deleting_failed"
+
+	BackupStatusRestoring       = "restoring"
+	BackupStatusRestored        = "restored"
+	BackupStatusRestoringFailed = "restoring_failed"
 )
 
 type Backup struct {
