@@ -166,6 +166,11 @@ func (s *BackupServiceImpl) SaveBackup(databaseName string, backupUUID uuid.UUID
 
 	fileBytes, err := os.ReadFile(fmt.Sprintf("/tmp/%s.sql", backupUUID))
 	if err != nil {
+		_, err := s.Update(backupUUID, models.BackupStatusFailed, err.Error(), authUser)
+		if err != nil {
+			log.Errorf("failed to update backup status: %s", err)
+		}
+
 		log.Errorf("failed to read backup file: %s", err)
 	}
 
