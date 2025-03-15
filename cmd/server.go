@@ -65,6 +65,7 @@ func registerRoutes(e *echo.Echo, container *do.Injector) {
 	routes.RegisterFormRoutes(e, container, authMiddleware)
 	routes.RegisterStorageRoutes(e, container, authMiddleware)
 	routes.RegisterFunctionRoutes(e, container, authMiddleware)
+	routes.RegisterBackup(e, container, authMiddleware)
 
 	e.GET("/docs/*", echoSwagger.WrapHandler)
 }

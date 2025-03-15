@@ -11,6 +11,7 @@ var AboutFluxton = map[string]string{
 }
 
 const (
+	BackupBucketName              = "fluxton-client-database-backups"
 	MaxTableNameLength            = 60
 	MinTableNameLength            = 3
 	MaxColumnNameLength           = 60
