@@ -3,11 +3,11 @@ package services
 import (
 	"fluxton/models"
 	"fluxton/repositories"
+	"fluxton/utils"
 	"fmt"
 	"github.com/labstack/gommon/log"
 	"github.com/samber/do"
 	"os"
-	"os/exec"
 )
 
 const (
@@ -49,7 +49,7 @@ func (s *PostgrestServiceImpl) StartContainer(dbName string, dbPort int) {
 		ImageName,
 	}
 
-	if err := executeCommand(command); err != nil {
+	if err := utils.ExecuteCommand(command); err != nil {
 		_, err := s.projectRepo.UpdateStatusByDatabaseName(dbName, models.ProjectStatusFailed)
 		if err != nil {
 			log.Errorf("failed to update project status: %s", err)
@@ -69,11 +69,11 @@ func (s *PostgrestServiceImpl) StartContainer(dbName string, dbPort int) {
 func (s *PostgrestServiceImpl) RemoveContainer(dbName string) {
 	containerName := fmt.Sprintf("postgrest_%s", dbName)
 
-	if err := executeCommand([]string{"docker", "stop", containerName}); err != nil {
+	if err := utils.ExecuteCommand([]string{"docker", "stop", containerName}); err != nil {
 		log.Errorf("failed to stop container: %s", err)
 	}
 
-	if err := executeCommand([]string{"docker", "rm", containerName}); err != nil {
+	if err := utils.ExecuteCommand([]string{"docker", "rm", containerName}); err != nil {
 		log.Errorf("failed to remove container: %s", err)
 	}
 
@@ -81,18 +81,4 @@ func (s *PostgrestServiceImpl) RemoveContainer(dbName string) {
 	if err != nil {
 		log.Errorf("failed to update project status: %s", err)
 	}
-}
-
-func executeCommand(command []string) error {
-	cmd := exec.Command(command[0], command[1:]...)
-	output, err := cmd.CombinedOutput()
-	if err != nil {
-		log.Errorf("Command failed: %s\nOutput: %s", err, string(output))
-
-		return err
-	}
-
-	log.Printf("Command succeeded: %s", string(output))
-
-	return nil
 }

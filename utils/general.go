@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/labstack/gommon/log"
 	"golang.org/x/crypto/bcrypt"
+	"os/exec"
 	"reflect"
 	"runtime"
 	"strings"
@@ -128,4 +129,18 @@ func GetMethodName() string {
 func FormatError(err error, errType, method string) error {
 	// bucketRepo.ListForProject: select.err => <error>
 	return fmt.Errorf("%s: %s.err => %v", method, errType, err)
+}
+
+func ExecuteCommand(command []string) error {
+	cmd := exec.Command(command[0], command[1:]...)
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		log.Errorf("Command failed: %s\nOutput: %s", err, string(output))
+
+		return err
+	}
+
+	log.Printf("Command succeeded: %s", string(output))
+
+	return nil
 }
