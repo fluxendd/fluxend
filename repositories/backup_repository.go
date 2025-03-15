@@ -10,6 +10,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 	"github.com/samber/do"
+	"time"
 )
 
 type BackupRepository struct {
@@ -137,6 +138,16 @@ func (r *BackupRepository) Update(backup *models.Backup) (*models.Backup, error)
 	}
 
 	return backup, nil
+}
+
+func (r *BackupRepository) UpdateStatus(backupUUID uuid.UUID, status, error string, completedAt time.Time) error {
+	query := "UPDATE storage.backups SET status = $1, error = $2, completed_at = $3 WHERE uuid = $3"
+	_, err := r.db.Exec(query, status, error, completedAt, backupUUID)
+	if err != nil {
+		return utils.FormatError(err, "update", utils.GetMethodName())
+	}
+
+	return nil
 }
 
 func (r *BackupRepository) Delete(backupUUID uuid.UUID) (bool, error) {
