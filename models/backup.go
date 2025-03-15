@@ -5,6 +5,12 @@ import (
 	"time"
 )
 
+const (
+	BackupStatusPending   = "pending"
+	BackupStatusCompleted = "completed"
+	BackupStatusFailed    = "failed"
+)
+
 type Backup struct {
 	Uuid        uuid.UUID `db:"uuid" json:"uuid"`
 	ProjectUuid uuid.UUID `db:"project_uuid" json:"projectUuid"`

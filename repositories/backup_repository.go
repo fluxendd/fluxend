@@ -123,7 +123,7 @@ func (r *BackupRepository) Create(backup *models.Backup) (*models.Backup, error)
 func (r *BackupRepository) Update(backup *models.Backup) (*models.Backup, error) {
 	query := `
 		UPDATE storage.backups 
-		SET status = :status, completed_at = :completed_at
+		SET status = :status, error = :error, completed_at = :completed_at
 		WHERE uuid = :uuid`
 
 	res, err := r.db.NamedExec(query, backup)
