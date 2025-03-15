@@ -168,15 +168,33 @@ func (r *ProjectRepository) Create(project *models.Project) (*models.Project, er
 		return nil, utils.FormatError(err, "transactionBegin", utils.GetMethodName())
 	}
 
-	query := "INSERT INTO fluxton.projects (name, db_name, description, db_port, organization_uuid, created_by, updated_by) VALUES ($1, $2, $3, $4, $5, $6) RETURNING uuid"
-	queryErr := tx.QueryRowx(query, project.Name, project.DBName, project.Description, project.DBPort, project.OrganizationUuid, project.CreatedBy, project.UpdatedBy).Scan(&project.Uuid)
+	query := `
+		INSERT INTO fluxton.projects (
+			name, db_name, description, db_port, 
+			organization_uuid, created_by, updated_by
+		) 
+		VALUES ($1, $2, $3, $4, $5, $6, $7) 
+		RETURNING uuid
+	`
+
+	queryErr := tx.QueryRowx(
+		query,
+		project.Name,
+		project.DBName,
+		project.Description,
+		project.DBPort,
+		project.OrganizationUuid,
+		project.CreatedBy,
+		project.UpdatedBy,
+	).Scan(&project.Uuid)
+
 	if queryErr != nil {
 		err := tx.Rollback()
 		if err != nil {
 			return nil, err
 		}
 
-		return nil, fmt.Errorf("could not create project: %v", queryErr)
+		return nil, utils.FormatError(queryErr, "insert", utils.GetMethodName())
 	}
 
 	// Commit transaction

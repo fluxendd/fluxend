@@ -25,7 +25,7 @@ func NewBackupRepository(injector *do.Injector) (*BackupRepository, error) {
 func (r *BackupRepository) ListForProject(projectUUID uuid.UUID) ([]models.Backup, error) {
 	query := `
 		SELECT %s FROM storage.backups WHERE project_uuid = :project_uuid
-		ORDER BY completed_at DESC
+		ORDER BY started_at DESC
 	`
 
 	query = fmt.Sprintf(query, utils.GetColumns[models.Backup]())
@@ -102,7 +102,7 @@ func (r *BackupRepository) Create(backup *models.Backup) (*models.Backup, error)
 
 	queryErr := tx.QueryRowx(
 		query,
-		backup.ProjectUuid, backup.Status, backup.Error, backup.Status,
+		backup.ProjectUuid, backup.Status, backup.Error, backup.StartedAt,
 	).Scan(&backup.Uuid)
 
 	if queryErr != nil {

@@ -14,6 +14,5 @@ func RegisterBackup(e *echo.Echo, container *do.Injector, authMiddleware echo.Mi
 	formsGroup.POST("", backupController.Store)
 	formsGroup.GET("", backupController.List)
 	formsGroup.GET("/:backupUUID", backupController.Show)
-	formsGroup.PUT("/:backupUUID", backupController.Update)
 	formsGroup.DELETE("/:backupUUID", backupController.Delete)
 }
