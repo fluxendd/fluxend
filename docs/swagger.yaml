@@ -29,7 +29,7 @@ definitions:
     properties:
       columns:
         items:
-          $ref: '#/definitions/types.TableColumn'
+          $ref: '#/definitions/models.Column'
         type: array
       projectUUID:
         type: string
@@ -97,6 +97,25 @@ definitions:
       type:
         type: string
     type: object
+  models.Column:
+    properties:
+      constraintType:
+        type: string
+      defaultValue:
+        type: string
+      name:
+        type: string
+      notNull:
+        type: boolean
+      position:
+        type: integer
+      primary:
+        type: boolean
+      type:
+        type: string
+      unique:
+        type: boolean
+    type: object
   organization_requests.CreateRequest:
     properties:
       name:
@@ -113,6 +132,8 @@ definitions:
     type: object
   project_requests.CreateRequest:
     properties:
+      description:
+        type: string
       name:
         type: string
       organization_uuid:
@@ -122,6 +143,8 @@ definitions:
     type: object
   project_requests.UpdateRequest:
     properties:
+      description:
+        type: string
       name:
         type: string
       projectUUID:
@@ -144,6 +167,11 @@ definitions:
       return_type:
         type: string
     type: object
+  requests.DefaultRequestWithProjectHeader:
+    properties:
+      projectUUID:
+        type: string
+    type: object
   requests.IndexCreateRequest:
     properties:
       columns:
@@ -162,6 +190,21 @@ definitions:
       name:
         type: string
       type:
+        type: string
+    type: object
+  resources.BackupResponse:
+    properties:
+      completedAt:
+        type: string
+      error:
+        type: string
+      projectUuid:
+        type: string
+      startedAt:
+        type: string
+      status:
+        type: string
+      uuid:
         type: string
     type: object
   resources.BucketResponse:
@@ -190,6 +233,23 @@ definitions:
         type: string
       uuid:
         type: string
+    type: object
+  resources.ColumnResponse:
+    properties:
+      defaultValue:
+        type: string
+      name:
+        type: string
+      notNull:
+        type: boolean
+      position:
+        type: integer
+      primary:
+        type: boolean
+      type:
+        type: string
+      unique:
+        type: boolean
     type: object
   resources.FileResponse:
     properties:
@@ -315,9 +375,13 @@ definitions:
         type: string
       dbName:
         type: string
+      description:
+        type: string
       name:
         type: string
       organizationUuid:
+        type: string
+      status:
         type: string
       updatedAt:
         type: string
@@ -328,23 +392,15 @@ definitions:
     type: object
   resources.TableResponse:
     properties:
-      columns:
-        items:
-          $ref: '#/definitions/types.TableColumn'
-        type: array
-      createdAt:
-        type: string
-      createdBy:
-        type: string
+      estimatedRows:
+        type: integer
+      id:
+        type: integer
       name:
         type: string
-      projectUuid:
+      schema:
         type: string
-      updatedAt:
-        type: string
-      updatedBy:
-        type: string
-      uuid:
+      totalSize:
         type: string
     type: object
   resources.UserResponse:
@@ -380,7 +436,7 @@ definitions:
     properties:
       columns:
         items:
-          $ref: '#/definitions/types.TableColumn'
+          $ref: '#/definitions/models.Column'
         type: array
       name:
         type: string
@@ -393,21 +449,6 @@ definitions:
         type: string
       projectUUID:
         type: string
-    type: object
-  types.TableColumn:
-    properties:
-      default:
-        type: string
-      name:
-        type: string
-      notNull:
-        type: boolean
-      primary:
-        type: boolean
-      type:
-        type: string
-      unique:
-        type: boolean
     type: object
   user_requests.CreateRequest:
     properties:
@@ -449,6 +490,165 @@ info:
   title: Fluxton API
   version: "1.0"
 paths:
+  /backups:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a list of all backups for the specified project
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Project UUID
+        in: header
+        name: X-Project
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of backups
+          schema:
+            items:
+              allOf:
+              - $ref: '#/definitions/responses.Response'
+              - properties:
+                  content:
+                    items:
+                      $ref: '#/definitions/resources.BackupResponse'
+                    type: array
+                type: object
+            type: array
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal server error
+      summary: List all backups
+      tags:
+      - Backups
+    post:
+      consumes:
+      - application/json
+      description: Add a new backup
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Project UUID
+        in: header
+        name: X-Project
+        required: true
+        type: string
+      - description: Project UUID
+        in: body
+        name: backup
+        required: true
+        schema:
+          $ref: '#/definitions/requests.DefaultRequestWithProjectHeader'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Backup created
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Response'
+            - properties:
+                content:
+                  $ref: '#/definitions/resources.BackupResponse'
+              type: object
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "422":
+          description: Unprocessable entity
+        "500":
+          description: Internal server error
+      summary: Create a new backup
+      tags:
+      - Backups
+  /backups/{backupUUID}:
+    delete:
+      consumes:
+      - application/json
+      description: Remove a backup from the project
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Project UUID
+        in: header
+        name: X-Project
+        required: true
+        type: string
+      - description: Backup UUID
+        in: path
+        name: backupUUID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Backup deleted
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal server error
+      summary: Delete a backup
+      tags:
+      - Backups
+    get:
+      consumes:
+      - application/json
+      description: Get details of a specific backup
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Project UUID
+        in: header
+        name: X-Project
+        required: true
+        type: string
+      - description: Backup UUID
+        in: path
+        name: backupUUID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Backup details
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Response'
+            - properties:
+                content:
+                  $ref: '#/definitions/resources.BackupResponse'
+              type: object
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal server error
+      summary: Show details of a single backup
+      tags:
+      - Backups
   /buckets/{bucketUUID}/files:
     get:
       consumes:
@@ -2250,22 +2450,6 @@ paths:
         name: X-Project
         required: true
         type: string
-      - description: Page number for pagination
-        in: query
-        name: page
-        type: string
-      - description: Number of items per page
-        in: query
-        name: limit
-        type: string
-      - description: Field to sort by
-        in: query
-        name: sort
-        type: string
-      - description: Sort order (asc or desc)
-        in: query
-        name: order
-        type: string
       produces:
       - application/json
       responses:
@@ -2333,6 +2517,234 @@ paths:
       summary: Create a new table
       tags:
       - Tables
+  /tables/{fullTableName}/columns:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a list of columns in a specified table.
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Project UUID
+        in: header
+        name: X-Project
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of columns
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Response'
+            - properties:
+                content:
+                  items:
+                    $ref: '#/definitions/resources.ColumnResponse'
+                  type: array
+              type: object
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal server error
+      summary: List all columns
+      tags:
+      - Columns
+    post:
+      consumes:
+      - application/json
+      description: Create new columns in a specified table within a project.
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Project UUID
+        in: header
+        name: X-Project
+        required: true
+        type: string
+      - description: Full table name
+        in: path
+        name: fullTableName
+        required: true
+        type: string
+      - description: Columns JSON
+        in: body
+        name: columns
+        required: true
+        schema:
+          $ref: '#/definitions/column_requests.CreateRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Columns created
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Response'
+            - properties:
+                content:
+                  $ref: '#/definitions/resources.TableResponse'
+              type: object
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "422":
+          description: Unprocessable entity
+        "500":
+          description: Internal server error
+      summary: Add new columns to a table
+      tags:
+      - Columns
+    put:
+      consumes:
+      - application/json
+      description: Alter the data type of existing columns in a specified table.
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Project UUID
+        in: header
+        name: X-Project
+        required: true
+        type: string
+      - description: Full table name
+        in: path
+        name: fullTableName
+        required: true
+        type: string
+      - description: Updated column definitions
+        in: body
+        name: columns
+        required: true
+        schema:
+          $ref: '#/definitions/column_requests.CreateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Columns altered
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Response'
+            - properties:
+                content:
+                  $ref: '#/definitions/resources.TableResponse'
+              type: object
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "422":
+          description: Unprocessable entity
+        "500":
+          description: Internal server error
+      summary: Modify column types in a table
+      tags:
+      - Columns
+  /tables/{fullTableName}/columns/{columnName}:
+    delete:
+      consumes:
+      - application/json
+      description: Permanently delete a specific column from a given table.
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Project UUID
+        in: header
+        name: X-Project
+        required: true
+        type: string
+      - description: Full table name
+        in: path
+        name: fullTableName
+        required: true
+        type: string
+      - description: Column Name
+        in: path
+        name: column_name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Column deleted successfully
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "404":
+          description: Column not found
+        "500":
+          description: Internal server error
+      summary: Delete a column from a table
+      tags:
+      - Columns
+    put:
+      consumes:
+      - application/json
+      description: Change the name of a specific column in a given table.
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Project UUID
+        in: header
+        name: X-Project
+        required: true
+        type: string
+      - description: Full table name
+        in: path
+        name: fullTableName
+        required: true
+        type: string
+      - description: Existing Column Name
+        in: path
+        name: column_name
+        required: true
+        type: string
+      - description: New column name JSON
+        in: body
+        name: new_name
+        required: true
+        schema:
+          $ref: '#/definitions/column_requests.RenameRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Column renamed
+          schema:
+            $ref: '#/definitions/responses.Response'
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "422":
+          description: Unprocessable entity
+        "500":
+          description: Internal server error
+      summary: Rename a column in a table
+      tags:
+      - Columns
   /tables/{tableUUID}:
     delete:
       consumes:
@@ -2413,196 +2825,6 @@ paths:
       summary: Get table details
       tags:
       - Tables
-  /tables/{tableUUID}/columns:
-    post:
-      consumes:
-      - application/json
-      description: Create new columns in a specified table within a project.
-      parameters:
-      - description: Bearer Token
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      - description: Project UUID
-        in: header
-        name: X-Project
-        required: true
-        type: string
-      - description: Table UUID
-        in: path
-        name: tableUUID
-        required: true
-        type: string
-      - description: Columns JSON
-        in: body
-        name: columns
-        required: true
-        schema:
-          $ref: '#/definitions/column_requests.CreateRequest'
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Columns created
-          schema:
-            allOf:
-            - $ref: '#/definitions/responses.Response'
-            - properties:
-                content:
-                  $ref: '#/definitions/resources.TableResponse'
-              type: object
-        "400":
-          description: Invalid input
-        "401":
-          description: Unauthorized
-        "422":
-          description: Unprocessable entity
-        "500":
-          description: Internal server error
-      summary: Add new columns to a table
-      tags:
-      - Columns
-    put:
-      consumes:
-      - application/json
-      description: Alter the data type of existing columns in a specified table.
-      parameters:
-      - description: Bearer Token
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      - description: Project UUID
-        in: header
-        name: X-Project
-        required: true
-        type: string
-      - description: Table UUID
-        in: path
-        name: tableUUID
-        required: true
-        type: string
-      - description: Updated column definitions
-        in: body
-        name: columns
-        required: true
-        schema:
-          $ref: '#/definitions/column_requests.CreateRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Columns altered
-          schema:
-            allOf:
-            - $ref: '#/definitions/responses.Response'
-            - properties:
-                content:
-                  $ref: '#/definitions/resources.TableResponse'
-              type: object
-        "400":
-          description: Invalid input
-        "401":
-          description: Unauthorized
-        "422":
-          description: Unprocessable entity
-        "500":
-          description: Internal server error
-      summary: Modify column types in a table
-      tags:
-      - Columns
-  /tables/{tableUUID}/columns/{columnName}:
-    delete:
-      consumes:
-      - application/json
-      description: Permanently delete a specific column from a given table.
-      parameters:
-      - description: Bearer Token
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      - description: Project UUID
-        in: header
-        name: X-Project
-        required: true
-        type: string
-      - description: Table UUID
-        in: path
-        name: tableUUID
-        required: true
-        type: string
-      - description: Column Name
-        in: path
-        name: column_name
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "204":
-          description: Column deleted successfully
-        "400":
-          description: Invalid input
-        "401":
-          description: Unauthorized
-        "404":
-          description: Column not found
-        "500":
-          description: Internal server error
-      summary: Delete a column from a table
-      tags:
-      - Columns
-    put:
-      consumes:
-      - application/json
-      description: Change the name of a specific column in a given table.
-      parameters:
-      - description: Bearer Token
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      - description: Project UUID
-        in: header
-        name: X-Project
-        required: true
-        type: string
-      - description: Table UUID
-        in: path
-        name: tableUUID
-        required: true
-        type: string
-      - description: Existing Column Name
-        in: path
-        name: column_name
-        required: true
-        type: string
-      - description: New column name JSON
-        in: body
-        name: new_name
-        required: true
-        schema:
-          $ref: '#/definitions/column_requests.RenameRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Column renamed
-          schema:
-            $ref: '#/definitions/responses.Response'
-        "400":
-          description: Invalid input
-        "401":
-          description: Unauthorized
-        "422":
-          description: Unprocessable entity
-        "500":
-          description: Internal server error
-      summary: Rename a column in a table
-      tags:
-      - Columns
   /tables/{tableUUID}/duplicate:
     put:
       consumes:

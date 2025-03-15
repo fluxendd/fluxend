@@ -19,6 +19,256 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/backups": {
+            "get": {
+                "description": "Retrieve a list of all backups for the specified project",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Backups"
+                ],
+                "summary": "List all backups",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Project UUID",
+                        "name": "X-Project",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of backups",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "allOf": [
+                                    {
+                                        "$ref": "#/definitions/responses.Response"
+                                    },
+                                    {
+                                        "type": "object",
+                                        "properties": {
+                                            "content": {
+                                                "type": "array",
+                                                "items": {
+                                                    "$ref": "#/definitions/resources.BackupResponse"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            },
+            "post": {
+                "description": "Add a new backup",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Backups"
+                ],
+                "summary": "Create a new backup",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Project UUID",
+                        "name": "X-Project",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "Project UUID",
+                        "name": "backup",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/requests.DefaultRequestWithProjectHeader"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Backup created",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/responses.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "content": {
+                                            "$ref": "#/definitions/resources.BackupResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "422": {
+                        "description": "Unprocessable entity"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/backups/{backupUUID}": {
+            "get": {
+                "description": "Get details of a specific backup",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Backups"
+                ],
+                "summary": "Show details of a single backup",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Project UUID",
+                        "name": "X-Project",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Backup UUID",
+                        "name": "backupUUID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Backup details",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/responses.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "content": {
+                                            "$ref": "#/definitions/resources.BackupResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            },
+            "delete": {
+                "description": "Remove a backup from the project",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Backups"
+                ],
+                "summary": "Delete a backup",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Project UUID",
+                        "name": "X-Project",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Backup UUID",
+                        "name": "backupUUID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Backup deleted"
+                    },
+                    "400": {
+                        "description": "Invalid input"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
         "/buckets/{bucketUUID}/files": {
             "get": {
                 "description": "Retrieve a list of all files in a specific bucket",
@@ -2843,30 +3093,6 @@ const docTemplate = `{
                         "name": "X-Project",
                         "in": "header",
                         "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Page number for pagination",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Number of items per page",
-                        "name": "limit",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Field to sort by",
-                        "name": "sort",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Sort order (asc or desc)",
-                        "name": "order",
-                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -2966,6 +3192,357 @@ const docTemplate = `{
                     },
                     "422": {
                         "description": "Unprocessable entity"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/tables/{fullTableName}/columns": {
+            "get": {
+                "description": "Retrieve a list of columns in a specified table.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Columns"
+                ],
+                "summary": "List all columns",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Project UUID",
+                        "name": "X-Project",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of columns",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/responses.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "content": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/resources.ColumnResponse"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            },
+            "put": {
+                "description": "Alter the data type of existing columns in a specified table.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Columns"
+                ],
+                "summary": "Modify column types in a table",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Project UUID",
+                        "name": "X-Project",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Full table name",
+                        "name": "fullTableName",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Updated column definitions",
+                        "name": "columns",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/column_requests.CreateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Columns altered",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/responses.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "content": {
+                                            "$ref": "#/definitions/resources.TableResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "422": {
+                        "description": "Unprocessable entity"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            },
+            "post": {
+                "description": "Create new columns in a specified table within a project.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Columns"
+                ],
+                "summary": "Add new columns to a table",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Project UUID",
+                        "name": "X-Project",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Full table name",
+                        "name": "fullTableName",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Columns JSON",
+                        "name": "columns",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/column_requests.CreateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Columns created",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/responses.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "content": {
+                                            "$ref": "#/definitions/resources.TableResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "422": {
+                        "description": "Unprocessable entity"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/tables/{fullTableName}/columns/{columnName}": {
+            "put": {
+                "description": "Change the name of a specific column in a given table.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Columns"
+                ],
+                "summary": "Rename a column in a table",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Project UUID",
+                        "name": "X-Project",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Full table name",
+                        "name": "fullTableName",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Existing Column Name",
+                        "name": "column_name",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "New column name JSON",
+                        "name": "new_name",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/column_requests.RenameRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Column renamed",
+                        "schema": {
+                            "$ref": "#/definitions/responses.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "422": {
+                        "description": "Unprocessable entity"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            },
+            "delete": {
+                "description": "Permanently delete a specific column from a given table.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Columns"
+                ],
+                "summary": "Delete a column from a table",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Project UUID",
+                        "name": "X-Project",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Full table name",
+                        "name": "fullTableName",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Column Name",
+                        "name": "column_name",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Column deleted successfully"
+                    },
+                    "400": {
+                        "description": "Invalid input"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "Column not found"
                     },
                     "500": {
                         "description": "Internal server error"
@@ -3089,296 +3666,6 @@ const docTemplate = `{
                     },
                     "404": {
                         "description": "Table not found"
-                    },
-                    "500": {
-                        "description": "Internal server error"
-                    }
-                }
-            }
-        },
-        "/tables/{tableUUID}/columns": {
-            "put": {
-                "description": "Alter the data type of existing columns in a specified table.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Columns"
-                ],
-                "summary": "Modify column types in a table",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer Token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Project UUID",
-                        "name": "X-Project",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Table UUID",
-                        "name": "tableUUID",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Updated column definitions",
-                        "name": "columns",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/column_requests.CreateRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Columns altered",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/responses.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "content": {
-                                            "$ref": "#/definitions/resources.TableResponse"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid input"
-                    },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
-                    "422": {
-                        "description": "Unprocessable entity"
-                    },
-                    "500": {
-                        "description": "Internal server error"
-                    }
-                }
-            },
-            "post": {
-                "description": "Create new columns in a specified table within a project.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Columns"
-                ],
-                "summary": "Add new columns to a table",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer Token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Project UUID",
-                        "name": "X-Project",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Table UUID",
-                        "name": "tableUUID",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Columns JSON",
-                        "name": "columns",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/column_requests.CreateRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Columns created",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/responses.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "content": {
-                                            "$ref": "#/definitions/resources.TableResponse"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid input"
-                    },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
-                    "422": {
-                        "description": "Unprocessable entity"
-                    },
-                    "500": {
-                        "description": "Internal server error"
-                    }
-                }
-            }
-        },
-        "/tables/{tableUUID}/columns/{columnName}": {
-            "put": {
-                "description": "Change the name of a specific column in a given table.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Columns"
-                ],
-                "summary": "Rename a column in a table",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer Token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Project UUID",
-                        "name": "X-Project",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Table UUID",
-                        "name": "tableUUID",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Existing Column Name",
-                        "name": "column_name",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "New column name JSON",
-                        "name": "new_name",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/column_requests.RenameRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Column renamed",
-                        "schema": {
-                            "$ref": "#/definitions/responses.Response"
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid input"
-                    },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
-                    "422": {
-                        "description": "Unprocessable entity"
-                    },
-                    "500": {
-                        "description": "Internal server error"
-                    }
-                }
-            },
-            "delete": {
-                "description": "Permanently delete a specific column from a given table.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Columns"
-                ],
-                "summary": "Delete a column from a table",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer Token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Project UUID",
-                        "name": "X-Project",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Table UUID",
-                        "name": "tableUUID",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Column Name",
-                        "name": "column_name",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "Column deleted successfully"
-                    },
-                    "400": {
-                        "description": "Invalid input"
-                    },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
-                    "404": {
-                        "description": "Column not found"
                     },
                     "500": {
                         "description": "Internal server error"
@@ -4122,7 +4409,7 @@ const docTemplate = `{
                 "columns": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/types.TableColumn"
+                        "$ref": "#/definitions/models.Column"
                     }
                 },
                 "projectUUID": {
@@ -4226,6 +4513,35 @@ const docTemplate = `{
                 }
             }
         },
+        "models.Column": {
+            "type": "object",
+            "properties": {
+                "constraintType": {
+                    "type": "string"
+                },
+                "defaultValue": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "notNull": {
+                    "type": "boolean"
+                },
+                "position": {
+                    "type": "integer"
+                },
+                "primary": {
+                    "type": "boolean"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "unique": {
+                    "type": "boolean"
+                }
+            }
+        },
         "organization_requests.CreateRequest": {
             "type": "object",
             "properties": {
@@ -4251,6 +4567,9 @@ const docTemplate = `{
         "project_requests.CreateRequest": {
             "type": "object",
             "properties": {
+                "description": {
+                    "type": "string"
+                },
                 "name": {
                     "type": "string"
                 },
@@ -4265,6 +4584,9 @@ const docTemplate = `{
         "project_requests.UpdateRequest": {
             "type": "object",
             "properties": {
+                "description": {
+                    "type": "string"
+                },
                 "name": {
                     "type": "string"
                 },
@@ -4299,6 +4621,14 @@ const docTemplate = `{
                 }
             }
         },
+        "requests.DefaultRequestWithProjectHeader": {
+            "type": "object",
+            "properties": {
+                "projectUUID": {
+                    "type": "string"
+                }
+            }
+        },
         "requests.IndexCreateRequest": {
             "type": "object",
             "properties": {
@@ -4326,6 +4656,29 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "resources.BackupResponse": {
+            "type": "object",
+            "properties": {
+                "completedAt": {
+                    "type": "string"
+                },
+                "error": {
+                    "type": "string"
+                },
+                "projectUuid": {
+                    "type": "string"
+                },
+                "startedAt": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "uuid": {
                     "type": "string"
                 }
             }
@@ -4368,6 +4721,32 @@ const docTemplate = `{
                 },
                 "uuid": {
                     "type": "string"
+                }
+            }
+        },
+        "resources.ColumnResponse": {
+            "type": "object",
+            "properties": {
+                "defaultValue": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "notNull": {
+                    "type": "boolean"
+                },
+                "position": {
+                    "type": "integer"
+                },
+                "primary": {
+                    "type": "boolean"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "unique": {
+                    "type": "boolean"
                 }
             }
         },
@@ -4560,10 +4939,16 @@ const docTemplate = `{
                 "dbName": {
                     "type": "string"
                 },
+                "description": {
+                    "type": "string"
+                },
                 "name": {
                     "type": "string"
                 },
                 "organizationUuid": {
+                    "type": "string"
+                },
+                "status": {
                     "type": "string"
                 },
                 "updatedAt": {
@@ -4580,31 +4965,19 @@ const docTemplate = `{
         "resources.TableResponse": {
             "type": "object",
             "properties": {
-                "columns": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/types.TableColumn"
-                    }
+                "estimatedRows": {
+                    "type": "integer"
                 },
-                "createdAt": {
-                    "type": "string"
-                },
-                "createdBy": {
-                    "type": "string"
+                "id": {
+                    "type": "integer"
                 },
                 "name": {
                     "type": "string"
                 },
-                "projectUuid": {
+                "schema": {
                     "type": "string"
                 },
-                "updatedAt": {
-                    "type": "string"
-                },
-                "updatedBy": {
-                    "type": "string"
-                },
-                "uuid": {
+                "totalSize": {
                     "type": "string"
                 }
             }
@@ -4659,7 +5032,7 @@ const docTemplate = `{
                 "columns": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/types.TableColumn"
+                        "$ref": "#/definitions/models.Column"
                     }
                 },
                 "name": {
@@ -4678,29 +5051,6 @@ const docTemplate = `{
                 },
                 "projectUUID": {
                     "type": "string"
-                }
-            }
-        },
-        "types.TableColumn": {
-            "type": "object",
-            "properties": {
-                "default": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "notNull": {
-                    "type": "boolean"
-                },
-                "primary": {
-                    "type": "boolean"
-                },
-                "type": {
-                    "type": "string"
-                },
-                "unique": {
-                    "type": "boolean"
                 }
             }
         },
