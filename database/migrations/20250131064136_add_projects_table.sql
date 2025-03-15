@@ -21,6 +21,7 @@ CREATE UNIQUE INDEX idx_projects_name_organization_uuid ON fluxton.projects (nam
 
 -- +goose Down
 -- +goose StatementBegin
+DROP TABLE IF EXISTS storage.backups;
 DROP TABLE fluxton.projects;
 DROP type project_status;
 -- +goose StatementEnd

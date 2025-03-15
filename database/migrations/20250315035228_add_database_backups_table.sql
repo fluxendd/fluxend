@@ -5,8 +5,8 @@ CREATE TABLE storage.backups (
      project_uuid UUID NOT NULL REFERENCES fluxton.projects(uuid) ON DELETE CASCADE,
      status VARCHAR NOT NULL,
      error TEXT,
-     started_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
-     completed_at TIMESTAMPTZ
+     started_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+     completed_at TIMESTAMP
 );
 -- +goose StatementEnd
 
