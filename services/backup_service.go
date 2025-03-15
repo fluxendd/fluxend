@@ -15,7 +15,6 @@ type BackupService interface {
 	List(projectUUID uuid.UUID, authUser models.AuthUser) ([]models.Backup, error)
 	GetByUUID(backupUUID uuid.UUID, authUser models.AuthUser) (models.Backup, error)
 	Create(request *requests.DefaultRequestWithProjectHeader, authUser models.AuthUser) (models.Backup, error)
-	Update(backupUUID uuid.UUID, status, error string, authUser models.AuthUser) (*models.Backup, error)
 	Delete(backupUUID uuid.UUID, authUser models.AuthUser) (bool, error)
 }
 
@@ -96,29 +95,6 @@ func (s *BackupServiceImpl) Create(request *requests.DefaultRequestWithProjectHe
 	go s.backupWorkFlowService.Execute(project.DBName, createdBackup.Uuid, authUser)
 
 	return backup, nil
-}
-
-func (s *BackupServiceImpl) Update(backupUUID uuid.UUID, status, error string, authUser models.AuthUser) (*models.Backup, error) {
-	backup, err := s.backupRepo.GetByUUID(backupUUID)
-	if err != nil {
-		return nil, err
-	}
-
-	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(backup.ProjectUuid)
-	if err != nil {
-		return &models.Backup{}, err
-	}
-
-	if !s.projectPolicy.CanUpdate(organizationUUID, authUser) {
-		return &models.Backup{}, errs.NewForbiddenError("backup.error.updateForbidden")
-	}
-
-	backup.Status = status
-	backup.Error = error
-	now := time.Now()
-	backup.CompletedAt = &now
-
-	return s.backupRepo.Update(&backup)
 }
 
 func (s *BackupServiceImpl) Delete(backupUUID uuid.UUID, authUser models.AuthUser) (bool, error) {

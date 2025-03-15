@@ -121,25 +121,6 @@ func (r *BackupRepository) Create(backup *models.Backup) (*models.Backup, error)
 	return backup, nil
 }
 
-func (r *BackupRepository) Update(backup *models.Backup) (*models.Backup, error) {
-	query := `
-		UPDATE storage.backups 
-		SET status = :status, error = :error, completed_at = :completed_at
-		WHERE uuid = :uuid`
-
-	res, err := r.db.NamedExec(query, backup)
-	if err != nil {
-		return &models.Backup{}, utils.FormatError(err, "update", utils.GetMethodName())
-	}
-
-	_, err = res.RowsAffected()
-	if err != nil {
-		return &models.Backup{}, utils.FormatError(err, "affectedRows", utils.GetMethodName())
-	}
-
-	return backup, nil
-}
-
 func (r *BackupRepository) UpdateStatus(backupUUID uuid.UUID, status, error string, completedAt time.Time) error {
 	query := "UPDATE storage.backups SET status = $1, error = $2, completed_at = $3 WHERE uuid = $3"
 	_, err := r.db.Exec(query, status, error, completedAt, backupUUID)
