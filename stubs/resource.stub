@@ -1,0 +1,29 @@
+package resources
+
+import (
+	"fluxton/models"
+	"github.com/google/uuid"
+)
+
+type {{modelName}}Response struct {
+	Uuid        uuid.UUID `json:"uuid"`
+	CreatedAt   string    `json:"startedAt"`
+	UpdatedAt   string    `json:"completedAt"`
+}
+
+func {{modelName}}Resource({{modelLowercase}} *models.{{modelName}}) {{modelName}}Response {
+	return {{modelName}}Response{
+		Uuid:        {{modelLowercase}}.Uuid,
+		CreatedAt:   {{modelLowercase}}.CreatedAt.Format("2006-01-02 15:04:05"),
+		UpdatedAt:   {{modelLowercase}}.UpdatedAt.Format("2006-01-02 15:04:05"),
+	}
+}
+
+func {{modelName}}ResourceCollection({{modelLowercase}}s []models.{{modelName}}) []{{modelName}}Response {
+	resource{{modelName}}s := make([]{{modelName}}Response, len({{modelLowercase}}s))
+	for i, {{modelLowercase}} := range {{modelLowercase}}s {
+		resource{{modelName}}s[i] = {{modelName}}Resource(&{{modelLowercase}})
+	}
+
+	return resource{{modelName}}s
+}

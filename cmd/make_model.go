@@ -16,46 +16,86 @@ var makeModelCmd = &cobra.Command{
 	Use:   "make:model [model_name]",
 	Short: "Creates a new model file in the models directory",
 	Args:  cobra.ExactArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
-		modelName := args[0]
-
-		if !validModelName.MatchString(modelName) {
-			fmt.Println("Error: Model name can only contain letters and underscores.")
-
-			return
-		}
-
-		makeModel(modelName)
-	},
+	Run:   runMakeModelCmd,
 }
 
-func makeModel(modelName string) {
-	stubPath := "stubs/model.stub"
+func runMakeModelCmd(cmd *cobra.Command, args []string) {
+	modelName := args[0]
+
+	if !isValidModelName(modelName) {
+		fmt.Println("Error: Model name can only contain letters and underscores.")
+		return
+	}
+
+	if err := createModelFiles(modelName); err != nil {
+		fmt.Println("Error:", err)
+	}
+}
+
+func isValidModelName(modelName string) bool {
+	return validModelName.MatchString(modelName)
+}
+
+func createModelFiles(modelName string) error {
+	modelStubPath := "stubs/model.stub"
 	modelsDir := "models"
-	outputFile := filepath.Join(modelsDir, strings.ToLower(modelName)+".go")
+	modelOutputFile := filepath.Join(modelsDir, strings.ToLower(modelName)+".go")
 
-	if err := os.MkdirAll(modelsDir, os.ModePerm); err != nil {
-		fmt.Println("Error creating models directory:", err)
-		return
+	resourceStubPath := "stubs/resource.stub"
+	resourcesDir := "resources"
+	resourceOutputFile := filepath.Join(resourcesDir, strings.ToLower(modelName)+"Resource.go")
+
+	if err := ensureDirExists(modelsDir); err != nil {
+		return fmt.Errorf("creating models directory: %w", err)
 	}
 
-	if _, err := os.Stat(outputFile); err == nil {
-		fmt.Printf("Error: Model %s already exists at %s\n", modelName, outputFile)
-		return
+	if err := ensureFileDoesNotExist(modelOutputFile); err != nil {
+		return fmt.Errorf("checking if model exists: %w", err)
 	}
 
+	if err := writeFileWithReplacedContent(modelStubPath, modelOutputFile, modelName); err != nil {
+		return fmt.Errorf("writing model file: %w", err)
+	}
+
+	if err := writeFileWithReplacedContent(resourceStubPath, resourceOutputFile, modelName); err != nil {
+		return fmt.Errorf("writing resource file: %w", err)
+	}
+
+	fmt.Printf("Model %s created successfully at %s\n", modelName, modelOutputFile)
+	return nil
+}
+
+func ensureDirExists(dir string) error {
+	if err := os.MkdirAll(dir, os.ModePerm); err != nil {
+		return err
+	}
+	return nil
+}
+
+func ensureFileDoesNotExist(filePath string) error {
+	if _, err := os.Stat(filePath); err == nil {
+		return fmt.Errorf("file already exists at %s", filePath)
+	}
+	return nil
+}
+
+func writeFileWithReplacedContent(stubPath, outputFile, modelName string) error {
 	stubContent, err := os.ReadFile(stubPath)
 	if err != nil {
-		fmt.Println("Error reading stub file:", err)
-		return
+		return fmt.Errorf("reading stub file %s: %w", stubPath, err)
 	}
 
-	replacedContent := strings.ReplaceAll(string(stubContent), "{{modelName}}", modelName)
+	replacedContent := replacePlaceholders(string(stubContent), modelName)
 
 	if err := os.WriteFile(outputFile, []byte(replacedContent), 0644); err != nil {
-		fmt.Println("Error writing model file:", err)
-		return
+		return fmt.Errorf("writing file %s: %w", outputFile, err)
 	}
 
-	fmt.Printf("Model %s created successfully at %s\n", modelName, outputFile)
+	return nil
+}
+
+func replacePlaceholders(content, modelName string) string {
+	content = strings.ReplaceAll(content, "{{modelName}}", modelName)
+	content = strings.ReplaceAll(content, "{{modelLowercase}}", strings.ToLower(modelName))
+	return content
 }
