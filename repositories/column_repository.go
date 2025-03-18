@@ -7,15 +7,15 @@ import (
 	"github.com/lib/pq"
 )
 
-type ClientColumnRepository struct {
+type ColumnRepository struct {
 	connection *sqlx.DB
 }
 
-func NewClientColumnRepository(connection *sqlx.DB) (*ClientColumnRepository, error) {
-	return &ClientColumnRepository{connection: connection}, nil
+func NewColumnRepository(connection *sqlx.DB) (*ColumnRepository, error) {
+	return &ColumnRepository{connection: connection}, nil
 }
 
-func (r *ClientColumnRepository) List(tableName string) ([]models.Column, error) {
+func (r *ColumnRepository) List(tableName string) ([]models.Column, error) {
 	var columns []models.Column
 	query := `
 		SELECT 
@@ -46,7 +46,7 @@ func (r *ClientColumnRepository) List(tableName string) ([]models.Column, error)
 	return columns, nil
 }
 
-func (r *ClientColumnRepository) Has(tableName, columnName string) (bool, error) {
+func (r *ColumnRepository) Has(tableName, columnName string) (bool, error) {
 	var count int
 	err := r.connection.Get(&count, fmt.Sprintf("SELECT COUNT(*) FROM information_schema.columns WHERE table_name = '%s' AND column_name = '%s'", tableName, columnName))
 	if err != nil {
@@ -56,7 +56,7 @@ func (r *ClientColumnRepository) Has(tableName, columnName string) (bool, error)
 	return count > 0, nil
 }
 
-func (r *ClientColumnRepository) HasAny(tableName string, columns []models.Column) (bool, error) {
+func (r *ColumnRepository) HasAny(tableName string, columns []models.Column) (bool, error) {
 	var count int
 	columnNames := r.mapColumnsToNames(columns)
 	query := `
@@ -74,7 +74,7 @@ func (r *ClientColumnRepository) HasAny(tableName string, columns []models.Colum
 	return count > 0, nil
 }
 
-func (r *ClientColumnRepository) HasAll(tableName string, columns []models.Column) (bool, error) {
+func (r *ColumnRepository) HasAll(tableName string, columns []models.Column) (bool, error) {
 	var count int
 	columnNames := r.mapColumnsToNames(columns)
 	query := `
@@ -92,7 +92,7 @@ func (r *ClientColumnRepository) HasAll(tableName string, columns []models.Colum
 	return count == len(columns), nil
 }
 
-func (r *ClientColumnRepository) CreateOne(tableName string, column models.Column) error {
+func (r *ColumnRepository) CreateOne(tableName string, column models.Column) error {
 	query := fmt.Sprintf("ALTER TABLE %s ADD COLUMN %s %s", tableName, column.Name, column.Type)
 	_, err := r.connection.Exec(query)
 	if err != nil {
@@ -102,7 +102,7 @@ func (r *ClientColumnRepository) CreateOne(tableName string, column models.Colum
 	return nil
 }
 
-func (r *ClientColumnRepository) CreateMany(tableName string, fields []models.Column) error {
+func (r *ColumnRepository) CreateMany(tableName string, fields []models.Column) error {
 	for _, field := range fields {
 		err := r.CreateOne(tableName, field)
 		if err != nil {
@@ -113,7 +113,7 @@ func (r *ClientColumnRepository) CreateMany(tableName string, fields []models.Co
 	return nil
 }
 
-func (r *ClientColumnRepository) AlterOne(tableName string, columns []models.Column) error {
+func (r *ColumnRepository) AlterOne(tableName string, columns []models.Column) error {
 	for _, column := range columns {
 		query := fmt.Sprintf("ALTER TABLE %s ALTER COLUMN %s TYPE %s", tableName, column.Name, column.Type)
 		_, err := r.connection.Exec(query)
@@ -125,7 +125,7 @@ func (r *ClientColumnRepository) AlterOne(tableName string, columns []models.Col
 	return nil
 }
 
-func (r *ClientColumnRepository) AlterMany(tableName string, fields []models.Column) error {
+func (r *ColumnRepository) AlterMany(tableName string, fields []models.Column) error {
 	for _, field := range fields {
 		err := r.AlterOne(tableName, []models.Column{field})
 		if err != nil {
@@ -136,7 +136,7 @@ func (r *ClientColumnRepository) AlterMany(tableName string, fields []models.Col
 	return nil
 }
 
-func (r *ClientColumnRepository) Rename(tableName, oldColumnName, newColumnName string) error {
+func (r *ColumnRepository) Rename(tableName, oldColumnName, newColumnName string) error {
 	query := fmt.Sprintf("ALTER TABLE %s RENAME COLUMN %s TO %s", tableName, oldColumnName, newColumnName)
 	_, err := r.connection.Exec(query)
 	if err != nil {
@@ -146,7 +146,7 @@ func (r *ClientColumnRepository) Rename(tableName, oldColumnName, newColumnName 
 	return nil
 }
 
-func (r *ClientColumnRepository) Drop(tableName, columnName string) error {
+func (r *ColumnRepository) Drop(tableName, columnName string) error {
 	query := fmt.Sprintf("ALTER TABLE %s DROP COLUMN %s", tableName, columnName)
 	_, err := r.connection.Exec(query)
 	if err != nil {
@@ -156,7 +156,7 @@ func (r *ClientColumnRepository) Drop(tableName, columnName string) error {
 	return nil
 }
 
-func (r *ClientColumnRepository) mapColumnsToNames(columns []models.Column) []string {
+func (r *ColumnRepository) mapColumnsToNames(columns []models.Column) []string {
 	columnNames := make([]string, len(columns))
 	for i, column := range columns {
 		columnNames[i] = column.Name

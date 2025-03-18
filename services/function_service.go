@@ -51,7 +51,7 @@ func (s *FunctionServiceImpl) List(schema string, projectUUID uuid.UUID, authUse
 		return []models.Function{}, errs.NewForbiddenError("function.error.listForbidden")
 	}
 
-	clientFunctionRepo, _, err := s.connectService.GetClientFunctionRepoByProjectUUID(projectUUID, nil)
+	clientFunctionRepo, _, err := s.connectService.GetFunctionRepoByProjectUUID(projectUUID, nil)
 	if err != nil {
 		return []models.Function{}, err
 	}
@@ -69,7 +69,7 @@ func (s *FunctionServiceImpl) GetByName(name, schema string, projectUUID uuid.UU
 		return models.Function{}, errs.NewForbiddenError("function.error.listForbidden")
 	}
 
-	clientFunctionRepo, _, err := s.connectService.GetClientFunctionRepoByProjectUUID(projectUUID, nil)
+	clientFunctionRepo, _, err := s.connectService.GetFunctionRepoByProjectUUID(projectUUID, nil)
 	if err != nil {
 		return models.Function{}, err
 	}
@@ -87,7 +87,7 @@ func (s *FunctionServiceImpl) Create(schema string, request *requests.CreateFunc
 		return models.Function{}, errs.NewForbiddenError("function.error.listForbidden")
 	}
 
-	clientFunctionRepo, _, err := s.connectService.GetClientFunctionRepoByProjectUUID(request.ProjectUUID, nil)
+	clientFunctionRepo, _, err := s.connectService.GetFunctionRepoByProjectUUID(request.ProjectUUID, nil)
 	if err != nil {
 		return models.Function{}, err
 	}
@@ -115,7 +115,7 @@ func (s *FunctionServiceImpl) Delete(schema, name string, projectUUID uuid.UUID,
 		return false, errs.NewForbiddenError("function.error.listForbidden")
 	}
 
-	clientFunctionRepo, _, err := s.connectService.GetClientFunctionRepoByProjectUUID(projectUUID, nil)
+	clientFunctionRepo, _, err := s.connectService.GetFunctionRepoByProjectUUID(projectUUID, nil)
 	if err != nil {
 		return false, err
 	}

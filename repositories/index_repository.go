@@ -6,15 +6,15 @@ import (
 	"strings"
 )
 
-type ClientIndexRepository struct {
+type IndexRepository struct {
 	connection *sqlx.DB
 }
 
-func NewClientIndexRepository(connection *sqlx.DB) (*ClientIndexRepository, error) {
-	return &ClientIndexRepository{connection: connection}, nil
+func NewIndexRepository(connection *sqlx.DB) (*IndexRepository, error) {
+	return &IndexRepository{connection: connection}, nil
 }
 
-func (r *ClientIndexRepository) GetByName(tableName string, indexName string) (string, error) {
+func (r *IndexRepository) GetByName(tableName string, indexName string) (string, error) {
 	var index string
 	err := r.connection.Get(&index, fmt.Sprintf("SELECT indexdef FROM pg_indexes WHERE tablename = '%s' AND indexname = '%s'", tableName, indexName))
 	if err != nil {
@@ -24,7 +24,7 @@ func (r *ClientIndexRepository) GetByName(tableName string, indexName string) (s
 	return index, nil
 }
 
-func (r *ClientIndexRepository) Has(tableName string, indexName string) (bool, error) {
+func (r *IndexRepository) Has(tableName string, indexName string) (bool, error) {
 	var count int
 	err := r.connection.Get(&count, fmt.Sprintf("SELECT COUNT(*) FROM pg_indexes WHERE tablename = '%s' AND indexname = '%s'", tableName, indexName))
 	if err != nil {
@@ -34,7 +34,7 @@ func (r *ClientIndexRepository) Has(tableName string, indexName string) (bool, e
 	return count > 0, nil
 }
 
-func (r *ClientIndexRepository) List(tableName string) ([]string, error) {
+func (r *IndexRepository) List(tableName string) ([]string, error) {
 	var indexes []string
 	err := r.connection.Select(&indexes, fmt.Sprintf("SELECT indexname FROM pg_indexes WHERE tablename = '%s'", tableName))
 	if err != nil {
@@ -44,7 +44,7 @@ func (r *ClientIndexRepository) List(tableName string) ([]string, error) {
 	return indexes, nil
 }
 
-func (r *ClientIndexRepository) Create(tableName string, indexName string, columns []string, isUnique bool) (bool, error) {
+func (r *IndexRepository) Create(tableName string, indexName string, columns []string, isUnique bool) (bool, error) {
 	unique := ""
 	if isUnique {
 		unique = "UNIQUE"
@@ -62,7 +62,7 @@ func (r *ClientIndexRepository) Create(tableName string, indexName string, colum
 	return true, nil
 }
 
-func (r *ClientIndexRepository) DropIfExists(indexName string) (bool, error) {
+func (r *IndexRepository) DropIfExists(indexName string) (bool, error) {
 	query := fmt.Sprintf("DROP INDEX IF EXISTS %s", indexName)
 
 	_, err := r.connection.Exec(query)

@@ -6,15 +6,15 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-type ClientTableRepository struct {
+type TableRepository struct {
 	connection *sqlx.DB
 }
 
-func NewClientTableRepository(connection *sqlx.DB) (*ClientTableRepository, error) {
-	return &ClientTableRepository{connection: connection}, nil
+func NewTableRepository(connection *sqlx.DB) (*TableRepository, error) {
+	return &TableRepository{connection: connection}, nil
 }
 
-func (r *ClientTableRepository) Exists(name string) (bool, error) {
+func (r *TableRepository) Exists(name string) (bool, error) {
 	var count int
 	err := r.connection.Get(&count, "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = 'public' AND table_name = $1", name)
 	if err != nil {
@@ -24,7 +24,7 @@ func (r *ClientTableRepository) Exists(name string) (bool, error) {
 	return count > 0, nil
 }
 
-func (r *ClientTableRepository) Create(name string, columns []models.Column) error {
+func (r *TableRepository) Create(name string, columns []models.Column) error {
 	query := "CREATE TABLE " + name + " ("
 
 	for _, column := range columns {
@@ -59,7 +59,7 @@ func (r *ClientTableRepository) Create(name string, columns []models.Column) err
 	return nil
 }
 
-func (r *ClientTableRepository) Duplicate(oldName string, newName string) error {
+func (r *TableRepository) Duplicate(oldName string, newName string) error {
 	_, err := r.connection.Exec(fmt.Sprintf("CREATE TABLE %s AS TABLE %s", newName, oldName))
 	if err != nil {
 		return err
@@ -68,7 +68,7 @@ func (r *ClientTableRepository) Duplicate(oldName string, newName string) error 
 	return nil
 }
 
-func (r *ClientTableRepository) List() ([]models.Table, error) {
+func (r *TableRepository) List() ([]models.Table, error) {
 	var tables []models.Table
 	query := `
 		SELECT
@@ -91,7 +91,7 @@ func (r *ClientTableRepository) List() ([]models.Table, error) {
 	return tables, nil
 }
 
-func (r *ClientTableRepository) GetByNameInSchema(schema, name string) (models.Table, error) {
+func (r *TableRepository) GetByNameInSchema(schema, name string) (models.Table, error) {
 	var table models.Table
 	query := `
 		SELECT
@@ -115,7 +115,7 @@ func (r *ClientTableRepository) GetByNameInSchema(schema, name string) (models.T
 	return table, nil
 }
 
-func (r *ClientTableRepository) DropIfExists(name string) error {
+func (r *TableRepository) DropIfExists(name string) error {
 	_, err := r.connection.Exec("DROP TABLE IF EXISTS " + name)
 	if err != nil {
 		return err
@@ -124,7 +124,7 @@ func (r *ClientTableRepository) DropIfExists(name string) error {
 	return nil
 }
 
-func (r *ClientTableRepository) Rename(oldName string, newName string) error {
+func (r *TableRepository) Rename(oldName string, newName string) error {
 	_, err := r.connection.Exec(fmt.Sprintf("ALTER TABLE %s RENAME TO %s", oldName, newName))
 	if err != nil {
 		return err

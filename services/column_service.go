@@ -47,7 +47,7 @@ func (s *ColumnServiceImpl) List(fullTableName string, projectUUID uuid.UUID, au
 		return nil, errs.NewForbiddenError("project.error.readForbidden")
 	}
 
-	clientTableRepo, connection, err := s.connectionService.GetClientTableRepo(project.DBName, nil)
+	clientTableRepo, connection, err := s.connectionService.GetTableRepo(project.DBName, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -57,7 +57,7 @@ func (s *ColumnServiceImpl) List(fullTableName string, projectUUID uuid.UUID, au
 		return nil, err
 	}
 
-	clientColumnRepo, _, err := s.connectionService.GetClientColumnRepo(project.DBName, connection)
+	clientColumnRepo, _, err := s.connectionService.GetColumnRepo(project.DBName, connection)
 	if err != nil {
 		return nil, err
 	}
@@ -80,7 +80,7 @@ func (s *ColumnServiceImpl) CreateMany(fullTableName string, request *column_req
 		return []models.Column{}, errs.NewForbiddenError("column.error.createForbidden")
 	}
 
-	clientTableRepo, connection, err := s.connectionService.GetClientTableRepo(project.DBName, nil)
+	clientTableRepo, connection, err := s.connectionService.GetTableRepo(project.DBName, nil)
 	if err != nil {
 		return []models.Column{}, err
 	}
@@ -90,7 +90,7 @@ func (s *ColumnServiceImpl) CreateMany(fullTableName string, request *column_req
 		return []models.Column{}, err
 	}
 
-	clientColumnRepo, _, err := s.connectionService.GetClientColumnRepo(project.DBName, connection)
+	clientColumnRepo, _, err := s.connectionService.GetColumnRepo(project.DBName, connection)
 	if err != nil {
 		return []models.Column{}, err
 	}
@@ -122,7 +122,7 @@ func (s *ColumnServiceImpl) AlterMany(fullTableName string, request *column_requ
 		return []models.Column{}, errs.NewForbiddenError("project.error.updateForbidden")
 	}
 
-	clientTableRepo, connection, err := s.connectionService.GetClientTableRepo(project.DBName, nil)
+	clientTableRepo, connection, err := s.connectionService.GetTableRepo(project.DBName, nil)
 	if err != nil {
 		return []models.Column{}, err
 	}
@@ -132,7 +132,7 @@ func (s *ColumnServiceImpl) AlterMany(fullTableName string, request *column_requ
 		return []models.Column{}, err
 	}
 
-	clientColumnRepo, _, err := s.connectionService.GetClientColumnRepo(project.DBName, connection)
+	clientColumnRepo, _, err := s.connectionService.GetColumnRepo(project.DBName, connection)
 	if err != nil {
 		return []models.Column{}, err
 	}
@@ -164,7 +164,7 @@ func (s *ColumnServiceImpl) Rename(columnName string, fullTableName string, requ
 		return []models.Column{}, errs.NewForbiddenError("project.error.updateForbidden")
 	}
 
-	clientTableRepo, connection, err := s.connectionService.GetClientTableRepo(project.DBName, nil)
+	clientTableRepo, connection, err := s.connectionService.GetTableRepo(project.DBName, nil)
 	if err != nil {
 		return []models.Column{}, err
 	}
@@ -174,7 +174,7 @@ func (s *ColumnServiceImpl) Rename(columnName string, fullTableName string, requ
 		return []models.Column{}, err
 	}
 
-	clientColumnRepo, _, err := s.connectionService.GetClientColumnRepo(project.DBName, connection)
+	clientColumnRepo, _, err := s.connectionService.GetColumnRepo(project.DBName, connection)
 	if err != nil {
 		return []models.Column{}, err
 	}
@@ -206,7 +206,7 @@ func (s *ColumnServiceImpl) Delete(columnName, fullTableName string, projectUUID
 		return false, errs.NewForbiddenError("project.error.updateForbidden")
 	}
 
-	clientColumnRepo, _, err := s.connectionService.GetClientColumnRepo(project.DBName, nil)
+	clientColumnRepo, _, err := s.connectionService.GetColumnRepo(project.DBName, nil)
 	if err != nil {
 		return false, err
 	}

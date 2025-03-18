@@ -46,7 +46,7 @@ func (s *IndexServiceImpl) List(fullTableName string, projectUUID uuid.UUID, aut
 		return nil, errs.NewForbiddenError("project.error.viewForbidden")
 	}
 
-	clientIndexRepo, _, err := s.connectionService.GetClientIndexRepo(project.DBName, nil)
+	clientIndexRepo, _, err := s.connectionService.GetIndexRepo(project.DBName, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -65,7 +65,7 @@ func (s *IndexServiceImpl) GetByName(indexName, fullTableName string, projectUUI
 		return "", errs.NewForbiddenError("project.error.viewForbidden")
 	}
 
-	clientIndexRepo, _, err := s.connectionService.GetClientIndexRepo(project.DBName, nil)
+	clientIndexRepo, _, err := s.connectionService.GetIndexRepo(project.DBName, nil)
 	if err != nil {
 		return "", err
 	}
@@ -84,7 +84,7 @@ func (s *IndexServiceImpl) Create(fullTableName string, request *requests.IndexC
 		return "", errs.NewForbiddenError("table.error.createForbidden")
 	}
 
-	clientIndexRepo, _, err := s.connectionService.GetClientIndexRepo(project.DBName, nil)
+	clientIndexRepo, _, err := s.connectionService.GetIndexRepo(project.DBName, nil)
 	if err != nil {
 		return "", err
 	}
@@ -118,7 +118,7 @@ func (s *IndexServiceImpl) Delete(indexName, fullTableName string, projectUUID u
 		return false, errs.NewForbiddenError("project.error.updateForbidden")
 	}
 
-	clientIndexRepo, _, err := s.connectionService.GetClientIndexRepo(project.DBName, nil)
+	clientIndexRepo, _, err := s.connectionService.GetIndexRepo(project.DBName, nil)
 	if err != nil {
 		return false, err
 	}

@@ -6,15 +6,15 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-type ClientFunctionRepository struct {
+type FunctionRepository struct {
 	connection *sqlx.DB
 }
 
-func NewClientFunctionRepository(connection *sqlx.DB) (*ClientFunctionRepository, error) {
-	return &ClientFunctionRepository{connection: connection}, nil
+func NewFunctionRepository(connection *sqlx.DB) (*FunctionRepository, error) {
+	return &FunctionRepository{connection: connection}, nil
 }
 
-func (r *ClientFunctionRepository) List(schema string) ([]models.Function, error) {
+func (r *FunctionRepository) List(schema string) ([]models.Function, error) {
 	var functions []models.Function
 	query := `
 		SELECT routine_name, routine_type, data_type, type_udt_name, routine_definition, external_language, sql_data_access
@@ -28,13 +28,13 @@ func (r *ClientFunctionRepository) List(schema string) ([]models.Function, error
 	return functions, nil
 }
 
-func (r *ClientFunctionRepository) Create(functionSQL string) error {
+func (r *FunctionRepository) Create(functionSQL string) error {
 	_, err := r.connection.Exec(functionSQL)
 
 	return err
 }
 
-func (r *ClientFunctionRepository) GetByName(schema, functionName string) (models.Function, error) {
+func (r *FunctionRepository) GetByName(schema, functionName string) (models.Function, error) {
 	var function models.Function
 	query := `
 		SELECT 
@@ -57,7 +57,7 @@ func (r *ClientFunctionRepository) GetByName(schema, functionName string) (model
 	return function, nil
 }
 
-func (r *ClientFunctionRepository) Delete(schema, functionName string) error {
+func (r *FunctionRepository) Delete(schema, functionName string) error {
 	query := fmt.Sprintf(`DROP FUNCTION IF EXISTS %s.%s CASCADE`, schema, functionName)
 	_, err := r.connection.Exec(query)
 	if err != nil {
