@@ -156,7 +156,12 @@ func (r *BucketRepository) Create(bucket *models.Bucket) (*models.Bucket, error)
 func (r *BucketRepository) Update(bucket *models.Bucket) (*models.Bucket, error) {
 	query := `
 		UPDATE storage.buckets 
-		SET name = :name, description = :description, is_public = :is_public, updated_at = :updated_at, updated_by = :updated_by
+		SET 
+		    name = :name, 
+		    description = :description, 
+		    is_public = :is_public, 
+		    updated_at = :updated_at, 
+		    updated_by = :updated_by
 		WHERE uuid = :uuid`
 
 	res, err := r.db.NamedExec(query, bucket)
