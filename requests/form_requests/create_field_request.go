@@ -10,6 +10,28 @@ import (
 	"regexp"
 )
 
+var (
+	fieldTypeText     = "text"
+	fieldTypeTextarea = "textarea"
+	fieldTypeNumber   = "number"
+	fieldTypeEmail    = "email"
+	fieldTypeDate     = "date"
+	fieldTypeCheckbox = "checkbox"
+	fieldTypeRadio    = "radio"
+	fieldTypeSelect   = "select"
+)
+
+var allowedFieldTypes = []string{
+	fieldTypeText,
+	fieldTypeTextarea,
+	fieldTypeNumber,
+	fieldTypeEmail,
+	fieldTypeDate,
+	fieldTypeCheckbox,
+	fieldTypeRadio,
+	fieldTypeSelect,
+}
+
 type FieldRequest struct {
 	// required fields
 	Label      string `json:"label"`
@@ -86,7 +108,7 @@ func validateField(value interface{}) error {
 		validation.Field(
 			&field.Type,
 			validation.Required.Error("Type is required"),
-			validation.In("text", "textarea", "number", "email", "date", "checkbox", "radio", "select").Error("Invalid field type"),
+			validation.In(allowedFieldTypes).Error("Invalid field type"),
 		),
 		validation.Field(&field.IsRequired, validation.Required.Error("IsRequired is required")),
 		validation.Field(
