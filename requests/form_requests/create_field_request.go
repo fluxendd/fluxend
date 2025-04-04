@@ -11,11 +11,27 @@ import (
 )
 
 type FieldRequest struct {
-	Label       string `json:"label"`
-	Type        string `json:"type"`
-	IsRequired  bool   `json:"is_required"`
-	Description string `json:"description,omitempty"`
-	Options     string `json:"options,omitempty"` // Optional for select/radio types
+	// required fields
+	Label      string `json:"label"`
+	Type       string `json:"type"`
+	IsRequired bool   `json:"is_required"`
+
+	// all fields from this point are optional
+	MinLength    int    `json:"min_length,omitempty"`
+	MaxLength    int    `json:"max_length,omitempty"`
+	Pattern      string `json:"pattern,omitempty"`
+	Description  string `json:"description,omitempty"`
+	Options      string `json:"options,omitempty"` // Optional for select/radio types
+	DefaultValue string `json:"default_value,omitempty"`
+
+	// only applicable for number types
+	MinValue int `json:"min_value,omitempty"`
+	MaxValue int `json:"max_value,omitempty"`
+
+	// only applicable for date types
+	StartDate  string `json:"start_date,omitempty"`
+	EndDate    string `json:"end_date,omitempty"`
+	DateFormat string `json:"date_format,omitempty"` // fails if provided and field value doesn't match
 }
 
 // CreateFormFieldsRequest represents multiple fields in a request
