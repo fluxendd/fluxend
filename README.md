@@ -8,7 +8,7 @@
 - [Contribute](#want-to-contribute)
 
 ## What is Fluxton?
-Fluxton is a lightweight, high-performance backend server built with Go and the Echo framework. It’s designed to simplify backend development without sacrificing flexibility or speed.
+Fluxton is a lightweight, high-performance backend server built with Go. It’s designed to simplify backend development without sacrificing flexibility or speed.
 
 With Fluxton, you can connect a database and immediately get a dynamic, auto-generated RESTful API for all your tables—no manual routing or boilerplate code required. It also handles form validation and submissions out of the box, making it easier to build robust APIs and admin panels quickly.
 
