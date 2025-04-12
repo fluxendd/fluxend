@@ -8,21 +8,21 @@
 - [Contribute](#want-to-contribute)
 
 ## What is Fluxton?
-**Fluxton** is a cutting-edge backend server that is as fast as it is simple to use. Built with the power of Go and the flexibility of the Echo framework, Fluxton allows you to create scalable and dynamic backend solutions with minimal effort. The best part? You get everything in a single file – no need for complex infrastructure setups or tedious server configurations.
+Fluxton is a lightweight, high-performance backend server built with Go and the Echo framework. It’s designed to simplify backend development without sacrificing flexibility or speed.
 
-Fluxton automatically handles backend logic, form validation, submissions, and even provides an API for your database. Simply connect your database, and Fluxton dynamically generates a fully-functional RESTful API based on the tables you create. It's truly backend development for the future.
+With Fluxton, you can connect a database and immediately get a dynamic, auto-generated RESTful API for all your tables—no manual routing or boilerplate code required. It also handles form validation and submissions out of the box, making it easier to build robust APIs and admin panels quickly.
+
+Everything runs from a single binary — no complex setup or external dependencies. Ideal for prototyping, internal tools, or building production-ready backends with minimal overhead.
 
 ## Why Choose Fluxton?
-- **Blazing Fast**: Powered by Go and optimized for performance, Fluxton delivers lightning-fast responses.
-- **Zero Hassle Deployment**: With just **one file**, you can deploy and be up and running in minutes.
-- **Automatic API Generation**: Fluxton automatically generates RESTful API endpoints based on your database schema. No more manually creating routes!
-- **Dynamic Query Builder**: Effortlessly build complex database queries with Fluxton's dynamic query builder.
-- **Database Management Made Easy**: Fluxton provides an intuitive database editor for seamless table management.
-- **Form Validation & Backend Management**: Handle form submissions and validate data without writing a single line of validation logic.
+- Fast by Design: Built with Go and Echo, Fluxton is optimized for performance and low-latency APIs out of the box.
+- Simple Deployment: Just one binary file—no external dependencies or setup scripts. Ideal for quick prototyping or deploying to production.
+- Auto-Generated REST API: Connect your database, and Fluxton instantly exposes RESTful endpoints based on your schema. No manual route definitions needed.
+- Flexible Query Builder: Easily construct advanced queries without writing raw SQL.
+- Built-in Database UI: Includes a minimal interface for managing tables and records directly, useful for internal tools or quick data edits.
+- Integrated Form Handling: Validate and handle form submissions server-side with minimal configuration—no extra validation libraries or middlewares required.
 
 ## Installation
-
-Getting started with **Fluxton** is as easy as 1-2-3. Choose the installation method that suits you best:
 
 ### Method 1: Using Docker (Recommended for Easy Setup)
 To get up and running with Fluxton in just a few minutes, simply follow these steps:
