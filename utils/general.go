@@ -6,7 +6,9 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"os/exec"
 	"reflect"
+	"regexp"
 	"runtime"
+	"strconv"
 	"strings"
 )
 
@@ -126,6 +128,15 @@ func GetMethodName() string {
 	return parts[len(parts)-1]
 }
 
+func ConvertStringToInt(param string) (int, error) {
+	value, err := strconv.Atoi(param)
+	if err != nil {
+		return 0, fmt.Errorf("provided value is not a valid integer: %w", err)
+	}
+
+	return value, nil
+}
+
 func FormatError(err error, errType, method string) error {
 	// bucketRepo.ListForProject: select.err => <error>
 	return fmt.Errorf("%s: %s.err => %v", method, errType, err)
@@ -143,4 +154,13 @@ func ExecuteCommand(command []string) error {
 	log.Printf("Command succeeded: %s", string(output))
 
 	return nil
+}
+
+func MatchRegex(input, pattern string) (bool, error) {
+	re, err := regexp.Compile(pattern)
+	if err != nil {
+		return false, fmt.Errorf("invalid regex pattern: %w", err)
+	}
+
+	return re.MatchString(input), nil
 }
