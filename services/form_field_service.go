@@ -8,7 +8,6 @@ import (
 	"fluxton/requests/form_requests"
 	"fluxton/utils"
 	"github.com/google/uuid"
-	"github.com/guregu/null/v6"
 	"github.com/samber/do"
 	"time"
 )
@@ -147,7 +146,6 @@ func (s *FormFieldServiceImpl) Update(formUUID, fieldUUID uuid.UUID, authUser mo
 		return nil, err
 	}
 
-	formField.Options = null.String{} // TODO: Implement options
 	formField.UpdatedAt = time.Now()
 
 	err = s.validateOneForLabelDuplication(request.Label, formField.FormUuid)

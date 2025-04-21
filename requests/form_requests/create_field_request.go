@@ -11,26 +11,26 @@ import (
 	"regexp"
 )
 
-var (
-	fieldTypeText     = "text"
-	fieldTypeTextarea = "textarea"
-	fieldTypeNumber   = "number"
-	fieldTypeEmail    = "email"
-	fieldTypeDate     = "date"
-	fieldTypeCheckbox = "checkbox"
-	fieldTypeRadio    = "radio"
-	fieldTypeSelect   = "select"
+const (
+	FieldTypeText     = "text"
+	FieldTypeTextarea = "textarea"
+	FieldTypeNumber   = "number"
+	FieldTypeEmail    = "email"
+	FieldTypeDate     = "date"
+	FieldTypeCheckbox = "checkbox"
+	FieldTypeRadio    = "radio"
+	FieldTypeSelect   = "select"
 )
 
 var allowedFieldTypes = []interface{}{
-	fieldTypeText,
-	fieldTypeTextarea,
-	fieldTypeNumber,
-	fieldTypeEmail,
-	fieldTypeDate,
-	fieldTypeCheckbox,
-	fieldTypeRadio,
-	fieldTypeSelect,
+	FieldTypeText,
+	FieldTypeTextarea,
+	FieldTypeNumber,
+	FieldTypeEmail,
+	FieldTypeDate,
+	FieldTypeCheckbox,
+	FieldTypeRadio,
+	FieldTypeSelect,
 }
 
 type FieldRequest struct {

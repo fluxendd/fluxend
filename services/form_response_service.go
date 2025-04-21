@@ -18,26 +18,29 @@ type FormResponseService interface {
 }
 
 type FormResponseServiceImpl struct {
-	projectPolicy    *policies.ProjectPolicy
-	formRepo         *repositories.FormRepository
-	formFieldRepo    *repositories.FormFieldRepository
-	projectRepo      *repositories.ProjectRepository
-	formResponseRepo *repositories.FormResponseRepository
+	projectPolicy              *policies.ProjectPolicy
+	formFieldValidationService FormFieldValidationService
+	formRepo                   *repositories.FormRepository
+	formFieldRepo              *repositories.FormFieldRepository
+	projectRepo                *repositories.ProjectRepository
+	formResponseRepo           *repositories.FormResponseRepository
 }
 
 func NewFormResponseService(injector *do.Injector) (FormResponseService, error) {
 	policy := do.MustInvoke[*policies.ProjectPolicy](injector)
+	formFieldValidationService := do.MustInvoke[FormFieldValidationService](injector)
 	formRepo := do.MustInvoke[*repositories.FormRepository](injector)
 	formFieldRepo := do.MustInvoke[*repositories.FormFieldRepository](injector)
 	projectRepo := do.MustInvoke[*repositories.ProjectRepository](injector)
 	formResponseRepo := do.MustInvoke[*repositories.FormResponseRepository](injector)
 
 	return &FormResponseServiceImpl{
-		projectPolicy:    policy,
-		formRepo:         formRepo,
-		formFieldRepo:    formFieldRepo,
-		projectRepo:      projectRepo,
-		formResponseRepo: formResponseRepo,
+		projectPolicy:              policy,
+		formFieldValidationService: formFieldValidationService,
+		formRepo:                   formRepo,
+		formFieldRepo:              formFieldRepo,
+		projectRepo:                projectRepo,
+		formResponseRepo:           formResponseRepo,
 	}, nil
 }
 
@@ -108,9 +111,15 @@ func (s *FormResponseServiceImpl) Create(formUUID uuid.UUID, request *form_reque
 			return models.FormResponse{}, errs.NewUnprocessableError("formResponse.error.missingField")
 		}
 
+		currentFieldValue := request.Response[formField.Label].(string)
+		validationErr := s.formFieldValidationService.Validate(currentFieldValue, formField)
+		if validationErr != nil {
+			return models.FormResponse{}, validationErr
+		}
+
 		formFieldResponses = append(formFieldResponses, models.FormFieldResponse{
 			FormFieldUuid: formField.Uuid,
-			Value:         request.Response[formField.Label].(string),
+			Value:         currentFieldValue,
 		})
 	}
 
