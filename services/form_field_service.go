@@ -104,13 +104,13 @@ func (s *FormFieldServiceImpl) CreateMany(formUUID uuid.UUID, request *form_requ
 
 	formFields := make([]models.FormField, len(request.Fields))
 	for i, field := range request.Fields {
-		formFields[i] = models.FormField{
-			FormUuid:   formUUID,
-			Label:      field.Label,
-			Type:       field.Type,
-			IsRequired: field.IsRequired,
-			Options:    "{}", // TODO: Implement options
+		currentField := models.FormField{}
+		err := utils.PopulateModel(&currentField, field)
+		if err != nil {
+			return []models.FormField{}, err
 		}
+
+		formFields[i] = currentField
 	}
 
 	createdFields, err := s.formFieldRepo.CreateMany(formFields, formUUID)
@@ -146,7 +146,6 @@ func (s *FormFieldServiceImpl) Update(formUUID, fieldUUID uuid.UUID, authUser mo
 		return nil, err
 	}
 
-	formField.Options = "{}" // TODO: Implement options
 	formField.UpdatedAt = time.Now()
 
 	err = s.validateOneForLabelDuplication(request.Label, formField.FormUuid)

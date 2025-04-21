@@ -109,16 +109,44 @@ func (r *FormFieldRepository) Create(formField *models.FormField) (*models.FormF
 
 	query := `
     INSERT INTO fluxton.form_fields (
-        form_uuid, label, type, description, is_required, options
+        form_uuid,
+        label,
+        type,
+        description,
+        is_required,
+        options,
+        min_length,
+        max_length,
+        min_value,
+        max_value,
+        pattern,
+        default_value,
+        start_date,
+        end_date,
+        date_format
     ) VALUES (
-        $1, $2, $3, $4, $5, $6
+        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15
     )
     RETURNING uuid
 `
 
 	queryErr := tx.QueryRowx(
 		query,
-		formField.FormUuid, formField.Label, formField.Type, formField.Description, formField.IsRequired, formField.Options,
+		formField.FormUuid,
+		formField.Label,
+		formField.Type,
+		formField.Description,
+		formField.IsRequired,
+		formField.Options,
+		formField.MinLength,
+		formField.MaxLength,
+		formField.MinValue,
+		formField.MaxValue,
+		formField.Pattern,
+		formField.DefaultValue,
+		formField.StartDate,
+		formField.EndDate,
+		formField.DateFormat,
 	).Scan(&formField.Uuid)
 
 	if queryErr != nil {
