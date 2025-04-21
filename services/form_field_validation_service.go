@@ -1,6 +1,7 @@
 package services
 
 import (
+	"encoding/json"
 	"fluxton/errs"
 	"fluxton/models"
 	"fluxton/requests/form_requests"
@@ -14,6 +15,8 @@ type FormFieldValidationService interface {
 	validateString(value string, formField models.FormField) error
 	validateEmail(value string, formField models.FormField) error
 	validateDate(value string, formField models.FormField) error
+	validateCheckbox(value string, formField models.FormField) error
+	validateSelect(value string, formField models.FormField) error
 }
 
 type FormFieldValidationServiceImpl struct{}
@@ -36,6 +39,11 @@ func (s *FormFieldValidationServiceImpl) Validate(value string, formField models
 		validationErr = s.validateString(value, formField)
 	case form_requests.FieldTypeEmail:
 		validationErr = s.validateEmail(value, formField)
+	case form_requests.FieldTypeCheckbox:
+		validationErr = s.validateCheckbox(value, formField)
+	case form_requests.FieldTypeRadio:
+	case form_requests.FieldTypeSelect:
+		validationErr = s.validateSelect(value, formField)
 	}
 
 	return validationErr
@@ -89,6 +97,32 @@ func (s *FormFieldValidationServiceImpl) validateEmail(value string, formField m
 
 func (s *FormFieldValidationServiceImpl) validateDate(value string, formField models.FormField) error {
 	// TODO: Implement date validation logic
+
+	return nil
+}
+
+func (s *FormFieldValidationServiceImpl) validateCheckbox(value string, formField models.FormField) error {
+	// TODO: Implement checkbox validation logic
+
+	return nil
+}
+
+func (s *FormFieldValidationServiceImpl) validateSelect(value string, formField models.FormField) error {
+	var options []string
+	err := json.Unmarshal([]byte(formField.Options.String), &options)
+	if err != nil {
+		return errs.NewUnprocessableError("formResponse.error.invalidSelectOptions")
+	}
+
+	if formField.Options.Valid {
+		for _, option := range options {
+			if option == value {
+				return nil
+			}
+		}
+
+		return errs.NewUnprocessableError("formResponse.error.invalidSelectOption")
+	}
 
 	return nil
 }
