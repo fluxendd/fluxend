@@ -43,7 +43,7 @@ type FieldRequest struct {
 	MaxLength    int    `json:"max_length,omitempty"`
 	Pattern      string `json:"pattern,omitempty"`
 	Description  string `json:"description,omitempty"`
-	Options      string `json:"options,omitempty"` // Optional for select/radio types
+	Options      string `json:"options,omitempty"` // Options for select/radio types
 	DefaultValue string `json:"default_value,omitempty"`
 
 	// only applicable for number types
