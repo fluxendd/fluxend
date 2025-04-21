@@ -6,6 +6,7 @@ import (
 	"fluxton/utils"
 	"fmt"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
+	"github.com/guregu/null/v6"
 	"github.com/labstack/echo/v4"
 	"regexp"
 )
@@ -21,7 +22,7 @@ var (
 	fieldTypeSelect   = "select"
 )
 
-var allowedFieldTypes = []string{
+var allowedFieldTypes = []interface{}{
 	fieldTypeText,
 	fieldTypeTextarea,
 	fieldTypeNumber,
@@ -39,21 +40,21 @@ type FieldRequest struct {
 	IsRequired bool   `json:"is_required"`
 
 	// all fields from this point are optional
-	MinLength    int    `json:"min_length,omitempty"`
-	MaxLength    int    `json:"max_length,omitempty"`
-	Pattern      string `json:"pattern,omitempty"`
-	Description  string `json:"description,omitempty"`
-	Options      string `json:"options,omitempty"` // Options for select/radio types
-	DefaultValue string `json:"default_value,omitempty"`
+	MinLength    null.Int    `json:"min_length"`
+	MaxLength    null.Int    `json:"max_length"`
+	Pattern      null.String `json:"pattern"`
+	Description  null.String `json:"description"`
+	Options      null.String `json:"options"` // Options for select/radio types
+	DefaultValue null.String `json:"default_value"`
 
 	// only applicable for number types
-	MinValue int `json:"min_value,omitempty"`
-	MaxValue int `json:"max_value,omitempty"`
+	MinValue null.Int `json:"min_value"`
+	MaxValue null.Int `json:"max_value"`
 
 	// only applicable for date types
-	StartDate  string `json:"start_date,omitempty"`
-	EndDate    string `json:"end_date,omitempty"`
-	DateFormat string `json:"date_format,omitempty"` // fails if provided and field value doesn't match
+	StartDate  null.String `json:"start_date"`
+	EndDate    null.String `json:"end_date"`
+	DateFormat null.String `json:"date_format"` // fails if provided and field value doesn't match
 }
 
 // CreateFormFieldsRequest represents multiple fields in a request
@@ -65,7 +66,7 @@ type CreateFormFieldsRequest struct {
 // BindAndValidate binds and validates the request
 func (r *CreateFormFieldsRequest) BindAndValidate(c echo.Context) []string {
 	if err := c.Bind(r); err != nil {
-		return []string{"Invalid request payload"}
+		return []string{"Invalid request payload: " + err.Error()}
 	}
 
 	err := r.WithProjectHeader(c)
@@ -108,7 +109,7 @@ func validateField(value interface{}) error {
 		validation.Field(
 			&field.Type,
 			validation.Required.Error("Type is required"),
-			validation.In(allowedFieldTypes).Error("Invalid field type"),
+			validation.In(allowedFieldTypes...).Error("Invalid field type"),
 		),
 		validation.Field(&field.IsRequired, validation.Required.Error("IsRequired is required")),
 		validation.Field(
