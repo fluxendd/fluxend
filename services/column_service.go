@@ -44,7 +44,7 @@ func (s *ColumnServiceImpl) List(fullTableName string, projectUUID uuid.UUID, au
 	}
 
 	if !s.projectPolicy.CanAccess(project.OrganizationUuid, authUser) {
-		return nil, errs.NewForbiddenError("project.error.readForbidden")
+		return nil, errs.NewForbiddenError("project.error.viewForbidden")
 	}
 
 	clientTableRepo, connection, err := s.connectionService.GetTableRepo(project.DBName, nil)

@@ -117,12 +117,15 @@ func (uc *UserController) Store(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	user, err := uc.userService.Create(&request)
+	user, token, err := uc.userService.Create(&request)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
 
-	return responses.CreatedResponse(c, resources.UserResource(&user))
+	return responses.CreatedResponse(c, map[string]interface{}{
+		"user":  resources.UserResource(&user),
+		"token": token,
+	})
 }
 
 // Update updates a user.
@@ -158,7 +161,7 @@ func (uc *UserController) Update(c echo.Context) error {
 	}
 
 	if err := c.Bind(&request); err != nil {
-		return responses.BadRequestResponse(c, "note.error.invalidPayload")
+		return responses.BadRequestResponse(c, "user.error.invalidPayload")
 	}
 
 	updatedUser, err := uc.userService.Update(userUUID, authUserUUID, &request)

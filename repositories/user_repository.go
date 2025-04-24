@@ -84,6 +84,28 @@ func (r *UserRepository) ExistsByID(userUUID uuid.UUID) (bool, error) {
 	return exists, nil
 }
 
+func (r *UserRepository) ExistsByEmail(email string) (bool, error) {
+	query := "SELECT EXISTS(SELECT 1 FROM authentication.users WHERE email = $1)"
+	var exists bool
+	err := r.db.Get(&exists, query, email)
+	if err != nil {
+		return false, utils.FormatError(err, "fetch", utils.GetMethodName())
+	}
+
+	return exists, nil
+}
+
+func (r *UserRepository) ExistsByUsername(username string) (bool, error) {
+	query := "SELECT EXISTS(SELECT 1 FROM authentication.users WHERE username = $1)"
+	var exists bool
+	err := r.db.Get(&exists, query, username)
+	if err != nil {
+		return false, utils.FormatError(err, "fetch", utils.GetMethodName())
+	}
+
+	return exists, nil
+}
+
 func (r *UserRepository) GetByEmail(email string) (models.User, error) {
 	query := fmt.Sprintf("SELECT %s FROM authentication.users WHERE email = $1", utils.GetColumns[models.User]())
 	var user models.User
