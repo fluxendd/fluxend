@@ -23,19 +23,14 @@ func InitDB() {
 		os.Getenv("DATABASE_SSL_MODE"),
 	)
 
-	DB, err = sqlx.Open("postgres", connStr)
+	DB, err = sqlx.Connect("postgres", connStr)
 	if err != nil {
 		log.Fatal("Error opening database: ", err)
 	}
 
-	DB.SetMaxOpenConns(10)
-	DB.SetMaxIdleConns(5)
-	DB.SetConnMaxLifetime(5 * time.Minute)
-
-	err = DB.Ping()
-	if err != nil {
-		log.Fatal("Error pinging database: ", err)
-	}
+	DB.DB.SetMaxOpenConns(10)
+	DB.DB.SetMaxIdleConns(5)
+	DB.DB.SetConnMaxLifetime(5 * time.Minute)
 }
 
 func GetDB() *sqlx.DB {
