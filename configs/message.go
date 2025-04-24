@@ -8,11 +8,13 @@ var messages = map[string]string{
 	"auth.error.tokenInvalid":  "Invalid token provided",
 
 	// User
-	"user.error.notFound":           "User not found",
-	"user.error.invalidCredentials": "Invalid credentials provided",
-	"user.error.updateForbidden":    "You don't have permission to update user",
-	"user.error.unauthenticated":    "Unauthenticated",
-	"user.error.invalidPayload":     "Invalid payload provided",
+	"user.error.notFound":              "User not found",
+	"user.error.invalidCredentials":    "Invalid credentials provided",
+	"user.error.updateForbidden":       "You don't have permission to update user",
+	"user.error.unauthenticated":       "Unauthenticated",
+	"user.error.invalidPayload":        "Invalid payload provided",
+	"user.error.emailAlreadyExists":    "User with this email already exists",
+	"user.error.usernameAlreadyExists": "User with this username already exists",
 
 	// Organizations
 	"organization.error.userNotFound":        "User not found in organization",

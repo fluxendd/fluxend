@@ -81,6 +81,24 @@ func (s *UserServiceImpl) ExistsByUUID(id uuid.UUID) error {
 }
 
 func (s *UserServiceImpl) Create(request *user_requests.CreateRequest) (models.User, string, error) {
+	existsByEmail, err := s.userRepo.ExistsByEmail(request.Email)
+	if err != nil {
+		return models.User{}, "", err
+	}
+
+	if existsByEmail {
+		return models.User{}, "", errs.NewBadRequestError("user.error.emailAlreadyExists")
+	}
+
+	existsByUsername, err := s.userRepo.ExistsByUsername(request.Username)
+	if err != nil {
+		return models.User{}, "", err
+	}
+
+	if existsByUsername {
+		return models.User{}, "", errs.NewBadRequestError("user.error.usernameAlreadyExists")
+	}
+
 	user := models.User{
 		Username: request.Username,
 		Email:    request.Email,
@@ -89,7 +107,7 @@ func (s *UserServiceImpl) Create(request *user_requests.CreateRequest) (models.U
 		RoleID:   models.UserRoleOwner,
 	}
 
-	_, err := s.userRepo.Create(&user)
+	_, err = s.userRepo.Create(&user)
 	if err != nil {
 		return models.User{}, "", err
 	}
