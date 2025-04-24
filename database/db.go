@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"time"
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
@@ -26,6 +27,10 @@ func InitDB() {
 	if err != nil {
 		log.Fatal("Error opening database: ", err)
 	}
+
+	DB.SetMaxOpenConns(10)
+	DB.SetMaxIdleConns(5)
+	DB.SetConnMaxLifetime(5 * time.Minute)
 
 	err = DB.Ping()
 	if err != nil {
