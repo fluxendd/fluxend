@@ -161,7 +161,7 @@ func (uc *UserController) Update(c echo.Context) error {
 	}
 
 	if err := c.Bind(&request); err != nil {
-		return responses.BadRequestResponse(c, "note.error.invalidPayload")
+		return responses.BadRequestResponse(c, "user.error.invalidPayload")
 	}
 
 	updatedUser, err := uc.userService.Update(userUUID, authUserUUID, &request)
