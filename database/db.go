@@ -30,7 +30,7 @@ func InitDB() {
 
 	DB.DB.SetMaxOpenConns(10)
 	DB.DB.SetMaxIdleConns(5)
-	DB.DB.SetConnMaxLifetime(5 * time.Minute)
+	DB.DB.SetConnMaxLifetime(1 * time.Minute)
 }
 
 func GetDB() *sqlx.DB {
