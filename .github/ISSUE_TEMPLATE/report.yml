@@ -12,9 +12,9 @@ body:
       required: true
 
   - type: textarea
-    id: what
+    id: description
     attributes:
-      label: What
+      label: Description
       description: A clear and concise explanation of the task, bug, or feature request
     validations:
       required: true
