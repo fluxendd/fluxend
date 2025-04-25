@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 )
 
 type DatabaseRepository struct {
@@ -88,7 +89,16 @@ func (r *DatabaseRepository) Connect(name string) (*sqlx.DB, error) {
 		os.Getenv("DATABASE_SSL_MODE"),
 	)
 
-	return sqlx.Connect("postgres", connStr)
+	connection, err := sqlx.Connect("postgres", connStr)
+	if err != nil {
+		return nil, fmt.Errorf("could not connect to database: %v", err)
+	}
+
+	connection.DB.SetMaxOpenConns(10)
+	connection.DB.SetMaxIdleConns(5)
+	connection.DB.SetConnMaxLifetime(1 * time.Minute)
+
+	return connection, nil
 }
 
 func (r *DatabaseRepository) importSeedFiles(databaseName string, userUUID uuid.UUID) error {
