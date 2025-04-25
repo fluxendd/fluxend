@@ -1,16 +1,8 @@
 name: 📝 General Task or Issue
 description: Create a new bug report, feature request, or general task
-title: "[Issue] "
+title: ""
 labels: ["needs triage"]
 body:
-  - type: input
-    id: title
-    attributes:
-      label: Title
-      placeholder: Short descriptive title
-    validations:
-      required: true
-
   - type: textarea
     id: description
     attributes:
