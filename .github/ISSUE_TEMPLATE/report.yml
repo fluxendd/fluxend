@@ -1,0 +1,44 @@
+name: 📝 General Task or Issue
+description: Create a new bug report, feature request, or general task
+title: "[Issue] "
+labels: ["needs triage"]
+body:
+  - type: input
+    id: title
+    attributes:
+      label: Title
+      placeholder: Short descriptive title
+    validations:
+      required: true
+
+  - type: textarea
+    id: what
+    attributes:
+      label: What
+      description: A clear and concise explanation of the task, bug, or feature request
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: Describe what should happen once the issue is resolved
+    validations:
+      required: false
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots / Examples
+      description: Add screenshots, code snippets, or references if applicable
+    validations:
+      required: false
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional Context
+      description: Add any other context, environment info, or related links
+    validations:
+      required: false
