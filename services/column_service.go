@@ -51,6 +51,7 @@ func (s *ColumnServiceImpl) List(fullTableName string, projectUUID uuid.UUID, au
 	if err != nil {
 		return nil, err
 	}
+	defer connection.Close()
 
 	table, err := clientTableRepo.GetByNameInSchema(utils.ParseTableName(fullTableName))
 	if err != nil {
@@ -84,6 +85,7 @@ func (s *ColumnServiceImpl) CreateMany(fullTableName string, request *column_req
 	if err != nil {
 		return []models.Column{}, err
 	}
+	defer connection.Close()
 
 	table, err := clientTableRepo.GetByNameInSchema(utils.ParseTableName(fullTableName))
 	if err != nil {
@@ -126,6 +128,7 @@ func (s *ColumnServiceImpl) AlterMany(fullTableName string, request *column_requ
 	if err != nil {
 		return []models.Column{}, err
 	}
+	defer connection.Close()
 
 	table, err := clientTableRepo.GetByNameInSchema(utils.ParseTableName(fullTableName))
 	if err != nil {
@@ -168,6 +171,7 @@ func (s *ColumnServiceImpl) Rename(columnName string, fullTableName string, requ
 	if err != nil {
 		return []models.Column{}, err
 	}
+	defer connection.Close()
 
 	table, err := clientTableRepo.GetByNameInSchema(utils.ParseTableName(fullTableName))
 	if err != nil {
@@ -206,10 +210,11 @@ func (s *ColumnServiceImpl) Delete(columnName, fullTableName string, projectUUID
 		return false, errs.NewForbiddenError("project.error.updateForbidden")
 	}
 
-	clientColumnRepo, _, err := s.connectionService.GetColumnRepo(project.DBName, nil)
+	clientColumnRepo, connection, err := s.connectionService.GetColumnRepo(project.DBName, nil)
 	if err != nil {
 		return false, err
 	}
+	defer connection.Close()
 
 	_, tableName := utils.ParseTableName(fullTableName)
 	columnExists, err := clientColumnRepo.Has(tableName, columnName)

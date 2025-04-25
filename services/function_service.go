@@ -51,10 +51,11 @@ func (s *FunctionServiceImpl) List(schema string, projectUUID uuid.UUID, authUse
 		return []models.Function{}, errs.NewForbiddenError("function.error.listForbidden")
 	}
 
-	clientFunctionRepo, _, err := s.connectService.GetFunctionRepoByProjectUUID(projectUUID, nil)
+	clientFunctionRepo, connection, err := s.connectService.GetFunctionRepoByProjectUUID(projectUUID, nil)
 	if err != nil {
 		return []models.Function{}, err
 	}
+	defer connection.Close()
 
 	return clientFunctionRepo.List(schema)
 }
@@ -69,10 +70,11 @@ func (s *FunctionServiceImpl) GetByName(name, schema string, projectUUID uuid.UU
 		return models.Function{}, errs.NewForbiddenError("function.error.listForbidden")
 	}
 
-	clientFunctionRepo, _, err := s.connectService.GetFunctionRepoByProjectUUID(projectUUID, nil)
+	clientFunctionRepo, connection, err := s.connectService.GetFunctionRepoByProjectUUID(projectUUID, nil)
 	if err != nil {
 		return models.Function{}, err
 	}
+	defer connection.Close()
 
 	return clientFunctionRepo.GetByName(schema, name)
 }
@@ -87,10 +89,11 @@ func (s *FunctionServiceImpl) Create(schema string, request *requests.CreateFunc
 		return models.Function{}, errs.NewForbiddenError("function.error.listForbidden")
 	}
 
-	clientFunctionRepo, _, err := s.connectService.GetFunctionRepoByProjectUUID(request.ProjectUUID, nil)
+	clientFunctionRepo, connection, err := s.connectService.GetFunctionRepoByProjectUUID(request.ProjectUUID, nil)
 	if err != nil {
 		return models.Function{}, err
 	}
+	defer connection.Close()
 
 	definitionQuery, err := s.buildDefinition(schema, request)
 	if err != nil {
@@ -115,10 +118,11 @@ func (s *FunctionServiceImpl) Delete(schema, name string, projectUUID uuid.UUID,
 		return false, errs.NewForbiddenError("function.error.listForbidden")
 	}
 
-	clientFunctionRepo, _, err := s.connectService.GetFunctionRepoByProjectUUID(projectUUID, nil)
+	clientFunctionRepo, connection, err := s.connectService.GetFunctionRepoByProjectUUID(projectUUID, nil)
 	if err != nil {
 		return false, err
 	}
+	defer connection.Close()
 
 	err = clientFunctionRepo.Delete(schema, name)
 	if err != nil {

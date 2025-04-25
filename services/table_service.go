@@ -51,11 +51,11 @@ func (s *TableServiceImpl) List(projectUUID uuid.UUID, authUser models.AuthUser)
 		return []models.Table{}, errs.NewForbiddenError("project.error.listForbidden")
 	}
 
-	clientTableRepo, clientDbConnection, err := s.connectionService.GetTableRepo(project.DBName, nil)
+	clientTableRepo, connection, err := s.connectionService.GetTableRepo(project.DBName, nil)
 	if err != nil {
 		return []models.Table{}, err
 	}
-	defer clientDbConnection.Close()
+	defer connection.Close()
 
 	tables, err := clientTableRepo.List()
 	if err != nil {
@@ -75,11 +75,11 @@ func (s *TableServiceImpl) GetByName(fullTableName string, projectUUID uuid.UUID
 		return models.Table{}, errs.NewForbiddenError("project.error.viewForbidden")
 	}
 
-	clientTableRepo, clientDbConnection, err := s.connectionService.GetTableRepo(project.DBName, nil)
+	clientTableRepo, connection, err := s.connectionService.GetTableRepo(project.DBName, nil)
 	if err != nil {
 		return models.Table{}, err
 	}
-	defer clientDbConnection.Close()
+	defer connection.Close()
 
 	table, err := clientTableRepo.GetByNameInSchema(utils.ParseTableName(fullTableName))
 	if err != nil {
@@ -99,11 +99,11 @@ func (s *TableServiceImpl) Create(request *table_requests.CreateRequest, authUse
 		return models.Table{}, errs.NewForbiddenError("table.error.createForbidden")
 	}
 
-	clientTableRepo, clientDbConnection, err := s.connectionService.GetTableRepo(project.DBName, nil)
+	clientTableRepo, connection, err := s.connectionService.GetTableRepo(project.DBName, nil)
 	if err != nil {
 		return models.Table{}, err
 	}
-	defer clientDbConnection.Close()
+	defer connection.Close()
 
 	err = s.validateNameForDuplication(request.Name, clientTableRepo)
 	if err != nil {
@@ -128,11 +128,11 @@ func (s *TableServiceImpl) Duplicate(fullTableName string, authUser models.AuthU
 		return &models.Table{}, errs.NewForbiddenError("project.error.updateForbidden")
 	}
 
-	clientTableRepo, clientDbConnection, err := s.connectionService.GetTableRepo(project.DBName, nil)
+	clientTableRepo, connection, err := s.connectionService.GetTableRepo(project.DBName, nil)
 	if err != nil {
 		return &models.Table{}, err
 	}
-	defer clientDbConnection.Close()
+	defer connection.Close()
 
 	err = s.validateNameForDuplication(request.Name, clientTableRepo)
 	if err != nil {
@@ -164,11 +164,11 @@ func (s *TableServiceImpl) Rename(fullTableName string, authUser models.AuthUser
 		return models.Table{}, errs.NewForbiddenError("project.error.updateForbidden")
 	}
 
-	clientTableRepo, clientDbConnection, err := s.connectionService.GetTableRepo(project.DBName, nil)
+	clientTableRepo, connection, err := s.connectionService.GetTableRepo(project.DBName, nil)
 	if err != nil {
 		return models.Table{}, err
 	}
-	defer clientDbConnection.Close()
+	defer connection.Close()
 
 	err = s.validateNameForDuplication(request.Name, clientTableRepo)
 	if err != nil {
@@ -200,11 +200,11 @@ func (s *TableServiceImpl) Delete(fullTableName string, projectUUID uuid.UUID, a
 		return false, errs.NewForbiddenError("project.error.updateForbidden")
 	}
 
-	clientTableRepo, clientDbConnection, err := s.connectionService.GetTableRepo(project.DBName, nil)
+	clientTableRepo, connection, err := s.connectionService.GetTableRepo(project.DBName, nil)
 	if err != nil {
 		return false, err
 	}
-	defer clientDbConnection.Close()
+	defer connection.Close()
 
 	err = clientTableRepo.DropIfExists(fullTableName)
 	if err != nil {
