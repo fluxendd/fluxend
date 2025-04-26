@@ -1,6 +1,8 @@
 # Use the official Go image as a base
 FROM golang:1.23-alpine
 
+RUN apk add --no-cache docker
+
 WORKDIR /app
 COPY . .
 
