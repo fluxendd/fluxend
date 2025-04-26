@@ -60,7 +60,7 @@ services:
       - fluxton_network
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.fluxton_app.rule=Host(`fluxton.localhost`)"
+      - "traefik.http.routers.fluxton_app.rule=Host(`${APP_URL}`)"
       - "traefik.http.routers.fluxton_app.entrypoints=web"
       - "traefik.http.services.fluxton_app.loadbalancer.server.port=8080"
       #- "traefik.http.routers.fluxton_app.tls.certresolver=le"
