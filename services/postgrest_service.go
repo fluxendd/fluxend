@@ -5,6 +5,7 @@ import (
 	"fluxton/repositories"
 	"fluxton/utils"
 	"fmt"
+	"github.com/google/uuid"
 	"github.com/labstack/gommon/log"
 	"github.com/samber/do"
 	"os"
@@ -15,7 +16,7 @@ const (
 )
 
 type PostgrestService interface {
-	StartContainer(dbName string, dbPort int)
+	StartContainer(dbName string, projectUUID uuid.UUID)
 	RemoveContainer(dbName string)
 }
 
@@ -31,10 +32,15 @@ func NewPostgrestService(injector *do.Injector) (PostgrestService, error) {
 	}, nil
 }
 
-func (s *PostgrestServiceImpl) StartContainer(dbName string, dbPort int) {
+func (s *PostgrestServiceImpl) StartContainer(dbName string, projectUUID uuid.UUID) {
 	containerName := fmt.Sprintf("postgrest_%s", dbName)
+
+	// Traefik label for routing based on subdomain
+	traefikRule := fmt.Sprintf("traefik.http.routers.%s.rule=Host(`%s.%s`)", projectUUID.String(), projectUUID.String(), os.Getenv("APP_URL"))
+
 	command := []string{
 		"docker", "run", "-d", "--name", containerName,
+		"--network", "fluxton_network",
 		"-e", fmt.Sprintf(
 			"PGRST_DB_URI=postgres://%s:%s@%s/%s",
 			os.Getenv("POSTGREST_DB_USER"),
@@ -45,21 +51,24 @@ func (s *PostgrestServiceImpl) StartContainer(dbName string, dbPort int) {
 		"-e", "PGRST_DB_ANON_ROLE=" + os.Getenv("POSTGREST_DEFAULT_ROLE"),
 		"-e", "PGRST_DB_SCHEMA=" + os.Getenv("POSTGREST_DEFAULT_SCHEMA"),
 		"-e", "PGRST_JWT_SECRET=" + os.Getenv("JWT_SECRET"),
-		"-p", fmt.Sprintf("%d:3000", dbPort),
+		"--label", "traefik.enable=true",
+		"--label", traefikRule,
+		"--label", fmt.Sprintf("traefik.http.services.%s.loadbalancer.server.port=3000", projectUUID.String()), // PostgREST default port
 		ImageName,
 	}
 
+	// Execute command to start container
 	if err := utils.ExecuteCommand(command); err != nil {
-		_, err := s.projectRepo.UpdateStatusByDatabaseName(dbName, models.ProjectStatusFailed)
+		_, err := s.projectRepo.UpdateStatusByDatabaseName(dbName, models.ProjectStatusError)
 		if err != nil {
 			log.Errorf("failed to update project status: %s", err)
-
 			return
 		}
 
 		log.Errorf("failed to start container: %s", err)
 	}
 
+	// Update project status to active
 	_, err := s.projectRepo.UpdateStatusByDatabaseName(dbName, models.ProjectStatusActive)
 	if err != nil {
 		log.Errorf("failed to update project status: %s", err)

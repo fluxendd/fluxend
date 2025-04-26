@@ -25,7 +25,7 @@ var serverCmd = &cobra.Command{
 
 func startServer() {
 	e := setupServer(InitializeContainer())
-	e.Logger.Fatal(e.Start(":80"))
+	e.Logger.Fatal(e.Start("0.0.0.0:8080"))
 }
 
 func setupServer(container *do.Injector) *echo.Echo {

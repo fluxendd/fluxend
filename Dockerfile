@@ -1,6 +1,8 @@
 # Use the official Go image as a base
 FROM golang:1.23-alpine
 
+RUN apk add --no-cache docker
+
 WORKDIR /app
 COPY . .
 
@@ -11,7 +13,7 @@ RUN go mod tidy
 RUN go build -o bin/fluxton main.go
 
 # Expose the port Echo is running on (change if needed)
-EXPOSE 80
+EXPOSE 8080
 
 # Run the Go binary
 CMD ["./bin/fluxton", "server"]
