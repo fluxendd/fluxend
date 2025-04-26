@@ -27,12 +27,14 @@ services:
       - APP_ENV=${APP_ENV:-development}
       - DATABASE_URL=postgres://${DATABASE_USER:-postgres}:${DATABASE_PASSWORD:-yourpassword}@fluxton_db:5432/${DATABASE_NAME:-fluxton_db}
     ports: # on port 80
-        - "80:80"
+      - "80:80"
     depends_on:
       fluxton_db:
         condition: service_healthy
     networks:
       - fluxton_network
+    volumes: # TODO: find a better way to do this
+      - /var/run/docker.sock:/var/run/docker.sock
 
 networks:
   fluxton_network:
