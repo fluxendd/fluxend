@@ -151,7 +151,7 @@ func ExecuteCommand(command []string) error {
 		return err
 	}
 
-	log.Printf("Command succeeded: %s", string(output))
+	log.Printf("Command succeeded: cmd=[%s] : output=[%s]", command, string(output))
 
 	return nil
 }
