@@ -27,7 +27,7 @@ services:
       - APP_ENV=${APP_ENV:-development}
       - DATABASE_URL=postgres://${DATABASE_USER:-postgres}:${DATABASE_PASSWORD:-yourpassword}@fluxton_db:5432/${DATABASE_NAME:-fluxton_db}
     ports:
-      - "8080:8080"
+      - "8080:80"
     depends_on:
       fluxton_db:
         condition: service_healthy
