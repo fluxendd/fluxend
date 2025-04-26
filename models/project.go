@@ -7,7 +7,7 @@ import (
 
 const ProjectStatusActive = "active"
 const ProjectStatusInactive = "inactive"
-const ProjectStatusFailed = "failed"
+const ProjectStatusError = "error"
 const ProjectStatusFrozen = "frozen"
 
 type Project struct {
