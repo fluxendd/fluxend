@@ -26,15 +26,32 @@ services:
     environment:
       - APP_ENV=${APP_ENV:-development}
       - DATABASE_URL=postgres://${DATABASE_USER:-postgres}:${DATABASE_PASSWORD:-yourpassword}@fluxton_db:5432/${DATABASE_NAME:-fluxton_db}
-    ports:
-      - "8080:80"
+      - DATABASE_HOST=fluxton_db
+      - DATABASE_USER=${DATABASE_USER:-postgres}
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD:-yourpassword}
+      - DATABASE_NAME=${DATABASE_NAME:-fluxton_db}
+      - DATABASE_SSL_MODE=disable
+    networks:
+      - fluxton_network
     depends_on:
       fluxton_db:
         condition: service_healthy
+    expose:
+      - "0.0.0.0:80" # internal expose
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock # still TODO: revisit for security
+
+  fluxton_nginx:
+    image: nginx:stable
+    container_name: fluxton_nginx
+    ports:
+      - "80:80"
     networks:
       - fluxton_network
-    volumes: # TODO: find a better way to do this
-      - /var/run/docker.sock:/var/run/docker.sock
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+    depends_on:
+      - fluxton_app
 
 networks:
   fluxton_network:
