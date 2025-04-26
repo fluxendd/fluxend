@@ -1,4 +1,26 @@
 services:
+  traefik:
+    image: traefik:v2.11
+    container_name: traefik
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    command:
+      - "--api.dashboard=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.le.acme.tlschallenge=true"
+      #- "--certificatesresolvers.le.acme.email=your-email@example.com"
+      #- "--certificatesresolvers.le.acme.storage=/letsencrypt/acme.json"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      #- "./letsencrypt:/letsencrypt"
+    networks:
+      - fluxton_network
+
   fluxton_db:
     image: postgres:latest
     container_name: fluxton_db
@@ -31,30 +53,22 @@ services:
       - DATABASE_PASSWORD=${DATABASE_PASSWORD:-yourpassword}
       - DATABASE_NAME=${DATABASE_NAME:-fluxton_db}
       - DATABASE_SSL_MODE=disable
-    networks:
-      - fluxton_network
     depends_on:
       fluxton_db:
         condition: service_healthy
-    expose:
-      - "0.0.0.0:80" # internal expose
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock # still TODO: revisit for security
-
-  fluxton_nginx:
-    image: nginx:stable
-    container_name: fluxton_nginx
-    ports:
-      - "80:80"
     networks:
       - fluxton_network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.fluxton_app.rule=Host(`fluxton.localhost`)"
+      - "traefik.http.routers.fluxton_app.entrypoints=web"
+      - "traefik.http.services.fluxton_app.loadbalancer.server.port=8080"
+      #- "traefik.http.routers.fluxton_app.tls.certresolver=le"
     volumes:
-      - ./nginx/conf.d:/etc/nginx/conf.d:ro
-    depends_on:
-      - fluxton_app
-
+      - /var/run/docker.sock:/var/run/docker.sock # still TODO: revisit for security
 networks:
   fluxton_network:
+    name: fluxton_network
     driver: bridge
 
 volumes:
