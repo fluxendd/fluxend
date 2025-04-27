@@ -156,6 +156,16 @@ func ExecuteCommand(command []string) error {
 	return nil
 }
 
+func ExecuteCommandWithOutput(command []string) (string, error) {
+	cmd := exec.Command(command[0], command[1:]...)
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		return "", err
+	}
+
+	return string(output), nil
+}
+
 func MatchRegex(input, pattern string) (bool, error) {
 	re, err := regexp.Compile(pattern)
 	if err != nil {

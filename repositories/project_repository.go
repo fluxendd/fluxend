@@ -73,6 +73,40 @@ func (r *ProjectRepository) ListForUser(paginationParams utils.PaginationParams,
 	return projects, nil
 }
 
+func (r *ProjectRepository) List(paginationParams utils.PaginationParams) ([]models.Project, error) {
+	offset := (paginationParams.Page - 1) * paginationParams.Limit
+	query := `SELECT %s FROM fluxton.projects ORDER BY :sort DESC LIMIT :limit OFFSET :offset;`
+
+	query = fmt.Sprintf(query, utils.GetColumns[models.Project]())
+
+	params := map[string]interface{}{
+		"sort":   paginationParams.Sort,
+		"limit":  paginationParams.Limit,
+		"offset": offset,
+	}
+
+	rows, err := r.db.NamedQuery(query, params)
+	if err != nil {
+		return nil, utils.FormatError(err, "select", utils.GetMethodName())
+	}
+	defer rows.Close()
+
+	var projects []models.Project
+	for rows.Next() {
+		var project models.Project
+		if err := rows.StructScan(&project); err != nil {
+			return nil, utils.FormatError(err, "scan", utils.GetMethodName())
+		}
+		projects = append(projects, project)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, utils.FormatError(err, "iterate", utils.GetMethodName())
+	}
+
+	return projects, nil
+}
+
 func (r *ProjectRepository) GetByUUID(projectUUID uuid.UUID) (models.Project, error) {
 	query := "SELECT %s FROM fluxton.projects WHERE uuid = $1"
 	query = fmt.Sprintf(query, utils.GetColumns[models.Project]())

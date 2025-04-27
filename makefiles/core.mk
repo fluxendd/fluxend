@@ -17,3 +17,6 @@ optimize: ## Optimize the project
 
 udb.stats: ## Show the database stats
 	@go run main.go udb.stats
+
+udb.restart: ## Restart the database
+	@go run main.go udb.restart

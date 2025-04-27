@@ -8,6 +8,7 @@ import (
 	"github.com/labstack/gommon/log"
 	"github.com/samber/do"
 	"os"
+	"strings"
 )
 
 const (
@@ -17,6 +18,7 @@ const (
 type PostgrestService interface {
 	StartContainer(dbName string)
 	RemoveContainer(dbName string)
+	HasContainer(dbName string) bool
 }
 
 type PostgrestServiceImpl struct {
@@ -89,4 +91,19 @@ func (s *PostgrestServiceImpl) RemoveContainer(dbName string) {
 	if err != nil {
 		log.Errorf("failed to update project status: %s", err)
 	}
+}
+
+func (s *PostgrestServiceImpl) HasContainer(dbName string) bool {
+	containerName := fmt.Sprintf("postgrest_%s", dbName)
+
+	// Check if the container is running
+	cmd := []string{"docker", "inspect", "--format='{{.State.Running}}'", containerName}
+	output, err := utils.ExecuteCommandWithOutput(cmd)
+	if err != nil {
+		log.Errorf("failed to check container: %s", err)
+
+		return false
+	}
+
+	return strings.Contains(output, "true")
 }
