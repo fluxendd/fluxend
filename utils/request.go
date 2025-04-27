@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"errors"
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
@@ -51,22 +50,6 @@ func ExtractPaginationParams(c echo.Context) PaginationParams {
 	}
 }
 
-func GetUintQueryParam(c echo.Context, name string, required bool) (uint, error) {
-	if required && c.QueryParam(name) == "" {
-		return 0, fmt.Errorf("query parameter [%s] is required", name)
-	}
-
-	return ConvertStringToUint(c.QueryParam(name))
-}
-
-func GetUintPathParam(c echo.Context, name string, required bool) (uint, error) {
-	if required && c.Param(name) == "" {
-		return 0, fmt.Errorf("path parameter [%s] is required", name)
-	}
-
-	return ConvertStringToUint(c.Param(name))
-}
-
 func GetUUIDPathParam(c echo.Context, name string, required bool) (uuid.UUID, error) {
 	if required && c.Param(name) == "" {
 		return uuid.UUID{}, fmt.Errorf("path parameter [%s] is required", name)
@@ -81,15 +64,6 @@ func GetUUIDQueryParam(c echo.Context, name string, required bool) (uuid.UUID, e
 	}
 
 	return uuid.Parse(strings.TrimSpace(c.QueryParam(name)))
-}
-
-func ConvertStringToUint(param string) (uint, error) {
-	value, err := strconv.ParseUint(param, 10, 64)
-	if err != nil {
-		return 0, errors.New("provided value is not a valid integer")
-	}
-
-	return uint(value), nil
 }
 
 func ParseTableName(fullName string) (schema string, table string) {
