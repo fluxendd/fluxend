@@ -110,7 +110,7 @@ func (s *ProjectServiceImpl) Create(request *project_requests.CreateRequest, aut
 		return models.Project{}, err
 	}
 
-	go s.postgrestService.StartContainer(project.DBName, project.Uuid)
+	go s.postgrestService.StartContainer(project.DBName)
 
 	return project, nil
 }
