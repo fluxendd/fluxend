@@ -10,7 +10,7 @@ import (
 )
 
 var udbStats = &cobra.Command{
-	Use:   "udb:stats [database_name]",
+	Use:   "udb.stats [database_name]",
 	Short: "Pull stats from given database",
 	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {

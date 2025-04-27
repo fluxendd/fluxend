@@ -10,7 +10,7 @@ import (
 )
 
 var udbRestart = &cobra.Command{
-	Use:   "udb:restart",
+	Use:   "udb.restart",
 	Short: "Restart all PostGREST instances",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return restartPostgrestInstances()
