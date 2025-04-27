@@ -89,11 +89,8 @@ func (s *S3ServiceImpl) BucketExists(bucketName string) bool {
 	_, err := s.client.HeadBucket(context.Background(), &s3.HeadBucketInput{
 		Bucket: aws.String(bucketName),
 	})
-	if err != nil {
-		return false
-	}
 
-	return true
+	return err == nil
 }
 
 func (s *S3ServiceImpl) ListBuckets(limit int, continuationToken *string) ([]string, *string, error) {

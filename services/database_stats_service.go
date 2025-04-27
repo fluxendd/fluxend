@@ -25,7 +25,6 @@ type DatabaseStatsServiceImpl struct {
 	connectionService ConnectionService
 	adminPolicy       *policies.AdminPolicy
 	databaseRepo      *repositories.DatabaseRepository
-	databaseStatsRepo *repositories.DatabaseStatsRepository
 }
 
 func NewDatabaseStatsService(injector *do.Injector) (DatabaseStatsService, error) {
