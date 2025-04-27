@@ -48,7 +48,12 @@ func (r *ColumnRepository) List(tableName string) ([]models.Column, error) {
 
 func (r *ColumnRepository) Has(tableName, columnName string) (bool, error) {
 	var count int
-	err := r.connection.Get(&count, fmt.Sprintf("SELECT COUNT(*) FROM information_schema.columns WHERE table_name = '%s' AND column_name = '%s'", tableName, columnName))
+	query := `
+		SELECT COUNT(*)
+		FROM information_schema.columns
+		WHERE table_name = $1 AND column_name = $2
+	`
+	err := r.connection.Get(&count, query, tableName, columnName)
 	if err != nil {
 		return false, err
 	}
