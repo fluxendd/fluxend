@@ -14,9 +14,14 @@ func NewIndexRepository(connection *sqlx.DB) (*IndexRepository, error) {
 	return &IndexRepository{connection: connection}, nil
 }
 
-func (r *IndexRepository) GetByName(tableName string, indexName string) (string, error) {
+func (r *IndexRepository) GetByName(tableName, indexName string) (string, error) {
 	var index string
-	err := r.connection.Get(&index, fmt.Sprintf("SELECT indexdef FROM pg_indexes WHERE tablename = '%s' AND indexname = '%s'", tableName, indexName))
+	query := `
+		SELECT indexdef
+		FROM pg_indexes
+		WHERE tablename = $1 AND indexname = $2
+	`
+	err := r.connection.Get(&index, query, tableName, indexName)
 	if err != nil {
 		return "", err
 	}
@@ -24,9 +29,14 @@ func (r *IndexRepository) GetByName(tableName string, indexName string) (string,
 	return index, nil
 }
 
-func (r *IndexRepository) Has(tableName string, indexName string) (bool, error) {
+func (r *IndexRepository) Has(tableName, indexName string) (bool, error) {
 	var count int
-	err := r.connection.Get(&count, fmt.Sprintf("SELECT COUNT(*) FROM pg_indexes WHERE tablename = '%s' AND indexname = '%s'", tableName, indexName))
+	query := `
+		SELECT COUNT(*)
+		FROM pg_indexes
+		WHERE tablename = $1 AND indexname = $2
+	`
+	err := r.connection.Get(&count, query, tableName, indexName)
 	if err != nil {
 		return false, err
 	}
@@ -36,7 +46,12 @@ func (r *IndexRepository) Has(tableName string, indexName string) (bool, error) 
 
 func (r *IndexRepository) List(tableName string) ([]string, error) {
 	var indexes []string
-	err := r.connection.Select(&indexes, fmt.Sprintf("SELECT indexname FROM pg_indexes WHERE tablename = '%s'", tableName))
+	query := `
+		SELECT indexname
+		FROM pg_indexes
+		WHERE tablename = $1
+	`
+	err := r.connection.Select(&indexes, query, tableName)
 	if err != nil {
 		return []string{}, err
 	}
