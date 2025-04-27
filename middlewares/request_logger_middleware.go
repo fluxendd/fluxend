@@ -4,9 +4,11 @@ import (
 	"fluxton/models"
 	"fluxton/repositories"
 	"fluxton/utils"
+	"fmt"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	_ "github.com/lib/pq" // PostgreSQL driver
+	"io"
 	"time"
 )
 
@@ -30,7 +32,7 @@ func RequestLoggerMiddleware(requestLogRepo *repositories.RequestLogRepository) 
 				IPAddress: c.RealIP(),
 				UserAgent: request.UserAgent(),
 				Params:    request.URL.RawQuery,
-				Body:      "{}", // TODO: implement body parsing/reading later
+				Body:      readBody(request.Body), // TODO: look into streams and buffering
 				CreatedAt: time.Now(),
 			}
 
@@ -39,4 +41,16 @@ func RequestLoggerMiddleware(requestLogRepo *repositories.RequestLogRepository) 
 			return res
 		}
 	}
+}
+
+func readBody(body io.ReadCloser) string {
+	defer body.Close()
+	data, err := io.ReadAll(body)
+	if err != nil {
+		fmt.Printf("failed to read request body: %v", err)
+
+		return ""
+	}
+
+	return string(data)
 }

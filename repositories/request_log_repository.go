@@ -57,9 +57,9 @@ func (r *RequestLogRepository) Create(requestLog *models.RequestLog) (*models.Re
 
 	query := `
     INSERT INTO fluxton.request_logs (
-        user_uuid, api_key, method, endpoint, ip_address, user_agent, params
+        user_uuid, api_key, method, endpoint, ip_address, user_agent, params, body
     ) VALUES (
-        $1, $2, $3, $4, $5, $6, $7
+        $1, $2, $3, $4, $5, $6, $7, $8
     )
     RETURNING uuid
 `
@@ -73,6 +73,7 @@ func (r *RequestLogRepository) Create(requestLog *models.RequestLog) (*models.Re
 		requestLog.IPAddress,
 		requestLog.UserAgent,
 		requestLog.Params,
+		requestLog.Body,
 	).Scan(&requestLog.Uuid)
 
 	if queryErr != nil {
