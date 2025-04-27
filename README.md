@@ -63,7 +63,8 @@ Available Commands:
   seed        Seed the database with initial data
   server      Start the Fluxton API server
   make:model  Creates a new model file in the models directory
-  udb:stats   Pull stats from given database
+  udb.stats   Pull stats from given database
+  udb.restart Restart all PostGREST instances
 
 Flags:
   -h, --help   help for fluxton
@@ -96,6 +97,7 @@ seed                           Seed the database
 about                          Show the project information
 optimize                       Optimize the project
 udb.stats                      Show the database stats
+udb.restart                    Restart all PostGREST instances
 routes.list                    Show all the available routes
 drop.user.dbs                  Drop all user-created databases
 
