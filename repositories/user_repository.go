@@ -156,6 +156,10 @@ func (r *UserRepository) GetJWTVersion(userId uuid.UUID) (int, error) {
 	var version int
 	err := r.db.Get(&version, query, userId)
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return 0, errs.NewUnauthorizedError("auth.error.tokenExpired")
+		}
+
 		return 0, fmt.Errorf("could not fetch JWT version: %v", err)
 	}
 

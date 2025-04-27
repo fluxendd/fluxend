@@ -6,6 +6,7 @@ var messages = map[string]string{
 	// Authentication
 	"auth.error.tokenRequired": "Token is required",
 	"auth.error.tokenInvalid":  "Invalid token provided",
+	"auth.error.tokenExpired":  "Token has expired",
 
 	// User
 	"user.error.notFound":              "User not found",
