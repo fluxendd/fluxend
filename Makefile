@@ -13,9 +13,15 @@ setup: ## Setup the project
 	cp .env.example .env
 	make up
 
-build: ## Build the project
+build: ## Build the project with all containers
 	@make down
 	@docker-compose up -d --build
+
+build.app: ## Rebuild the app container only
+	@docker-compose stop $${APP_CONTAINER_NAME}
+	@docker-compose rm -f $${APP_CONTAINER_NAME}
+	@docker-compose build $${APP_CONTAINER_NAME}
+	@docker-compose up -d $${APP_CONTAINER_NAME}
 
 up: ## Start the project
 	@make down
@@ -25,10 +31,10 @@ down: ## Stop the project
 	@docker-compose down
 
 login.app: ## Login to fluxton container
-	@docker exec -it fluxton_app /bin/sh
+	@docker exec -it $${APP_CONTAINER_NAME} /bin/sh
 
 login.db: ## Login to database container
-	@docker exec -it fluxton_db /bin/bash
+	@docker exec -it $${DATABASE_CONTAINER_NAME} /bin/bash
 
 pgr.list: ## List all postgrest containers
 	@docker ps --filter "name=postgrest_" --format "table {{.ID}}\t{{.Names}}\t{{.Ports}}\t{{.CreatedAt}}\t{{.Status}}"
