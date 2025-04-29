@@ -1,12 +1,16 @@
 package models
 
 type Column struct {
-	Name           string `db:"column_name" json:"name"`
-	Position       int    `db:"column_position" json:"position"`
-	NotNull        bool   `db:"not_null" json:"notNull"`
-	Type           string `db:"data_type" json:"type"`
-	ConstraintType string `db:"constraint_type" json:"constraintType"`
-	Primary        bool   `json:"primary"`
-	Unique         bool   `json:"unique"`
-	Default        string `db:"default_value" json:"defaultValue"`
+	Name     string `json:"name"`
+	Position int    `json:"position"`
+	NotNull  bool   `json:"notNull"`
+	Type     string `json:"type"`
+	Primary  bool   `json:"primary"`
+	Unique   bool   `json:"unique"`
+	Foreign  bool   `json:"foreign"`
+	Default  string `json:"defaultValue"`
+
+	// only required when constraint is FOREIGN KEY
+	ReferenceTable  string `json:"referenceTable,omitempty"`
+	ReferenceColumn string `json:"referenceColumn,omitempty"`
 }
