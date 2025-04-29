@@ -63,5 +63,9 @@ func ValidateColumn(column models.Column) error {
 			validation.Required.Error("Column type is required"),
 			validation.By(validateType),
 		),
+		validation.Field(
+			&column.Foreign,
+			validation.By(validateForeignKeyConstraints(column)),
+		),
 	)
 }

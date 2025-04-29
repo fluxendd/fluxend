@@ -1,8 +1,11 @@
 package column_requests
 
 import (
+	"errors"
+	"fluxton/models"
 	"fluxton/requests"
 	"fmt"
+	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"strings"
 )
 
@@ -24,4 +27,16 @@ func validateType(value interface{}) error {
 	}
 
 	return nil
+}
+
+func validateForeignKeyConstraints(column models.Column) validation.RuleFunc {
+	return func(value interface{}) error {
+		if column.Foreign {
+			if column.ReferenceTable == "" || column.ReferenceColumn == "" {
+				return errors.New("reference table and column are required for foreign key constraints")
+			}
+		}
+
+		return nil
+	}
 }
