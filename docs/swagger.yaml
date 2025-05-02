@@ -69,40 +69,86 @@ definitions:
     type: object
   form_requests.FieldRequest:
     properties:
+      date_format:
+        description: fails if provided and field value doesn't match
+        type: string
+      default_value:
+        type: string
       description:
+        type: string
+      end_date:
         type: string
       is_required:
         type: boolean
       label:
+        description: required fields
         type: string
+      max_length:
+        type: integer
+      max_value:
+        type: integer
+      min_length:
+        description: all fields from this point are optional
+        type: integer
+      min_value:
+        description: only applicable for number types
+        type: integer
       options:
-        description: Optional for select/radio types
+        description: Options for select/radio types
+        type: string
+      pattern:
+        type: string
+      start_date:
+        description: only applicable for date types
         type: string
       type:
         type: string
     type: object
   form_requests.UpdateFormFieldRequest:
     properties:
+      date_format:
+        description: fails if provided and field value doesn't match
+        type: string
+      default_value:
+        type: string
       description:
+        type: string
+      end_date:
         type: string
       is_required:
         type: boolean
       label:
+        description: required fields
         type: string
+      max_length:
+        type: integer
+      max_value:
+        type: integer
+      min_length:
+        description: all fields from this point are optional
+        type: integer
+      min_value:
+        description: only applicable for number types
+        type: integer
       options:
-        description: Optional for select/radio types
+        description: Options for select/radio types
+        type: string
+      pattern:
         type: string
       projectUUID:
+        type: string
+      start_date:
+        description: only applicable for date types
         type: string
       type:
         type: string
     type: object
   models.Column:
     properties:
-      constraintType:
-        type: string
       defaultValue:
         type: string
+      foreign:
+        type: boolean
       name:
         type: string
       notNull:
@@ -111,6 +157,11 @@ definitions:
         type: integer
       primary:
         type: boolean
+      referenceColumn:
+        type: string
+      referenceTable:
+        description: only required when constraint is FOREIGN KEY
+        type: string
       type:
         type: string
       unique:
@@ -238,6 +289,8 @@ definitions:
     properties:
       defaultValue:
         type: string
+      foreign:
+        type: boolean
       name:
         type: string
       notNull:
@@ -246,6 +299,10 @@ definitions:
         type: integer
       primary:
         type: boolean
+      referenceColumn:
+        type: string
+      referenceTable:
+        type: string
       type:
         type: string
       unique:
@@ -277,7 +334,13 @@ definitions:
     properties:
       createdAt:
         type: string
+      dateFormat:
+        type: string
+      defaultValue:
+        type: string
       description:
+        type: string
+      endDate:
         type: string
       formUuid:
         type: string
@@ -285,7 +348,19 @@ definitions:
         type: boolean
       label:
         type: string
+      maxLength:
+        type: integer
+      maxValue:
+        type: integer
+      minLength:
+        type: integer
+      minValue:
+        type: integer
       options:
+        type: string
+      pattern:
+        type: string
+      startDate:
         type: string
       type:
         type: string

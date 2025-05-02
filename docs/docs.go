@@ -4471,17 +4471,49 @@ const docTemplate = `{
         "form_requests.FieldRequest": {
             "type": "object",
             "properties": {
+                "date_format": {
+                    "description": "fails if provided and field value doesn't match",
+                    "type": "string"
+                },
+                "default_value": {
+                    "type": "string"
+                },
                 "description": {
+                    "type": "string"
+                },
+                "end_date": {
                     "type": "string"
                 },
                 "is_required": {
                     "type": "boolean"
                 },
                 "label": {
+                    "description": "required fields",
                     "type": "string"
                 },
+                "max_length": {
+                    "type": "integer"
+                },
+                "max_value": {
+                    "type": "integer"
+                },
+                "min_length": {
+                    "description": "all fields from this point are optional",
+                    "type": "integer"
+                },
+                "min_value": {
+                    "description": "only applicable for number types",
+                    "type": "integer"
+                },
                 "options": {
-                    "description": "Optional for select/radio types",
+                    "description": "Options for select/radio types",
+                    "type": "string"
+                },
+                "pattern": {
+                    "type": "string"
+                },
+                "start_date": {
+                    "description": "only applicable for date types",
                     "type": "string"
                 },
                 "type": {
@@ -4492,20 +4524,52 @@ const docTemplate = `{
         "form_requests.UpdateFormFieldRequest": {
             "type": "object",
             "properties": {
+                "date_format": {
+                    "description": "fails if provided and field value doesn't match",
+                    "type": "string"
+                },
+                "default_value": {
+                    "type": "string"
+                },
                 "description": {
+                    "type": "string"
+                },
+                "end_date": {
                     "type": "string"
                 },
                 "is_required": {
                     "type": "boolean"
                 },
                 "label": {
+                    "description": "required fields",
                     "type": "string"
                 },
+                "max_length": {
+                    "type": "integer"
+                },
+                "max_value": {
+                    "type": "integer"
+                },
+                "min_length": {
+                    "description": "all fields from this point are optional",
+                    "type": "integer"
+                },
+                "min_value": {
+                    "description": "only applicable for number types",
+                    "type": "integer"
+                },
                 "options": {
-                    "description": "Optional for select/radio types",
+                    "description": "Options for select/radio types",
+                    "type": "string"
+                },
+                "pattern": {
                     "type": "string"
                 },
                 "projectUUID": {
+                    "type": "string"
+                },
+                "start_date": {
+                    "description": "only applicable for date types",
                     "type": "string"
                 },
                 "type": {
@@ -4516,11 +4580,11 @@ const docTemplate = `{
         "models.Column": {
             "type": "object",
             "properties": {
-                "constraintType": {
-                    "type": "string"
-                },
                 "defaultValue": {
                     "type": "string"
+                },
+                "foreign": {
+                    "type": "boolean"
                 },
                 "name": {
                     "type": "string"
@@ -4533,6 +4597,13 @@ const docTemplate = `{
                 },
                 "primary": {
                     "type": "boolean"
+                },
+                "referenceColumn": {
+                    "type": "string"
+                },
+                "referenceTable": {
+                    "description": "only required when constraint is FOREIGN KEY",
+                    "type": "string"
                 },
                 "type": {
                     "type": "string"
@@ -4730,6 +4801,9 @@ const docTemplate = `{
                 "defaultValue": {
                     "type": "string"
                 },
+                "foreign": {
+                    "type": "boolean"
+                },
                 "name": {
                     "type": "string"
                 },
@@ -4741,6 +4815,12 @@ const docTemplate = `{
                 },
                 "primary": {
                     "type": "boolean"
+                },
+                "referenceColumn": {
+                    "type": "string"
+                },
+                "referenceTable": {
+                    "type": "string"
                 },
                 "type": {
                     "type": "string"
@@ -4789,7 +4869,16 @@ const docTemplate = `{
                 "createdAt": {
                     "type": "string"
                 },
+                "dateFormat": {
+                    "type": "string"
+                },
+                "defaultValue": {
+                    "type": "string"
+                },
                 "description": {
+                    "type": "string"
+                },
+                "endDate": {
                     "type": "string"
                 },
                 "formUuid": {
@@ -4801,7 +4890,25 @@ const docTemplate = `{
                 "label": {
                     "type": "string"
                 },
+                "maxLength": {
+                    "type": "integer"
+                },
+                "maxValue": {
+                    "type": "integer"
+                },
+                "minLength": {
+                    "type": "integer"
+                },
+                "minValue": {
+                    "type": "integer"
+                },
                 "options": {
+                    "type": "string"
+                },
+                "pattern": {
+                    "type": "string"
+                },
+                "startDate": {
                     "type": "string"
                 },
                 "type": {
