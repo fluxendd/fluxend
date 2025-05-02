@@ -108,7 +108,7 @@ func (s *BucketServiceImpl) Create(request *bucket_requests.CreateRequest, authU
 		return models.Bucket{}, err
 	}
 
-	bucket.Url = utils.PointerToString(createdBucket.Location)
+	bucket.Url = utils.ConvertPointerToString(createdBucket.Location)
 	_, err = s.bucketRepo.Create(&bucket)
 	if err != nil {
 		return models.Bucket{}, err

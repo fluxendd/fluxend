@@ -114,7 +114,7 @@ func (s *FileServiceImpl) Create(bucketUUID uuid.UUID, request *bucket_requests.
 	file := models.File{
 		BucketUuid:   bucketUUID,
 		FullFileName: request.FullFileName,
-		Size:         utils.BytesToKiloBytes(int(request.File.Size)),
+		Size:         utils.ConvertBytesToKiloBytes(int(request.File.Size)),
 		MimeType:     request.File.Header.Get("Content-Type"),
 		CreatedBy:    authUser.Uuid,
 		UpdatedBy:    authUser.Uuid,
@@ -238,7 +238,7 @@ func (s *FileServiceImpl) getFileContents(request bucket_requests.CreateFileRequ
 }
 
 func (s *FileServiceImpl) validate(request *bucket_requests.CreateFileRequest, bucket models.Bucket) error {
-	fileSize := utils.BytesToKiloBytes(int(request.File.Size))
+	fileSize := utils.ConvertBytesToKiloBytes(int(request.File.Size))
 
 	err := s.validateMimeType(request.File.Header.Get("Content-Type"), bucket)
 	if err != nil {

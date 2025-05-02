@@ -8,6 +8,8 @@ import (
 	"strings"
 )
 
+const DefaultSchema = "public"
+
 type PaginationParams struct {
 	Page  int
 	Limit int
@@ -72,5 +74,5 @@ func ParseTableName(fullName string) (schema string, table string) {
 		return parts[0], parts[1] // schema, table
 	}
 
-	return "public", fullName // Default to "public" schema if none provided
+	return DefaultSchema, fullName // Default to "public" schema if none provided
 }
