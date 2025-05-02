@@ -12,17 +12,17 @@ type FormFieldResponse struct {
 	Label        string      `json:"label"`
 	Type         string      `json:"type"`
 	IsRequired   bool        `json:"isRequired"`
-	Description  null.String `json:"description"`
-	Options      null.String `json:"options"`
-	MinLength    null.Int    `db:"min_length" json:"minLength"`
-	MaxLength    null.Int    `db:"max_length" json:"maxLength"`
-	MinValue     null.Int    `db:"min_value" json:"minValue"`
-	MaxValue     null.Int    `db:"max_value" json:"maxValue"`
-	Pattern      null.String `db:"pattern" json:"pattern"`
-	DefaultValue null.String `db:"default_value" json:"defaultValue"`
-	StartDate    null.String `db:"start_date" json:"startDate"`
-	EndDate      null.String `db:"end_date" json:"endDate"`
-	DateFormat   null.String `db:"date_format" json:"dateFormat"`
+	Description  null.String `json:"description" swaggertype:"string"`
+	Options      null.String `json:"options" swaggertype:"string"`
+	MinLength    null.Int    `db:"min_length" json:"minLength" swaggertype:"integer"`
+	MaxLength    null.Int    `db:"max_length" json:"maxLength" swaggertype:"integer"`
+	MinValue     null.Int    `db:"min_value" json:"minValue" swaggertype:"integer"`
+	MaxValue     null.Int    `db:"max_value" json:"maxValue" swaggertype:"integer"`
+	Pattern      null.String `db:"pattern" json:"pattern" swaggertype:"string"`
+	DefaultValue null.String `db:"default_value" json:"defaultValue" swaggertype:"string"`
+	StartDate    null.String `db:"start_date" json:"startDate" swaggertype:"string"`
+	EndDate      null.String `db:"end_date" json:"endDate" swaggertype:"string"`
+	DateFormat   null.String `db:"date_format" json:"dateFormat" swaggertype:"string"`
 	CreatedAt    string      `json:"createdAt"`
 	UpdatedAt    string      `json:"updatedAt"`
 }
