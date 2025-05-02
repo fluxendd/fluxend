@@ -1,7 +1,7 @@
 package models
 
 import (
-	"database/sql"
+	"github.com/guregu/null/v6"
 )
 
 type Column struct {
@@ -15,6 +15,6 @@ type Column struct {
 	Default  string `db:"default_value" json:"defaultValue"`
 
 	// only required when constraint is FOREIGN KEY
-	ReferenceTable  sql.NullString `db:"reference_table" json:"referenceTable,omitempty"`
-	ReferenceColumn sql.NullString `db:"reference_column" json:"referenceColumn,omitempty"`
+	ReferenceTable  null.String `db:"reference_table" json:"referenceTable,omitempty"`
+	ReferenceColumn null.String `db:"reference_column" json:"referenceColumn,omitempty"`
 }
