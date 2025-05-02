@@ -72,20 +72,12 @@ func (r *BaseRequest) ExtractValidationErrors(err error) []string {
 	return errs
 }
 
-func GetReservedTableNames() map[string]bool {
-	return reservedTableNames
-}
-
 func IsReservedTableName(name string) bool {
 	if _, ok := reservedTableNames[name]; ok {
 		return true
 	}
 
 	return false
-}
-
-func GetReservedColumnNames() map[string]bool {
-	return reservedColumnNames
 }
 
 func IsReservedColumnName(name string) bool {
@@ -96,10 +88,6 @@ func IsReservedColumnName(name string) bool {
 	return false
 }
 
-func GetAllowedColumnTypes() map[string]bool {
-	return allowedColumnTypes
-}
-
 func IsAllowedColumnType(columnType string) bool {
 	if _, ok := allowedColumnTypes[columnType]; ok {
 		return true
@@ -107,11 +95,6 @@ func IsAllowedColumnType(columnType string) bool {
 
 	return false
 }
-
-func GetReservedIndexNames() map[string]bool {
-	return reservedIndexNames
-}
-
 func IsReservedIndexName(name string) bool {
 	if _, ok := reservedIndexNames[name]; ok {
 		return true
