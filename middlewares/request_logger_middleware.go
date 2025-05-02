@@ -17,16 +17,12 @@ func RequestLoggerMiddleware(requestLogRepo *repositories.RequestLogRepository) 
 		return func(c echo.Context) error {
 			res := next(c)
 			authUserUUID, _ := utils.NewAuth(c).Uuid()
-			APIKey, err := utils.GetUUIDQueryParam(c, "api_key", true)
-			if err != nil {
-				APIKey = uuid.MustParse("00000000-0000-0000-0000-000000000000")
-			}
 
 			request := c.Request()
 
 			logEntry := models.RequestLog{
 				UserUuid:  authUserUUID,
-				APIKey:    APIKey, // TODO: implement API key parsing/reading later
+				APIKey:    uuid.MustParse("00000000-0000-0000-0000-000000000000"), // TODO: implement API key parsing/reading later
 				Method:    request.Method,
 				Endpoint:  request.URL.Path,
 				IPAddress: c.RealIP(),

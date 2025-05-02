@@ -4,7 +4,6 @@ import (
 	"fluxton/repositories"
 	"fluxton/requests"
 	"fluxton/services"
-	"fluxton/utils"
 	"fmt"
 	"github.com/samber/do"
 	"github.com/spf13/cobra"
