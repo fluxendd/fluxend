@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fluxton/requests"
 	"fluxton/requests/user_requests"
 	"fluxton/resources"
 	"fluxton/responses"
@@ -39,7 +40,12 @@ func NewUserController(injector *do.Injector) (*UserController, error) {
 //
 // @Router /users/{userUUID} [get]
 func (uc *UserController) Show(c echo.Context) error {
-	id, err := utils.GetUUIDPathParam(c, "id", true)
+	var request requests.DefaultRequest
+	if err := request.BindAndValidate(c); err != nil {
+		return responses.UnprocessableResponse(c, err)
+	}
+
+	id, err := request.GetUUIDPathParam(c, "id", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
@@ -155,7 +161,7 @@ func (uc *UserController) Update(c echo.Context) error {
 	}
 
 	var request user_requests.UpdateRequest
-	userUUID, err := utils.GetUUIDPathParam(c, "userUUID", true)
+	userUUID, err := request.GetUUIDPathParam(c, "userUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}

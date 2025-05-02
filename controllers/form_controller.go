@@ -81,9 +81,14 @@ func (fc *FormController) List(c echo.Context) error {
 //
 // @Router /forms/{formUUID} [get]
 func (fc *FormController) Show(c echo.Context) error {
+	var request requests.DefaultRequestWithProjectHeader
+	if err := request.BindAndValidate(c); err != nil {
+		return responses.UnprocessableResponse(c, err)
+	}
+
 	authUser, _ := utils.NewAuth(c).User()
 
-	formUUID, err := utils.GetUUIDPathParam(c, "formUUID", true)
+	formUUID, err := request.GetUUIDPathParam(c, "formUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
@@ -163,7 +168,7 @@ func (fc *FormController) Update(c echo.Context) error {
 
 	authUser, _ := utils.NewAuth(c).User()
 
-	formUUID, err := utils.GetUUIDPathParam(c, "formUUID", true)
+	formUUID, err := request.GetUUIDPathParam(c, "formUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
@@ -197,9 +202,14 @@ func (fc *FormController) Update(c echo.Context) error {
 //
 // @Router /forms/{formUUID} [delete]
 func (fc *FormController) Delete(c echo.Context) error {
+	var request requests.DefaultRequestWithProjectHeader
+	if err := request.BindAndValidate(c); err != nil {
+		return responses.UnprocessableResponse(c, err)
+	}
+
 	authUser, _ := utils.NewAuth(c).User()
 
-	formUUID, err := utils.GetUUIDPathParam(c, "formUUID", true)
+	formUUID, err := request.GetUUIDPathParam(c, "formUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}

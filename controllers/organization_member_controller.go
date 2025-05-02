@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fluxton/requests"
 	"fluxton/requests/organization_requests"
 	"fluxton/resources"
 	"fluxton/responses"
@@ -40,9 +41,14 @@ func NewOrganizationMemberController(injector *do.Injector) (*OrganizationMember
 //
 // @Router /organizations/{organizationUUID}/users [get]
 func (ouc *OrganizationMemberController) List(c echo.Context) error {
+	var request requests.DefaultRequest
+	if err := request.BindAndValidate(c); err != nil {
+		return responses.UnprocessableResponse(c, err)
+	}
+
 	authUser, _ := utils.NewAuth(c).User()
 
-	organizationUUID, err := utils.GetUUIDPathParam(c, "organizationUUID", true)
+	organizationUUID, err := request.GetUUIDPathParam(c, "organizationUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
@@ -83,7 +89,7 @@ func (ouc *OrganizationMemberController) Store(c echo.Context) error {
 
 	authUser, _ := utils.NewAuth(c).User()
 
-	organizationUUID, err := utils.GetUUIDPathParam(c, "organizationUUID", true)
+	organizationUUID, err := request.GetUUIDPathParam(c, "organizationUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
@@ -117,14 +123,19 @@ func (ouc *OrganizationMemberController) Store(c echo.Context) error {
 //
 // @Router /organizations/{organizationUUID}/users/{userUUID} [delete]
 func (ouc *OrganizationMemberController) Delete(c echo.Context) error {
+	var request requests.DefaultRequest
+	if err := request.BindAndValidate(c); err != nil {
+		return responses.UnprocessableResponse(c, err)
+	}
+
 	authUser, _ := utils.NewAuth(c).User()
 
-	organizationUUID, err := utils.GetUUIDPathParam(c, "organizationUUID", true)
+	organizationUUID, err := request.GetUUIDPathParam(c, "organizationUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	userID, err := utils.GetUUIDPathParam(c, "userID", true)
+	userID, err := request.GetUUIDPathParam(c, "userID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}

@@ -86,14 +86,19 @@ func (fc *FileController) List(c echo.Context) error {
 //
 // @Router /buckets/{bucketUUID}/files/{fileUUID} [get]
 func (fc *FileController) Show(c echo.Context) error {
+	var request requests.DefaultRequestWithProjectHeader
+	if err := request.BindAndValidate(c); err != nil {
+		return responses.UnprocessableResponse(c, err)
+	}
+
 	authUser, _ := utils.NewAuth(c).User()
 
-	bucketUUID, err := utils.GetUUIDPathParam(c, "bucketUUID", true)
+	bucketUUID, err := request.GetUUIDPathParam(c, "bucketUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	fileUUID, err := utils.GetUUIDPathParam(c, "fileUUID", true)
+	fileUUID, err := request.GetUUIDPathParam(c, "fileUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
@@ -133,7 +138,7 @@ func (fc *FileController) Store(c echo.Context) error {
 
 	authUser, _ := utils.NewAuth(c).User()
 
-	bucketUUID, err := utils.GetUUIDPathParam(c, "bucketUUID", true)
+	bucketUUID, err := request.GetUUIDPathParam(c, "bucketUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
@@ -174,12 +179,12 @@ func (fc *FileController) Rename(c echo.Context) error {
 
 	authUser, _ := utils.NewAuth(c).User()
 
-	fileUUID, err := utils.GetUUIDPathParam(c, "fileUUID", true)
+	fileUUID, err := request.GetUUIDPathParam(c, "fileUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	bucketUUID, err := utils.GetUUIDPathParam(c, "bucketUUID", true)
+	bucketUUID, err := request.GetUUIDPathParam(c, "bucketUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
@@ -212,14 +217,19 @@ func (fc *FileController) Rename(c echo.Context) error {
 //
 // @Router /buckets/{bucketUUID}/files/{fileUUID} [delete]
 func (fc *FileController) Delete(c echo.Context) error {
+	var request requests.DefaultRequestWithProjectHeader
+	if err := request.BindAndValidate(c); err != nil {
+		return responses.UnprocessableResponse(c, err)
+	}
+
 	authUser, _ := utils.NewAuth(c).User()
 
-	bucketUUID, err := utils.GetUUIDPathParam(c, "bucketUUID", true)
+	bucketUUID, err := request.GetUUIDPathParam(c, "bucketUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	fileUUID, err := utils.GetUUIDPathParam(c, "fileUUID", true)
+	fileUUID, err := request.GetUUIDPathParam(c, "fileUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}

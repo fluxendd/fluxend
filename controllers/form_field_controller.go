@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fluxton/requests"
 	"fluxton/requests/form_requests"
 	"fluxton/resources"
 	"fluxton/responses"
@@ -39,9 +40,14 @@ func NewFormFieldController(injector *do.Injector) (*FormFieldController, error)
 //
 // @Router /forms/{formUUID}/fields [get]
 func (ffc *FormFieldController) List(c echo.Context) error {
+	var request requests.DefaultRequestWithProjectHeader
+	if err := request.BindAndValidate(c); err != nil {
+		return responses.UnprocessableResponse(c, err)
+	}
+
 	authUser, _ := utils.NewAuth(c).User()
 
-	formUUID, err := utils.GetUUIDPathParam(c, "formUUID", true)
+	formUUID, err := request.GetUUIDPathParam(c, "formUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
@@ -74,9 +80,14 @@ func (ffc *FormFieldController) List(c echo.Context) error {
 //
 // @Router /forms/{formUUID}/fields/{fieldUUID} [get]
 func (ffc *FormFieldController) Show(c echo.Context) error {
+	var request requests.DefaultRequestWithProjectHeader
+	if err := request.BindAndValidate(c); err != nil {
+		return responses.UnprocessableResponse(c, err)
+	}
+
 	authUser, _ := utils.NewAuth(c).User()
 
-	formUUID, err := utils.GetUUIDPathParam(c, "formUUID", true)
+	formUUID, err := request.GetUUIDPathParam(c, "formUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
@@ -117,7 +128,7 @@ func (ffc *FormFieldController) Store(c echo.Context) error {
 
 	authUser, _ := utils.NewAuth(c).User()
 
-	formUUID, err := utils.GetUUIDPathParam(c, "formUUID", true)
+	formUUID, err := request.GetUUIDPathParam(c, "formUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
@@ -159,12 +170,12 @@ func (ffc *FormFieldController) Update(c echo.Context) error {
 
 	authUser, _ := utils.NewAuth(c).User()
 
-	fieldUUID, err := utils.GetUUIDPathParam(c, "fieldUUID", true)
+	fieldUUID, err := request.GetUUIDPathParam(c, "fieldUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	formUUID, err := utils.GetUUIDPathParam(c, "formUUID", true)
+	formUUID, err := request.GetUUIDPathParam(c, "formUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
@@ -197,14 +208,19 @@ func (ffc *FormFieldController) Update(c echo.Context) error {
 //
 // @Router /forms/{formUUID}/fields/{fieldUUID} [delete]
 func (ffc *FormFieldController) Delete(c echo.Context) error {
+	var request requests.DefaultRequestWithProjectHeader
+	if err := request.BindAndValidate(c); err != nil {
+		return responses.UnprocessableResponse(c, err)
+	}
+
 	authUser, _ := utils.NewAuth(c).User()
 
-	fieldUUID, err := utils.GetUUIDPathParam(c, "fieldUUID", true)
+	fieldUUID, err := request.GetUUIDPathParam(c, "fieldUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	formUUID, err := utils.GetUUIDPathParam(c, "formUUID", true)
+	formUUID, err := request.GetUUIDPathParam(c, "formUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}

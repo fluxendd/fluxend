@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fluxton/requests"
 	"fluxton/requests/form_requests"
 	"fluxton/resources"
 	"fluxton/responses"
@@ -41,9 +42,14 @@ func NewFormResponseController(injector *do.Injector) (*FormResponseController, 
 //
 // @Router /forms/{formUUID}/responses [get]
 func (ffc *FormResponseController) List(c echo.Context) error {
+	var request requests.DefaultRequestWithProjectHeader
+	if err := request.BindAndValidate(c); err != nil {
+		return responses.UnprocessableResponse(c, err)
+	}
+
 	authUser, _ := utils.NewAuth(c).User()
 
-	formUUID, err := utils.GetUUIDPathParam(c, "formUUID", true)
+	formUUID, err := request.GetUUIDPathParam(c, "formUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
@@ -78,9 +84,14 @@ func (ffc *FormResponseController) List(c echo.Context) error {
 //
 // @Router /forms/{formUUID}/responses/{formResponseUUID} [get]
 func (ffc *FormResponseController) Show(c echo.Context) error {
+	var request requests.DefaultRequestWithProjectHeader
+	if err := request.BindAndValidate(c); err != nil {
+		return responses.UnprocessableResponse(c, err)
+	}
+
 	authUser, _ := utils.NewAuth(c).User()
 
-	formUUID, formResponseUUID, err := ffc.parseRequest(c)
+	formUUID, formResponseUUID, err := ffc.parseRequest(request, c)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
@@ -123,7 +134,7 @@ func (ffc *FormResponseController) Store(c echo.Context) error {
 
 	authUser, _ := utils.NewAuth(c).User()
 
-	formUUID, err := utils.GetUUIDPathParam(c, "formUUID", true)
+	formUUID, err := request.GetUUIDPathParam(c, "formUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
@@ -158,9 +169,14 @@ func (ffc *FormResponseController) Store(c echo.Context) error {
 //
 // @Router /forms/{formUUID}/responses/{formResponseUUID} [delete]
 func (ffc *FormResponseController) Delete(c echo.Context) error {
+	var request requests.DefaultRequestWithProjectHeader
+	if err := request.BindAndValidate(c); err != nil {
+		return responses.UnprocessableResponse(c, err)
+	}
+
 	authUser, _ := utils.NewAuth(c).User()
 
-	formUUID, formResponseUUID, err := ffc.parseRequest(c)
+	formUUID, formResponseUUID, err := ffc.parseRequest(request, c)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
@@ -172,13 +188,13 @@ func (ffc *FormResponseController) Delete(c echo.Context) error {
 	return responses.DeletedResponse(c, nil)
 }
 
-func (ffc *FormResponseController) parseRequest(c echo.Context) (uuid.UUID, uuid.UUID, error) {
-	formUUID, err := utils.GetUUIDPathParam(c, "formUUID", true)
+func (ffc *FormResponseController) parseRequest(request requests.DefaultRequestWithProjectHeader, c echo.Context) (uuid.UUID, uuid.UUID, error) {
+	formUUID, err := request.GetUUIDPathParam(c, "formUUID", true)
 	if err != nil {
 		return uuid.Nil, uuid.Nil, err
 	}
 
-	formResponseUUID, err := utils.GetUUIDPathParam(c, "formResponseUUID", true)
+	formResponseUUID, err := request.GetUUIDPathParam(c, "formResponseUUID", true)
 	if err != nil {
 		return uuid.Nil, uuid.Nil, err
 	}

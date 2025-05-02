@@ -83,9 +83,11 @@ func (bc *BucketController) List(c echo.Context) error {
 //
 // @Router /storage/{bucketUUID} [get]
 func (bc *BucketController) Show(c echo.Context) error {
+	var request requests.DefaultRequestWithProjectHeader
+
 	authUser, _ := utils.NewAuth(c).User()
 
-	bucketUUID, err := utils.GetUUIDPathParam(c, "bucketUUID", true)
+	bucketUUID, err := request.GetUUIDPathParam(c, "bucketUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
@@ -164,7 +166,7 @@ func (bc *BucketController) Update(c echo.Context) error {
 
 	authUser, _ := utils.NewAuth(c).User()
 
-	bucketUUID, err := utils.GetUUIDPathParam(c, "bucketUUID", true)
+	bucketUUID, err := request.GetUUIDPathParam(c, "bucketUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
@@ -198,9 +200,14 @@ func (bc *BucketController) Update(c echo.Context) error {
 //
 // @Router /storage/{bucketUUID} [delete]
 func (bc *BucketController) Delete(c echo.Context) error {
+	var request requests.DefaultRequestWithProjectHeader
+	if err := request.BindAndValidate(c); err != nil {
+		return responses.UnprocessableResponse(c, err)
+	}
+
 	authUser, _ := utils.NewAuth(c).User()
 
-	bucketUUID, err := utils.GetUUIDPathParam(c, "bucketUUID", true)
+	bucketUUID, err := request.GetUUIDPathParam(c, "bucketUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
