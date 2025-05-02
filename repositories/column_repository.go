@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/jmoiron/sqlx"
 	"github.com/lib/pq"
+	"strings"
 )
 
 type ColumnRepository struct {
@@ -19,17 +20,15 @@ func (r *ColumnRepository) List(tableName string) ([]models.Column, error) {
 	var columns []models.Column
 	query := `
 		SELECT 
-			a.attname AS column_name,
-			a.attnum AS column_position,
+			a.attname AS name,
+			a.attnum AS position,
 			a.attnotnull AS not_null,
-			COALESCE(pg_catalog.format_type(a.atttypid, a.atttypmod), '') AS data_type,
+			COALESCE(pg_catalog.format_type(a.atttypid, a.atttypmod), '') AS type,
 			COALESCE(pg_get_expr(ad.adbin, ad.adrelid), '') AS default_value,
-			CASE 
-				WHEN ct.contype = 'p' THEN 'PRIMARY'
-				WHEN ct.contype = 'u' THEN 'UNIQUE'
-			    WHEN ct.contype = 'f' THEN 'FOREIGN'
-				ELSE ''
-			END AS constraint_type
+			-- Constraint type flags as booleans
+			(CASE WHEN ct.contype = 'p' THEN true ELSE false END) AS primary,
+			(CASE WHEN ct.contype = 'u' THEN true ELSE false END) AS unique,
+			(CASE WHEN ct.contype = 'f' THEN true ELSE false END) AS foreign
 		FROM pg_attribute a
 		LEFT JOIN pg_attrdef ad ON a.attrelid = ad.adrelid AND a.attnum = ad.adnum
 		LEFT JOIN pg_constraint ct ON ct.conrelid = a.attrelid AND a.attnum = ANY(ct.conkey)
@@ -98,10 +97,45 @@ func (r *ColumnRepository) HasAll(tableName string, columns []models.Column) (bo
 }
 
 func (r *ColumnRepository) CreateOne(tableName string, column models.Column) error {
-	query := fmt.Sprintf("ALTER TABLE %s ADD COLUMN %s %s", tableName, column.Name, column.Type)
-	_, err := r.connection.Exec(query)
-	if err != nil {
-		return err
+	// Step 1: Build base column definition
+	var columnDefinitionParts []string
+	columnDefinitionParts = append(columnDefinitionParts, fmt.Sprintf("%s %s", column.Name, column.Type))
+
+	if column.NotNull {
+		columnDefinitionParts = append(columnDefinitionParts, "NOT NULL")
+	}
+
+	if column.Unique {
+		columnDefinitionParts = append(columnDefinitionParts, "UNIQUE")
+	}
+
+	if column.Default != "" {
+		columnDefinitionParts = append(columnDefinitionParts, fmt.Sprintf("DEFAULT %s", column.Default))
+	}
+
+	if column.Primary {
+		columnDefinitionParts = append(columnDefinitionParts, "PRIMARY KEY")
+	}
+
+	columnDef := strings.Join(columnDefinitionParts, " ")
+
+	// Step 2: Add the column first
+	addColumnQuery := fmt.Sprintf("ALTER TABLE %s ADD COLUMN %s", tableName, columnDef)
+
+	if _, err := r.connection.Exec(addColumnQuery); err != nil {
+		return fmt.Errorf("failed to add column: %w", err)
+	}
+
+	// Step 3: If foreign key, add the constraint after the column exists
+	if column.Foreign {
+		fkName := fmt.Sprintf("fk_%s_%s", tableName, column.Name)
+		addFKQuery := fmt.Sprintf(
+			"ALTER TABLE %s ADD CONSTRAINT %s FOREIGN KEY (%s) REFERENCES %s(%s)",
+			tableName, fkName, column.Name, column.ReferenceTable, column.ReferenceColumn,
+		)
+		if _, err := r.connection.Exec(addFKQuery); err != nil {
+			return fmt.Errorf("failed to add foreign key: %w", err)
+		}
 	}
 
 	return nil
