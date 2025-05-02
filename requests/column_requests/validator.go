@@ -32,7 +32,7 @@ func validateType(value interface{}) error {
 func validateForeignKeyConstraints(column models.Column) validation.RuleFunc {
 	return func(value interface{}) error {
 		if column.Foreign {
-			if column.ReferenceTable == "" || column.ReferenceColumn == "" {
+			if !column.ReferenceTable.Valid || !column.ReferenceColumn.Valid {
 				return errors.New("reference table and column are required for foreign key constraints")
 			}
 		}

@@ -25,17 +25,25 @@ func (r *ColumnRepository) List(tableName string) ([]models.Column, error) {
 			a.attnotnull AS not_null,
 			COALESCE(pg_catalog.format_type(a.atttypid, a.atttypmod), '') AS type,
 			COALESCE(pg_get_expr(ad.adbin, ad.adrelid), '') AS default_value,
-			-- Constraint type flags as booleans
-			(CASE WHEN ct.contype = 'p' THEN true ELSE false END) AS primary,
-			(CASE WHEN ct.contype = 'u' THEN true ELSE false END) AS unique,
-			(CASE WHEN ct.contype = 'f' THEN true ELSE false END) AS foreign
+			COALESCE(ct.contype = 'p', false) AS primary,
+			COALESCE(ct.contype = 'u', false) AS unique,
+			COALESCE(ct.contype = 'f', false) AS foreign,
+			ref_table.relname AS reference_table,
+			ref_col.attname AS reference_column
 		FROM pg_attribute a
-		LEFT JOIN pg_attrdef ad ON a.attrelid = ad.adrelid AND a.attnum = ad.adnum
-		LEFT JOIN pg_constraint ct ON ct.conrelid = a.attrelid AND a.attnum = ANY(ct.conkey)
+		LEFT JOIN pg_attrdef ad 
+			ON a.attrelid = ad.adrelid AND a.attnum = ad.adnum
+		LEFT JOIN pg_constraint ct 
+			ON ct.conrelid = a.attrelid AND a.attnum = ANY(ct.conkey)
+		LEFT JOIN pg_class ref_table 
+			ON ref_table.oid = ct.confrelid
+		LEFT JOIN pg_attribute ref_col 
+			ON ref_col.attrelid = ct.confrelid AND ref_col.attnum = ct.confkey[1]
 		WHERE a.attrelid = $1::regclass
-		AND a.attnum > 0
-		AND NOT a.attisdropped
+		  AND a.attnum > 0
+		  AND NOT a.attisdropped
 		ORDER BY a.attnum;
+
 	`
 	err := r.connection.Select(&columns, query, tableName)
 	if err != nil {
