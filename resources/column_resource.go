@@ -2,19 +2,20 @@ package resources
 
 import (
 	"fluxton/models"
+	"github.com/guregu/null/v6"
 )
 
 type ColumnResponse struct {
-	Name            string `json:"name"`
-	Position        int    `json:"position"`
-	NotNull         bool   `json:"notNull"`
-	Type            string `json:"type"`
-	Default         string `json:"defaultValue"`
-	Primary         bool   `json:"primary"`
-	Unique          bool   `json:"unique"`
-	Foreign         bool   `json:"foreign"`
-	ReferenceTable  string `json:"referenceTable"`
-	ReferenceColumn string `json:"referenceColumn"`
+	Name            string      `json:"name"`
+	Position        int         `json:"position"`
+	NotNull         bool        `json:"notNull"`
+	Type            string      `json:"type"`
+	Default         string      `json:"defaultValue"`
+	Primary         bool        `json:"primary"`
+	Unique          bool        `json:"unique"`
+	Foreign         bool        `json:"foreign"`
+	ReferenceTable  null.String `json:"referenceTable" swaggertype:"string"`
+	ReferenceColumn null.String `json:"referenceColumn" swaggertype:"string"`
 }
 
 func ColumnResource(column *models.Column) ColumnResponse {
@@ -27,8 +28,8 @@ func ColumnResource(column *models.Column) ColumnResponse {
 		Primary:         column.Primary,
 		Unique:          column.Unique,
 		Foreign:         column.Foreign,
-		ReferenceTable:  column.ReferenceTable.String,
-		ReferenceColumn: column.ReferenceColumn.String,
+		ReferenceTable:  column.ReferenceTable,
+		ReferenceColumn: column.ReferenceColumn,
 	}
 }
 
