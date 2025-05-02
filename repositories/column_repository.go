@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/jmoiron/sqlx"
 	"github.com/lib/pq"
-	"strings"
 )
 
 type ColumnRepository struct {
@@ -105,44 +104,16 @@ func (r *ColumnRepository) HasAll(tableName string, columns []models.Column) (bo
 }
 
 func (r *ColumnRepository) CreateOne(tableName string, column models.Column) error {
-	// Step 1: Build base column definition
-	var columnDefinitionParts []string
-	columnDefinitionParts = append(columnDefinitionParts, fmt.Sprintf("%s %s", column.Name, column.Type))
-
-	if column.NotNull {
-		columnDefinitionParts = append(columnDefinitionParts, "NOT NULL")
-	}
-
-	if column.Unique {
-		columnDefinitionParts = append(columnDefinitionParts, "UNIQUE")
-	}
-
-	if column.Default != "" {
-		columnDefinitionParts = append(columnDefinitionParts, fmt.Sprintf("DEFAULT %s", column.Default))
-	}
-
-	if column.Primary {
-		columnDefinitionParts = append(columnDefinitionParts, "PRIMARY KEY")
-	}
-
-	columnDef := strings.Join(columnDefinitionParts, " ")
-
-	// Step 2: Add the column first
-	addColumnQuery := fmt.Sprintf("ALTER TABLE %s ADD COLUMN %s", tableName, columnDef)
+	def := r.BuildColumnDefinition(column)
+	addColumnQuery := fmt.Sprintf("ALTER TABLE %s ADD COLUMN %s;", tableName, def)
 
 	if _, err := r.connection.Exec(addColumnQuery); err != nil {
 		return fmt.Errorf("failed to add column: %w", err)
 	}
 
-	// Step 3: If foreign key, add the constraint after the column exists
-	if column.Foreign {
-		fkName := fmt.Sprintf("fk_%s_%s", tableName, column.Name)
-		addFKQuery := fmt.Sprintf(
-			"ALTER TABLE %s ADD CONSTRAINT %s FOREIGN KEY (%s) REFERENCES %s(%s)",
-			tableName, fkName, column.Name, column.ReferenceTable, column.ReferenceColumn,
-		)
-		if _, err := r.connection.Exec(addFKQuery); err != nil {
-			return fmt.Errorf("failed to add foreign key: %w", err)
+	if fkQuery, ok := r.BuildForeignKeyConstraint(tableName, column); ok {
+		if _, err := r.connection.Exec(fkQuery); err != nil {
+			return fmt.Errorf("failed to add foreign key constraint: %w", err)
 		}
 	}
 
@@ -210,4 +181,41 @@ func (r *ColumnRepository) mapColumnsToNames(columns []models.Column) []string {
 	}
 
 	return columnNames
+}
+
+func (r *ColumnRepository) BuildColumnDefinition(column models.Column) string {
+	def := fmt.Sprintf("%s %s", column.Name, column.Type)
+
+	if column.Primary {
+		def += " PRIMARY KEY"
+	}
+
+	if column.Unique {
+		def += " UNIQUE"
+	}
+
+	if column.NotNull {
+		def += " NOT NULL"
+	}
+
+	if column.Default != "" {
+		def += fmt.Sprintf(" DEFAULT %s", column.Default)
+	}
+
+	return def
+}
+
+func (r *ColumnRepository) BuildForeignKeyConstraint(tableName string, column models.Column) (string, bool) {
+	if !column.Foreign || !column.ReferenceTable.Valid || !column.ReferenceColumn.Valid {
+		return "", false
+	}
+
+	return fmt.Sprintf(
+		"ALTER TABLE %s ADD CONSTRAINT fk_%s FOREIGN KEY (%s) REFERENCES %s(%s);",
+		tableName,
+		column.Name,
+		column.Name,
+		column.ReferenceTable.String,
+		column.ReferenceColumn.String,
+	), true
 }

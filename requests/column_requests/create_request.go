@@ -18,7 +18,7 @@ type CreateRequest struct {
 
 func (r *CreateRequest) BindAndValidate(c echo.Context) []string {
 	if err := c.Bind(r); err != nil {
-		return []string{"Invalid request payload"}
+		return []string{"Invalid request payload: " + err.Error()}
 	}
 
 	err := r.WithProjectHeader(c)
