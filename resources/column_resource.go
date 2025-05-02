@@ -12,6 +12,7 @@ type ColumnResponse struct {
 	Default  string `json:"defaultValue"`
 	Primary  bool   `json:"primary"`
 	Unique   bool   `json:"unique"`
+	Foreign  bool   `json:"foreign"`
 }
 
 func ColumnResource(column *models.Column) ColumnResponse {
@@ -23,6 +24,7 @@ func ColumnResource(column *models.Column) ColumnResponse {
 		Default:  column.Default,
 		Primary:  column.Primary,
 		Unique:   column.Unique,
+		Foreign:  column.Foreign,
 	}
 }
 
