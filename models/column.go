@@ -1,12 +1,20 @@
 package models
 
+import (
+	"github.com/guregu/null/v6"
+)
+
 type Column struct {
-	Name           string `db:"column_name" json:"name"`
-	Position       int    `db:"column_position" json:"position"`
-	NotNull        bool   `db:"not_null" json:"notNull"`
-	Type           string `db:"data_type" json:"type"`
-	ConstraintType string `db:"constraint_type" json:"constraintType"`
-	Primary        bool   `json:"primary"`
-	Unique         bool   `json:"unique"`
-	Default        string `db:"default_value" json:"defaultValue"`
+	Name     string `db:"name" json:"name"`
+	Position int    `db:"position" json:"position"`
+	NotNull  bool   `db:"not_null" json:"notNull"`
+	Type     string `db:"type" json:"type"`
+	Primary  bool   `db:"primary" json:"primary"`
+	Unique   bool   `db:"unique" json:"unique"`
+	Foreign  bool   `db:"foreign" json:"foreign"`
+	Default  string `db:"default_value" json:"defaultValue"`
+
+	// only required when constraint is FOREIGN KEY
+	ReferenceTable  null.String `db:"reference_table" json:"referenceTable,omitempty" swaggertype:"string"`
+	ReferenceColumn null.String `db:"reference_column" json:"referenceColumn,omitempty" swaggertype:"string"`
 }

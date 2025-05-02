@@ -19,24 +19,30 @@ func (r *ColumnRepository) List(tableName string) ([]models.Column, error) {
 	var columns []models.Column
 	query := `
 		SELECT 
-			a.attname AS column_name,
-			a.attnum AS column_position,
+			a.attname AS name,
+			a.attnum AS position,
 			a.attnotnull AS not_null,
-			COALESCE(pg_catalog.format_type(a.atttypid, a.atttypmod), '') AS data_type,
+			COALESCE(pg_catalog.format_type(a.atttypid, a.atttypmod), '') AS type,
 			COALESCE(pg_get_expr(ad.adbin, ad.adrelid), '') AS default_value,
-			CASE 
-				WHEN ct.contype = 'p' THEN 'PRIMARY'
-				WHEN ct.contype = 'u' THEN 'UNIQUE'
-			    WHEN ct.contype = 'f' THEN 'FOREIGN'
-				ELSE ''
-			END AS constraint_type
+			COALESCE(ct.contype = 'p', false) AS primary,
+			COALESCE(ct.contype = 'u', false) AS unique,
+			COALESCE(ct.contype = 'f', false) AS foreign,
+			ref_table.relname AS reference_table,
+			ref_col.attname AS reference_column
 		FROM pg_attribute a
-		LEFT JOIN pg_attrdef ad ON a.attrelid = ad.adrelid AND a.attnum = ad.adnum
-		LEFT JOIN pg_constraint ct ON ct.conrelid = a.attrelid AND a.attnum = ANY(ct.conkey)
+		LEFT JOIN pg_attrdef ad 
+			ON a.attrelid = ad.adrelid AND a.attnum = ad.adnum
+		LEFT JOIN pg_constraint ct 
+			ON ct.conrelid = a.attrelid AND a.attnum = ANY(ct.conkey)
+		LEFT JOIN pg_class ref_table 
+			ON ref_table.oid = ct.confrelid
+		LEFT JOIN pg_attribute ref_col 
+			ON ref_col.attrelid = ct.confrelid AND ref_col.attnum = ct.confkey[1]
 		WHERE a.attrelid = $1::regclass
-		AND a.attnum > 0
-		AND NOT a.attisdropped
+		  AND a.attnum > 0
+		  AND NOT a.attisdropped
 		ORDER BY a.attnum;
+
 	`
 	err := r.connection.Select(&columns, query, tableName)
 	if err != nil {
@@ -98,10 +104,17 @@ func (r *ColumnRepository) HasAll(tableName string, columns []models.Column) (bo
 }
 
 func (r *ColumnRepository) CreateOne(tableName string, column models.Column) error {
-	query := fmt.Sprintf("ALTER TABLE %s ADD COLUMN %s %s", tableName, column.Name, column.Type)
-	_, err := r.connection.Exec(query)
-	if err != nil {
-		return err
+	def := r.BuildColumnDefinition(column)
+	addColumnQuery := fmt.Sprintf("ALTER TABLE %s ADD COLUMN %s;", tableName, def)
+
+	if _, err := r.connection.Exec(addColumnQuery); err != nil {
+		return fmt.Errorf("failed to add column: %w", err)
+	}
+
+	if fkQuery, ok := r.BuildForeignKeyConstraint(tableName, column); ok {
+		if _, err := r.connection.Exec(fkQuery); err != nil {
+			return fmt.Errorf("failed to add foreign key constraint: %w", err)
+		}
 	}
 
 	return nil
@@ -168,4 +181,41 @@ func (r *ColumnRepository) mapColumnsToNames(columns []models.Column) []string {
 	}
 
 	return columnNames
+}
+
+func (r *ColumnRepository) BuildColumnDefinition(column models.Column) string {
+	def := fmt.Sprintf("%s %s", column.Name, column.Type)
+
+	if column.Primary {
+		def += " PRIMARY KEY"
+	}
+
+	if column.Unique {
+		def += " UNIQUE"
+	}
+
+	if column.NotNull {
+		def += " NOT NULL"
+	}
+
+	if column.Default != "" {
+		def += fmt.Sprintf(" DEFAULT %s", column.Default)
+	}
+
+	return def
+}
+
+func (r *ColumnRepository) BuildForeignKeyConstraint(tableName string, column models.Column) (string, bool) {
+	if !column.Foreign || !column.ReferenceTable.Valid || !column.ReferenceColumn.Valid {
+		return "", false
+	}
+
+	return fmt.Sprintf(
+		"ALTER TABLE %s ADD CONSTRAINT fk_%s FOREIGN KEY (%s) REFERENCES %s(%s);",
+		tableName,
+		column.Name,
+		column.Name,
+		column.ReferenceTable.String,
+		column.ReferenceColumn.String,
+	), true
 }

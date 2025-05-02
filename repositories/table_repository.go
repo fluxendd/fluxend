@@ -4,14 +4,24 @@ import (
 	"fluxton/models"
 	"fmt"
 	"github.com/jmoiron/sqlx"
+	"strings"
 )
 
 type TableRepository struct {
-	connection *sqlx.DB
+	connection       *sqlx.DB
+	columnRepository *ColumnRepository
 }
 
 func NewTableRepository(connection *sqlx.DB) (*TableRepository, error) {
-	return &TableRepository{connection: connection}, nil
+	columnRepository, err := NewColumnRepository(connection)
+	if err != nil {
+		return nil, err
+	}
+
+	return &TableRepository{
+		connection:       connection,
+		columnRepository: columnRepository,
+	}, nil
 }
 
 func (r *TableRepository) Exists(name string) (bool, error) {
@@ -25,35 +35,27 @@ func (r *TableRepository) Exists(name string) (bool, error) {
 }
 
 func (r *TableRepository) Create(name string, columns []models.Column) error {
-	query := "CREATE TABLE " + name + " ("
+	var defs []string
+	var foreignConstraints []string
 
 	for _, column := range columns {
-		query += column.Name + " " + column.Type
+		defs = append(defs, r.columnRepository.BuildColumnDefinition(column))
 
-		if column.Primary {
-			query += " PRIMARY KEY"
+		if fkQuery, ok := r.columnRepository.BuildForeignKeyConstraint(name, column); ok {
+			foreignConstraints = append(foreignConstraints, fkQuery)
 		}
-
-		if column.Unique {
-			query += " UNIQUE"
-		}
-
-		if column.NotNull {
-			query += " NOT NULL"
-		}
-
-		if column.Default != "" {
-			query += " DEFAULT " + column.Default
-		}
-
-		query += ", "
 	}
 
-	query = query[:len(query)-2] + ")"
+	createQuery := fmt.Sprintf("CREATE TABLE %s (\n%s\n);", name, strings.Join(defs, ",\n"))
 
-	_, err := r.connection.Exec(query)
-	if err != nil {
-		return err
+	if _, err := r.connection.Exec(createQuery); err != nil {
+		return fmt.Errorf("failed to create table: %w", err)
+	}
+
+	for _, fk := range foreignConstraints {
+		if _, err := r.connection.Exec(fk); err != nil {
+			return fmt.Errorf("failed to add foreign key constraint: %w", err)
+		}
 	}
 
 	return nil
