@@ -40,21 +40,21 @@ type FieldRequest struct {
 	IsRequired bool   `json:"is_required"`
 
 	// all fields from this point are optional
-	MinLength    null.Int    `json:"min_length"`
-	MaxLength    null.Int    `json:"max_length"`
-	Pattern      null.String `json:"pattern"`
-	Description  null.String `json:"description"`
-	Options      null.String `json:"options"` // Options for select/radio types
-	DefaultValue null.String `json:"default_value"`
+	MinLength    null.Int    `json:"min_length" swaggertype:"integer"`
+	MaxLength    null.Int    `json:"max_length" swaggertype:"integer"`
+	Pattern      null.String `json:"pattern" swaggertype:"string"`
+	Description  null.String `json:"description" swaggertype:"string"`
+	Options      null.String `json:"options" swaggertype:"string"` // Options for select/radio types
+	DefaultValue null.String `json:"default_value" swaggertype:"string"`
 
 	// only applicable for number types
-	MinValue null.Int `json:"min_value"`
-	MaxValue null.Int `json:"max_value"`
+	MinValue null.Int `json:"min_value" swaggertype:"integer"`
+	MaxValue null.Int `json:"max_value" swaggertype:"integer"`
 
 	// only applicable for date types
-	StartDate  null.String `json:"start_date"`
-	EndDate    null.String `json:"end_date"`
-	DateFormat null.String `json:"date_format"` // fails if provided and field value doesn't match
+	StartDate  null.String `json:"start_date" swaggertype:"string"`
+	EndDate    null.String `json:"end_date" swaggertype:"string"`
+	DateFormat null.String `json:"date_format" swaggertype:"string"` // fails if provided and field value doesn't match
 }
 
 // CreateFormFieldsRequest represents multiple fields in a request
