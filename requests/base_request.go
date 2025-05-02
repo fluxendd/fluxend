@@ -2,9 +2,12 @@ package requests
 
 import (
 	"errors"
+	"fmt"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
+	"strconv"
+	"strings"
 )
 
 var (
@@ -46,6 +49,13 @@ type BaseRequest struct {
 	ProjectUUID uuid.UUID `json:"projectUUID,omitempty"`
 }
 
+type PaginationParams struct {
+	Page  int
+	Limit int
+	Sort  string
+	Order string
+}
+
 func (r *BaseRequest) WithProjectHeader(c echo.Context) error {
 	projectUUID, err := uuid.Parse(c.Request().Header.Get("X-Project"))
 	if err != nil {
@@ -70,6 +80,57 @@ func (r *BaseRequest) ExtractValidationErrors(err error) []string {
 	}
 
 	return errs
+}
+
+func (r *BaseRequest) ExtractPaginationParams(c echo.Context) PaginationParams {
+	defaultPage := 1
+	defaultLimit := 10
+	defaultSort := "id"
+	defaultOrder := "asc"
+
+	// Extract and parse query parameters
+	page, err := strconv.Atoi(c.QueryParam("page"))
+	if err != nil || page < 1 {
+		page = defaultPage
+	}
+
+	limit, err := strconv.Atoi(c.QueryParam("limit"))
+	if err != nil || limit < 1 {
+		limit = defaultLimit
+	}
+
+	sort := c.QueryParam("sort")
+	if sort == "" {
+		sort = defaultSort
+	}
+
+	order := c.QueryParam("order")
+	if order != "asc" && order != "desc" {
+		order = defaultOrder
+	}
+
+	return PaginationParams{
+		Page:  page,
+		Limit: limit,
+		Sort:  sort,
+		Order: order,
+	}
+}
+
+func (r *BaseRequest) GetUUIDPathParam(c echo.Context, name string, required bool) (uuid.UUID, error) {
+	if required && c.Param(name) == "" {
+		return uuid.UUID{}, fmt.Errorf("path parameter [%s] is required", name)
+	}
+
+	return uuid.Parse(c.Param(name))
+}
+
+func (r *BaseRequest) GetUUIDQueryParam(c echo.Context, name string, required bool) (uuid.UUID, error) {
+	if required && c.QueryParam(name) == "" {
+		return uuid.UUID{}, fmt.Errorf("query parameter [%s] is required", name)
+	}
+
+	return uuid.Parse(strings.TrimSpace(c.QueryParam(name)))
 }
 
 func IsReservedTableName(name string) bool {
