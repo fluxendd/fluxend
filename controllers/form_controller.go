@@ -51,7 +51,7 @@ func (fc *FormController) List(c echo.Context) error {
 	}
 	authUser, _ := utils.NewAuth(c).User()
 
-	paginationParams := utils.ExtractPaginationParams(c)
+	paginationParams := request.ExtractPaginationParams(c)
 	forms, err := fc.formService.List(paginationParams, request.ProjectUUID, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)

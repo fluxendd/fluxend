@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fluxton/repositories"
+	"fluxton/requests"
 	"fluxton/services"
 	"fluxton/utils"
 	"fmt"
@@ -24,7 +25,7 @@ func restartPostgrestInstances() error {
 	projectRepository := do.MustInvoke[*repositories.ProjectRepository](container)
 	postgrestService := do.MustInvoke[services.PostgrestService](container)
 
-	projects, err := projectRepository.List(utils.PaginationParams{Page: 1, Limit: 1000})
+	projects, err := projectRepository.List(requests.PaginationParams{Page: 1, Limit: 1000})
 	if err != nil {
 		return fmt.Errorf("error fetching projects: %w", err)
 	}

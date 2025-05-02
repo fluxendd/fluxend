@@ -5,6 +5,7 @@ import (
 	"fluxton/models"
 	"fluxton/policies"
 	"fluxton/repositories"
+	"fluxton/requests"
 	"fluxton/requests/project_requests"
 	"fluxton/utils"
 	"github.com/google/uuid"
@@ -15,7 +16,7 @@ import (
 )
 
 type ProjectService interface {
-	List(paginationParams utils.PaginationParams, organizationUUID uuid.UUID, authUser models.AuthUser) ([]models.Project, error)
+	List(paginationParams requests.PaginationParams, organizationUUID uuid.UUID, authUser models.AuthUser) ([]models.Project, error)
 	GetByUUID(projectUUID uuid.UUID, authUser models.AuthUser) (models.Project, error)
 	GetDatabaseNameByUUID(projectUUID uuid.UUID, authUser models.AuthUser) (string, error)
 	Create(request *project_requests.CreateRequest, authUser models.AuthUser) (models.Project, error)
@@ -44,7 +45,7 @@ func NewProjectService(injector *do.Injector) (ProjectService, error) {
 	}, nil
 }
 
-func (s *ProjectServiceImpl) List(paginationParams utils.PaginationParams, organizationUUID uuid.UUID, authUser models.AuthUser) ([]models.Project, error) {
+func (s *ProjectServiceImpl) List(paginationParams requests.PaginationParams, organizationUUID uuid.UUID, authUser models.AuthUser) ([]models.Project, error) {
 	if !s.projectPolicy.CanAccess(organizationUUID, authUser) {
 		return []models.Project{}, errs.NewForbiddenError("project.error.listForbidden")
 	}

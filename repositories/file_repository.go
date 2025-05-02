@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fluxton/errs"
 	"fluxton/models"
+	"fluxton/requests"
 	"fluxton/utils"
 	"fmt"
 	"github.com/google/uuid"
@@ -22,7 +23,7 @@ func NewFileRepository(injector *do.Injector) (*FileRepository, error) {
 	return &FileRepository{db: db}, nil
 }
 
-func (r *FileRepository) ListForBucket(paginationParams utils.PaginationParams, bucketUUID uuid.UUID) ([]models.File, error) {
+func (r *FileRepository) ListForBucket(paginationParams requests.PaginationParams, bucketUUID uuid.UUID) ([]models.File, error) {
 	offset := (paginationParams.Page - 1) * paginationParams.Limit
 	query := `
 		SELECT 

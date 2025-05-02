@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fluxton/requests"
 	"fluxton/requests/project_requests"
 	"fluxton/resources"
 	"fluxton/responses"
@@ -44,14 +45,19 @@ func NewProjectController(injector *do.Injector) (*ProjectController, error) {
 //
 // @Router /projects [get]
 func (pc *ProjectController) List(c echo.Context) error {
+	var request requests.DefaultRequest
+	if err := request.BindAndValidate(c); err != nil {
+		return responses.UnprocessableResponse(c, err)
+	}
+
 	authUser, _ := utils.NewAuth(c).User()
 
-	organizationUUID, err := utils.GetUUIDQueryParam(c, "organization_uuid", true)
+	organizationUUID, err := request.GetUUIDQueryParam(c, "organization_uuid", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, "Invalid organization ID")
 	}
 
-	paginationParams := utils.ExtractPaginationParams(c)
+	paginationParams := request.ExtractPaginationParams(c)
 	projects, err := pc.projectService.List(paginationParams, organizationUUID, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
@@ -80,9 +86,14 @@ func (pc *ProjectController) List(c echo.Context) error {
 //
 // @Router /projects/{projectUUID} [get]
 func (pc *ProjectController) Show(c echo.Context) error {
+	var request requests.DefaultRequest
+	if err := request.BindAndValidate(c); err != nil {
+		return responses.UnprocessableResponse(c, err)
+	}
+
 	authUser, _ := utils.NewAuth(c).User()
 
-	projectUUID, err := utils.GetUUIDPathParam(c, "projectUUID", true)
+	projectUUID, err := request.GetUUIDPathParam(c, "projectUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
@@ -159,7 +170,7 @@ func (pc *ProjectController) Update(c echo.Context) error {
 
 	authUser, _ := utils.NewAuth(c).User()
 
-	projectUUID, err := utils.GetUUIDPathParam(c, "projectUUID", true)
+	projectUUID, err := request.GetUUIDPathParam(c, "projectUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
@@ -191,9 +202,14 @@ func (pc *ProjectController) Update(c echo.Context) error {
 //
 // @Router /projects/{projectUUID} [delete]
 func (pc *ProjectController) Delete(c echo.Context) error {
+	var request requests.DefaultRequest
+	if err := request.BindAndValidate(c); err != nil {
+		return responses.UnprocessableResponse(c, err)
+	}
+
 	authUser, _ := utils.NewAuth(c).User()
 
-	projectUUID, err := utils.GetUUIDPathParam(c, "projectUUID", true)
+	projectUUID, err := request.GetUUIDPathParam(c, "projectUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}

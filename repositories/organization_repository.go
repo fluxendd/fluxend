@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fluxton/errs"
 	"fluxton/models"
+	"fluxton/requests"
 	"fluxton/utils"
 	"fmt"
 	"github.com/google/uuid"
@@ -21,7 +22,7 @@ func NewOrganizationRepository(injector *do.Injector) (*OrganizationRepository, 
 	return &OrganizationRepository{db: db}, nil
 }
 
-func (r *OrganizationRepository) ListForUser(paginationParams utils.PaginationParams, authUserID uuid.UUID) ([]models.Organization, error) {
+func (r *OrganizationRepository) ListForUser(paginationParams requests.PaginationParams, authUserID uuid.UUID) ([]models.Organization, error) {
 	offset := (paginationParams.Page - 1) * paginationParams.Limit
 
 	query := `

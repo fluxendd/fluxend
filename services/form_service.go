@@ -5,6 +5,7 @@ import (
 	"fluxton/models"
 	"fluxton/policies"
 	"fluxton/repositories"
+	"fluxton/requests"
 	"fluxton/requests/form_requests"
 	"fluxton/utils"
 	"github.com/google/uuid"
@@ -13,7 +14,7 @@ import (
 )
 
 type FormService interface {
-	List(paginationParams utils.PaginationParams, projectUUID uuid.UUID, authUser models.AuthUser) ([]models.Form, error)
+	List(paginationParams requests.PaginationParams, projectUUID uuid.UUID, authUser models.AuthUser) ([]models.Form, error)
 	GetByUUID(formUUID uuid.UUID, authUser models.AuthUser) (models.Form, error)
 	Create(request *form_requests.CreateRequest, authUser models.AuthUser) (models.Form, error)
 	Update(formUUID uuid.UUID, authUser models.AuthUser, request *form_requests.CreateRequest) (*models.Form, error)
@@ -38,7 +39,7 @@ func NewFormService(injector *do.Injector) (FormService, error) {
 	}, nil
 }
 
-func (s *FormServiceImpl) List(paginationParams utils.PaginationParams, projectUUID uuid.UUID, authUser models.AuthUser) ([]models.Form, error) {
+func (s *FormServiceImpl) List(paginationParams requests.PaginationParams, projectUUID uuid.UUID, authUser models.AuthUser) ([]models.Form, error) {
 	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(projectUUID)
 	if err != nil {
 		return []models.Form{}, err

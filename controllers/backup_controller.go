@@ -73,9 +73,14 @@ func (bc *BackupController) List(c echo.Context) error {
 //
 // @Router /backups/{backupUUID} [get]
 func (bc *BackupController) Show(c echo.Context) error {
+	var request requests.DefaultRequestWithProjectHeader
+	if err := request.BindAndValidate(c); err != nil {
+		return responses.UnprocessableResponse(c, err)
+	}
+
 	authUser, _ := utils.NewAuth(c).User()
 
-	backupUUID, err := utils.GetUUIDPathParam(c, "backupUUID", true)
+	backupUUID, err := request.GetUUIDPathParam(c, "backupUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
@@ -146,9 +151,14 @@ func (bc *BackupController) Store(c echo.Context) error {
 //
 // @Router /backups/{backupUUID} [delete]
 func (bc *BackupController) Delete(c echo.Context) error {
+	var request requests.DefaultRequestWithProjectHeader
+	if err := request.BindAndValidate(c); err != nil {
+		return responses.UnprocessableResponse(c, err)
+	}
+
 	authUser, _ := utils.NewAuth(c).User()
 
-	backupUUID, err := utils.GetUUIDPathParam(c, "backupUUID", true)
+	backupUUID, err := request.GetUUIDPathParam(c, "backupUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}

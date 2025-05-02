@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fluxton/errs"
 	"fluxton/models"
+	"fluxton/requests"
 	"fluxton/utils"
 	"fmt"
 	"github.com/google/uuid"
@@ -22,7 +23,7 @@ func NewProjectRepository(injector *do.Injector) (*ProjectRepository, error) {
 	return &ProjectRepository{db: db}, nil
 }
 
-func (r *ProjectRepository) ListForUser(paginationParams utils.PaginationParams, authUserId uuid.UUID) ([]models.Project, error) {
+func (r *ProjectRepository) ListForUser(paginationParams requests.PaginationParams, authUserId uuid.UUID) ([]models.Project, error) {
 	offset := (paginationParams.Page - 1) * paginationParams.Limit
 	query := `
 		SELECT 
@@ -73,7 +74,7 @@ func (r *ProjectRepository) ListForUser(paginationParams utils.PaginationParams,
 	return projects, nil
 }
 
-func (r *ProjectRepository) List(paginationParams utils.PaginationParams) ([]models.Project, error) {
+func (r *ProjectRepository) List(paginationParams requests.PaginationParams) ([]models.Project, error) {
 	offset := (paginationParams.Page - 1) * paginationParams.Limit
 	query := `SELECT %s FROM fluxton.projects ORDER BY :sort DESC LIMIT :limit OFFSET :offset;`
 

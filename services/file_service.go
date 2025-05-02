@@ -5,6 +5,7 @@ import (
 	"fluxton/models"
 	"fluxton/policies"
 	"fluxton/repositories"
+	"fluxton/requests"
 	"fluxton/requests/bucket_requests"
 	"fluxton/utils"
 	"fmt"
@@ -15,7 +16,7 @@ import (
 )
 
 type FileService interface {
-	List(paginationParams utils.PaginationParams, bucketUUID uuid.UUID, authUser models.AuthUser) ([]models.File, error)
+	List(paginationParams requests.PaginationParams, bucketUUID uuid.UUID, authUser models.AuthUser) ([]models.File, error)
 	GetByUUID(fileUUID, bucketUUID uuid.UUID, authUser models.AuthUser) (models.File, error)
 	Create(bucketUUID uuid.UUID, request *bucket_requests.CreateFileRequest, authUser models.AuthUser) (models.File, error)
 	Rename(fileUUID, bucketUUID uuid.UUID, authUser models.AuthUser, request *bucket_requests.RenameFileRequest) (*models.File, error)
@@ -50,7 +51,7 @@ func NewFileService(injector *do.Injector) (FileService, error) {
 	}, nil
 }
 
-func (s *FileServiceImpl) List(paginationParams utils.PaginationParams, bucketUUID uuid.UUID, authUser models.AuthUser) ([]models.File, error) {
+func (s *FileServiceImpl) List(paginationParams requests.PaginationParams, bucketUUID uuid.UUID, authUser models.AuthUser) ([]models.File, error) {
 	bucket, err := s.bucketRepo.GetByUUID(bucketUUID)
 	if err != nil {
 		return []models.File{}, err

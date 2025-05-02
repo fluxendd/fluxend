@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fluxton/requests"
 	"fluxton/requests/bucket_requests"
 	"fluxton/resources"
 	"fluxton/responses"
@@ -44,14 +45,19 @@ func NewFileController(injector *do.Injector) (*FileController, error) {
 //
 // @Router /buckets/{bucketUUID}/files [get]
 func (fc *FileController) List(c echo.Context) error {
+	var request requests.DefaultRequestWithProjectHeader
+	if err := request.BindAndValidate(c); err != nil {
+		return responses.UnprocessableResponse(c, err)
+	}
+
 	authUser, _ := utils.NewAuth(c).User()
 
-	bucketUUID, err := utils.GetUUIDPathParam(c, "bucketUUID", true)
+	bucketUUID, err := request.GetUUIDPathParam(c, "bucketUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, "Invalid bucket UUID")
 	}
 
-	paginationParams := utils.ExtractPaginationParams(c)
+	paginationParams := request.ExtractPaginationParams(c)
 	files, err := fc.fileService.List(paginationParams, bucketUUID, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)

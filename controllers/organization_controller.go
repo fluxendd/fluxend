@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fluxton/requests"
 	"fluxton/requests/organization_requests"
 	"fluxton/resources"
 	"fluxton/responses"
@@ -42,9 +43,14 @@ func NewOrganizationController(injector *do.Injector) (*OrganizationController, 
 //
 // @Router /organizations [get]
 func (oc *OrganizationController) List(c echo.Context) error {
+	var request requests.DefaultRequest
+	if err := request.BindAndValidate(c); err != nil {
+		return responses.UnprocessableResponse(c, err)
+	}
+
 	authUserId, _ := utils.NewAuth(c).Uuid()
 
-	paginationParams := utils.ExtractPaginationParams(c)
+	paginationParams := request.ExtractPaginationParams(c)
 	organizations, err := oc.organizationService.List(paginationParams, authUserId)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
@@ -73,9 +79,14 @@ func (oc *OrganizationController) List(c echo.Context) error {
 //
 // @Router /organizations/{organizationUUID} [get]
 func (oc *OrganizationController) Show(c echo.Context) error {
+	var request requests.DefaultRequest
+	if err := request.BindAndValidate(c); err != nil {
+		return responses.UnprocessableResponse(c, err)
+	}
+
 	authUser, _ := utils.NewAuth(c).User()
 
-	organizationUUID, err := utils.GetUUIDPathParam(c, "organizationUUID", true)
+	organizationUUID, err := request.GetUUIDPathParam(c, "organizationUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
@@ -154,7 +165,7 @@ func (oc *OrganizationController) Update(c echo.Context) error {
 
 	authUser, _ := utils.NewAuth(c).User()
 
-	organizationUUID, err := utils.GetUUIDPathParam(c, "organizationUUID", true)
+	organizationUUID, err := request.GetUUIDPathParam(c, "organizationUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
@@ -185,9 +196,14 @@ func (oc *OrganizationController) Update(c echo.Context) error {
 //
 // @Router /organizations/{organizationUUID} [delete]
 func (oc *OrganizationController) Delete(c echo.Context) error {
+	var request requests.DefaultRequest
+	if err := request.BindAndValidate(c); err != nil {
+		return responses.UnprocessableResponse(c, err)
+	}
+
 	authUser, _ := utils.NewAuth(c).User()
 
-	organizationUUID, err := utils.GetUUIDPathParam(c, "organizationUUID", true)
+	organizationUUID, err := request.GetUUIDPathParam(c, "organizationUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}

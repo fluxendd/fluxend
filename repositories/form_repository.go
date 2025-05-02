@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fluxton/errs"
 	"fluxton/models"
+	"fluxton/requests"
 	"fluxton/utils"
 	"fmt"
 	"github.com/google/uuid"
@@ -22,7 +23,7 @@ func NewFormRepository(injector *do.Injector) (*FormRepository, error) {
 	return &FormRepository{db: db}, nil
 }
 
-func (r *FormRepository) ListForProject(paginationParams utils.PaginationParams, projectUUID uuid.UUID) ([]models.Form, error) {
+func (r *FormRepository) ListForProject(paginationParams requests.PaginationParams, projectUUID uuid.UUID) ([]models.Form, error) {
 	offset := (paginationParams.Page - 1) * paginationParams.Limit
 	query := `
 		SELECT 

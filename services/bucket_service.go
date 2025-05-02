@@ -5,6 +5,7 @@ import (
 	"fluxton/models"
 	"fluxton/policies"
 	"fluxton/repositories"
+	"fluxton/requests"
 	"fluxton/requests/bucket_requests"
 	"fluxton/utils"
 	"github.com/google/uuid"
@@ -14,7 +15,7 @@ import (
 )
 
 type BucketService interface {
-	List(paginationParams utils.PaginationParams, projectUUID uuid.UUID, authUser models.AuthUser) ([]models.Bucket, error)
+	List(paginationParams requests.PaginationParams, projectUUID uuid.UUID, authUser models.AuthUser) ([]models.Bucket, error)
 	GetByUUID(bucketUUID uuid.UUID, authUser models.AuthUser) (models.Bucket, error)
 	Create(request *bucket_requests.CreateRequest, authUser models.AuthUser) (models.Bucket, error)
 	Update(bucketUUID uuid.UUID, authUser models.AuthUser, request *bucket_requests.CreateRequest) (*models.Bucket, error)
@@ -46,7 +47,7 @@ func NewBucketService(injector *do.Injector) (BucketService, error) {
 	}, nil
 }
 
-func (s *BucketServiceImpl) List(paginationParams utils.PaginationParams, projectUUID uuid.UUID, authUser models.AuthUser) ([]models.Bucket, error) {
+func (s *BucketServiceImpl) List(paginationParams requests.PaginationParams, projectUUID uuid.UUID, authUser models.AuthUser) ([]models.Bucket, error) {
 	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(projectUUID)
 	if err != nil {
 		return []models.Bucket{}, err

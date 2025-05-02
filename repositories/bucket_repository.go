@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fluxton/errs"
 	"fluxton/models"
+	"fluxton/requests"
 	"fluxton/utils"
 	"fmt"
 	"github.com/google/uuid"
@@ -22,7 +23,7 @@ func NewBucketRepository(injector *do.Injector) (*BucketRepository, error) {
 	return &BucketRepository{db: db}, nil
 }
 
-func (r *BucketRepository) ListForProject(paginationParams utils.PaginationParams, projectUUID uuid.UUID) ([]models.Bucket, error) {
+func (r *BucketRepository) ListForProject(paginationParams requests.PaginationParams, projectUUID uuid.UUID) ([]models.Bucket, error) {
 	offset := (paginationParams.Page - 1) * paginationParams.Limit
 	query := `
 		SELECT 

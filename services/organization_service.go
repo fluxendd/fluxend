@@ -5,6 +5,7 @@ import (
 	"fluxton/models"
 	"fluxton/policies"
 	"fluxton/repositories"
+	"fluxton/requests"
 	"fluxton/requests/organization_requests"
 	"fluxton/utils"
 	"github.com/google/uuid"
@@ -13,7 +14,7 @@ import (
 )
 
 type OrganizationService interface {
-	List(paginationParams utils.PaginationParams, authUserId uuid.UUID) ([]models.Organization, error)
+	List(paginationParams requests.PaginationParams, authUserId uuid.UUID) ([]models.Organization, error)
 	GetByID(organizationUUID uuid.UUID, authUser models.AuthUser) (models.Organization, error)
 	Create(request *organization_requests.CreateRequest, authUser models.AuthUser) (models.Organization, error)
 	Update(organizationUUID uuid.UUID, authUser models.AuthUser, request *organization_requests.CreateRequest) (*models.Organization, error)
@@ -41,7 +42,7 @@ func NewOrganizationService(injector *do.Injector) (OrganizationService, error) 
 	}, nil
 }
 
-func (s *OrganizationServiceImpl) List(paginationParams utils.PaginationParams, authUserId uuid.UUID) ([]models.Organization, error) {
+func (s *OrganizationServiceImpl) List(paginationParams requests.PaginationParams, authUserId uuid.UUID) ([]models.Organization, error) {
 	return s.organizationRepo.ListForUser(paginationParams, authUserId)
 }
 

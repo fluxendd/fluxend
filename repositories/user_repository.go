@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fluxton/errs"
 	"fluxton/models"
+	"fluxton/requests"
 	"fluxton/utils"
 	"fmt"
 	"github.com/google/uuid"
@@ -22,7 +23,7 @@ func NewUserRepository(injector *do.Injector) (*UserRepository, error) {
 	return &UserRepository{db: db}, nil
 }
 
-func (r *UserRepository) List(paginationParams utils.PaginationParams) ([]models.User, error) {
+func (r *UserRepository) List(paginationParams requests.PaginationParams) ([]models.User, error) {
 	offset := (paginationParams.Page - 1) * paginationParams.Limit
 
 	query := fmt.Sprintf(

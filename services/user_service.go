@@ -5,6 +5,7 @@ import (
 	"fluxton/models"
 	"fluxton/policies"
 	"fluxton/repositories"
+	"fluxton/requests"
 	"fluxton/requests/user_requests"
 	"fluxton/utils"
 	"github.com/golang-jwt/jwt/v5"
@@ -17,7 +18,7 @@ import (
 
 type UserService interface {
 	Login(request *user_requests.LoginRequest) (models.User, string, error)
-	List(paginationParams utils.PaginationParams) ([]models.User, error)
+	List(paginationParams requests.PaginationParams) ([]models.User, error)
 	ExistsByUUID(id uuid.UUID) error
 	GetByID(id uuid.UUID) (models.User, error)
 	Create(request *user_requests.CreateRequest) (models.User, string, error)
@@ -59,7 +60,7 @@ func (s *UserServiceImpl) Login(request *user_requests.LoginRequest) (models.Use
 	return user, token, nil
 }
 
-func (s *UserServiceImpl) List(paginationParams utils.PaginationParams) ([]models.User, error) {
+func (s *UserServiceImpl) List(paginationParams requests.PaginationParams) ([]models.User, error) {
 	return s.userRepo.List(paginationParams)
 }
 
