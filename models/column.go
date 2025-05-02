@@ -15,6 +15,6 @@ type Column struct {
 	Default  string `db:"default_value" json:"defaultValue"`
 
 	// only required when constraint is FOREIGN KEY
-	ReferenceTable  null.String `db:"reference_table" json:"referenceTable,omitempty"`
-	ReferenceColumn null.String `db:"reference_column" json:"referenceColumn,omitempty"`
+	ReferenceTable  null.String `db:"reference_table" json:"referenceTable,omitempty" swaggertype:"string"`
+	ReferenceColumn null.String `db:"reference_column" json:"referenceColumn,omitempty" swaggertype:"string"`
 }
