@@ -1,9 +1,13 @@
 package repositories
 
 import (
+	"database/sql"
+	"errors"
+	"fluxton/errs"
 	"fluxton/models"
 	"fmt"
 	"github.com/jmoiron/sqlx"
+	"github.com/lib/pq"
 	"strings"
 )
 
@@ -62,7 +66,7 @@ func (r *TableRepository) Create(name string, columns []models.Column) error {
 }
 
 func (r *TableRepository) Duplicate(oldName string, newName string) error {
-	_, err := r.connection.Exec(fmt.Sprintf("CREATE TABLE %s AS TABLE %s", newName, oldName))
+	_, err := r.connection.Exec(fmt.Sprintf("CREATE TABLE %s AS TABLE %s", pq.QuoteIdentifier(newName), pq.QuoteIdentifier(oldName)))
 	if err != nil {
 		return err
 	}
@@ -111,6 +115,10 @@ func (r *TableRepository) GetByNameInSchema(schema, name string) (models.Table, 
 
 	err := r.connection.Get(&table, query, schema, name)
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return models.Table{}, errs.NewNotFoundError("table.error.notFound")
+		}
+
 		return models.Table{}, err
 	}
 
@@ -118,7 +126,7 @@ func (r *TableRepository) GetByNameInSchema(schema, name string) (models.Table, 
 }
 
 func (r *TableRepository) DropIfExists(name string) error {
-	_, err := r.connection.Exec("DROP TABLE IF EXISTS " + name)
+	_, err := r.connection.Exec("DROP TABLE IF EXISTS " + pq.QuoteIdentifier(name))
 	if err != nil {
 		return err
 	}
@@ -127,7 +135,8 @@ func (r *TableRepository) DropIfExists(name string) error {
 }
 
 func (r *TableRepository) Rename(oldName string, newName string) error {
-	_, err := r.connection.Exec(fmt.Sprintf("ALTER TABLE %s RENAME TO %s", oldName, newName))
+	query := fmt.Sprintf("ALTER TABLE %s RENAME TO %s", pq.QuoteIdentifier(oldName), pq.QuoteIdentifier(newName))
+	_, err := r.connection.Exec(query)
 	if err != nil {
 		return err
 	}

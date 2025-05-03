@@ -62,6 +62,7 @@ var messages = map[string]string{
 	"project.error.duplicateName":   "Project name already exists",
 
 	// Tables
+	"table.error.notFound":        "Table not found",
 	"table.error.createForbidden": "You don't have permission to create tables",
 	"table.error.alreadyExists":   "Table already exists",
 
