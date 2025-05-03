@@ -1,10 +1,9 @@
-CREATE TABLE IF NOT EXISTS posts (
+CREATE TABLE IF NOT EXISTS public.tags (
      id SERIAL PRIMARY KEY,
-     title VARCHAR(255) NOT NULL,
-     content TEXT NOT NULL,
+     name VARCHAR(255) NOT NULL,
      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-INSERT INTO posts (title, content) VALUES ('Hello World', 'This is a test post.');
-INSERT INTO posts (title, content) VALUES ('Hello World 2', 'This is another test post.');
+INSERT INTO public.tags (name) VALUES ('Travel');
+INSERT INTO public.tags (name) VALUES ('Diary');
