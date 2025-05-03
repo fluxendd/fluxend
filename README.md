@@ -62,7 +62,6 @@ Available Commands:
   routes      List all registered API routes
   seed        Seed the database with initial data
   server      Start the Fluxton API server
-  make:model  Creates a new model file in the models directory
   udb.stats   Pull stats from given database
   udb.restart Restart all PostGREST instances
 
