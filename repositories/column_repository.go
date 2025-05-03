@@ -155,7 +155,12 @@ func (r *ColumnRepository) AlterMany(tableName string, fields []models.Column) e
 }
 
 func (r *ColumnRepository) Rename(tableName, oldColumnName, newColumnName string) error {
-	query := fmt.Sprintf("ALTER TABLE %s RENAME COLUMN %s TO %s", tableName, oldColumnName, newColumnName)
+	query := fmt.Sprintf(
+		"ALTER TABLE %s RENAME COLUMN %s TO %s",
+		pq.QuoteIdentifier(tableName),
+		pq.QuoteIdentifier(oldColumnName),
+		pq.QuoteIdentifier(newColumnName),
+	)
 	_, err := r.connection.Exec(query)
 	if err != nil {
 		return err
@@ -165,7 +170,7 @@ func (r *ColumnRepository) Rename(tableName, oldColumnName, newColumnName string
 }
 
 func (r *ColumnRepository) Drop(tableName, columnName string) error {
-	query := fmt.Sprintf("ALTER TABLE %s DROP COLUMN %s", tableName, columnName)
+	query := fmt.Sprintf("ALTER TABLE %s DROP COLUMN %s", pq.QuoteIdentifier(tableName), pq.QuoteIdentifier(columnName))
 	_, err := r.connection.Exec(query)
 	if err != nil {
 		return err
@@ -184,7 +189,7 @@ func (r *ColumnRepository) mapColumnsToNames(columns []models.Column) []string {
 }
 
 func (r *ColumnRepository) BuildColumnDefinition(column models.Column) string {
-	def := fmt.Sprintf("%s %s", column.Name, column.Type)
+	def := fmt.Sprintf("%s %s", pq.QuoteIdentifier(column.Name), pq.QuoteIdentifier(column.Type))
 
 	if column.Primary {
 		def += " PRIMARY KEY"
@@ -212,9 +217,9 @@ func (r *ColumnRepository) BuildForeignKeyConstraint(tableName string, column mo
 
 	return fmt.Sprintf(
 		"ALTER TABLE %s ADD CONSTRAINT fk_%s FOREIGN KEY (%s) REFERENCES %s(%s);",
-		tableName,
-		column.Name,
-		column.Name,
+		pq.QuoteIdentifier(tableName),
+		pq.QuoteIdentifier(column.Name),
+		pq.QuoteIdentifier(column.Name),
 		column.ReferenceTable.String,
 		column.ReferenceColumn.String,
 	), true
