@@ -3,6 +3,7 @@ package repositories
 import (
 	"fmt"
 	"github.com/jmoiron/sqlx"
+	"github.com/lib/pq"
 	"strings"
 )
 
@@ -67,7 +68,13 @@ func (r *IndexRepository) Create(tableName string, indexName string, columns []s
 
 	columnsStr := strings.Join(columns, ", ")
 
-	query := fmt.Sprintf("CREATE %s INDEX %s ON %s (%s)", unique, indexName, tableName, columnsStr)
+	query := fmt.Sprintf(
+		"CREATE %s INDEX %s ON %s (%s)",
+		unique,
+		pq.QuoteIdentifier(indexName),
+		pq.QuoteIdentifier(tableName),
+		columnsStr,
+	)
 
 	_, err := r.connection.Exec(query)
 	if err != nil {
@@ -78,7 +85,7 @@ func (r *IndexRepository) Create(tableName string, indexName string, columns []s
 }
 
 func (r *IndexRepository) DropIfExists(indexName string) (bool, error) {
-	query := fmt.Sprintf("DROP INDEX IF EXISTS %s", indexName)
+	query := fmt.Sprintf("DROP INDEX IF EXISTS %s", pq.QuoteIdentifier(indexName))
 
 	_, err := r.connection.Exec(query)
 	if err != nil {
