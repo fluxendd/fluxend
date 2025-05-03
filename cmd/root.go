@@ -25,5 +25,4 @@ func init() {
 	RootCmd.AddCommand(udbStats)
 	RootCmd.AddCommand(udbRestart)
 	RootCmd.AddCommand(optimizeCmd)
-	RootCmd.AddCommand(makeModelCmd)
 }

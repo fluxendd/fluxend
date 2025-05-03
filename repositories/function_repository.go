@@ -4,6 +4,7 @@ import (
 	"fluxton/models"
 	"fmt"
 	"github.com/jmoiron/sqlx"
+	"github.com/lib/pq"
 )
 
 type FunctionRepository struct {
@@ -58,7 +59,7 @@ func (r *FunctionRepository) GetByName(schema, functionName string) (models.Func
 }
 
 func (r *FunctionRepository) Delete(schema, functionName string) error {
-	query := fmt.Sprintf(`DROP FUNCTION IF EXISTS %s.%s CASCADE`, schema, functionName)
+	query := fmt.Sprintf(`DROP FUNCTION IF EXISTS %s.%s CASCADE`, pq.QuoteIdentifier(schema), pq.QuoteIdentifier(functionName))
 	_, err := r.connection.Exec(query)
 	if err != nil {
 		return err
