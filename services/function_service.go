@@ -8,6 +8,7 @@ import (
 	"fluxton/requests"
 	"fmt"
 	"github.com/google/uuid"
+	"github.com/lib/pq"
 	"strings"
 
 	"github.com/samber/do"
@@ -135,18 +136,18 @@ func (s *FunctionServiceImpl) Delete(schema, name string, projectUUID uuid.UUID,
 func (s *FunctionServiceImpl) buildDefinition(schema string, request *requests.CreateFunctionRequest) (string, error) {
 	var params []string
 	for _, param := range request.Parameters {
-		params = append(params, fmt.Sprintf("%s %s", param.Name, param.Type))
+		params = append(params, fmt.Sprintf("%s %s", pq.QuoteIdentifier(param.Name), pq.QuoteIdentifier(param.Type)))
 	}
 	paramList := strings.Join(params, ", ")
 
 	sql := fmt.Sprintf(
 		`CREATE OR REPLACE FUNCTION %s.%s(%s) RETURNS %s AS $$ %s; $$ LANGUAGE %s;`,
 		schema,
-		request.Name,
+		pq.QuoteIdentifier(request.Name),
 		paramList,
-		request.ReturnType,
-		request.Definition,
-		request.Language,
+		pq.QuoteIdentifier(request.ReturnType),
+		pq.QuoteIdentifier(request.Definition),
+		pq.QuoteIdentifier(request.Language),
 	)
 
 	return strings.ReplaceAll(sql, ";;", ";"), nil
