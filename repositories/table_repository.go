@@ -50,7 +50,7 @@ func (r *TableRepository) Create(name string, columns []models.Column) error {
 		}
 	}
 
-	createQuery := fmt.Sprintf("CREATE TABLE %s (\n%s\n);", name, strings.Join(defs, ",\n"))
+	createQuery := fmt.Sprintf("CREATE TABLE %s (\n%s\n);", pq.QuoteIdentifier(name), strings.Join(defs, ",\n"))
 
 	if _, err := r.connection.Exec(createQuery); err != nil {
 		return fmt.Errorf("failed to create table: %w", err)
@@ -65,8 +65,8 @@ func (r *TableRepository) Create(name string, columns []models.Column) error {
 	return nil
 }
 
-func (r *TableRepository) Duplicate(oldName string, newName string) error {
-	_, err := r.connection.Exec(fmt.Sprintf("CREATE TABLE %s AS TABLE %s", pq.QuoteIdentifier(newName), pq.QuoteIdentifier(oldName)))
+func (r *TableRepository) Duplicate(existingTable string, newTable string) error {
+	_, err := r.connection.Exec(fmt.Sprintf("CREATE TABLE %s AS TABLE %s", pq.QuoteIdentifier(newTable), pq.QuoteIdentifier(existingTable)))
 	if err != nil {
 		return err
 	}
