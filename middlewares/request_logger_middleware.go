@@ -54,6 +54,7 @@ func readBody(body io.ReadCloser) string {
 	if err != nil {
 		log.Warn().
 			Str("action", constants.ActionAPIRequest).
+			Str("error", err.Error()).
 			Msg("Failed to read request body")
 
 		return ""
