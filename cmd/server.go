@@ -57,7 +57,9 @@ func registerRoutes(e *echo.Echo, container *do.Injector) {
 	userRepo := do.MustInvoke[*repositories.UserRepository](container)
 
 	authMiddleware := middlewares.AuthMiddleware(userRepo)
-	formEnabledMiddleware := middlewares.AllowFormMiddleware(settingService)
+	allowFormMiddleware := middlewares.AllowFormMiddleware(settingService)
+	allowStorageMiddleware := middlewares.AllowStorageMiddleware(settingService)
+	allowBackupMiddleware := middlewares.AllowBackupMiddleware(settingService)
 
 	requestLogRepo := do.MustInvoke[*repositories.RequestLogRepository](container)
 	requestLogMiddleware := middlewares.RequestLoggerMiddleware(requestLogRepo)
@@ -68,10 +70,10 @@ func registerRoutes(e *echo.Echo, container *do.Injector) {
 	routes.RegisterOrganizationRoutes(e, container, authMiddleware)
 	routes.RegisterProjectRoutes(e, container, authMiddleware)
 	routes.RegisterTableRoutes(e, container, authMiddleware)
-	routes.RegisterFormRoutes(e, container, authMiddleware, formEnabledMiddleware)
-	routes.RegisterStorageRoutes(e, container, authMiddleware)
+	routes.RegisterFormRoutes(e, container, authMiddleware, allowFormMiddleware)
+	routes.RegisterStorageRoutes(e, container, authMiddleware, allowStorageMiddleware)
 	routes.RegisterFunctionRoutes(e, container, authMiddleware)
-	routes.RegisterBackup(e, container, authMiddleware)
+	routes.RegisterBackup(e, container, authMiddleware, allowBackupMiddleware)
 
 	e.GET("/docs/*", echoSwagger.WrapHandler)
 }
