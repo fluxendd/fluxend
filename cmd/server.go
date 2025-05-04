@@ -32,7 +32,6 @@ func setupServer(container *do.Injector) *echo.Echo {
 	e := echo.New()
 
 	// Middleware
-	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 	e.Use(middleware.CORS())
 
