@@ -1,11 +1,12 @@
 package services
 
 import (
+	"fluxton/constants"
 	"fluxton/models"
 	"fluxton/repositories"
 	"fluxton/utils"
 	"fmt"
-	"github.com/labstack/gommon/log"
+	"github.com/rs/zerolog/log"
 	"github.com/samber/do"
 	"os"
 	"strings"
@@ -57,36 +58,71 @@ func NewPostgrestService(injector *do.Injector) (PostgrestService, error) {
 
 func (s *PostgrestServiceImpl) StartContainer(dbName string) {
 	if err := utils.ExecuteCommand(s.buildStartCommand(dbName)); err != nil {
+		log.Error().
+			Str("action", constants.ActionPostgrest).
+			Str("db", dbName).
+			Str("error", err.Error()).
+			Msg("failed to start container")
+
 		_, err := s.projectRepo.UpdateStatusByDatabaseName(dbName, models.ProjectStatusError)
 		if err != nil {
-			log.Errorf("failed to update project status: %s", err)
+			log.Error().
+				Str("action", constants.ActionPostgrest).
+				Str("dbName", dbName).
+				Str("error", err.Error()).
+				Msg("failed to update project status to error")
+
 			return
 		}
 
-		log.Errorf("failed to start container: %s", err)
 	}
 
 	// Update project status to active
 	_, err := s.projectRepo.UpdateStatusByDatabaseName(dbName, models.ProjectStatusActive)
 	if err != nil {
-		log.Errorf("failed to update project status: %s", err)
+		log.Error().
+			Str("action", constants.ActionPostgrest).
+			Str("db", dbName).
+			Str("error", err.Error()).
+			Msg("failed to update project status to active")
+
+		return
 	}
+
+	log.Info().
+		Str("action", constants.ActionPostgrest).
+		Str("db", dbName).
+		Msg("container started successfully")
 }
 
 func (s *PostgrestServiceImpl) RemoveContainer(dbName string) {
 	containerName := s.getContainerName(dbName)
 
 	if err := utils.ExecuteCommand([]string{"docker", "stop", containerName}); err != nil {
-		log.Errorf("failed to stop container: %s", err)
+		log.Error().
+			Str("action", constants.ActionPostgrest).
+			Str("db", dbName).
+			Str("error", err.Error()).
+			Msg("failed to stop container")
 	}
 
 	if err := utils.ExecuteCommand([]string{"docker", "rm", containerName}); err != nil {
-		log.Errorf("failed to remove container: %s", err)
+		log.Error().
+			Str("action", constants.ActionPostgrest).
+			Str("db", dbName).
+			Str("error", err.Error()).
+			Msg("failed to remove container")
 	}
 
 	_, err := s.projectRepo.UpdateStatusByDatabaseName(dbName, models.ProjectStatusInactive)
 	if err != nil {
-		log.Errorf("failed to update project status: %s", err)
+		log.Error().
+			Str("action", constants.ActionPostgrest).
+			Str("db", dbName).
+			Str("error", err.Error()).
+			Msg("failed to update project status to inactive")
+
+		return
 	}
 }
 
@@ -94,7 +130,11 @@ func (s *PostgrestServiceImpl) HasContainer(dbName string) bool {
 	cmd := []string{"docker", "inspect", "--format='{{.State.Running}}'", s.getContainerName(dbName)}
 	output, err := utils.ExecuteCommandWithOutput(cmd)
 	if err != nil {
-		log.Errorf("failed to check container: %s", err)
+		log.Error().
+			Str("action", constants.ActionPostgrest).
+			Str("db", dbName).
+			Str("error", err.Error()).
+			Msg("failed to check if container exists")
 
 		return false
 	}
