@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"github.com/labstack/gommon/log"
+	"github.com/rs/zerolog/log"
 	"os/exec"
 )
 
@@ -9,12 +9,20 @@ func ExecuteCommand(command []string) error {
 	cmd := exec.Command(command[0], command[1:]...)
 	output, err := cmd.CombinedOutput()
 	if err != nil {
-		log.Errorf("Command failed: %s\nOutput: %s", err, string(output))
+		log.Error().
+			Str("command", cmd.String()).
+			Str("output", string(output)).
+			Str("error", err.Error()).
+			Msg("Command failed")
 
 		return err
 	}
 
-	log.Printf("Command succeeded: cmd=[%s] : output=[%s]", command, string(output))
+	// Uncomment for debugging purposes
+	//log.Info().
+	//	Str("command", cmd.String()).
+	//	Str("output", string(output)).
+	//	Msg("Command successful")
 
 	return nil
 }
