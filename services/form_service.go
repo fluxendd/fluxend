@@ -43,8 +43,7 @@ func NewFormService(injector *do.Injector) (FormService, error) {
 }
 
 func (s *FormServiceImpl) List(paginationParams requests.PaginationParams, projectUUID uuid.UUID, authUser models.AuthUser) ([]models.Form, error) {
-	err := s.validateFormsEnabled()
-	if err != nil {
+	if err := s.validateFormsEnabled(); err != nil {
 		return []models.Form{}, err
 	}
 
@@ -61,8 +60,7 @@ func (s *FormServiceImpl) List(paginationParams requests.PaginationParams, proje
 }
 
 func (s *FormServiceImpl) GetByUUID(formUUID uuid.UUID, authUser models.AuthUser) (models.Form, error) {
-	err := s.validateFormsEnabled()
-	if err != nil {
+	if err := s.validateFormsEnabled(); err != nil {
 		return models.Form{}, err
 	}
 
@@ -84,8 +82,7 @@ func (s *FormServiceImpl) GetByUUID(formUUID uuid.UUID, authUser models.AuthUser
 }
 
 func (s *FormServiceImpl) Create(request *form_requests.CreateRequest, authUser models.AuthUser) (models.Form, error) {
-	err := s.validateFormsEnabled()
-	if err != nil {
+	if err := s.validateFormsEnabled(); err != nil {
 		return models.Form{}, err
 	}
 
@@ -121,8 +118,7 @@ func (s *FormServiceImpl) Create(request *form_requests.CreateRequest, authUser 
 }
 
 func (s *FormServiceImpl) Update(formUUID uuid.UUID, authUser models.AuthUser, request *form_requests.CreateRequest) (*models.Form, error) {
-	err := s.validateFormsEnabled()
-	if err != nil {
+	if err := s.validateFormsEnabled(); err != nil {
 		return &models.Form{}, err
 	}
 
@@ -157,8 +153,7 @@ func (s *FormServiceImpl) Update(formUUID uuid.UUID, authUser models.AuthUser, r
 }
 
 func (s *FormServiceImpl) Delete(formUUID uuid.UUID, authUser models.AuthUser) (bool, error) {
-	err := s.validateFormsEnabled()
-	if err != nil {
+	if err := s.validateFormsEnabled(); err != nil {
 		return false, err
 	}
 
