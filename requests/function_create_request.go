@@ -1,7 +1,7 @@
 package requests
 
 import (
-	"fluxton/configs"
+	"fluxton/constants"
 	"fluxton/utils"
 	"fmt"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -70,12 +70,12 @@ func (r *CreateFunctionRequest) validate() error {
 				regexp.MustCompile(utils.AlphanumericWithUnderscorePattern()),
 			).Error("name must be alphanumeric with underscores"),
 			validation.Length(
-				configs.MinTableNameLength, configs.MaxTableNameLength,
+				constants.MinTableNameLength, constants.MaxTableNameLength,
 			).Error(
 				fmt.Sprintf(
 					"name must be between %d and %d characters",
-					configs.MinTableNameLength,
-					configs.MaxTableNameLength,
+					constants.MinTableNameLength,
+					constants.MaxTableNameLength,
 				),
 			),
 		),

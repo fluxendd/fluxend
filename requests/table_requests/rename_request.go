@@ -1,7 +1,7 @@
 package table_requests
 
 import (
-	"fluxton/configs"
+	"fluxton/constants"
 	"fluxton/requests"
 	"fluxton/utils"
 	"fmt"
@@ -32,12 +32,12 @@ func (r *RenameRequest) BindAndValidate(c echo.Context) []string {
 				regexp.MustCompile(utils.AlphanumericWithUnderscorePattern()),
 			).Error("Table name must be alphanumeric with underscores"),
 			validation.Length(
-				configs.MinTableNameLength, configs.MaxTableNameLength,
+				constants.MinTableNameLength, constants.MaxTableNameLength,
 			).Error(
 				fmt.Sprintf(
 					"Name must be between %d and %d characters",
-					configs.MinTableNameLength,
-					configs.MaxTableNameLength,
+					constants.MinTableNameLength,
+					constants.MaxTableNameLength,
 				),
 			),
 			validation.By(validateName),

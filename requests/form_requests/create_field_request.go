@@ -1,7 +1,7 @@
 package form_requests
 
 import (
-	"fluxton/configs"
+	"fluxton/constants"
 	"fluxton/requests"
 	"fluxton/utils"
 	"fmt"
@@ -94,12 +94,12 @@ func validateField(value interface{}) error {
 			&field.Label,
 			validation.Required.Error("Label is required"),
 			validation.Length(
-				configs.MinFormFieldLabelLength, configs.MaxFormFieldLabelLength,
+				constants.MinFormFieldLabelLength, constants.MaxFormFieldLabelLength,
 			).Error(
 				fmt.Sprintf(
 					"Label name must be between %d and %d characters",
-					configs.MinFormFieldLabelLength,
-					configs.MaxFormFieldLabelLength,
+					constants.MinFormFieldLabelLength,
+					constants.MaxFormFieldLabelLength,
 				),
 			),
 			validation.Match(
@@ -115,7 +115,7 @@ func validateField(value interface{}) error {
 		validation.Field(
 			&field.Description,
 			validation.Length(
-				configs.MinFormFieldDescriptionLength, configs.MaxFormFieldDescriptionLength,
+				constants.MinFormFieldDescriptionLength, constants.MaxFormFieldDescriptionLength,
 			).Error("Description must be between 0 and 255 characters"),
 		),
 	)

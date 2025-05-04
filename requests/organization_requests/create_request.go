@@ -1,7 +1,7 @@
 package organization_requests
 
 import (
-	"fluxton/configs"
+	"fluxton/constants"
 	"fluxton/requests"
 	"fluxton/utils"
 	"fmt"
@@ -25,12 +25,12 @@ func (r *CreateRequest) BindAndValidate(c echo.Context) []string {
 			&r.Name,
 			validation.Required.Error("Name is required"),
 			validation.Length(
-				configs.MinOrganizationNameLength, configs.MaxOrganizationNameLength,
+				constants.MinOrganizationNameLength, constants.MaxOrganizationNameLength,
 			).Error(
 				fmt.Sprintf(
 					"Organization name be between %d and %d characters",
-					configs.MinOrganizationNameLength,
-					configs.MaxOrganizationNameLength,
+					constants.MinOrganizationNameLength,
+					constants.MaxOrganizationNameLength,
 				),
 			),
 			validation.Match(

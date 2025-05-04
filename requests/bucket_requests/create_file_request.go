@@ -1,7 +1,7 @@
 package bucket_requests
 
 import (
-	"fluxton/configs"
+	"fluxton/constants"
 	"fluxton/requests"
 	"fmt"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -25,12 +25,12 @@ func (r *CreateFileRequest) BindAndValidate(c echo.Context) []string {
 			&r.FullFileName,
 			validation.Required.Error("full_file_name is required"),
 			validation.Length(
-				configs.MinBucketNameLength, configs.MaxBucketNameLength,
+				constants.MinBucketNameLength, constants.MaxBucketNameLength,
 			).Error(
 				fmt.Sprintf(
 					"File name must be between %d and %d characters",
-					configs.MinBucketNameLength,
-					configs.MaxBucketNameLength,
+					constants.MinBucketNameLength,
+					constants.MaxBucketNameLength,
 				),
 			),
 			/*validation.Match(

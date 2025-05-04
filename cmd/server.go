@@ -32,18 +32,19 @@ func setupServer(container *do.Injector) *echo.Echo {
 	e := echo.New()
 
 	// Middleware
-	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 	e.Use(middleware.CORS())
 
-	if err := sentry.Init(sentry.ClientOptions{
-		Dsn:              os.Getenv("SENTRY_DSN"),
-		TracesSampleRate: 1.0,
-	}); err != nil {
-		fmt.Printf("Sentry initialization failed: %v\n", err)
-	}
+	if os.Getenv("SENTRY_DSN") != "" {
+		if err := sentry.Init(sentry.ClientOptions{
+			Dsn:              os.Getenv("SENTRY_DSN"),
+			TracesSampleRate: 1.0,
+		}); err != nil {
+			fmt.Printf("Sentry initialization failed: %v\n", err)
+		}
 
-	e.Use(sentryecho.New(sentryecho.Options{}))
+		e.Use(sentryecho.New(sentryecho.Options{}))
+	}
 
 	registerRoutes(e, container)
 

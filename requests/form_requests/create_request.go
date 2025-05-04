@@ -1,7 +1,7 @@
 package form_requests
 
 import (
-	"fluxton/configs"
+	"fluxton/constants"
 	"fluxton/requests"
 	"fluxton/utils"
 	"fmt"
@@ -31,12 +31,12 @@ func (r *CreateRequest) BindAndValidate(c echo.Context) []string {
 			&r.Name,
 			validation.Required.Error("Name is required"),
 			validation.Length(
-				configs.MinProjectNameLength, configs.MaxProjectNameLength,
+				constants.MinProjectNameLength, constants.MaxProjectNameLength,
 			).Error(
 				fmt.Sprintf(
 					"Form name must be between %d and %d characters",
-					configs.MinProjectNameLength,
-					configs.MaxProjectNameLength,
+					constants.MinProjectNameLength,
+					constants.MaxProjectNameLength,
 				),
 			),
 			validation.Match(

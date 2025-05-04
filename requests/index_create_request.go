@@ -1,7 +1,7 @@
 package requests
 
 import (
-	"fluxton/configs"
+	"fluxton/constants"
 	"fluxton/utils"
 	"fmt"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -34,12 +34,12 @@ func (r *IndexCreateRequest) BindAndValidate(c echo.Context) []string {
 			&r.Name,
 			validation.Required.Error("Index name is required"),
 			validation.Length(
-				configs.MinIndexNameLength, configs.MaxIndexNameLength,
+				constants.MinIndexNameLength, constants.MaxIndexNameLength,
 			).Error(
 				fmt.Sprintf(
 					"Index name be between %d and %d characters",
-					configs.MinIndexNameLength,
-					configs.MaxIndexNameLength,
+					constants.MinIndexNameLength,
+					constants.MaxIndexNameLength,
 				),
 			),
 			validation.Match(

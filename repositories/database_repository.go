@@ -1,10 +1,11 @@
 package repositories
 
 import (
+	"fluxton/constants"
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
-	"github.com/labstack/gommon/log"
+	"github.com/rs/zerolog/log"
 	"github.com/samber/do"
 	"os"
 	"path/filepath"
@@ -25,6 +26,12 @@ func NewDatabaseRepository(injector *do.Injector) (*DatabaseRepository, error) {
 func (r *DatabaseRepository) Create(name string, userUUID uuid.NullUUID) error {
 	_, err := r.db.Exec(fmt.Sprintf(`CREATE DATABASE "%s"`, name))
 	if err != nil {
+		log.Error().
+			Str("action", constants.ActionClientDatabaseCreate).
+			Str("db", name).
+			Str("error", err.Error()).
+			Msg("failed to create database")
+
 		return err
 	}
 
@@ -91,6 +98,12 @@ func (r *DatabaseRepository) Connect(name string) (*sqlx.DB, error) {
 
 	connection, err := sqlx.Connect("postgres", connStr)
 	if err != nil {
+		log.Error().
+			Str("action", constants.ActionClientDatabaseConnect).
+			Str("db", name).
+			Str("error", err.Error()).
+			Msg("failed to connect to database")
+
 		return nil, fmt.Errorf("could not connect to database: %v", err)
 	}
 
@@ -113,6 +126,12 @@ func (r *DatabaseRepository) importSeedFiles(databaseName string, userUUID uuid.
 	// Read all files in the directory
 	files, err := os.ReadDir(seedDir)
 	if err != nil {
+		log.Error().
+			Str("action", constants.ActionClientDatabaseSeed).
+			Str("db", databaseName).
+			Str("error", err.Error()).
+			Msg("Failed to read seed directory")
+
 		return fmt.Errorf("could not read seed directory: %v", err)
 	}
 
@@ -126,7 +145,12 @@ func (r *DatabaseRepository) importSeedFiles(databaseName string, userUUID uuid.
 		// Load the contents of the SQL file
 		sqlContent, err := os.ReadFile(filePath)
 		if err != nil {
-			log.Printf("DB: %s => Skipping file %s: could not read file: %v", databaseName, filePath, err)
+			log.Warn().
+				Str("action", constants.ActionClientDatabaseSeed).
+				Str("db", databaseName).
+				Str("file", filePath).
+				Str("error", err.Error()).
+				Msg("Failed to read SQL file")
 
 			continue
 		}
@@ -140,13 +164,23 @@ func (r *DatabaseRepository) importSeedFiles(databaseName string, userUUID uuid.
 			}
 
 			if _, err := connection.Exec(query); err != nil {
-				log.Printf("DB: %s => Skipping file %s: could not execute SQL: %v", databaseName, filePath, err)
+				log.Warn().
+					Str("action", constants.ActionClientDatabaseSeed).
+					Str("db", databaseName).
+					Str("file", filePath).
+					Str("query", query).
+					Str("error", err.Error()).
+					Msg("Failed to execute SQL query")
 
 				continue
 			}
 		}
 
-		log.Printf("DB: %s => Successfully executed seed file %s", databaseName, filePath)
+		log.Info().
+			Str("action", constants.ActionClientDatabaseSeed).
+			Str("db", databaseName).
+			Str("file", filePath).
+			Msg("Successfully executed SQL file")
 	}
 
 	return nil

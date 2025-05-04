@@ -1,4 +1,4 @@
-package configs
+package message
 
 var messages = map[string]string{
 	// General

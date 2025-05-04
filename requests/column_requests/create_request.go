@@ -1,7 +1,7 @@
 package column_requests
 
 import (
-	"fluxton/configs"
+	"fluxton/constants"
 	"fluxton/models"
 	"fluxton/requests"
 	"fluxton/utils"
@@ -45,12 +45,12 @@ func ValidateColumn(column models.Column) error {
 			&column.Name,
 			validation.Required.Error("Column name is required"),
 			validation.Length(
-				configs.MinColumnNameLength, configs.MaxColumnNameLength,
+				constants.MinColumnNameLength, constants.MaxColumnNameLength,
 			).Error(
 				fmt.Sprintf(
 					"Column name be between %d and %d characters",
-					configs.MinColumnNameLength,
-					configs.MaxTableNameLength,
+					constants.MinColumnNameLength,
+					constants.MaxTableNameLength,
 				),
 			),
 			validation.Match(
