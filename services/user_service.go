@@ -28,13 +28,18 @@ type UserService interface {
 }
 
 type UserServiceImpl struct {
-	userRepo *repositories.UserRepository
+	settingService SettingService
+	userRepo       *repositories.UserRepository
 }
 
 func NewUserService(injector *do.Injector) (UserService, error) {
+	settingService := do.MustInvoke[SettingService](injector)
 	repo := do.MustInvoke[*repositories.UserRepository](injector)
 
-	return &UserServiceImpl{userRepo: repo}, nil
+	return &UserServiceImpl{
+		settingService: settingService,
+		userRepo:       repo,
+	}, nil
 }
 
 func (s *UserServiceImpl) Login(request *user_requests.LoginRequest) (models.User, string, error) {
@@ -82,6 +87,10 @@ func (s *UserServiceImpl) ExistsByUUID(id uuid.UUID) error {
 }
 
 func (s *UserServiceImpl) Create(request *user_requests.CreateRequest) (models.User, string, error) {
+	if !s.settingService.GetBool("allowRegistrations") {
+		return models.User{}, "", errs.NewBadRequestError("user.error.registrationDisabled")
+	}
+
 	existsByEmail, err := s.userRepo.ExistsByEmail(request.Email)
 	if err != nil {
 		return models.User{}, "", err

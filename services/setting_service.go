@@ -6,12 +6,16 @@ import (
 	"fluxton/policies"
 	"fluxton/repositories"
 	"fluxton/requests"
+	"github.com/rs/zerolog/log"
 	"github.com/samber/do"
 	"time"
 )
 
 type SettingService interface {
-	List(authUser models.AuthUser) ([]models.Setting, error)
+	List() ([]models.Setting, error)
+	Get(name string) models.Setting
+	GetValue(name string) string
+	GetBool(name string) bool
 	Update(authUser models.AuthUser, request *requests.SettingUpdateRequest) ([]models.Setting, error)
 	Reset(authUser models.AuthUser) ([]models.Setting, error)
 }
@@ -34,12 +38,41 @@ func NewSettingService(injector *do.Injector) (SettingService, error) {
 	}, nil
 }
 
-func (s *SettingServiceImpl) List(authUser models.AuthUser) ([]models.Setting, error) {
-	if !s.adminPolicy.CanAccess(authUser) {
-		return []models.Setting{}, errs.NewForbiddenError("setting.error.listForbidden")
+func (s *SettingServiceImpl) List() ([]models.Setting, error) {
+	return s.settingRepo.List()
+}
+
+func (s *SettingServiceImpl) Get(name string) models.Setting {
+	settings, err := s.settingRepo.List() // cached settings so no need to worry about multiple calls
+	if err != nil {
+		log.Error().
+			Str("error", err.Error()).
+			Msg("Error fetching settings")
 	}
 
-	return s.settingRepo.List()
+	for _, setting := range settings {
+		if setting.Name == name {
+			return setting
+		}
+	}
+
+	log.Error().
+		Str("name", name).
+		Msg("Setting not found")
+
+	return models.Setting{}
+}
+
+func (s *SettingServiceImpl) GetValue(name string) string {
+	setting := s.Get(name)
+
+	return setting.Value
+}
+
+func (s *SettingServiceImpl) GetBool(name string) bool {
+	setting := s.Get(name)
+
+	return setting.Value == "yes"
 }
 
 func (s *SettingServiceImpl) Update(authUser models.AuthUser, request *requests.SettingUpdateRequest) ([]models.Setting, error) {

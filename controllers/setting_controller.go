@@ -21,9 +21,7 @@ func NewSettingController(injector *do.Injector) (*SettingController, error) {
 }
 
 func (sc *SettingController) List(c echo.Context) error {
-	authUser, _ := utils.NewAuth(c).User()
-
-	settings, err := sc.settingService.List(authUser)
+	settings, err := sc.settingService.List()
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}

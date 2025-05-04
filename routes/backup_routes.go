@@ -6,10 +6,10 @@ import (
 	"github.com/samber/do"
 )
 
-func RegisterBackup(e *echo.Echo, container *do.Injector, authMiddleware echo.MiddlewareFunc) {
+func RegisterBackup(e *echo.Echo, container *do.Injector, authMiddleware echo.MiddlewareFunc, allowBackupMiddleware echo.MiddlewareFunc) {
 	backupController := do.MustInvoke[*controllers.BackupController](container)
 
-	formsGroup := e.Group("api/backups", authMiddleware)
+	formsGroup := e.Group("api/backups", authMiddleware, allowBackupMiddleware)
 
 	formsGroup.POST("", backupController.Store)
 	formsGroup.GET("", backupController.List)

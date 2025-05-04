@@ -6,11 +6,11 @@ import (
 	"github.com/samber/do"
 )
 
-func RegisterStorageRoutes(e *echo.Echo, container *do.Injector, authMiddleware echo.MiddlewareFunc) {
+func RegisterStorageRoutes(e *echo.Echo, container *do.Injector, authMiddleware echo.MiddlewareFunc, allowStorageMiddleware echo.MiddlewareFunc) {
 	bucketController := do.MustInvoke[*controllers.BucketController](container)
 	fileController := do.MustInvoke[*controllers.FileController](container)
 
-	projectsGroup := e.Group("api/buckets", authMiddleware)
+	projectsGroup := e.Group("api/buckets", authMiddleware, allowStorageMiddleware)
 
 	projectsGroup.POST("", bucketController.Store)
 	projectsGroup.GET("", bucketController.List)

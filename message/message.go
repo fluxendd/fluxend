@@ -16,6 +16,7 @@ var messages = map[string]string{
 	"user.error.invalidPayload":        "Invalid payload provided",
 	"user.error.emailAlreadyExists":    "User with this email already exists",
 	"user.error.usernameAlreadyExists": "User with this username already exists",
+	"user.error.registrationDisabled":  "User registration is disabled at the moment",
 
 	// Organizations
 	"organization.error.userNotFound":        "User not found in organization",
@@ -84,6 +85,7 @@ var messages = map[string]string{
 	"form.error.updateForbidden": "You don't have permission to update this form",
 	"form.error.deleteForbidden": "You don't have permission to delete this form",
 	"form.error.duplicateName":   "Form name already exists",
+	"form.error.disabled":        "Forms are disabled at the moment",
 
 	// Form Responses
 	"formResponse.error.notFound":             "Form response not found",
