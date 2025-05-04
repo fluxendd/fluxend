@@ -18,6 +18,10 @@ type SettingService interface {
 	GetBool(name string) bool
 	Update(authUser models.AuthUser, request *requests.SettingUpdateRequest) ([]models.Setting, error)
 	Reset(authUser models.AuthUser) ([]models.Setting, error)
+	ValidateFormsEnabled() error
+	ValidateNewProjectsEnabled() error
+	ValidateStorageEnabled() error
+	ValidateBackupsEnabled() error
 }
 
 type SettingServiceImpl struct {
@@ -73,6 +77,34 @@ func (s *SettingServiceImpl) GetBool(name string) bool {
 	setting := s.Get(name)
 
 	return setting.Value == "yes"
+}
+
+func (s *SettingServiceImpl) ValidateEnabled(settingName, errorKey string) error {
+	if !s.GetBool(settingName) {
+		return errs.NewForbiddenError(errorKey)
+	}
+
+	return nil
+}
+
+func (s *SettingServiceImpl) ValidateFormsEnabled() error {
+	log.Info().Msg("IN HERE")
+	x := s.ValidateEnabled("enableForms", "form.error.disabled")
+	log.Info().Msg(x.Error())
+	log.Info().Msg("OUT HERE")
+	return x
+}
+
+func (s *SettingServiceImpl) ValidateNewProjectsEnabled() error {
+	return s.ValidateEnabled("allowNewProjects", "project.error.disabled")
+}
+
+func (s *SettingServiceImpl) ValidateStorageEnabled() error {
+	return s.ValidateEnabled("enableStorage", "storage.error.disabled")
+}
+
+func (s *SettingServiceImpl) ValidateBackupsEnabled() error {
+	return s.ValidateEnabled("enableBackups", "backup.error.disabled")
 }
 
 func (s *SettingServiceImpl) Update(authUser models.AuthUser, request *requests.SettingUpdateRequest) ([]models.Setting, error) {

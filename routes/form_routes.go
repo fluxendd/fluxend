@@ -6,12 +6,17 @@ import (
 	"github.com/samber/do"
 )
 
-func RegisterFormRoutes(e *echo.Echo, container *do.Injector, authMiddleware echo.MiddlewareFunc) {
+func RegisterFormRoutes(
+	e *echo.Echo,
+	container *do.Injector,
+	authMiddleware echo.MiddlewareFunc,
+	formEnabledMiddleware echo.MiddlewareFunc,
+) {
 	formController := do.MustInvoke[*controllers.FormController](container)
 	formFieldController := do.MustInvoke[*controllers.FormFieldController](container)
 	formResponseController := do.MustInvoke[*controllers.FormResponseController](container)
 
-	formsGroup := e.Group("api/forms", authMiddleware)
+	formsGroup := e.Group("api/forms", authMiddleware, formEnabledMiddleware)
 
 	formsGroup.POST("", formController.Store)
 	formsGroup.GET("", formController.List)
@@ -20,7 +25,7 @@ func RegisterFormRoutes(e *echo.Echo, container *do.Injector, authMiddleware ech
 	formsGroup.DELETE("/:formUUID", formController.Delete)
 
 	// Form Field routes
-	formFieldsGroup := e.Group("api/forms/:formUUID/fields", authMiddleware)
+	formFieldsGroup := e.Group("api/forms/:formUUID/fields", authMiddleware, formEnabledMiddleware)
 
 	formFieldsGroup.POST("", formFieldController.Store)
 	formFieldsGroup.GET("", formFieldController.List)
@@ -29,7 +34,7 @@ func RegisterFormRoutes(e *echo.Echo, container *do.Injector, authMiddleware ech
 	formFieldsGroup.DELETE("/:fieldUUID", formFieldController.Delete)
 
 	// Form Response routes
-	formResponsesGroup := e.Group("api/forms/:formUUID/responses", authMiddleware)
+	formResponsesGroup := e.Group("api/forms/:formUUID/responses", authMiddleware, formEnabledMiddleware)
 
 	formResponsesGroup.GET("", formResponseController.List)
 	formResponsesGroup.POST("", formResponseController.Store)

@@ -34,7 +34,7 @@ func SeedSettings(container *do.Injector) {
 		// API throttle settings
 		{Name: "apiThrottleLimit", Value: "100", DefaultValue: "100"},
 		{Name: "apiThrottleInterval", Value: "60", DefaultValue: "60"},
-		{Name: "apiThrottleEnabled", Value: "yes", DefaultValue: "no"},
+		{Name: "enableApiThrottle", Value: "yes", DefaultValue: "no"},
 	}
 
 	_, err := settingsService.CreateMany(settings)
