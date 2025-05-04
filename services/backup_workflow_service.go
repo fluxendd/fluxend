@@ -2,12 +2,13 @@ package services
 
 import (
 	"fluxton/configs"
+	"fluxton/constants"
 	"fluxton/models"
 	"fluxton/repositories"
 	"fluxton/utils"
 	"fmt"
 	"github.com/google/uuid"
-	"github.com/labstack/gommon/log"
+	"github.com/rs/zerolog/log"
 	"github.com/samber/do"
 	"os"
 	"time"
@@ -87,7 +88,12 @@ func (s *BackupWorkflowServiceImpl) Create(databaseName string, backupUUID uuid.
 	// 6. Remove backup file from app container
 	err = os.Remove(backupFilePath)
 	if err != nil {
-		log.Errorf("failed to remove backup file: %s", err)
+		log.Error().
+			Str("action", constants.ActionBackup).
+			Str("db", databaseName).
+			Str("backup_uuid", backupUUID.String()).
+			Str("error", err.Error()).
+			Msg("failed to remove backup file from fluxton_app container")
 	}
 }
 
@@ -101,7 +107,12 @@ func (s *BackupWorkflowServiceImpl) Delete(databaseName string, backupUUID uuid.
 
 	_, err = s.backupRepo.Delete(backupUUID)
 	if err != nil {
-		log.Errorf("failed to delete backup: %s", err)
+		log.Error().
+			Str("action", constants.ActionBackup).
+			Str("db", databaseName).
+			Str("backup_uuid", backupUUID.String()).
+			Str("error", err.Error()).
+			Msg("failed to delete backup from database")
 	}
 }
 
@@ -121,7 +132,13 @@ func (s *BackupWorkflowServiceImpl) executePgDump(databaseName, backupFilePath s
 
 	err := utils.ExecuteCommand(command)
 	if err != nil {
-		log.Errorf("pg_dump failed: %s", err)
+		log.Error().
+			Str("action", constants.ActionBackup).
+			Str("db", databaseName).
+			Str("backup_uuid", backupFilePath).
+			Msg("failed to execute pg_dump command")
+
+		return err
 	}
 
 	return err
@@ -138,7 +155,10 @@ func (s *BackupWorkflowServiceImpl) copyBackupToAppContainer(backupFilePath stri
 
 	err := utils.ExecuteCommand(dockerCpCommand)
 	if err != nil {
-		log.Errorf("failed to copy backup file: %s", err)
+		log.Error().
+			Str("action", constants.ActionBackup).
+			Str("backup_uuid", backupUUID.String()).
+			Msg("failed to copy backup file from fluxton_db to fluxton_app container")
 	}
 
 	return err
@@ -150,7 +170,11 @@ func (s *BackupWorkflowServiceImpl) ensureBackupBucketExists() error {
 	if !bucketExists {
 		_, err := s.s3Service.CreateBucket(configs.BackupBucketName)
 		if err != nil {
-			log.Errorf("failed to create backup bucket: %s", err)
+			log.Error().
+				Str("action", constants.ActionBackup).
+				Str("bucket_name", configs.BackupBucketName).
+				Str("error", err.Error()).
+				Msg("failed to create backup bucket")
 
 			return err
 		}
@@ -163,7 +187,13 @@ func (s *BackupWorkflowServiceImpl) ensureBackupBucketExists() error {
 func (s *BackupWorkflowServiceImpl) readBackupFile(backupUUID uuid.UUID) ([]byte, error) {
 	fileBytes, err := os.ReadFile(fmt.Sprintf("/tmp/%s.sql", backupUUID))
 	if err != nil {
-		log.Errorf("failed to read backup file: %s", err)
+		log.Error().
+			Str("action", constants.ActionBackup).
+			Str("backup_uuid", backupUUID.String()).
+			Str("error", err.Error()).
+			Msg("failed to read backup file from fluxton_app container")
+
+		return nil, err
 	}
 
 	return fileBytes, err
@@ -174,7 +204,14 @@ func (s *BackupWorkflowServiceImpl) uploadBackupToS3(databaseName string, backup
 	filePath := fmt.Sprintf("%s/%s.sql", databaseName, backupUUID)
 	err := s.s3Service.UploadFile(configs.BackupBucketName, filePath, fileBytes)
 	if err != nil {
-		log.Errorf("failed to upload backup to S3: %s", err)
+		log.Error().
+			Str("action", constants.ActionBackup).
+			Str("db", databaseName).
+			Str("backup_uuid", backupUUID.String()).
+			Str("error", err.Error()).
+			Msg("failed to upload backup file to S3")
+
+		return err
 	}
 
 	return err
@@ -184,8 +221,18 @@ func (s *BackupWorkflowServiceImpl) uploadBackupToS3(databaseName string, backup
 func (s *BackupWorkflowServiceImpl) handleBackupFailure(backupUUID uuid.UUID, status, errorMessage string) {
 	err := s.backupRepo.UpdateStatus(backupUUID, status, errorMessage, time.Now())
 	if err != nil {
-		log.Errorf("failed to update backup status: %s", err)
+		log.Error().
+			Str("action", constants.ActionBackup).
+			Str("backup_uuid", backupUUID.String()).
+			Str("error", err.Error()).
+			Msg("failed to update backup status in database")
+		return
 	}
 
-	log.Errorf("backup failed: %s", errorMessage)
+	log.Error().
+		Str("action", constants.ActionBackup).
+		Str("backup_uuid", backupUUID.String()).
+		Str("status", status).
+		Str("error", errorMessage).
+		Msg("backup workflow failed")
 }
