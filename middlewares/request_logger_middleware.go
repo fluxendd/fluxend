@@ -5,10 +5,8 @@ import (
 	"fluxton/models"
 	"fluxton/repositories"
 	"fluxton/utils"
-	"fmt"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
-	_ "github.com/lib/pq" // PostgreSQL driver
 	"github.com/rs/zerolog/log"
 	"io"
 	"time"
@@ -54,7 +52,9 @@ func readBody(body io.ReadCloser) string {
 	defer body.Close()
 	data, err := io.ReadAll(body)
 	if err != nil {
-		fmt.Printf("failed to read request body: %v", err)
+		log.Warn().
+			Str("action", constants.ActionAPIRequest).
+			Msg("Failed to read request body")
 
 		return ""
 	}
