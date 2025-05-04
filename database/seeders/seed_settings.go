@@ -22,9 +22,9 @@ func SeedSettings(container *do.Injector) {
 		{Name: "maxProjectsPerOrg", Value: "10", DefaultValue: "10"},
 		{Name: "allowRegistrations", Value: "yes", DefaultValue: "yes"},
 		{Name: "allowNewProjects", Value: "yes", DefaultValue: "yes"},
-		{Name: "enableForms", Value: "yes", DefaultValue: "yes"},
-		{Name: "enableStorage", Value: "yes", DefaultValue: "yes"},
-		{Name: "enableBackups", Value: "yes", DefaultValue: "yes"},
+		{Name: "allowForms", Value: "yes", DefaultValue: "yes"},
+		{Name: "allowStorage", Value: "yes", DefaultValue: "yes"},
+		{Name: "allowBackups", Value: "yes", DefaultValue: "yes"},
 
 		// Storage settings
 		{Name: "storageMaxBuckets", Value: "10", DefaultValue: "10"},
@@ -34,7 +34,7 @@ func SeedSettings(container *do.Injector) {
 		// API throttle settings
 		{Name: "apiThrottleLimit", Value: "100", DefaultValue: "100"},
 		{Name: "apiThrottleInterval", Value: "60", DefaultValue: "60"},
-		{Name: "enableApiThrottle", Value: "yes", DefaultValue: "no"},
+		{Name: "allowApiThrottle", Value: "yes", DefaultValue: "no"},
 	}
 
 	_, err := settingsService.CreateMany(settings)

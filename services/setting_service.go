@@ -88,11 +88,7 @@ func (s *SettingServiceImpl) ValidateEnabled(settingName, errorKey string) error
 }
 
 func (s *SettingServiceImpl) ValidateFormsEnabled() error {
-	log.Info().Msg("IN HERE")
-	x := s.ValidateEnabled("enableForms", "form.error.disabled")
-	log.Info().Msg(x.Error())
-	log.Info().Msg("OUT HERE")
-	return x
+	return s.ValidateEnabled("allowForms", "form.error.disabled")
 }
 
 func (s *SettingServiceImpl) ValidateNewProjectsEnabled() error {
@@ -104,7 +100,7 @@ func (s *SettingServiceImpl) ValidateStorageEnabled() error {
 }
 
 func (s *SettingServiceImpl) ValidateBackupsEnabled() error {
-	return s.ValidateEnabled("enableBackups", "backup.error.disabled")
+	return s.ValidateEnabled("allowBackups", "backup.error.disabled")
 }
 
 func (s *SettingServiceImpl) Update(authUser models.AuthUser, request *requests.SettingUpdateRequest) ([]models.Setting, error) {
