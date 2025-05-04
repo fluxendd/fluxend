@@ -1,7 +1,7 @@
 package table_requests
 
 import (
-	"fluxton/configs"
+	"fluxton/constants"
 	"fluxton/models"
 	"fluxton/requests"
 	"fluxton/requests/column_requests"
@@ -56,12 +56,12 @@ func (r *CreateRequest) validate() error {
 				regexp.MustCompile(utils.AlphanumericWithUnderscorePattern()),
 			).Error("Table name must be alphanumeric with underscores"),
 			validation.Length(
-				configs.MinTableNameLength, configs.MaxTableNameLength,
+				constants.MinTableNameLength, constants.MaxTableNameLength,
 			).Error(
 				fmt.Sprintf(
 					"Name must be between %d and %d characters",
-					configs.MinTableNameLength,
-					configs.MaxTableNameLength,
+					constants.MinTableNameLength,
+					constants.MaxTableNameLength,
 				),
 			),
 			validation.By(validateName),

@@ -1,7 +1,7 @@
 package bucket_requests
 
 import (
-	"fluxton/configs"
+	"fluxton/constants"
 	"fluxton/requests"
 	"fluxton/utils"
 	"fmt"
@@ -28,12 +28,12 @@ func (r *CreateRequest) BindAndValidate(c echo.Context) []string {
 			&r.Name,
 			validation.Required.Error("Name is required"),
 			validation.Length(
-				configs.MinBucketNameLength, configs.MaxBucketNameLength,
+				constants.MinBucketNameLength, constants.MaxBucketNameLength,
 			).Error(
 				fmt.Sprintf(
 					"Bucket name must be between %d and %d characters",
-					configs.MinBucketNameLength,
-					configs.MaxBucketNameLength,
+					constants.MinBucketNameLength,
+					constants.MaxBucketNameLength,
 				),
 			),
 			validation.Match(
@@ -46,10 +46,10 @@ func (r *CreateRequest) BindAndValidate(c echo.Context) []string {
 		),
 		validation.Field(
 			&r.Description,
-			validation.Length(configs.MinBucketDescriptionLength, configs.MaxBucketDescriptionLength).Error(
+			validation.Length(constants.MinBucketDescriptionLength, constants.MaxBucketDescriptionLength).Error(
 				fmt.Sprintf(
 					"Bucket description must be less than %d characters",
-					configs.MaxBucketDescriptionLength,
+					constants.MaxBucketDescriptionLength,
 				),
 			),
 		),
