@@ -1,7 +1,7 @@
 package responses
 
 import (
-	"fluxton/configs"
+	"fluxton/message"
 	"github.com/labstack/echo/v4"
 	"net/http"
 )
@@ -9,7 +9,7 @@ import (
 func UnauthorizedResponse(c echo.Context, error string) error {
 	response := Response{
 		Success: false,
-		Errors:  []string{configs.Message(error)},
+		Errors:  []string{message.Message(error)},
 		Content: nil,
 	}
 
