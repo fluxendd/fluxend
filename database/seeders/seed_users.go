@@ -3,11 +3,14 @@ package seeders
 import (
 	"fluxton/database/factories"
 	"fluxton/models"
-	"github.com/labstack/gommon/log"
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 	"github.com/samber/do"
+	"os"
 )
 
 func SeedUsers(container *do.Injector) {
+	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
 	userFactory := do.MustInvoke[*factories.UserFactory](container)
 
 	_, err := userFactory.Create(
@@ -16,13 +19,18 @@ func SeedUsers(container *do.Injector) {
 		userFactory.WithEmail("superman@fluxton.com"),
 	)
 	if err != nil {
-		log.Fatalf("Error creating admin user: %v", err)
+		log.Error().
+			Str("error", err.Error()).
+			Msg("Error creating superman user")
 	}
 
 	_, err = userFactory.CreateMany(3)
 	if err != nil {
-		log.Fatalf("Error seeding users: %v", err)
+		log.Error().
+			Str("error", err.Error()).
+			Msg("Error creating users")
 	}
 
-	log.Info("Users seeded successfully")
+	log.Info().
+		Msg("Users seeded successfully")
 }
