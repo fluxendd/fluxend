@@ -21,7 +21,7 @@ func SeedSettings(container *do.Injector) {
 		{Name: "jwtSecret", Value: os.Getenv("JWT_SECRET"), DefaultValue: os.Getenv("JWT_SECRET")},
 		{Name: "maxProjectsPerOrg", Value: "10", DefaultValue: "10"},
 		{Name: "allowRegistrations", Value: "yes", DefaultValue: "yes"},
-		{Name: "allowNewProjects", Value: "yes", DefaultValue: "yes"},
+		{Name: "allowProjects", Value: "yes", DefaultValue: "yes"},
 		{Name: "allowForms", Value: "yes", DefaultValue: "yes"},
 		{Name: "allowStorage", Value: "yes", DefaultValue: "yes"},
 		{Name: "allowBackups", Value: "yes", DefaultValue: "yes"},
