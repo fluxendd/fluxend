@@ -87,7 +87,7 @@ func (s *UserServiceImpl) ExistsByUUID(id uuid.UUID) error {
 }
 
 func (s *UserServiceImpl) Create(request *user_requests.CreateRequest) (models.User, string, error) {
-	if !s.settingService.IsEnabled("allowRegistrations") {
+	if !s.settingService.GetBool("allowRegistrations") {
 		return models.User{}, "", errs.NewBadRequestError("user.error.registrationDisabled")
 	}
 

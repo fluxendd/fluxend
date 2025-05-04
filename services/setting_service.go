@@ -15,7 +15,7 @@ type SettingService interface {
 	List() ([]models.Setting, error)
 	Get(name string) models.Setting
 	GetValue(name string) string
-	IsEnabled(name string) bool
+	GetBool(name string) bool
 	Update(authUser models.AuthUser, request *requests.SettingUpdateRequest) ([]models.Setting, error)
 	Reset(authUser models.AuthUser) ([]models.Setting, error)
 }
@@ -69,7 +69,7 @@ func (s *SettingServiceImpl) GetValue(name string) string {
 	return setting.Value
 }
 
-func (s *SettingServiceImpl) IsEnabled(name string) bool {
+func (s *SettingServiceImpl) GetBool(name string) bool {
 	setting := s.Get(name)
 
 	return setting.Value == "yes"

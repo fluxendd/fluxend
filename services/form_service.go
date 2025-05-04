@@ -193,7 +193,7 @@ func (s *FormServiceImpl) validateNameForDuplication(name string, projectUUID uu
 }
 
 func (s *FormServiceImpl) validateFormsEnabled() error {
-	enabled := s.settingService.IsEnabled("enableForms")
+	enabled := s.settingService.GetBool("enableForms")
 	if !enabled {
 		return errs.NewForbiddenError("form.error.formsDisabled")
 	}
