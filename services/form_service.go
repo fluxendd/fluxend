@@ -44,16 +44,16 @@ func NewFormService(injector *do.Injector) (FormService, error) {
 
 func (s *FormServiceImpl) List(paginationParams requests.PaginationParams, projectUUID uuid.UUID, authUser models.AuthUser) ([]models.Form, error) {
 	if err := s.validateFormsEnabled(); err != nil {
-		return []models.Form{}, err
+		return nil, err
 	}
 
 	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(projectUUID)
 	if err != nil {
-		return []models.Form{}, err
+		return nil, err
 	}
 
 	if !s.projectPolicy.CanAccess(organizationUUID, authUser) {
-		return []models.Form{}, errs.NewForbiddenError("form.error.listForbidden")
+		return nil, errs.NewForbiddenError("form.error.listForbidden")
 	}
 
 	return s.formRepo.ListForProject(paginationParams, projectUUID)
