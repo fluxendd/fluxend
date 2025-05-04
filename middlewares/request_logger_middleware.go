@@ -1,6 +1,7 @@
 package middlewares
 
 import (
+	"fluxton/constants"
 	"fluxton/models"
 	"fluxton/repositories"
 	"fluxton/utils"
@@ -33,13 +34,14 @@ func RequestLoggerMiddleware(requestLogRepo *repositories.RequestLogRepository) 
 				CreatedAt: time.Now(),
 			}
 
-			log.Log().
+			log.Info().
+				Str("action", constants.ActionAPIRequest).
 				Str("user_uuid", authUserUUID.String()).
 				Str("method", logEntry.Method).
 				Str("endpoint", logEntry.Endpoint).
 				Str("ip_address", logEntry.IPAddress).
 				Str("user_agent", logEntry.UserAgent).
-				Msg("incoming request")
+				Msg("")
 
 			go requestLogRepo.Create(&logEntry)
 
