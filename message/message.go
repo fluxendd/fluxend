@@ -16,6 +16,7 @@ var messages = map[string]string{
 	"user.error.invalidPayload":        "Invalid payload provided",
 	"user.error.emailAlreadyExists":    "User with this email already exists",
 	"user.error.usernameAlreadyExists": "User with this username already exists",
+	"user.error.registrationDisabled":  "User registration is disabled",
 
 	// Organizations
 	"organization.error.userNotFound":        "User not found in organization",
