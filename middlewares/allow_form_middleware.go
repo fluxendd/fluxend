@@ -6,10 +6,10 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func FormEnabledMiddleware(settingService services.SettingService) echo.MiddlewareFunc {
+func AllowFormMiddleware(settingService services.SettingService) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
-			if err := settingService.ValidateFormsEnabled(); err != nil {
+			if !settingService.GetBool("allowForm") {
 				return responses.ForbiddenResponse(c, "form.error.disabled")
 			}
 

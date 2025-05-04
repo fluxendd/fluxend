@@ -57,7 +57,7 @@ func registerRoutes(e *echo.Echo, container *do.Injector) {
 	userRepo := do.MustInvoke[*repositories.UserRepository](container)
 
 	authMiddleware := middlewares.AuthMiddleware(userRepo)
-	formEnabledMiddleware := middlewares.FormEnabledMiddleware(settingService)
+	formEnabledMiddleware := middlewares.AllowFormMiddleware(settingService)
 
 	requestLogRepo := do.MustInvoke[*repositories.RequestLogRepository](container)
 	requestLogMiddleware := middlewares.RequestLoggerMiddleware(requestLogRepo)
