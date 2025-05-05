@@ -20,5 +20,5 @@ type RequestLog struct {
 }
 
 func (ff RequestLog) GetTableName() string {
-	return "fluxton.request_logs"
+	return "fluxton.api_logs"
 }

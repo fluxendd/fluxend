@@ -20,7 +20,7 @@ func NewRequestLogRepository(injector *do.Injector) (*RequestLogRepository, erro
 
 func (r *RequestLogRepository) List(paginationParams requests.PaginationParams) ([]models.RequestLog, error) {
 	offset := (paginationParams.Page - 1) * paginationParams.Limit
-	query := `SELECT * FROM fluxton.request_logs ORDER BY :sort DESC LIMIT :limit OFFSET :offset;`
+	query := `SELECT * FROM fluxton.api_logs ORDER BY :sort DESC LIMIT :limit OFFSET :offset;`
 
 	params := map[string]interface{}{
 		"sort":   paginationParams.Sort,
@@ -57,7 +57,7 @@ func (r *RequestLogRepository) Create(requestLog *models.RequestLog) (*models.Re
 	}
 
 	query := `
-    INSERT INTO fluxton.request_logs (
+    INSERT INTO fluxton.api_logs (
         user_uuid, api_key, method, status, endpoint, ip_address, user_agent, params, body
     ) VALUES (
         $1, $2, $3, $4, $5, $6, $7, $8, $9
