@@ -24,6 +24,7 @@ func RequestLoggerMiddleware(requestLogRepo *repositories.RequestLogRepository) 
 				UserUuid:  authUserUUID,
 				APIKey:    uuid.MustParse("00000000-0000-0000-0000-000000000000"), // TODO: implement API key parsing/reading later
 				Method:    request.Method,
+				Status:    c.Response().Status,
 				Endpoint:  request.URL.Path,
 				IPAddress: c.RealIP(),
 				UserAgent: request.UserAgent(),
@@ -39,6 +40,7 @@ func RequestLoggerMiddleware(requestLogRepo *repositories.RequestLogRepository) 
 				Str("endpoint", logEntry.Endpoint).
 				Str("ip_address", logEntry.IPAddress).
 				Str("user_agent", logEntry.UserAgent).
+				Int("status", c.Response().Status).
 				Msg("")
 
 			go requestLogRepo.Create(&logEntry)

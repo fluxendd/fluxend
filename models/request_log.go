@@ -10,6 +10,7 @@ type RequestLog struct {
 	UserUuid  uuid.UUID `db:"user_uuid" json:"userUuid"`
 	APIKey    uuid.UUID `db:"api_key" json:"apiKey"`
 	Method    string    `db:"method" json:"method"`
+	Status    int       `db:"status" json:"status"`
 	Endpoint  string    `db:"endpoint" json:"endpoint"`
 	IPAddress string    `db:"ip_address" json:"ipAddress"`
 	UserAgent string    `db:"user_agent" json:"userAgent"`
