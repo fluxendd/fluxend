@@ -17,6 +17,7 @@ const (
 )
 
 type User struct {
+	BaseModel
 	Uuid      uuid.UUID `db:"uuid"`
 	Username  string    `db:"username"`
 	Email     string    `db:"email"`

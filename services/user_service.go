@@ -145,7 +145,7 @@ func (s *UserServiceImpl) Update(userUUID, authUserUUID uuid.UUID, request *user
 		return nil, err
 	}
 
-	err = utils.PopulateModel(&user, request)
+	err = user.PopulateModel(&user, request)
 	if err != nil {
 		return nil, err
 	}
