@@ -43,6 +43,13 @@ var messages = map[string]string{
 	"s3.error.bucketAlreadyExists": "Bucket already exists",
 	"s3.error.bucketNotFound":      "Bucket not found",
 
+	// Dropbox
+	"dropbox.error.pathNotFound":           "Path not found",
+	"dropbox.error.pathConflict":           "Path conflict",
+	"dropbox.error.insufficientSpace":      "Insufficient space",
+	"dropbox.error.tooManyWriteOperations": "Too many write operations",
+	"dropbox.error.tooManyFiles":           "Too many files",
+
 	// Files
 	"file.error.notFound":        "File not found",
 	"file.error.listForbidden":   "You don't have permission to view files",
