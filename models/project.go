@@ -11,6 +11,7 @@ const ProjectStatusError = "error"
 const ProjectStatusFrozen = "frozen"
 
 type Project struct {
+	BaseModel
 	Uuid             uuid.UUID `db:"uuid"`
 	OrganizationUuid uuid.UUID `db:"organization_uuid"`
 	CreatedBy        uuid.UUID `db:"created_by"`

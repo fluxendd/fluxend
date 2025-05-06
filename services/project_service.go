@@ -7,7 +7,6 @@ import (
 	"fluxton/repositories"
 	"fluxton/requests"
 	"fluxton/requests/project_requests"
-	"fluxton/utils"
 	"github.com/google/uuid"
 	"github.com/samber/do"
 	"math/rand"
@@ -126,7 +125,7 @@ func (s *ProjectServiceImpl) Update(projectUUID uuid.UUID, authUser models.AuthU
 		return &models.Project{}, errs.NewForbiddenError("project.error.updateForbidden")
 	}
 
-	err = utils.PopulateModel(&project, request)
+	err = project.PopulateModel(&project, request)
 	if err != nil {
 		return nil, err
 	}
