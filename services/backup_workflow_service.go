@@ -1,7 +1,6 @@
 package services
 
 import (
-	"fluxton/configs"
 	"fluxton/constants"
 	"fluxton/models"
 	"fluxton/repositories"
@@ -100,7 +99,7 @@ func (s *BackupWorkflowServiceImpl) Create(databaseName string, backupUUID uuid.
 // Delete removes the backup file from s3
 func (s *BackupWorkflowServiceImpl) Delete(databaseName string, backupUUID uuid.UUID) {
 	filePath := fmt.Sprintf("%s/%s.sql", databaseName, backupUUID)
-	err := s.s3Service.DeleteFile(configs.BackupBucketName, filePath)
+	err := s.s3Service.DeleteFile(constants.BackupBucketName, filePath)
 	if err != nil {
 		s.handleBackupFailure(backupUUID, models.BackupStatusDeletingFailed, err.Error())
 	}
@@ -166,13 +165,13 @@ func (s *BackupWorkflowServiceImpl) copyBackupToAppContainer(backupFilePath stri
 
 // ensureBackupBucketExists checks if the backup bucket exists and creates it if necessary
 func (s *BackupWorkflowServiceImpl) ensureBackupBucketExists() error {
-	bucketExists := s.s3Service.BucketExists(configs.BackupBucketName)
+	bucketExists := s.s3Service.BucketExists(constants.BackupBucketName)
 	if !bucketExists {
-		_, err := s.s3Service.CreateBucket(configs.BackupBucketName)
+		_, err := s.s3Service.CreateBucket(constants.BackupBucketName)
 		if err != nil {
 			log.Error().
 				Str("action", constants.ActionBackup).
-				Str("bucket_name", configs.BackupBucketName).
+				Str("bucket_name", constants.BackupBucketName).
 				Str("error", err.Error()).
 				Msg("failed to create backup bucket")
 
@@ -202,7 +201,7 @@ func (s *BackupWorkflowServiceImpl) readBackupFile(backupUUID uuid.UUID) ([]byte
 // uploadBackupToS3 uploads the backup file to S3
 func (s *BackupWorkflowServiceImpl) uploadBackupToS3(databaseName string, backupUUID uuid.UUID, fileBytes []byte) error {
 	filePath := fmt.Sprintf("%s/%s.sql", databaseName, backupUUID)
-	err := s.s3Service.UploadFile(configs.BackupBucketName, filePath, fileBytes)
+	err := s.s3Service.UploadFile(constants.BackupBucketName, filePath, fileBytes)
 	if err != nil {
 		log.Error().
 			Str("action", constants.ActionBackup).

@@ -5,6 +5,7 @@ import (
 	"fluxton/utils"
 	"fmt"
 	"github.com/jmoiron/sqlx"
+	"github.com/rs/zerolog/log"
 	"github.com/samber/do"
 	"strings"
 	"sync"
@@ -29,6 +30,7 @@ func (r *SettingRepository) List() ([]models.Setting, error) {
 
 		r.mu.RUnlock()
 
+		log.Info().Msg("Returning cached settings")
 		return settings, nil
 	}
 
@@ -46,6 +48,7 @@ func (r *SettingRepository) List() ([]models.Setting, error) {
 	r.cachedSettings = settings
 	r.mu.Unlock()
 
+	log.Info().Msg("Returning DB settings")
 	return settings, nil
 }
 
