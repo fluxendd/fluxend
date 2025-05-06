@@ -1,26 +1,19 @@
 # Fluxton
-**Blazing-Fast, Futuristic Backend for the Modern Web – Deploy with Just One File!**
+Fluxton is a fast, no BS backend server built with Go. It cuts the noise and gives you raw power to build, scale, and own your backend — your way.
 
-## Table of contents
-- [What is Fluxton](#what-is-fluxton)
-- [Installation](#installation)
-- [Commands](#commands)
-- [Contribute](#want-to-contribute)
-
-## What is Fluxton?
-Fluxton is a lightweight, high-performance backend server built with Go. It’s designed to simplify backend development without sacrificing flexibility or speed.
-
-With Fluxton, you can connect a database and immediately get a dynamic, auto-generated RESTful API for all your tables—no manual routing or boilerplate code required. It also handles form validation and submissions out of the box, making it easier to build robust APIs and admin panels quickly.
-
-Everything runs from a single binary — no complex setup or external dependencies. Ideal for prototyping, internal tools, or building production-ready backends with minimal overhead.
-
-## Why Choose Fluxton?
-- Fast by Design: Built with Go and Echo, Fluxton is optimized for performance and low-latency APIs out of the box.
-- Simple Deployment: Just one binary file—no external dependencies or setup scripts. Ideal for quick prototyping or deploying to production.
-- Auto-Generated REST API: Connect your database, and Fluxton instantly exposes RESTful endpoints based on your schema. No manual route definitions needed.
-- Flexible Query Builder: Easily construct advanced queries without writing raw SQL.
-- Built-in Database UI: Includes a minimal interface for managing tables and records directly, useful for internal tools or quick data edits.
-- Integrated Form Handling: Validate and handle form submissions server-side with minimal configuration—no extra validation libraries or middlewares required.
+## Features
+- Built-in Org & Role Management
+- Instantly Generated Endpoints
+- Plug-and-Play Auth
+- Built-in Search Engine
+- Realtime Database
+- Zapier Integration
+- Row-Level Access Control
+- Import CSV/XLSX as APIs
+- DB Functions, Triggers & Hooks
+- Smart Forms with Validations & Triggers
+- Multi-Driver Storage (S3, Dropbox, BackBlaze, FS)
+- Detailed Audit Logs
 
 ## Installation
 
