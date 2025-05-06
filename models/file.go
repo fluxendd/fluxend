@@ -6,6 +6,7 @@ import (
 )
 
 type File struct {
+	BaseModel
 	Uuid         uuid.UUID `db:"uuid" json:"uuid"`
 	BucketUuid   uuid.UUID `db:"bucket_uuid" json:"bucketUuid"`
 	FullFileName string    `db:"full_file_name" json:"fullFileName"`

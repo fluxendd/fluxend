@@ -5,6 +5,7 @@ import (
 )
 
 type Setting struct {
+	BaseModel
 	ID           int       `db:"id"`
 	Name         string    `db:"name"`
 	Value        string    `db:"value"`

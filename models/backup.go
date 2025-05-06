@@ -19,6 +19,7 @@ const (
 )
 
 type Backup struct {
+	BaseModel
 	Uuid        uuid.UUID  `db:"uuid" json:"uuid"`
 	ProjectUuid uuid.UUID  `db:"project_uuid" json:"projectUuid"`
 	Status      string     `db:"status" json:"status"`
