@@ -1,0 +1,322 @@
+package services
+
+import (
+	"encoding/json"
+	"fluxton/errs"
+	"fmt"
+	"os"
+	"resty.dev/v3"
+	"strings"
+	"time"
+)
+
+type DropboxService interface {
+	CreateFolder(path string) error
+	FolderExists(path string) bool
+	ListFolders(path string, limit int, cursor string) ([]string, string, error)
+	ShowFolder(path string) (*FolderMetadata, error)
+	DeleteFolder(path string) error
+}
+
+type DropboxServiceImpl struct {
+	accessToken string
+	client      *resty.Client
+	apiBase     string
+	contentBase string
+}
+
+type FolderMetadata struct {
+	Path        string `json:"path_display"`
+	Name        string `json:"name"`
+	ID          string `json:"id"`
+	IsShared    bool   `json:"sharing_info,omitempty"`
+	DateCreated string `json:"server_modified,omitempty"`
+}
+
+type FileMetadata struct {
+	Path        string `json:"path_display"`
+	Name        string `json:"name"`
+	ID          string `json:"id"`
+	Size        int64  `json:"size"`
+	ContentHash string `json:"content_hash,omitempty"`
+	DateCreated string `json:"server_modified"`
+}
+
+type ListFolderResult struct {
+	Entries []struct {
+		Tag         string `json:".tag"`
+		Name        string `json:"name"`
+		PathDisplay string `json:"path_display"`
+		ID          string `json:"id"`
+	} `json:"entries"`
+	Cursor  string `json:"cursor"`
+	HasMore bool   `json:"has_more"`
+}
+
+func NewDropboxService() (DropboxService, error) {
+	accessToken := os.Getenv("DROPBOX_ACCESS_TOKEN")
+	if accessToken == "" {
+		return nil, fmt.Errorf("DROPBOX_ACCESS_TOKEN is not set")
+	}
+
+	client := resty.New().
+		SetAuthToken(accessToken).
+		SetRetryCount(3).
+		SetRetryWaitTime(2*time.Second).
+		SetRetryMaxWaitTime(20*time.Second).
+		SetTimeout(30*time.Second).
+		SetHeader("Content-Type", "application/json")
+
+	return &DropboxServiceImpl{
+		accessToken: accessToken,
+		client:      client,
+		apiBase:     "https://api.dropboxapi.com/2",
+		contentBase: "https://content.dropboxapi.com/2",
+	}, nil
+}
+
+func (d *DropboxServiceImpl) CreateFolder(path string) error {
+	path = normalizePath(path)
+
+	payload := map[string]interface{}{
+		"path":       path,
+		"autorename": false,
+	}
+
+	resp, err := d.executeAPIRequest("POST", "/files/create_folder_v2", payload)
+	if err != nil {
+		return err
+	}
+
+	return d.handleAPIError(resp, "create folder")
+}
+
+func (d *DropboxServiceImpl) FolderExists(path string) bool {
+	metadata, err := d.ShowFolder(path)
+	return err == nil && metadata != nil
+}
+
+func (d *DropboxServiceImpl) ListFolders(path string, limit int, cursor string) ([]string, string, error) {
+	var endpoint string
+	var payload map[string]interface{}
+
+	if cursor == "" {
+		endpoint = "/files/list_folder"
+		payload = map[string]interface{}{
+			"path":                                path,
+			"recursive":                           false,
+			"include_media_info":                  false,
+			"include_deleted":                     false,
+			"include_has_explicit_shared_members": false,
+			"include_mounted_folders":             true,
+		}
+
+		if limit > 0 {
+			payload["limit"] = limit
+		}
+	} else {
+		endpoint = "/files/list_folder/continue"
+		payload = map[string]interface{}{
+			"cursor": cursor,
+		}
+	}
+
+	resp, err := d.executeAPIRequest("POST", endpoint, payload)
+	if err != nil {
+		return nil, "", err
+	}
+
+	if err := d.handleAPIError(resp, "list folders"); err != nil {
+		return nil, "", err
+	}
+
+	var result ListFolderResult
+	if err := json.Unmarshal(resp.Bytes(), &result); err != nil {
+		return nil, "", fmt.Errorf("unable to decode response: %v", err)
+	}
+
+	var folderPaths []string
+	for _, entry := range result.Entries {
+		if entry.Tag == "folder" {
+			folderPaths = append(folderPaths, entry.PathDisplay)
+		}
+	}
+
+	var nextCursor string
+	if result.HasMore {
+		nextCursor = result.Cursor
+	}
+
+	return folderPaths, nextCursor, nil
+}
+
+func (d *DropboxServiceImpl) ShowFolder(path string) (*FolderMetadata, error) {
+	path = normalizePath(path)
+
+	payload := map[string]interface{}{
+		"path": path,
+	}
+
+	resp, err := d.executeAPIRequest("POST", "/files/get_metadata", payload)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := d.handleAPIError(resp, "get metadata"); err != nil {
+		return nil, err
+	}
+
+	var metadata map[string]interface{}
+	if err := json.Unmarshal(resp.Bytes(), &metadata); err != nil {
+		return nil, fmt.Errorf("unable to decode response: %v", err)
+	}
+
+	tag, ok := metadata[".tag"].(string)
+	if !ok || tag != "folder" {
+		return nil, fmt.Errorf("path is not a folder")
+	}
+
+	folderMeta := &FolderMetadata{
+		Path: metadata["path_display"].(string),
+		Name: metadata["name"].(string),
+		ID:   metadata["id"].(string),
+	}
+
+	return folderMeta, nil
+}
+
+func (d *DropboxServiceImpl) DeleteFolder(path string) error {
+	path = normalizePath(path)
+
+	payload := map[string]interface{}{
+		"path": path,
+	}
+
+	resp, err := d.executeAPIRequest("POST", "/files/delete_v2", payload)
+	if err != nil {
+		return err
+	}
+
+	return d.handleAPIError(resp, "delete folder")
+}
+
+func (d *DropboxServiceImpl) UploadFile(path string, fileBytes []byte) error {
+	path = normalizePath(path)
+
+	apiArg := map[string]interface{}{
+		"path":       path,
+		"mode":       "overwrite",
+		"autorename": false,
+		"mute":       false,
+	}
+
+	resp, err := d.executeContentRequest("POST", "/files/upload", apiArg, fileBytes)
+	if err != nil {
+		return err
+	}
+
+	return d.handleAPIError(resp, "upload file")
+}
+
+func (d *DropboxServiceImpl) handleAPIError(resp *resty.Response, operation string) error {
+	if resp.IsSuccess() {
+		return nil
+	}
+
+	return d.transformError(fmt.Errorf("%s failed: %s, %s", operation, resp.Status(), resp.String()))
+}
+
+func (d *DropboxServiceImpl) executeAPIRequest(method, endpoint string, payload interface{}) (*resty.Response, error) {
+	req := d.client.R()
+
+	if payload != nil {
+		req.SetBody(payload)
+	}
+
+	var resp *resty.Response
+	var err error
+
+	switch method {
+	case "POST":
+		resp, err = req.Post(d.apiBase + endpoint)
+	case "GET":
+		resp, err = req.Get(d.apiBase + endpoint)
+	default:
+		return nil, fmt.Errorf("unsupported HTTP method: %s", method)
+	}
+
+	if err != nil {
+		return nil, fmt.Errorf("request failed: %v", err)
+	}
+
+	return resp, nil
+}
+
+func (d *DropboxServiceImpl) executeContentRequest(method, endpoint string, apiArg interface{}, body []byte) (*resty.Response, error) {
+	apiArgJson, err := json.Marshal(apiArg)
+	if err != nil {
+		return nil, fmt.Errorf("unable to marshal JSON: %v", err)
+	}
+
+	req := d.client.R().
+		SetHeader("Content-Type", "application/octet-stream").
+		SetHeader("Dropbox-API-Arg", string(apiArgJson))
+
+	if body != nil {
+		req.SetBody(body)
+	}
+
+	var resp *resty.Response
+
+	switch method {
+	case "POST":
+		resp, err = req.Post(d.contentBase + endpoint)
+	case "GET":
+		resp, err = req.Get(d.contentBase + endpoint)
+	default:
+		return nil, fmt.Errorf("unsupported HTTP method: %s", method)
+	}
+
+	if err != nil {
+		return nil, fmt.Errorf("request failed: %v", err)
+	}
+
+	return resp, nil
+}
+
+func normalizePath(path string) string {
+	if !strings.HasPrefix(path, "/") {
+		return "/" + path
+	}
+	return path
+}
+
+func (d *DropboxServiceImpl) transformError(err error) error {
+	if err == nil {
+		return nil
+	}
+
+	errorString := err.Error()
+
+	if strings.Contains(errorString, "path/not_found") {
+		return errs.NewNotFoundError("dropbox.error.pathNotFound")
+	}
+
+	if strings.Contains(errorString, "path/conflict") {
+		return errs.NewBadRequestError("dropbox.error.pathConflict")
+	}
+
+	if strings.Contains(errorString, "insufficient_space") {
+		return errs.NewBadRequestError("dropbox.error.insufficientSpace")
+	}
+
+	if strings.Contains(errorString, "too_many_write_operations") {
+		return errs.NewBadRequestError("dropbox.error.tooManyWriteOperations")
+	}
+
+	if strings.Contains(errorString, "too_many_files") {
+		return errs.NewBadRequestError("dropbox.error.tooManyFiles")
+	}
+
+	return err
+}
