@@ -7,6 +7,7 @@ import (
 )
 
 type FormField struct {
+	BaseModel
 	Uuid         uuid.UUID   `db:"uuid" json:"uuid"`
 	FormUuid     uuid.UUID   `db:"form_uuid" json:"formUuid"`
 	Label        string      `db:"label" json:"label"`

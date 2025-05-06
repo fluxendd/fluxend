@@ -6,7 +6,6 @@ import (
 	"fluxton/policies"
 	"fluxton/repositories"
 	"fluxton/requests/form_requests"
-	"fluxton/utils"
 	"github.com/google/uuid"
 	"github.com/samber/do"
 	"time"
@@ -105,7 +104,7 @@ func (s *FormFieldServiceImpl) CreateMany(formUUID uuid.UUID, request *form_requ
 	formFields := make([]models.FormField, len(request.Fields))
 	for i, field := range request.Fields {
 		currentField := models.FormField{}
-		err := utils.PopulateModel(&currentField, field)
+		err := currentField.PopulateModel(&currentField, field)
 		if err != nil {
 			return []models.FormField{}, err
 		}
@@ -141,7 +140,7 @@ func (s *FormFieldServiceImpl) Update(formUUID, fieldUUID uuid.UUID, authUser mo
 		return &models.FormField{}, err
 	}
 
-	err = utils.PopulateModel(&formField, request.FieldRequest)
+	err = formField.PopulateModel(&formField, request.FieldRequest)
 	if err != nil {
 		return nil, err
 	}
