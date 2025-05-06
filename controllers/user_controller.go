@@ -123,7 +123,7 @@ func (uc *UserController) Store(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	user, token, err := uc.userService.Create(&request)
+	user, token, err := uc.userService.Create(c, &request)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}

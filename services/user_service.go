@@ -10,6 +10,7 @@ import (
 	"fluxton/utils"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
+	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
 	"os"
 	"strings"
@@ -21,7 +22,7 @@ type UserService interface {
 	List(paginationParams requests.PaginationParams) ([]models.User, error)
 	ExistsByUUID(id uuid.UUID) error
 	GetByID(id uuid.UUID) (models.User, error)
-	Create(request *user_requests.CreateRequest) (models.User, string, error)
+	Create(ctx echo.Context, request *user_requests.CreateRequest) (models.User, string, error)
 	Update(userUUID, authUserUUID uuid.UUID, request *user_requests.UpdateRequest) (*models.User, error)
 	Delete(userUUID uuid.UUID) (bool, error)
 	Logout(userUUID uuid.UUID) error
@@ -86,8 +87,8 @@ func (s *UserServiceImpl) ExistsByUUID(id uuid.UUID) error {
 	return nil
 }
 
-func (s *UserServiceImpl) Create(request *user_requests.CreateRequest) (models.User, string, error) {
-	if !s.settingService.GetBool("allowRegistrations") {
+func (s *UserServiceImpl) Create(ctx echo.Context, request *user_requests.CreateRequest) (models.User, string, error) {
+	if !s.settingService.GetBool(ctx, "allowRegistrations") {
 		return models.User{}, "", errs.NewBadRequestError("user.error.registrationDisabled")
 	}
 
