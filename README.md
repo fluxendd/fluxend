@@ -1,4 +1,3 @@
-# Fluxton
 Fluxton is a fast, no BS backend server built with Go. It cuts the noise and gives you raw power to build, scale, and own your backend — your way.
 
 ## Features
