@@ -9,7 +9,3 @@ var AboutFluxton = map[string]string{
 	"release":     "alpha",
 	"releaseDate": "YYYY-MM-DD",
 }
-
-const (
-	BackupBucketName = "fluxton-client-database-backups"
-)
