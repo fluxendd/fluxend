@@ -9,7 +9,7 @@ import (
 func AllowBackupMiddleware(settingService services.SettingService) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
-			if !settingService.GetBool("allowBackup") {
+			if !settingService.GetBool(c, "allowBackup") {
 				return responses.ForbiddenResponse(c, "backup.error.disabled")
 			}
 

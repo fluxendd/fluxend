@@ -9,7 +9,7 @@ import (
 func AllowStorageMiddleware(settingService services.SettingService) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
-			if !settingService.GetBool("allowStorage") {
+			if !settingService.GetBool(c, "allowStorage") {
 				return responses.ForbiddenResponse(c, "storage.error.disabled")
 			}
 
