@@ -6,6 +6,7 @@ import (
 )
 
 type Bucket struct {
+	BaseModel
 	Uuid        uuid.UUID `db:"uuid" json:"uuid"`
 	ProjectUuid uuid.UUID `db:"project_uuid" json:"projectUuid"`
 	Name        string    `db:"name" json:"name"`

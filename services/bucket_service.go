@@ -133,7 +133,7 @@ func (s *BucketServiceImpl) Update(bucketUUID uuid.UUID, authUser models.AuthUse
 		return &models.Bucket{}, errs.NewForbiddenError("bucket.error.updateForbidden")
 	}
 
-	err = utils.PopulateModel(&bucket, request)
+	err = bucket.PopulateModel(&bucket, request)
 	if err != nil {
 		return nil, err
 	}
