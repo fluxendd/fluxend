@@ -1,6 +1,7 @@
 package middlewares
 
 import (
+	"bytes"
 	"fluxton/constants"
 	"fluxton/models"
 	"fluxton/repositories"
@@ -9,16 +10,18 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/rs/zerolog/log"
 	"io"
+	"net/http"
 	"time"
 )
 
 func RequestLoggerMiddleware(requestLogRepo *repositories.RequestLogRepository) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
+			request := c.Request()
+			requestBody := readBody(request)
+
 			res := next(c)
 			authUserUUID, _ := utils.NewAuth(c).Uuid()
-
-			request := c.Request()
 
 			logEntry := models.RequestLog{
 				UserUuid:  authUserUUID,
@@ -29,7 +32,7 @@ func RequestLoggerMiddleware(requestLogRepo *repositories.RequestLogRepository) 
 				IPAddress: c.RealIP(),
 				UserAgent: request.UserAgent(),
 				Params:    request.URL.RawQuery,
-				Body:      readBody(request.Body), // TODO: look into streams and buffering
+				Body:      requestBody,
 				CreatedAt: time.Now(),
 			}
 
@@ -50,17 +53,16 @@ func RequestLoggerMiddleware(requestLogRepo *repositories.RequestLogRepository) 
 	}
 }
 
-func readBody(body io.ReadCloser) string {
-	defer body.Close()
-	data, err := io.ReadAll(body)
+func readBody(r *http.Request) string {
+	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		log.Warn().
-			Str("action", constants.ActionAPIRequest).
-			Str("error", err.Error()).
-			Msg("Failed to read request body")
+		log.Error().Err(err).Msg("Failed to read request body")
 
 		return ""
 	}
 
-	return string(data)
+	// Restore the io.ReadCloser to its original state
+	r.Body = io.NopCloser(bytes.NewBuffer(body))
+
+	return string(body)
 }
