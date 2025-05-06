@@ -16,7 +16,6 @@ import (
 
 type S3Service interface {
 	CreateBucket(bucketName string) (*s3.CreateBucketOutput, error)
-	CreateFolder(bucketName, folderName string) error
 	BucketExists(bucketName string) bool
 	ListBuckets(limit int, continuationToken *string) ([]string, *string, error)
 	ShowBucket(bucketName string) (*s3.HeadBucketOutput, error)
@@ -71,18 +70,6 @@ func (s *S3ServiceImpl) CreateBucket(bucketName string) (*s3.CreateBucketOutput,
 	}
 
 	return createdBucket, nil
-}
-
-func (s *S3ServiceImpl) CreateFolder(bucketName, folderName string) error {
-	_, err := s.client.PutObject(context.Background(), &s3.PutObjectInput{
-		Bucket: aws.String(bucketName),
-		Key:    aws.String(folderName + "/"),
-	})
-	if err != nil {
-		return fmt.Errorf("unable to create folder %q, %v", folderName, err)
-	}
-
-	return nil
 }
 
 func (s *S3ServiceImpl) BucketExists(bucketName string) bool {
