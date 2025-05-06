@@ -7,7 +7,6 @@ import (
 	"fluxton/repositories"
 	"fluxton/requests"
 	"fluxton/requests/form_requests"
-	"fluxton/utils"
 	"github.com/google/uuid"
 	"github.com/samber/do"
 	"time"
@@ -117,7 +116,7 @@ func (s *FormServiceImpl) Update(formUUID uuid.UUID, authUser models.AuthUser, r
 		return &models.Form{}, errs.NewForbiddenError("form.error.updateForbidden")
 	}
 
-	err = utils.PopulateModel(&form, request)
+	err = form.PopulateModel(&form, request)
 	if err != nil {
 		return nil, err
 	}
