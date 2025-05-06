@@ -5,16 +5,12 @@ import (
 	"fluxton/utils"
 	"fmt"
 	"github.com/jmoiron/sqlx"
-	"github.com/rs/zerolog/log"
 	"github.com/samber/do"
 	"strings"
-	"sync"
 )
 
 type SettingRepository struct {
-	db             *sqlx.DB
-	cachedSettings []models.Setting
-	mu             sync.RWMutex
+	db *sqlx.DB
 }
 
 func NewSettingRepository(injector *do.Injector) (*SettingRepository, error) {
@@ -23,19 +19,6 @@ func NewSettingRepository(injector *do.Injector) (*SettingRepository, error) {
 }
 
 func (r *SettingRepository) List() ([]models.Setting, error) {
-	r.mu.RLock()
-	if r.cachedSettings != nil {
-		settings := make([]models.Setting, len(r.cachedSettings))
-		copy(settings, r.cachedSettings) // so app doesn't modify the cached settings
-
-		r.mu.RUnlock()
-
-		log.Info().Msg("Returning cached settings")
-		return settings, nil
-	}
-
-	r.mu.RUnlock()
-
 	query := "SELECT * FROM fluxton.settings;"
 
 	var settings []models.Setting
@@ -44,11 +27,6 @@ func (r *SettingRepository) List() ([]models.Setting, error) {
 		return nil, utils.FormatError(err, "select", utils.GetMethodName())
 	}
 
-	r.mu.Lock()
-	r.cachedSettings = settings
-	r.mu.Unlock()
-
-	log.Info().Msg("Returning DB settings")
 	return settings, nil
 }
 
@@ -69,10 +47,6 @@ func (r *SettingRepository) CreateMany(settings []models.Setting) (bool, error) 
 	if err != nil {
 		return false, fmt.Errorf("could not create settings: %v", err)
 	}
-
-	r.mu.Lock()
-	r.cachedSettings = nil
-	r.mu.Unlock()
 
 	return true, nil
 }
@@ -96,10 +70,6 @@ func (r *SettingRepository) Update(settings []models.Setting) (bool, error) {
 	if err != nil {
 		return false, utils.FormatError(err, "transactionCommit", utils.GetMethodName())
 	}
-
-	r.mu.Lock()
-	r.cachedSettings = nil
-	r.mu.Unlock()
 
 	return true, nil
 }
