@@ -6,6 +6,7 @@ import (
 )
 
 type Organization struct {
+	BaseModel
 	Uuid      uuid.UUID `db:"uuid"`
 	Name      string    `db:"name"`
 	CreatedBy uuid.UUID `db:"created_by"`

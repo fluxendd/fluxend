@@ -7,7 +7,6 @@ import (
 	"fluxton/repositories"
 	"fluxton/requests"
 	"fluxton/requests/organization_requests"
-	"fluxton/utils"
 	"github.com/google/uuid"
 	"github.com/samber/do"
 	"time"
@@ -101,7 +100,7 @@ func (s *OrganizationServiceImpl) Update(organizationUUID uuid.UUID, authUser mo
 		return &models.Organization{}, errs.NewForbiddenError("organization.error.updateForbidden")
 	}
 
-	err = utils.PopulateModel(&organization, request)
+	err = organization.PopulateModel(&organization, request)
 	if err != nil {
 		return nil, err
 	}
