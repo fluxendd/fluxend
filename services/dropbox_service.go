@@ -16,6 +16,10 @@ type DropboxService interface {
 	ListFolders(path string, limit int, cursor string) ([]string, string, error)
 	ShowFolder(path string) (*FolderMetadata, error)
 	DeleteFolder(path string) error
+	UploadFile(path string, fileBytes []byte) error
+	RenameFile(oldPath, newPath string) error
+	DownloadFile(path string) ([]byte, error)
+	DeleteFile(path string) error
 }
 
 type DropboxServiceImpl struct {
@@ -216,6 +220,60 @@ func (d *DropboxServiceImpl) UploadFile(path string, fileBytes []byte) error {
 	}
 
 	return d.handleAPIError(resp, "upload file")
+}
+
+func (d *DropboxServiceImpl) RenameFile(oldPath, newPath string) error {
+	oldPath = normalizePath(oldPath)
+	newPath = normalizePath(newPath)
+
+	payload := map[string]interface{}{
+		"from_path":                oldPath,
+		"to_path":                  newPath,
+		"allow_shared_folder":      false,
+		"autorename":               false,
+		"allow_ownership_transfer": false,
+	}
+
+	resp, err := d.executeAPIRequest("POST", "/files/move_v2", payload)
+	if err != nil {
+		return err
+	}
+
+	return d.handleAPIError(resp, "rename file")
+}
+
+func (d *DropboxServiceImpl) DownloadFile(path string) ([]byte, error) {
+	path = normalizePath(path)
+
+	apiArg := map[string]string{
+		"path": path,
+	}
+
+	resp, err := d.executeContentRequest("POST", "/files/download", apiArg, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := d.handleAPIError(resp, "download file"); err != nil {
+		return nil, err
+	}
+
+	return resp.Bytes(), nil
+}
+
+func (d *DropboxServiceImpl) DeleteFile(path string) error {
+	path = normalizePath(path)
+
+	payload := map[string]interface{}{
+		"path": path,
+	}
+
+	resp, err := d.executeAPIRequest("POST", "/files/delete_v2", payload)
+	if err != nil {
+		return err
+	}
+
+	return d.handleAPIError(resp, "delete file")
 }
 
 func (d *DropboxServiceImpl) handleAPIError(resp *resty.Response, operation string) error {
