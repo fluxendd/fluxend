@@ -6,18 +6,21 @@ import (
 	"fluxton/policies"
 	"fluxton/repositories"
 	"fluxton/requests"
+	"github.com/labstack/echo/v4"
 	"github.com/rs/zerolog/log"
 	"github.com/samber/do"
 	"time"
 )
 
+const settingsCacheKey = "settings"
+
 type SettingService interface {
-	List() ([]models.Setting, error)
-	Get(name string) models.Setting
-	GetValue(name string) string
-	GetBool(name string) bool
-	Update(authUser models.AuthUser, request *requests.SettingUpdateRequest) ([]models.Setting, error)
-	Reset(authUser models.AuthUser) ([]models.Setting, error)
+	List(ctx echo.Context, skipCache bool) ([]models.Setting, error)
+	Get(ctx echo.Context, name string) models.Setting
+	GetValue(ctx echo.Context, name string) string
+	GetBool(ctx echo.Context, name string) bool
+	Update(ctx echo.Context, authUser models.AuthUser, request *requests.SettingUpdateRequest) ([]models.Setting, error)
+	Reset(ctx echo.Context, authUser models.AuthUser) ([]models.Setting, error)
 }
 
 type SettingServiceImpl struct {
@@ -38,12 +41,25 @@ func NewSettingService(injector *do.Injector) (SettingService, error) {
 	}, nil
 }
 
-func (s *SettingServiceImpl) List() ([]models.Setting, error) {
-	return s.settingRepo.List()
+func (s *SettingServiceImpl) List(ctx echo.Context, skipCache bool) ([]models.Setting, error) {
+	if !skipCache && ctx.Get(settingsCacheKey) != nil {
+		settings := ctx.Get(settingsCacheKey).([]models.Setting)
+
+		return settings, nil
+	}
+
+	settings, err := s.settingRepo.List()
+	if err != nil {
+		return nil, err
+	}
+
+	ctx.Set(settingsCacheKey, settings)
+
+	return settings, nil
 }
 
-func (s *SettingServiceImpl) Get(name string) models.Setting {
-	settings, err := s.settingRepo.List() // cached settings so no need to worry about multiple calls
+func (s *SettingServiceImpl) Get(ctx echo.Context, name string) models.Setting {
+	settings, err := s.List(ctx, false)
 	if err != nil {
 		log.Error().
 			Str("error", err.Error()).
@@ -63,19 +79,19 @@ func (s *SettingServiceImpl) Get(name string) models.Setting {
 	return models.Setting{}
 }
 
-func (s *SettingServiceImpl) GetValue(name string) string {
-	setting := s.Get(name)
+func (s *SettingServiceImpl) GetValue(ctx echo.Context, name string) string {
+	setting := s.Get(ctx, name)
 
 	return setting.Value
 }
 
-func (s *SettingServiceImpl) GetBool(name string) bool {
-	setting := s.Get(name)
+func (s *SettingServiceImpl) GetBool(ctx echo.Context, name string) bool {
+	setting := s.Get(ctx, name)
 
 	return setting.Value == "yes"
 }
 
-func (s *SettingServiceImpl) Update(authUser models.AuthUser, request *requests.SettingUpdateRequest) ([]models.Setting, error) {
+func (s *SettingServiceImpl) Update(ctx echo.Context, authUser models.AuthUser, request *requests.SettingUpdateRequest) ([]models.Setting, error) {
 	// Authorization check
 	if !s.adminPolicy.CanUpdate(authUser) {
 		return nil, errs.NewForbiddenError("setting.error.updateForbidden")
@@ -103,10 +119,10 @@ func (s *SettingServiceImpl) Update(authUser models.AuthUser, request *requests.
 		return nil, err
 	}
 
-	return s.settingRepo.List()
+	return s.List(ctx, true)
 }
 
-func (s *SettingServiceImpl) Reset(authUser models.AuthUser) ([]models.Setting, error) {
+func (s *SettingServiceImpl) Reset(ctx echo.Context, authUser models.AuthUser) ([]models.Setting, error) {
 	if !s.adminPolicy.CanUpdate(authUser) {
 		return []models.Setting{}, errs.NewForbiddenError("setting.error.resetForbidden")
 	}
@@ -126,5 +142,5 @@ func (s *SettingServiceImpl) Reset(authUser models.AuthUser) ([]models.Setting, 
 		return []models.Setting{}, err
 	}
 
-	return s.settingRepo.List()
+	return s.List(ctx, true)
 }
