@@ -10,6 +10,17 @@ import (
 	"time"
 )
 
+const (
+	dropboxActionCreateFolder = "CREATE_FOLDER"
+	dropboxActionListFolders  = "LIST_FOLDERS"
+	dropboxActionShowFolder   = "SHOW_FOLDER"
+	dropboxActionDeleteFolder = "DELETE_FOLDER"
+	dropboxActionUploadFile   = "UPLOAD_FILE"
+	dropboxActionRenameFile   = "RENAME_FILE"
+	dropboxActionDownloadFile = "DOWNLOAD_FILE"
+	dropboxActionDeleteFile   = "DELETE_FILE"
+)
+
 type DropboxService interface {
 	CreateFolder(path string) error
 	FolderExists(path string) bool
@@ -92,7 +103,7 @@ func (d *DropboxServiceImpl) CreateFolder(path string) error {
 		return err
 	}
 
-	return d.handleAPIError(resp, "create folder")
+	return d.handleAPIError(resp, dropboxActionCreateFolder)
 }
 
 func (d *DropboxServiceImpl) FolderExists(path string) bool {
@@ -130,7 +141,7 @@ func (d *DropboxServiceImpl) ListFolders(path string, limit int, cursor string) 
 		return nil, "", err
 	}
 
-	if err := d.handleAPIError(resp, "list folders"); err != nil {
+	if err := d.handleAPIError(resp, dropboxActionListFolders); err != nil {
 		return nil, "", err
 	}
 
@@ -166,7 +177,7 @@ func (d *DropboxServiceImpl) ShowFolder(path string) (*FolderMetadata, error) {
 		return nil, err
 	}
 
-	if err := d.handleAPIError(resp, "get metadata"); err != nil {
+	if err := d.handleAPIError(resp, dropboxActionShowFolder); err != nil {
 		return nil, err
 	}
 
@@ -201,7 +212,7 @@ func (d *DropboxServiceImpl) DeleteFolder(path string) error {
 		return err
 	}
 
-	return d.handleAPIError(resp, "delete folder")
+	return d.handleAPIError(resp, dropboxActionDeleteFolder)
 }
 
 func (d *DropboxServiceImpl) UploadFile(path string, fileBytes []byte) error {
@@ -219,7 +230,7 @@ func (d *DropboxServiceImpl) UploadFile(path string, fileBytes []byte) error {
 		return err
 	}
 
-	return d.handleAPIError(resp, "upload file")
+	return d.handleAPIError(resp, dropboxActionUploadFile)
 }
 
 func (d *DropboxServiceImpl) RenameFile(oldPath, newPath string) error {
@@ -239,7 +250,7 @@ func (d *DropboxServiceImpl) RenameFile(oldPath, newPath string) error {
 		return err
 	}
 
-	return d.handleAPIError(resp, "rename file")
+	return d.handleAPIError(resp, dropboxActionRenameFile)
 }
 
 func (d *DropboxServiceImpl) DownloadFile(path string) ([]byte, error) {
@@ -254,7 +265,7 @@ func (d *DropboxServiceImpl) DownloadFile(path string) ([]byte, error) {
 		return nil, err
 	}
 
-	if err := d.handleAPIError(resp, "download file"); err != nil {
+	if err := d.handleAPIError(resp, dropboxActionDownloadFile); err != nil {
 		return nil, err
 	}
 
@@ -273,7 +284,7 @@ func (d *DropboxServiceImpl) DeleteFile(path string) error {
 		return err
 	}
 
-	return d.handleAPIError(resp, "delete file")
+	return d.handleAPIError(resp, dropboxActionDeleteFile)
 }
 
 func (d *DropboxServiceImpl) handleAPIError(resp *resty.Response, operation string) error {
