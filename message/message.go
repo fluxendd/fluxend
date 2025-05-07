@@ -4,9 +4,11 @@ var messages = map[string]string{
 	// General
 
 	// Authentication
-	"auth.error.tokenRequired": "Token is required",
-	"auth.error.tokenInvalid":  "Invalid token provided",
-	"auth.error.tokenExpired":  "Token has expired",
+	"auth.error.tokenRequired":   "Token is required",
+	"auth.error.tokenInvalid":    "Invalid token provided",
+	"auth.error.tokenUnexpected": "Unexpected token provided",
+	"auth.error.bearerInvalid":   "Invalid bearer provided",
+	"auth.error.tokenExpired":    "Token has expired",
 
 	// User
 	"user.error.notFound":              "User not found",

@@ -26,7 +26,7 @@ func AuthMiddleware(userRepo *repositories.UserRepository) echo.MiddlewareFunc {
 			// Token usually comes in the format "Bearer <token>"
 			tokenString := strings.TrimPrefix(authHeader, "Bearer ")
 			if tokenString == authHeader { // If the token doesn't start with "Bearer "
-				return responses.UnauthorizedResponse(c, "auth.error.tokenInvalid")
+				return responses.UnauthorizedResponse(c, "auth.error.bearerInvalid")
 			}
 
 			// Parse the token
