@@ -23,7 +23,14 @@ func (r *CreateRequest) BindAndValidate(c echo.Context) []string {
 		return []string{"Invalid request payload"}
 	}
 
-	err := validation.ValidateStruct(r,
+	err := r.WithProjectHeader(c)
+	if err != nil {
+		return []string{err.Error()}
+	}
+
+	r.SetContext(c)
+
+	err = validation.ValidateStruct(r,
 		validation.Field(
 			&r.Name,
 			validation.Required.Error("Name is required"),
