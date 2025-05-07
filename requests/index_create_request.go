@@ -27,6 +27,8 @@ func (r *IndexCreateRequest) BindAndValidate(c echo.Context) []string {
 		return []string{err.Error()}
 	}
 
+	r.SetContext(c)
+
 	var errors []string
 
 	err = validation.ValidateStruct(r,

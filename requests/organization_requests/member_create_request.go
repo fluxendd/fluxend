@@ -21,5 +21,7 @@ func (r *MemberCreateRequest) BindAndValidate(c echo.Context) []string {
 		validation.Field(&r.UserID, validation.Required.Error("UserID is required")),
 	)
 
+	r.SetContext(c)
+
 	return r.ExtractValidationErrors(err)
 }

@@ -28,6 +28,8 @@ func (r *CreateRequest) BindAndValidate(c echo.Context) []string {
 		return []string{err.Error()}
 	}
 
+	r.SetContext(c)
+
 	var errors []string
 
 	if err := r.validate(); err != nil {
