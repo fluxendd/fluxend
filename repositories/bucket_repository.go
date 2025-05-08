@@ -130,7 +130,7 @@ func (r *BucketRepository) Create(bucket *models.Bucket) (*models.Bucket, error)
 		query,
 		bucket.ProjectUuid,
 		bucket.Name,
-		bucket.AwsName,
+		bucket.NameKey,
 		bucket.Description,
 		bucket.IsPublic,
 		bucket.Url,

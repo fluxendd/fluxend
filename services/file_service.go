@@ -128,7 +128,7 @@ func (s *FileServiceImpl) Create(bucketUUID uuid.UUID, request *bucket_requests.
 		return models.File{}, err
 	}
 
-	err = s.s3Service.UploadFile(bucket.AwsName, request.FullFileName, fileBytes)
+	err = s.s3Service.UploadFile(bucket.NameKey, request.FullFileName, fileBytes)
 	if err != nil {
 		return models.File{}, err
 	}
@@ -171,7 +171,7 @@ func (s *FileServiceImpl) Rename(fileUUID, bucketUUID uuid.UUID, authUser models
 		return &models.File{}, err
 	}
 
-	err = s.s3Service.RenameFile(bucket.AwsName, file.FullFileName, request.FullFileName)
+	err = s.s3Service.RenameFile(bucket.NameKey, file.FullFileName, request.FullFileName)
 	if err != nil {
 		return nil, err
 	}
@@ -203,7 +203,7 @@ func (s *FileServiceImpl) Delete(fileUUID, bucketUUID uuid.UUID, authUser models
 		return false, err
 	}
 
-	err = s.s3Service.DeleteFile(bucket.AwsName, file.FullFileName)
+	err = s.s3Service.DeleteFile(bucket.NameKey, file.FullFileName)
 	if err != nil {
 		return false, err
 	}

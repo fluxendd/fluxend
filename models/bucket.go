@@ -10,7 +10,7 @@ type Bucket struct {
 	Uuid        uuid.UUID `db:"uuid" json:"uuid"`
 	ProjectUuid uuid.UUID `db:"project_uuid" json:"projectUuid"`
 	Name        string    `db:"name" json:"name"`
-	AwsName     string    `db:"aws_name" json:"awsName"`
+	NameKey     string    `db:"name_key" json:"nameKey"`
 	Description string    `db:"description" json:"description"`
 	IsPublic    bool      `db:"is_public" json:"isPublic"`
 	Url         string    `db:"url" json:"url"`
