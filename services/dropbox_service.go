@@ -3,6 +3,7 @@ package services
 import (
 	"encoding/json"
 	"fluxton/errs"
+	"fluxton/utils"
 	"fmt"
 	"os"
 	"resty.dev/v3"
@@ -92,6 +93,7 @@ func (d *DropboxServiceImpl) CreateContainer(path string) (string, error) {
 		return "", err
 	}
 
+	utils.DumpJSON(resp.StatusCode())
 	// TODO: check if created folder's path or something else can be included
 	return "", d.handleAPIError(resp, dropboxActionCreateFolder)
 }
@@ -204,7 +206,7 @@ func (d *DropboxServiceImpl) DeleteContainer(path string) error {
 }
 
 func (d *DropboxServiceImpl) UploadFile(input UploadFileInput) error {
-	path := normalizePath(input.ContainerName + "/" + input.FileName)
+	path := normalizePath(fmt.Sprintf("%s/%s", input.ContainerName, input.FileName))
 
 	apiArg := map[string]interface{}{
 		"path":       path,
@@ -223,7 +225,7 @@ func (d *DropboxServiceImpl) UploadFile(input UploadFileInput) error {
 
 func (d *DropboxServiceImpl) RenameFile(input RenameFileInput) error {
 	payload := map[string]interface{}{
-		"from_path":                normalizePath(input.FileName),
+		"from_path":                normalizePath(fmt.Sprintf("%s/%s", input.ContainerName, input.FileName)),
 		"to_path":                  normalizePath(input.NewFileName),
 		"allow_shared_folder":      false,
 		"autorename":               false,
