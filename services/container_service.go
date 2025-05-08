@@ -92,10 +92,13 @@ func (s *ContainerServiceImpl) Create(request *container_requests.CreateRequest,
 		return models.Container{}, err
 	}
 
+	storageDriver := s.settingService.GetStorageDriver(request.Context)
+
 	container := models.Container{
 		ProjectUuid: request.ProjectUUID,
 		Name:        request.Name,
 		NameKey:     s.generateContainerName(),
+		Provider:    storageDriver,
 		IsPublic:    request.IsPublic,
 		Description: request.Description,
 		MaxFileSize: request.MaxFileSize,
@@ -103,7 +106,7 @@ func (s *ContainerServiceImpl) Create(request *container_requests.CreateRequest,
 		UpdatedBy:   authUser.Uuid,
 	}
 
-	storageService, err := GetStorageProvider(s.settingService.GetStorageDriver(request.Context))
+	storageService, err := GetStorageProvider(storageDriver)
 	if err != nil {
 		return models.Container{}, err
 	}

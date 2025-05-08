@@ -7,6 +7,7 @@ CREATE TABLE storage.containers (
     updated_by UUID NOT NULL REFERENCES authentication.users(uuid) ON DELETE CASCADE,
     name varchar NOT NULL,
     name_key varchar NOT NULL,
+    provider varchar NOT NULL,
     description TEXT,
     is_public BOOLEAN DEFAULT FALSE,
     url varchar,

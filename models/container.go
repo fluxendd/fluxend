@@ -11,6 +11,7 @@ type Container struct {
 	ProjectUuid uuid.UUID `db:"project_uuid" json:"projectUuid"`
 	Name        string    `db:"name" json:"name"`
 	NameKey     string    `db:"name_key" json:"nameKey"`
+	Provider    string    `db:"provider" json:"provider"`
 	Description string    `db:"description" json:"description"`
 	IsPublic    bool      `db:"is_public" json:"isPublic"`
 	Url         string    `db:"url" json:"url"`
