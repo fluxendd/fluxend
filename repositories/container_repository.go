@@ -162,6 +162,7 @@ func (r *ContainerRepository) Update(container *models.Container) (*models.Conta
 		    name = :name, 
 		    description = :description, 
 		    is_public = :is_public, 
+		    max_file_size = :max_file_size,
 		    updated_at = :updated_at, 
 		    updated_by = :updated_by
 		WHERE uuid = :uuid`
