@@ -7,7 +7,6 @@ import (
 	"fluxton/repositories"
 	"fluxton/requests"
 	"fluxton/requests/bucket_requests"
-	"fluxton/utils"
 	"github.com/google/uuid"
 	"github.com/samber/do"
 	"strings"
@@ -23,14 +22,26 @@ type BucketService interface {
 }
 
 type BucketServiceImpl struct {
-	s3Service     S3Service
-	projectPolicy *policies.ProjectPolicy
-	bucketRepo    *repositories.BucketRepository
-	projectRepo   *repositories.ProjectRepository
+	storageService StorageService
+	dropboxService DropboxService
+	settingService SettingService
+	projectPolicy  *policies.ProjectPolicy
+	bucketRepo     *repositories.BucketRepository
+	projectRepo    *repositories.ProjectRepository
 }
 
 func NewBucketService(injector *do.Injector) (BucketService, error) {
-	s3Service, err := NewS3Service()
+	settingService, err := NewSettingService(injector)
+	if err != nil {
+		return nil, err
+	}
+
+	storageProviderService, err := NewStorageProviderService()
+	if err != nil {
+		return nil, err
+	}
+
+	storageService, err := storageProviderService.GetProvider(settingService.GetValue(nil, "storageEngine"))
 	if err != nil {
 		return nil, err
 	}
@@ -40,10 +51,11 @@ func NewBucketService(injector *do.Injector) (BucketService, error) {
 	projectRepo := do.MustInvoke[*repositories.ProjectRepository](injector)
 
 	return &BucketServiceImpl{
-		s3Service:     s3Service,
-		projectPolicy: policy,
-		bucketRepo:    bucketRepo,
-		projectRepo:   projectRepo,
+		settingService: settingService,
+		storageService: storageService,
+		projectPolicy:  policy,
+		bucketRepo:     bucketRepo,
+		projectRepo:    projectRepo,
 	}, nil
 }
 
@@ -96,7 +108,7 @@ func (s *BucketServiceImpl) Create(request *bucket_requests.CreateRequest, authU
 	bucket := models.Bucket{
 		ProjectUuid: request.ProjectUUID,
 		Name:        request.Name,
-		AwsName:     s.generateBucketName(),
+		NameKey:     s.generateBucketName(),
 		IsPublic:    request.IsPublic,
 		Description: request.Description,
 		MaxFileSize: request.MaxFileSize,
@@ -104,12 +116,13 @@ func (s *BucketServiceImpl) Create(request *bucket_requests.CreateRequest, authU
 		UpdatedBy:   authUser.Uuid,
 	}
 
-	createdBucket, err := s.s3Service.CreateBucket(bucket.AwsName)
+	createdContainer, err := s.storageService.CreateContainer(bucket.NameKey)
 	if err != nil {
 		return models.Bucket{}, err
 	}
 
-	bucket.Url = utils.ConvertPointerToString(createdBucket.Location)
+	bucket.Url = createdContainer
+
 	_, err = s.bucketRepo.Create(&bucket)
 	if err != nil {
 		return models.Bucket{}, err
@@ -168,7 +181,7 @@ func (s *BucketServiceImpl) Delete(bucketUUID uuid.UUID, authUser models.AuthUse
 		return false, errs.NewForbiddenError("bucket.error.deleteForbidden")
 	}
 
-	err = s.s3Service.DeleteBucket(bucket.AwsName)
+	err = s.storageService.DeleteContainer(bucket.NameKey)
 	if err != nil {
 		return false, err
 	}
