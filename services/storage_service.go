@@ -10,6 +10,12 @@ type ListContainersInput struct {
 	Token string
 }
 
+type UploadFileInput struct {
+	ContainerName string
+	FileName      string
+	FileBytes     []byte
+}
+
 type ContainerMetadata struct {
 	Identifier string
 	Name       string
@@ -23,4 +29,5 @@ type StorageService interface {
 	ContainerExists(name string) bool
 	ShowContainer(name string) (*ContainerMetadata, error)
 	DeleteContainer(name string) error
+	UploadFile(input UploadFileInput) error
 }

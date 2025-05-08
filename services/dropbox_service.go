@@ -211,8 +211,8 @@ func (d *DropboxServiceImpl) DeleteContainer(path string) error {
 	return d.handleAPIError(resp, dropboxActionDeleteFolder)
 }
 
-func (d *DropboxServiceImpl) UploadFile(path string, fileBytes []byte) error {
-	path = normalizePath(path)
+func (d *DropboxServiceImpl) UploadFile(input UploadFileInput) error {
+	path := normalizePath(input.ContainerName + "/" + input.FileName)
 
 	apiArg := map[string]interface{}{
 		"path":       path,
@@ -221,7 +221,7 @@ func (d *DropboxServiceImpl) UploadFile(path string, fileBytes []byte) error {
 		"mute":       false,
 	}
 
-	resp, err := d.executeContentRequest("POST", "/files/upload", apiArg, fileBytes)
+	resp, err := d.executeContentRequest("POST", "/files/upload", apiArg, input.FileBytes)
 	if err != nil {
 		return err
 	}

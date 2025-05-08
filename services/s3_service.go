@@ -135,14 +135,14 @@ func (s *S3ServiceImpl) DeleteContainer(bucketName string) error {
 	return nil
 }
 
-func (s *S3ServiceImpl) UploadFile(bucketName, filePath string, fileBytes []byte) error {
+func (s *S3ServiceImpl) UploadFile(input UploadFileInput) error {
 	_, err := s.client.PutObject(context.Background(), &s3.PutObjectInput{
-		Bucket: aws.String(bucketName),
-		Key:    aws.String(filePath),
-		Body:   strings.NewReader(string(fileBytes)),
+		Bucket: aws.String(input.ContainerName),
+		Key:    aws.String(input.FileName),
+		Body:   strings.NewReader(string(input.FileBytes)),
 	})
 	if err != nil {
-		return fmt.Errorf("unable to upload file %q, %v", filePath, err)
+		return fmt.Errorf("unable to upload file %q, %v", input.FileName, err)
 	}
 
 	return nil
