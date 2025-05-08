@@ -10,23 +10,26 @@ type ListContainersInput struct {
 	Token string
 }
 
-type UploadFileInput struct {
-	ContainerName string
-	FileName      string
-	FileBytes     []byte
-}
-
-type RenameFileInput struct {
-	ContainerName string
-	OldFileName   string
-	NewFileName   string
-}
-
 type ContainerMetadata struct {
 	Identifier string
 	Name       string
 	Path       string
 	Region     null.String
+}
+
+type FileInput struct {
+	ContainerName string
+	FileName      string
+}
+
+type UploadFileInput struct {
+	FileInput
+	FileBytes []byte
+}
+
+type RenameFileInput struct {
+	FileInput
+	NewFileName string
 }
 
 type StorageService interface {
@@ -37,4 +40,6 @@ type StorageService interface {
 	DeleteContainer(name string) error
 	UploadFile(input UploadFileInput) error
 	RenameFile(input RenameFileInput) error
+	DownloadFile(input FileInput) ([]byte, error)
+	DeleteFile(input FileInput) error
 }

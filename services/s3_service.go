@@ -151,48 +151,48 @@ func (s *S3ServiceImpl) UploadFile(input UploadFileInput) error {
 func (s *S3ServiceImpl) RenameFile(input RenameFileInput) error {
 	_, err := s.client.CopyObject(context.Background(), &s3.CopyObjectInput{
 		Bucket:     aws.String(input.ContainerName),
-		CopySource: aws.String(input.ContainerName + "/" + input.OldFileName),
+		CopySource: aws.String(input.ContainerName + "/" + input.FileName),
 		Key:        aws.String(input.NewFileName),
 	})
 	if err != nil {
-		return fmt.Errorf("unable to rename file %q to %q, %v", input.OldFileName, input.NewFileName, err)
+		return fmt.Errorf("unable to rename file %q to %q, %v", input.FileName, input.NewFileName, err)
 	}
 
 	_, err = s.client.DeleteObject(context.Background(), &s3.DeleteObjectInput{
 		Bucket: aws.String(input.ContainerName),
-		Key:    aws.String(input.OldFileName),
+		Key:    aws.String(input.FileName),
 	})
 	if err != nil {
-		return fmt.Errorf("unable to delete old file %q, %v", input.OldFileName, err)
+		return fmt.Errorf("unable to delete old file %q, %v", input.FileName, err)
 	}
 
 	return nil
 }
 
-func (s *S3ServiceImpl) DownloadFile(bucketName, filePath string) ([]byte, error) {
+func (s *S3ServiceImpl) DownloadFile(input FileInput) ([]byte, error) {
 	resp, err := s.client.GetObject(context.Background(), &s3.GetObjectInput{
-		Bucket: aws.String(bucketName),
-		Key:    aws.String(filePath),
+		Bucket: aws.String(input.ContainerName),
+		Key:    aws.String(input.FileName),
 	})
 	if err != nil {
-		return nil, fmt.Errorf("unable to download file %q, %v", filePath, err)
+		return nil, fmt.Errorf("unable to download file %q, %v", input.FileName, err)
 	}
 
 	fileBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, fmt.Errorf("unable to read file %q, %v", filePath, err)
+		return nil, fmt.Errorf("unable to read file %q, %v", input.FileName, err)
 	}
 
 	return fileBytes, nil
 }
 
-func (s *S3ServiceImpl) DeleteFile(bucketName, filePath string) error {
+func (s *S3ServiceImpl) DeleteFile(input FileInput) error {
 	_, err := s.client.DeleteObject(context.Background(), &s3.DeleteObjectInput{
-		Bucket: aws.String(bucketName),
-		Key:    aws.String(filePath),
+		Bucket: aws.String(input.ContainerName),
+		Key:    aws.String(input.FileName),
 	})
 	if err != nil {
-		return fmt.Errorf("unable to delete file %q, %v", filePath, err)
+		return fmt.Errorf("unable to delete file %q, %v", input.FileName, err)
 	}
 
 	return nil

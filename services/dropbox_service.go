@@ -231,7 +231,7 @@ func (d *DropboxServiceImpl) UploadFile(input UploadFileInput) error {
 
 func (d *DropboxServiceImpl) RenameFile(input RenameFileInput) error {
 	payload := map[string]interface{}{
-		"from_path":                normalizePath(input.OldFileName),
+		"from_path":                normalizePath(input.FileName),
 		"to_path":                  normalizePath(input.NewFileName),
 		"allow_shared_folder":      false,
 		"autorename":               false,
@@ -246,11 +246,9 @@ func (d *DropboxServiceImpl) RenameFile(input RenameFileInput) error {
 	return d.handleAPIError(resp, dropboxActionRenameFile)
 }
 
-func (d *DropboxServiceImpl) DownloadFile(path string) ([]byte, error) {
-	path = normalizePath(path)
-
+func (d *DropboxServiceImpl) DownloadFile(input FileInput) ([]byte, error) {
 	apiArg := map[string]string{
-		"path": path,
+		"path": normalizePath(input.FileName),
 	}
 
 	resp, err := d.executeContentRequest("POST", "/files/download", apiArg, nil)
@@ -265,11 +263,9 @@ func (d *DropboxServiceImpl) DownloadFile(path string) ([]byte, error) {
 	return resp.Bytes(), nil
 }
 
-func (d *DropboxServiceImpl) DeleteFile(path string) error {
-	path = normalizePath(path)
-
+func (d *DropboxServiceImpl) DeleteFile(input FileInput) error {
 	payload := map[string]interface{}{
-		"path": path,
+		"path": normalizePath(input.FileName),
 	}
 
 	resp, err := d.executeAPIRequest("POST", "/files/delete_v2", payload)
