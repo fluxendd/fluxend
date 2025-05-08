@@ -20,11 +20,11 @@ type FileService interface {
 	GetByUUID(fileUUID, bucketUUID uuid.UUID, authUser models.AuthUser) (models.File, error)
 	Create(bucketUUID uuid.UUID, request *bucket_requests.CreateFileRequest, authUser models.AuthUser) (models.File, error)
 	Rename(fileUUID, bucketUUID uuid.UUID, authUser models.AuthUser, request *bucket_requests.RenameFileRequest) (*models.File, error)
-	Delete(fileUUID, bucketUUID uuid.UUID, authUser models.AuthUser) (bool, error)
+	Delete(fileUUID, bucketUUID uuid.UUID, authUser models.AuthUser, request requests.DefaultRequestWithProjectHeader) (bool, error)
 }
 
 type FileServiceImpl struct {
-	storageService StorageService
+	settingService SettingService
 	projectPolicy  *policies.ProjectPolicy
 	bucketRepo     *repositories.BucketRepository
 	fileRepo       *repositories.FileRepository
@@ -32,12 +32,7 @@ type FileServiceImpl struct {
 }
 
 func NewFileService(injector *do.Injector) (FileService, error) {
-	storageProviderService, err := NewStorageProviderService()
-	if err != nil {
-		return nil, err
-	}
-
-	storageService, err := storageProviderService.GetProvider("s3")
+	settingService, err := NewSettingService(injector)
 	if err != nil {
 		return nil, err
 	}
@@ -48,7 +43,7 @@ func NewFileService(injector *do.Injector) (FileService, error) {
 	projectRepo := do.MustInvoke[*repositories.ProjectRepository](injector)
 
 	return &FileServiceImpl{
-		storageService: storageService,
+		settingService: settingService,
 		projectPolicy:  policy,
 		bucketRepo:     bucketRepo,
 		fileRepo:       fileRepo,
@@ -133,7 +128,12 @@ func (s *FileServiceImpl) Create(bucketUUID uuid.UUID, request *bucket_requests.
 		return models.File{}, err
 	}
 
-	err = s.storageService.UploadFile(UploadFileInput{
+	storageService, err := GetStorageProvider(s.settingService.GetStorageDriver(request.Context))
+	if err != nil {
+		return models.File{}, err
+	}
+
+	err = storageService.UploadFile(UploadFileInput{
 		ContainerName: bucket.NameKey,
 		FileName:      request.FullFileName,
 		FileBytes:     fileBytes,
@@ -180,7 +180,12 @@ func (s *FileServiceImpl) Rename(fileUUID, bucketUUID uuid.UUID, authUser models
 		return &models.File{}, err
 	}
 
-	err = s.storageService.RenameFile(RenameFileInput{
+	storageService, err := GetStorageProvider(s.settingService.GetStorageDriver(request.Context))
+	if err != nil {
+		return &models.File{}, err
+	}
+
+	err = storageService.RenameFile(RenameFileInput{
 		ContainerName: bucket.NameKey,
 		FileName:      file.FullFileName,
 		NewFileName:   request.FullFileName,
@@ -196,7 +201,7 @@ func (s *FileServiceImpl) Rename(fileUUID, bucketUUID uuid.UUID, authUser models
 	return s.fileRepo.Rename(&file)
 }
 
-func (s *FileServiceImpl) Delete(fileUUID, bucketUUID uuid.UUID, authUser models.AuthUser) (bool, error) {
+func (s *FileServiceImpl) Delete(fileUUID, bucketUUID uuid.UUID, authUser models.AuthUser, request requests.DefaultRequestWithProjectHeader) (bool, error) {
 	bucket, err := s.bucketRepo.GetByUUID(bucketUUID)
 	if err != nil {
 		return false, err
@@ -216,7 +221,12 @@ func (s *FileServiceImpl) Delete(fileUUID, bucketUUID uuid.UUID, authUser models
 		return false, err
 	}
 
-	err = s.storageService.DeleteFile(FileInput{
+	storageService, err := GetStorageProvider(s.settingService.GetStorageDriver(request.Context))
+	if err != nil {
+		return false, err
+	}
+
+	err = storageService.DeleteFile(FileInput{
 		ContainerName: bucket.NameKey,
 		FileName:      file.FullFileName,
 	})
