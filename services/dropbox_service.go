@@ -229,13 +229,10 @@ func (d *DropboxServiceImpl) UploadFile(input UploadFileInput) error {
 	return d.handleAPIError(resp, dropboxActionUploadFile)
 }
 
-func (d *DropboxServiceImpl) RenameFile(oldPath, newPath string) error {
-	oldPath = normalizePath(oldPath)
-	newPath = normalizePath(newPath)
-
+func (d *DropboxServiceImpl) RenameFile(input RenameFileInput) error {
 	payload := map[string]interface{}{
-		"from_path":                oldPath,
-		"to_path":                  newPath,
+		"from_path":                normalizePath(input.OldFileName),
+		"to_path":                  normalizePath(input.NewFileName),
 		"allow_shared_folder":      false,
 		"autorename":               false,
 		"allow_ownership_transfer": false,

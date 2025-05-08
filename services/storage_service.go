@@ -16,6 +16,12 @@ type UploadFileInput struct {
 	FileBytes     []byte
 }
 
+type RenameFileInput struct {
+	ContainerName string
+	OldFileName   string
+	NewFileName   string
+}
+
 type ContainerMetadata struct {
 	Identifier string
 	Name       string
@@ -30,4 +36,5 @@ type StorageService interface {
 	ShowContainer(name string) (*ContainerMetadata, error)
 	DeleteContainer(name string) error
 	UploadFile(input UploadFileInput) error
+	RenameFile(input RenameFileInput) error
 }

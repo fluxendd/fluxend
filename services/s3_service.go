@@ -148,22 +148,22 @@ func (s *S3ServiceImpl) UploadFile(input UploadFileInput) error {
 	return nil
 }
 
-func (s *S3ServiceImpl) RenameFile(bucketName, oldFilePath, newFilePath string) error {
+func (s *S3ServiceImpl) RenameFile(input RenameFileInput) error {
 	_, err := s.client.CopyObject(context.Background(), &s3.CopyObjectInput{
-		Bucket:     aws.String(bucketName),
-		CopySource: aws.String(bucketName + "/" + oldFilePath),
-		Key:        aws.String(newFilePath),
+		Bucket:     aws.String(input.ContainerName),
+		CopySource: aws.String(input.ContainerName + "/" + input.OldFileName),
+		Key:        aws.String(input.NewFileName),
 	})
 	if err != nil {
-		return fmt.Errorf("unable to rename file %q to %q, %v", oldFilePath, newFilePath, err)
+		return fmt.Errorf("unable to rename file %q to %q, %v", input.OldFileName, input.NewFileName, err)
 	}
 
 	_, err = s.client.DeleteObject(context.Background(), &s3.DeleteObjectInput{
-		Bucket: aws.String(bucketName),
-		Key:    aws.String(oldFilePath),
+		Bucket: aws.String(input.ContainerName),
+		Key:    aws.String(input.OldFileName),
 	})
 	if err != nil {
-		return fmt.Errorf("unable to delete old file %q, %v", oldFilePath, err)
+		return fmt.Errorf("unable to delete old file %q, %v", input.OldFileName, err)
 	}
 
 	return nil
