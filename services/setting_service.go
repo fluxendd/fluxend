@@ -21,6 +21,7 @@ type SettingService interface {
 	GetBool(ctx echo.Context, name string) bool
 	Update(ctx echo.Context, authUser models.AuthUser, request *requests.SettingUpdateRequest) ([]models.Setting, error)
 	Reset(ctx echo.Context, authUser models.AuthUser) ([]models.Setting, error)
+	GetStorageDriver(ctx echo.Context) string
 }
 
 type SettingServiceImpl struct {
@@ -143,4 +144,8 @@ func (s *SettingServiceImpl) Reset(ctx echo.Context, authUser models.AuthUser) (
 	}
 
 	return s.List(ctx, true)
+}
+
+func (s *SettingServiceImpl) GetStorageDriver(ctx echo.Context) string {
+	return s.GetValue(ctx, "storageDriver")
 }
