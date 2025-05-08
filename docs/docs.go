@@ -269,9 +269,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/buckets/{bucketUUID}/files": {
+        "/containers/{containerUUID}/files": {
             "get": {
-                "description": "Retrieve a list of all files in a specific bucket",
+                "description": "Retrieve a list of all files in a specific container",
                 "consumes": [
                     "application/json"
                 ],
@@ -281,7 +281,7 @@ const docTemplate = `{
                 "tags": [
                     "Files"
                 ],
-                "summary": "List all files in a bucket",
+                "summary": "List all files in a container",
                 "parameters": [
                     {
                         "type": "string",
@@ -292,8 +292,8 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Bucket UUID",
-                        "name": "bucketUUID",
+                        "description": "Container UUID",
+                        "name": "containerUUID",
                         "in": "path",
                         "required": true
                     },
@@ -359,7 +359,7 @@ const docTemplate = `{
                 }
             },
             "post": {
-                "description": "Create a new file in a specific bucket",
+                "description": "Create a new file in a specific container",
                 "consumes": [
                     "application/json"
                 ],
@@ -380,8 +380,8 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Bucket UUID",
-                        "name": "bucketUUID",
+                        "description": "Container UUID",
+                        "name": "containerUUID",
                         "in": "path",
                         "required": true
                     },
@@ -391,7 +391,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/bucket_requests.CreateFileRequest"
+                            "$ref": "#/definitions/container_requests.CreateFileRequest"
                         }
                     }
                 ],
@@ -426,7 +426,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/buckets/{bucketUUID}/files/{fileUUID}": {
+        "/containers/{containerUUID}/files/{fileUUID}": {
             "get": {
                 "description": "Get details of a specific file",
                 "consumes": [
@@ -449,8 +449,8 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Bucket UUID",
-                        "name": "bucketUUID",
+                        "description": "Container UUID",
+                        "name": "containerUUID",
                         "in": "path",
                         "required": true
                     },
@@ -493,7 +493,7 @@ const docTemplate = `{
                 }
             },
             "delete": {
-                "description": "Permanently remove a specific file from a bucket",
+                "description": "Permanently remove a specific file from a container",
                 "consumes": [
                     "application/json"
                 ],
@@ -514,8 +514,8 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Bucket UUID",
-                        "name": "bucketUUID",
+                        "description": "Container UUID",
+                        "name": "containerUUID",
                         "in": "path",
                         "required": true
                     },
@@ -543,7 +543,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/buckets/{bucketUUID}/files/{fileUUID}/rename": {
+        "/containers/{containerUUID}/files/{fileUUID}/rename": {
             "put": {
                 "description": "Update the name of a specific file. In other words, moves the file to a new location.",
                 "consumes": [
@@ -566,8 +566,8 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Bucket UUID",
-                        "name": "bucketUUID",
+                        "description": "Container UUID",
+                        "name": "containerUUID",
                         "in": "path",
                         "required": true
                     },
@@ -584,7 +584,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/bucket_requests.RenameFileRequest"
+                            "$ref": "#/definitions/container_requests.RenameFileRequest"
                         }
                     }
                 ],
@@ -2714,7 +2714,7 @@ const docTemplate = `{
         },
         "/storage": {
             "get": {
-                "description": "Retrieve a list of buckets in a specified project.",
+                "description": "Retrieve a list of container in a specified project.",
                 "consumes": [
                     "application/json"
                 ],
@@ -2722,9 +2722,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Buckets"
+                    "Containers"
                 ],
-                "summary": "List all buckets",
+                "summary": "List all container",
                 "parameters": [
                     {
                         "type": "string",
@@ -2767,7 +2767,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "List of buckets",
+                        "description": "List of container",
                         "schema": {
                             "allOf": [
                                 {
@@ -2779,7 +2779,7 @@ const docTemplate = `{
                                         "content": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/resources.BucketResponse"
+                                                "$ref": "#/definitions/resources.ContainerResponse"
                                             }
                                         }
                                     }
@@ -2799,7 +2799,7 @@ const docTemplate = `{
                 }
             },
             "post": {
-                "description": "Add a new bucket to a project",
+                "description": "Add a new container to a project",
                 "consumes": [
                     "application/json"
                 ],
@@ -2807,9 +2807,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Buckets"
+                    "Containers"
                 ],
-                "summary": "Create a new bucket",
+                "summary": "Create a new container",
                 "parameters": [
                     {
                         "type": "string",
@@ -2826,18 +2826,18 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "description": "Bucket details",
-                        "name": "bucket",
+                        "description": "Container details",
+                        "name": "container",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/bucket_requests.CreateRequest"
+                            "$ref": "#/definitions/container_requests.CreateRequest"
                         }
                     }
                 ],
                 "responses": {
                     "201": {
-                        "description": "Bucket created",
+                        "description": "Container created",
                         "schema": {
                             "allOf": [
                                 {
@@ -2847,7 +2847,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "content": {
-                                            "$ref": "#/definitions/resources.BucketResponse"
+                                            "$ref": "#/definitions/resources.ContainerResponse"
                                         }
                                     }
                                 }
@@ -2869,9 +2869,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/storage/{bucketUUID}": {
+        "/storage/containers/{containerUUID}": {
             "get": {
-                "description": "Get details of a specific bucket",
+                "description": "Get details of a specific container",
                 "consumes": [
                     "application/json"
                 ],
@@ -2879,9 +2879,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Buckets"
+                    "Containers"
                 ],
-                "summary": "Show details of a single bucket",
+                "summary": "Show details of a single container",
                 "parameters": [
                     {
                         "type": "string",
@@ -2899,15 +2899,15 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Bucket UUID",
-                        "name": "bucketUUID",
+                        "description": "Container UUID",
+                        "name": "containerUUID",
                         "in": "path",
                         "required": true
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Bucket details",
+                        "description": "Container details",
                         "schema": {
                             "allOf": [
                                 {
@@ -2917,7 +2917,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "content": {
-                                            "$ref": "#/definitions/resources.BucketResponse"
+                                            "$ref": "#/definitions/resources.ContainerResponse"
                                         }
                                     }
                                 }
@@ -2939,7 +2939,7 @@ const docTemplate = `{
                 }
             },
             "put": {
-                "description": "Modify an existing bucket's details",
+                "description": "Modify an existing container's details",
                 "consumes": [
                     "application/json"
                 ],
@@ -2947,9 +2947,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Buckets"
+                    "Containers"
                 ],
-                "summary": "Update a bucket",
+                "summary": "Update a container",
                 "parameters": [
                     {
                         "type": "string",
@@ -2967,24 +2967,24 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Bucket UUID",
-                        "name": "bucketUUID",
+                        "description": "Container UUID",
+                        "name": "containerUUID",
                         "in": "path",
                         "required": true
                     },
                     {
-                        "description": "Bucket details",
-                        "name": "bucket",
+                        "description": "Container details",
+                        "name": "container",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/bucket_requests.CreateRequest"
+                            "$ref": "#/definitions/container_requests.CreateRequest"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Bucket updated",
+                        "description": "Container updated",
                         "schema": {
                             "allOf": [
                                 {
@@ -2994,7 +2994,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "content": {
-                                            "$ref": "#/definitions/resources.BucketResponse"
+                                            "$ref": "#/definitions/resources.ContainerResponse"
                                         }
                                     }
                                 }
@@ -3016,7 +3016,7 @@ const docTemplate = `{
                 }
             },
             "delete": {
-                "description": "Remove a bucket from a project",
+                "description": "Remove a container from a project",
                 "consumes": [
                     "application/json"
                 ],
@@ -3024,9 +3024,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Buckets"
+                    "Containers"
                 ],
-                "summary": "Delete a bucket",
+                "summary": "Delete a container",
                 "parameters": [
                     {
                         "type": "string",
@@ -3044,15 +3044,15 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Bucket UUID",
-                        "name": "bucketUUID",
+                        "description": "Container UUID",
+                        "name": "containerUUID",
                         "in": "path",
                         "required": true
                     }
                 ],
                 "responses": {
                     "204": {
-                        "description": "Bucket deleted"
+                        "description": "Container deleted"
                     },
                     "400": {
                         "description": "Invalid input"
@@ -4364,372 +4364,53 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "bucket_requests.CreateFileRequest": {
-            "type": "object",
-            "properties": {
-                "projectUUID": {
-                    "type": "string"
-                }
-            }
-        },
-        "bucket_requests.CreateRequest": {
-            "type": "object",
-            "properties": {
-                "description": {
-                    "type": "string"
-                },
-                "is_public": {
-                    "type": "boolean"
-                },
-                "max_file_size": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "projectUUID": {
-                    "type": "string"
-                }
-            }
-        },
-        "bucket_requests.RenameFileRequest": {
-            "type": "object",
-            "properties": {
-                "full_file_name": {
-                    "type": "string"
-                },
-                "projectUUID": {
-                    "type": "string"
-                }
-            }
-        },
         "column_requests.CreateRequest": {
-            "type": "object",
-            "properties": {
-                "columns": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.Column"
-                    }
-                },
-                "projectUUID": {
-                    "type": "string"
-                }
-            }
+            "type": "object"
         },
         "column_requests.RenameRequest": {
-            "type": "object",
-            "properties": {
-                "name": {
-                    "type": "string"
-                },
-                "projectUUID": {
-                    "type": "string"
-                }
-            }
+            "type": "object"
+        },
+        "container_requests.CreateFileRequest": {
+            "type": "object"
+        },
+        "container_requests.CreateRequest": {
+            "type": "object"
+        },
+        "container_requests.RenameFileRequest": {
+            "type": "object"
         },
         "form_requests.CreateFormFieldsRequest": {
-            "type": "object",
-            "properties": {
-                "fields": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/form_requests.FieldRequest"
-                    }
-                },
-                "projectUUID": {
-                    "type": "string"
-                }
-            }
+            "type": "object"
         },
         "form_requests.CreateRequest": {
-            "type": "object",
-            "properties": {
-                "description": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "projectUUID": {
-                    "type": "string"
-                }
-            }
+            "type": "object"
         },
         "form_requests.CreateResponseRequest": {
-            "type": "object",
-            "properties": {
-                "projectUUID": {
-                    "type": "string"
-                },
-                "response": {
-                    "type": "object",
-                    "additionalProperties": true
-                }
-            }
-        },
-        "form_requests.FieldRequest": {
-            "type": "object",
-            "properties": {
-                "date_format": {
-                    "description": "fails if provided and field value doesn't match",
-                    "type": "string"
-                },
-                "default_value": {
-                    "type": "string"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "end_date": {
-                    "type": "string"
-                },
-                "is_required": {
-                    "type": "boolean"
-                },
-                "label": {
-                    "description": "required fields",
-                    "type": "string"
-                },
-                "max_length": {
-                    "type": "integer"
-                },
-                "max_value": {
-                    "type": "integer"
-                },
-                "min_length": {
-                    "description": "all fields from this point are optional",
-                    "type": "integer"
-                },
-                "min_value": {
-                    "description": "only applicable for number types",
-                    "type": "integer"
-                },
-                "options": {
-                    "description": "Options for select/radio types",
-                    "type": "string"
-                },
-                "pattern": {
-                    "type": "string"
-                },
-                "start_date": {
-                    "description": "only applicable for date types",
-                    "type": "string"
-                },
-                "type": {
-                    "type": "string"
-                }
-            }
+            "type": "object"
         },
         "form_requests.UpdateFormFieldRequest": {
-            "type": "object",
-            "properties": {
-                "date_format": {
-                    "description": "fails if provided and field value doesn't match",
-                    "type": "string"
-                },
-                "default_value": {
-                    "type": "string"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "end_date": {
-                    "type": "string"
-                },
-                "is_required": {
-                    "type": "boolean"
-                },
-                "label": {
-                    "description": "required fields",
-                    "type": "string"
-                },
-                "max_length": {
-                    "type": "integer"
-                },
-                "max_value": {
-                    "type": "integer"
-                },
-                "min_length": {
-                    "description": "all fields from this point are optional",
-                    "type": "integer"
-                },
-                "min_value": {
-                    "description": "only applicable for number types",
-                    "type": "integer"
-                },
-                "options": {
-                    "description": "Options for select/radio types",
-                    "type": "string"
-                },
-                "pattern": {
-                    "type": "string"
-                },
-                "projectUUID": {
-                    "type": "string"
-                },
-                "start_date": {
-                    "description": "only applicable for date types",
-                    "type": "string"
-                },
-                "type": {
-                    "type": "string"
-                }
-            }
-        },
-        "models.Column": {
-            "type": "object",
-            "properties": {
-                "defaultValue": {
-                    "type": "string"
-                },
-                "foreign": {
-                    "type": "boolean"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "notNull": {
-                    "type": "boolean"
-                },
-                "position": {
-                    "type": "integer"
-                },
-                "primary": {
-                    "type": "boolean"
-                },
-                "referenceColumn": {
-                    "type": "string"
-                },
-                "referenceTable": {
-                    "description": "only required when constraint is FOREIGN KEY",
-                    "type": "string"
-                },
-                "type": {
-                    "type": "string"
-                },
-                "unique": {
-                    "type": "boolean"
-                }
-            }
+            "type": "object"
         },
         "organization_requests.CreateRequest": {
-            "type": "object",
-            "properties": {
-                "name": {
-                    "type": "string"
-                },
-                "projectUUID": {
-                    "type": "string"
-                }
-            }
+            "type": "object"
         },
         "organization_requests.MemberCreateRequest": {
-            "type": "object",
-            "properties": {
-                "projectUUID": {
-                    "type": "string"
-                },
-                "user_id": {
-                    "type": "string"
-                }
-            }
+            "type": "object"
         },
         "project_requests.CreateRequest": {
-            "type": "object",
-            "properties": {
-                "description": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "organization_uuid": {
-                    "type": "string"
-                },
-                "projectUUID": {
-                    "type": "string"
-                }
-            }
+            "type": "object"
         },
         "project_requests.UpdateRequest": {
-            "type": "object",
-            "properties": {
-                "description": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "projectUUID": {
-                    "type": "string"
-                }
-            }
+            "type": "object"
         },
         "requests.CreateFunctionRequest": {
-            "type": "object",
-            "properties": {
-                "definition": {
-                    "type": "string"
-                },
-                "language": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "parameters": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/requests.functionParameter"
-                    }
-                },
-                "projectUUID": {
-                    "type": "string"
-                },
-                "return_type": {
-                    "type": "string"
-                }
-            }
+            "type": "object"
         },
         "requests.DefaultRequestWithProjectHeader": {
-            "type": "object",
-            "properties": {
-                "projectUUID": {
-                    "type": "string"
-                }
-            }
+            "type": "object"
         },
         "requests.IndexCreateRequest": {
-            "type": "object",
-            "properties": {
-                "columns": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "is_unique": {
-                    "type": "boolean"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "projectUUID": {
-                    "type": "string"
-                }
-            }
-        },
-        "requests.functionParameter": {
-            "type": "object",
-            "properties": {
-                "name": {
-                    "type": "string"
-                },
-                "type": {
-                    "type": "string"
-                }
-            }
+            "type": "object"
         },
         "resources.BackupResponse": {
             "type": "object",
@@ -4747,47 +4428,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "status": {
-                    "type": "string"
-                },
-                "uuid": {
-                    "type": "string"
-                }
-            }
-        },
-        "resources.BucketResponse": {
-            "type": "object",
-            "properties": {
-                "createdAt": {
-                    "type": "string"
-                },
-                "createdBy": {
-                    "type": "string"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "isPublic": {
-                    "type": "boolean"
-                },
-                "maxFileSize": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "projectUuid": {
-                    "type": "string"
-                },
-                "totalFiles": {
-                    "type": "integer"
-                },
-                "updatedAt": {
-                    "type": "string"
-                },
-                "updatedBy": {
-                    "type": "string"
-                },
-                "url": {
                     "type": "string"
                 },
                 "uuid": {
@@ -4830,10 +4470,51 @@ const docTemplate = `{
                 }
             }
         },
+        "resources.ContainerResponse": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "createdBy": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "isPublic": {
+                    "type": "boolean"
+                },
+                "maxFileSize": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "projectUuid": {
+                    "type": "string"
+                },
+                "totalFiles": {
+                    "type": "integer"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "updatedBy": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                },
+                "uuid": {
+                    "type": "string"
+                }
+            }
+        },
         "resources.FileResponse": {
             "type": "object",
             "properties": {
-                "bucketUuid": {
+                "containerUuid": {
                     "type": "string"
                 },
                 "createdAt": {
@@ -5134,77 +4815,19 @@ const docTemplate = `{
             }
         },
         "table_requests.CreateRequest": {
-            "type": "object",
-            "properties": {
-                "columns": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.Column"
-                    }
-                },
-                "name": {
-                    "type": "string"
-                },
-                "projectUUID": {
-                    "type": "string"
-                }
-            }
+            "type": "object"
         },
         "table_requests.RenameRequest": {
-            "type": "object",
-            "properties": {
-                "name": {
-                    "type": "string"
-                },
-                "projectUUID": {
-                    "type": "string"
-                }
-            }
+            "type": "object"
         },
         "user_requests.CreateRequest": {
-            "type": "object",
-            "properties": {
-                "bio": {
-                    "type": "string"
-                },
-                "email": {
-                    "type": "string"
-                },
-                "password": {
-                    "type": "string"
-                },
-                "projectUUID": {
-                    "type": "string"
-                },
-                "username": {
-                    "type": "string"
-                }
-            }
+            "type": "object"
         },
         "user_requests.LoginRequest": {
-            "type": "object",
-            "properties": {
-                "email": {
-                    "type": "string"
-                },
-                "password": {
-                    "type": "string"
-                },
-                "projectUUID": {
-                    "type": "string"
-                }
-            }
+            "type": "object"
         },
         "user_requests.UpdateRequest": {
-            "type": "object",
-            "properties": {
-                "bio": {
-                    "type": "string"
-                },
-                "projectUUID": {
-                    "type": "string"
-                }
-            }
+            "type": "object"
         }
     }
 }`

@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"fluxton/requests"
-	"fluxton/requests/bucket_requests"
+	"fluxton/requests/container_requests"
 	"fluxton/resources"
 	"fluxton/responses"
 	"fluxton/services"
@@ -21,17 +21,17 @@ func NewFileController(injector *do.Injector) (*FileController, error) {
 	return &FileController{fileService: fileService}, nil
 }
 
-// List retrieves all files in a bucket
+// List retrieves all files in a container
 //
-// @Summary List all files in a bucket
-// @Description Retrieve a list of all files in a specific bucket
+// @Summary List all files in a container
+// @Description Retrieve a list of all files in a specific container
 // @Tags Files
 //
 // @Accept json
 // @Produce json
 //
 // @Param Authorization header string true "Bearer Token"
-// @Param bucketUUID path string true "Bucket UUID"
+// @Param containerUUID path string true "Container UUID"
 //
 // @Param page query string false "Page number for pagination"
 // @Param limit query string false "Number of items per page"
@@ -43,7 +43,7 @@ func NewFileController(injector *do.Injector) (*FileController, error) {
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
 //
-// @Router /buckets/{bucketUUID}/files [get]
+// @Router /containers/{containerUUID}/files [get]
 func (fc *FileController) List(c echo.Context) error {
 	var request requests.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
@@ -52,13 +52,13 @@ func (fc *FileController) List(c echo.Context) error {
 
 	authUser, _ := utils.NewAuth(c).User()
 
-	bucketUUID, err := request.GetUUIDPathParam(c, "bucketUUID", true)
+	containerUUID, err := request.GetUUIDPathParam(c, "containerUUID", true)
 	if err != nil {
-		return responses.BadRequestResponse(c, "Invalid bucket UUID")
+		return responses.BadRequestResponse(c, "Invalid container UUID")
 	}
 
 	paginationParams := request.ExtractPaginationParams(c)
-	files, err := fc.fileService.List(paginationParams, bucketUUID, authUser)
+	files, err := fc.fileService.List(paginationParams, containerUUID, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -76,7 +76,7 @@ func (fc *FileController) List(c echo.Context) error {
 // @Produce json
 //
 // @Param Authorization header string true "Bearer Token"
-// @Param bucketUUID path string true "Bucket UUID"
+// @Param containerUUID path string true "Container UUID"
 // @Param fileUUID path string true "File UUID"
 //
 // @Success 200 {object} responses.Response{content=resources.FileResponse} "File details"
@@ -84,7 +84,7 @@ func (fc *FileController) List(c echo.Context) error {
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
 //
-// @Router /buckets/{bucketUUID}/files/{fileUUID} [get]
+// @Router /containers/{containerUUID}/files/{fileUUID} [get]
 func (fc *FileController) Show(c echo.Context) error {
 	var request requests.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
@@ -93,7 +93,7 @@ func (fc *FileController) Show(c echo.Context) error {
 
 	authUser, _ := utils.NewAuth(c).User()
 
-	bucketUUID, err := request.GetUUIDPathParam(c, "bucketUUID", true)
+	containerUUID, err := request.GetUUIDPathParam(c, "containerUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
@@ -103,7 +103,7 @@ func (fc *FileController) Show(c echo.Context) error {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	file, err := fc.fileService.GetByUUID(fileUUID, bucketUUID, authUser)
+	file, err := fc.fileService.GetByUUID(fileUUID, containerUUID, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -111,39 +111,39 @@ func (fc *FileController) Show(c echo.Context) error {
 	return responses.SuccessResponse(c, resources.FileResource(&file))
 }
 
-// Store creates a new file in a bucket
+// Store creates a new file in a container
 //
 // @Summary Create a new file
-// @Description Create a new file in a specific bucket
+// @Description Create a new file in a specific container
 // @Tags Files
 //
 // @Accept json
 // @Produce json
 //
 // @Param Authorization header string true "Bearer Token"
-// @Param bucketUUID path string true "Bucket UUID"
-// @Param file body bucket_requests.CreateFileRequest true "File details"
+// @Param containerUUID path string true "Container UUID"
+// @Param file body container_requests.CreateFileRequest true "File details"
 //
 // @Success 201 {object} responses.Response{content=resources.FileResponse} "File details"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
 //
-// @Router /buckets/{bucketUUID}/files [post]
+// @Router /containers/{containerUUID}/files [post]
 func (fc *FileController) Store(c echo.Context) error {
-	var request bucket_requests.CreateFileRequest
+	var request container_requests.CreateFileRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return responses.UnprocessableResponse(c, err)
 	}
 
 	authUser, _ := utils.NewAuth(c).User()
 
-	bucketUUID, err := request.GetUUIDPathParam(c, "bucketUUID", true)
+	containerUUID, err := request.GetUUIDPathParam(c, "containerUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	file, err := fc.fileService.Create(bucketUUID, &request, authUser)
+	file, err := fc.fileService.Create(containerUUID, &request, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -161,18 +161,18 @@ func (fc *FileController) Store(c echo.Context) error {
 // @Produce json
 //
 // @Param Authorization header string true "Bearer Token"
-// @Param bucketUUID path string true "Bucket UUID"
+// @Param containerUUID path string true "Container UUID"
 // @Param fileUUID path string true "File UUID"
-// @Param file body bucket_requests.RenameFileRequest true "New file name"
+// @Param file body container_requests.RenameFileRequest true "New file name"
 //
 // @Success 200 {object} responses.Response{content=resources.FileResponse} "File details"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
 //
-// @Router /buckets/{bucketUUID}/files/{fileUUID}/rename [put]
+// @Router /containers/{containerUUID}/files/{fileUUID}/rename [put]
 func (fc *FileController) Rename(c echo.Context) error {
-	var request bucket_requests.RenameFileRequest
+	var request container_requests.RenameFileRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return responses.UnprocessableResponse(c, err)
 	}
@@ -184,12 +184,12 @@ func (fc *FileController) Rename(c echo.Context) error {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	bucketUUID, err := request.GetUUIDPathParam(c, "bucketUUID", true)
+	containerUUID, err := request.GetUUIDPathParam(c, "containerUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	updatedFile, err := fc.fileService.Rename(fileUUID, bucketUUID, authUser, &request)
+	updatedFile, err := fc.fileService.Rename(fileUUID, containerUUID, authUser, &request)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -197,17 +197,17 @@ func (fc *FileController) Rename(c echo.Context) error {
 	return responses.SuccessResponse(c, resources.FileResource(updatedFile))
 }
 
-// Delete removes a file from a bucket
+// Delete removes a file from a container
 //
 // @Summary Delete a file
-// @Description Permanently remove a specific file from a bucket
+// @Description Permanently remove a specific file from a container
 // @Tags Files
 //
 // @Accept json
 // @Produce json
 //
 // @Param Authorization header string true "Bearer Token"
-// @Param bucketUUID path string true "Bucket UUID"
+// @Param containerUUID path string true "Container UUID"
 // @Param fileUUID path string true "File UUID"
 //
 // @Success 204 "File deleted"
@@ -215,7 +215,7 @@ func (fc *FileController) Rename(c echo.Context) error {
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
 //
-// @Router /buckets/{bucketUUID}/files/{fileUUID} [delete]
+// @Router /containers/{containerUUID}/files/{fileUUID} [delete]
 func (fc *FileController) Delete(c echo.Context) error {
 	var request requests.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
@@ -224,7 +224,7 @@ func (fc *FileController) Delete(c echo.Context) error {
 
 	authUser, _ := utils.NewAuth(c).User()
 
-	bucketUUID, err := request.GetUUIDPathParam(c, "bucketUUID", true)
+	containerUUID, err := request.GetUUIDPathParam(c, "containerUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
@@ -234,7 +234,7 @@ func (fc *FileController) Delete(c echo.Context) error {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	if _, err := fc.fileService.Delete(fileUUID, bucketUUID, authUser); err != nil {
+	if _, err := fc.fileService.Delete(fileUUID, containerUUID, authUser, request); err != nil {
 		return responses.ErrorResponse(c, err)
 	}
 

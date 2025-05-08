@@ -1,12 +1,13 @@
 -- +goose Up
 -- +goose StatementBegin
-CREATE TABLE storage.buckets (
+CREATE TABLE storage.containers (
     uuid UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     project_uuid UUID NOT NULL REFERENCES fluxton.projects(uuid) ON DELETE CASCADE,
     created_by UUID NOT NULL REFERENCES authentication.users(uuid) ON DELETE CASCADE,
     updated_by UUID NOT NULL REFERENCES authentication.users(uuid) ON DELETE CASCADE,
     name varchar NOT NULL,
-    aws_name varchar NOT NULL,
+    name_key varchar NOT NULL,
+    provider varchar NOT NULL,
     description TEXT,
     is_public BOOLEAN DEFAULT FALSE,
     url varchar,
@@ -20,5 +21,5 @@ CREATE TABLE storage.buckets (
 
 -- +goose Down
 -- +goose StatementBegin
-DROP TABLE storage.buckets;
+DROP TABLE storage.containers;
 -- +goose StatementEnd

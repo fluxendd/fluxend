@@ -3,35 +3,24 @@ package services
 import (
 	"context"
 	"fluxton/errs"
+	"fluxton/utils"
 	"fmt"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/aws/aws-sdk-go-v2/service/s3/types"
+	"github.com/guregu/null/v6"
 	"io"
 	"os"
 	"strings"
 )
 
-type S3Service interface {
-	CreateBucket(bucketName string) (*s3.CreateBucketOutput, error)
-	CreateFolder(bucketName, folderName string) error
-	BucketExists(bucketName string) bool
-	ListBuckets(limit int, continuationToken *string) ([]string, *string, error)
-	ShowBucket(bucketName string) (*s3.HeadBucketOutput, error)
-	DeleteBucket(bucketName string) error
-	UploadFile(bucketName, filePath string, fileBytes []byte) error
-	RenameFile(bucketName, oldFilePath, newFilePath string) error
-	DownloadFile(bucketName, filePath string) ([]byte, error)
-	DeleteFile(bucketName, filePath string) error
-}
-
 type S3ServiceImpl struct {
 	client *s3.Client
 }
 
-func NewS3Service() (S3Service, error) {
+func NewS3Service() (StorageService, error) {
 	accessKey := os.Getenv("AWS_ACCESS_KEY_ID")
 	secretKey := os.Getenv("AWS_SECRET_ACCESS_KEY")
 	region := os.Getenv("AWS_REGION")
@@ -52,7 +41,7 @@ func NewS3Service() (S3Service, error) {
 	}, nil
 }
 
-func (s *S3ServiceImpl) CreateBucket(bucketName string) (*s3.CreateBucketOutput, error) {
+func (s *S3ServiceImpl) CreateContainer(bucketName string) (string, error) {
 	input := &s3.CreateBucketInput{
 		Bucket: aws.String(bucketName),
 	}
@@ -63,29 +52,17 @@ func (s *S3ServiceImpl) CreateBucket(bucketName string) (*s3.CreateBucketOutput,
 
 	createdBucket, err := s.client.CreateBucket(context.Background(), input)
 	if err != nil {
-		return nil, s.transformError(fmt.Errorf("createBucket: %q, %v", bucketName, err))
+		return "", s.transformError(fmt.Errorf("createBucket: %q, %v", bucketName, err))
 	}
 
-	if !s.BucketExists(bucketName) {
-		return nil, errs.NewBadRequestError(fmt.Sprintf("failed to confirm bucket %q exists", bucketName))
+	if !s.ContainerExists(bucketName) {
+		return "", errs.NewBadRequestError(fmt.Sprintf("failed to confirm bucket %q exists", bucketName))
 	}
 
-	return createdBucket, nil
+	return utils.ConvertPointerToString(createdBucket.Location), nil
 }
 
-func (s *S3ServiceImpl) CreateFolder(bucketName, folderName string) error {
-	_, err := s.client.PutObject(context.Background(), &s3.PutObjectInput{
-		Bucket: aws.String(bucketName),
-		Key:    aws.String(folderName + "/"),
-	})
-	if err != nil {
-		return fmt.Errorf("unable to create folder %q, %v", folderName, err)
-	}
-
-	return nil
-}
-
-func (s *S3ServiceImpl) BucketExists(bucketName string) bool {
+func (s *S3ServiceImpl) ContainerExists(bucketName string) bool {
 	_, err := s.client.HeadBucket(context.Background(), &s3.HeadBucketInput{
 		Bucket: aws.String(bucketName),
 	})
@@ -93,20 +70,20 @@ func (s *S3ServiceImpl) BucketExists(bucketName string) bool {
 	return err == nil
 }
 
-func (s *S3ServiceImpl) ListBuckets(limit int, continuationToken *string) ([]string, *string, error) {
-	input := &s3.ListBucketsInput{}
+func (s *S3ServiceImpl) ListContainers(input ListContainersInput) ([]string, string, error) {
+	bucketInput := &s3.ListBucketsInput{}
 
-	if limit > 0 {
-		input.MaxBuckets = aws.Int32(int32(limit))
+	if input.Limit > 0 {
+		bucketInput.MaxBuckets = aws.Int32(int32(input.Limit))
 	}
 
-	if continuationToken != nil {
-		input.ContinuationToken = continuationToken
+	if input.Token != "" {
+		bucketInput.ContinuationToken = &input.Token
 	}
 
-	resp, err := s.client.ListBuckets(context.Background(), input)
+	resp, err := s.client.ListBuckets(context.Background(), bucketInput)
 	if err != nil {
-		return nil, nil, fmt.Errorf("unable to list buckets: %w", err)
+		return nil, "", fmt.Errorf("unable to list buckets: %w", err)
 	}
 
 	var bucketNames []string
@@ -116,15 +93,15 @@ func (s *S3ServiceImpl) ListBuckets(limit int, continuationToken *string) ([]str
 		}
 	}
 
-	var nextToken *string
+	var nextToken string
 	if resp.ContinuationToken != nil {
-		nextToken = resp.ContinuationToken
+		nextToken = utils.ConvertPointerToString(resp.ContinuationToken)
 	}
 
 	return bucketNames, nextToken, nil
 }
 
-func (s *S3ServiceImpl) ShowBucket(bucketName string) (*s3.HeadBucketOutput, error) {
+func (s *S3ServiceImpl) ShowContainer(bucketName string) (*ContainerMetadata, error) {
 	resp, err := s.client.HeadBucket(context.Background(), &s3.HeadBucketInput{
 		Bucket: aws.String(bucketName),
 	})
@@ -132,10 +109,13 @@ func (s *S3ServiceImpl) ShowBucket(bucketName string) (*s3.HeadBucketOutput, err
 		return nil, fmt.Errorf("unable to show bucket %q, %v", bucketName, err)
 	}
 
-	return resp, nil
+	return &ContainerMetadata{
+		Identifier: bucketName,
+		Region:     null.StringFrom(utils.ConvertPointerToString(resp.BucketRegion)),
+	}, nil
 }
 
-func (s *S3ServiceImpl) DeleteBucket(bucketName string) error {
+func (s *S3ServiceImpl) DeleteContainer(bucketName string) error {
 	_, err := s.client.DeleteBucket(context.Background(), &s3.DeleteBucketInput{
 		Bucket: aws.String(bucketName),
 	})
@@ -146,64 +126,64 @@ func (s *S3ServiceImpl) DeleteBucket(bucketName string) error {
 	return nil
 }
 
-func (s *S3ServiceImpl) UploadFile(bucketName, filePath string, fileBytes []byte) error {
+func (s *S3ServiceImpl) UploadFile(input UploadFileInput) error {
 	_, err := s.client.PutObject(context.Background(), &s3.PutObjectInput{
-		Bucket: aws.String(bucketName),
-		Key:    aws.String(filePath),
-		Body:   strings.NewReader(string(fileBytes)),
+		Bucket: aws.String(input.ContainerName),
+		Key:    aws.String(input.FileName),
+		Body:   strings.NewReader(string(input.FileBytes)),
 	})
 	if err != nil {
-		return fmt.Errorf("unable to upload file %q, %v", filePath, err)
+		return fmt.Errorf("unable to upload file %q, %v", input.FileName, err)
 	}
 
 	return nil
 }
 
-func (s *S3ServiceImpl) RenameFile(bucketName, oldFilePath, newFilePath string) error {
+func (s *S3ServiceImpl) RenameFile(input RenameFileInput) error {
 	_, err := s.client.CopyObject(context.Background(), &s3.CopyObjectInput{
-		Bucket:     aws.String(bucketName),
-		CopySource: aws.String(bucketName + "/" + oldFilePath),
-		Key:        aws.String(newFilePath),
+		Bucket:     aws.String(input.ContainerName),
+		CopySource: aws.String(input.ContainerName + "/" + input.FileName),
+		Key:        aws.String(input.NewFileName),
 	})
 	if err != nil {
-		return fmt.Errorf("unable to rename file %q to %q, %v", oldFilePath, newFilePath, err)
+		return fmt.Errorf("unable to rename file %q to %q, %v", input.FileName, input.NewFileName, err)
 	}
 
 	_, err = s.client.DeleteObject(context.Background(), &s3.DeleteObjectInput{
-		Bucket: aws.String(bucketName),
-		Key:    aws.String(oldFilePath),
+		Bucket: aws.String(input.ContainerName),
+		Key:    aws.String(input.FileName),
 	})
 	if err != nil {
-		return fmt.Errorf("unable to delete old file %q, %v", oldFilePath, err)
+		return fmt.Errorf("unable to delete old file %q, %v", input.FileName, err)
 	}
 
 	return nil
 }
 
-func (s *S3ServiceImpl) DownloadFile(bucketName, filePath string) ([]byte, error) {
+func (s *S3ServiceImpl) DownloadFile(input FileInput) ([]byte, error) {
 	resp, err := s.client.GetObject(context.Background(), &s3.GetObjectInput{
-		Bucket: aws.String(bucketName),
-		Key:    aws.String(filePath),
+		Bucket: aws.String(input.ContainerName),
+		Key:    aws.String(input.FileName),
 	})
 	if err != nil {
-		return nil, fmt.Errorf("unable to download file %q, %v", filePath, err)
+		return nil, fmt.Errorf("unable to download file %q, %v", input.FileName, err)
 	}
 
 	fileBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, fmt.Errorf("unable to read file %q, %v", filePath, err)
+		return nil, fmt.Errorf("unable to read file %q, %v", input.FileName, err)
 	}
 
 	return fileBytes, nil
 }
 
-func (s *S3ServiceImpl) DeleteFile(bucketName, filePath string) error {
+func (s *S3ServiceImpl) DeleteFile(input FileInput) error {
 	_, err := s.client.DeleteObject(context.Background(), &s3.DeleteObjectInput{
-		Bucket: aws.String(bucketName),
-		Key:    aws.String(filePath),
+		Bucket: aws.String(input.ContainerName),
+		Key:    aws.String(input.FileName),
 	})
 	if err != nil {
-		return fmt.Errorf("unable to delete file %q, %v", filePath, err)
+		return fmt.Errorf("unable to delete file %q, %v", input.FileName, err)
 	}
 
 	return nil

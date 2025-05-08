@@ -23,13 +23,13 @@ func NewFileRepository(injector *do.Injector) (*FileRepository, error) {
 	return &FileRepository{db: db}, nil
 }
 
-func (r *FileRepository) ListForBucket(paginationParams requests.PaginationParams, bucketUUID uuid.UUID) ([]models.File, error) {
+func (r *FileRepository) ListForContainer(paginationParams requests.PaginationParams, containerUUID uuid.UUID) ([]models.File, error) {
 	offset := (paginationParams.Page - 1) * paginationParams.Limit
 	query := `
 		SELECT 
 			%s 
 		FROM 
-			storage.files WHERE bucket_uuid = :bucket_uuid
+			storage.files WHERE container_uuid = :container_uuid
 		ORDER BY 
 			:sort DESC
 		LIMIT 
@@ -42,10 +42,10 @@ func (r *FileRepository) ListForBucket(paginationParams requests.PaginationParam
 	query = fmt.Sprintf(query, utils.GetColumns[models.File]())
 
 	params := map[string]interface{}{
-		"bucket_uuid": bucketUUID,
-		"sort":        paginationParams.Sort,
-		"limit":       paginationParams.Limit,
-		"offset":      offset,
+		"container_uuid": containerUUID,
+		"sort":           paginationParams.Sort,
+		"limit":          paginationParams.Limit,
+		"offset":         offset,
 	}
 
 	rows, err := r.db.NamedQuery(query, params)
@@ -87,11 +87,11 @@ func (r *FileRepository) GetByUUID(fileUUID uuid.UUID) (models.File, error) {
 	return file, nil
 }
 
-func (r *FileRepository) ExistsByUUID(bucketUUID uuid.UUID) (bool, error) {
+func (r *FileRepository) ExistsByUUID(containerUUID uuid.UUID) (bool, error) {
 	query := "SELECT EXISTS(SELECT 1 FROM storage.files WHERE uuid = $1)"
 
 	var exists bool
-	err := r.db.Get(&exists, query, bucketUUID)
+	err := r.db.Get(&exists, query, containerUUID)
 	if err != nil {
 		return false, utils.FormatError(err, "fetch", utils.GetMethodName())
 	}
@@ -99,11 +99,11 @@ func (r *FileRepository) ExistsByUUID(bucketUUID uuid.UUID) (bool, error) {
 	return exists, nil
 }
 
-func (r *FileRepository) ExistsByNameForBucket(name string, bucketUUID uuid.UUID) (bool, error) {
-	query := "SELECT EXISTS(SELECT 1 FROM storage.files WHERE full_file_name = $1 AND bucket_uuid = $2)"
+func (r *FileRepository) ExistsByNameForContainer(name string, containerUUID uuid.UUID) (bool, error) {
+	query := "SELECT EXISTS(SELECT 1 FROM storage.files WHERE full_file_name = $1 AND container_uuid = $2)"
 
 	var exists bool
-	err := r.db.Get(&exists, query, name, bucketUUID)
+	err := r.db.Get(&exists, query, name, containerUUID)
 	if err != nil {
 		return false, utils.FormatError(err, "fetch", utils.GetMethodName())
 	}
@@ -119,7 +119,7 @@ func (r *FileRepository) Create(file *models.File) (*models.File, error) {
 
 	query := `
     INSERT INTO storage.files (
-        bucket_uuid, full_file_name, size, mime_type, created_by, updated_by, created_at, updated_at
+        container_uuid, full_file_name, size, mime_type, created_by, updated_by, created_at, updated_at
     ) VALUES (
         $1, $2, $3, $4, $5, $6, $7, $8
     )
@@ -128,7 +128,7 @@ func (r *FileRepository) Create(file *models.File) (*models.File, error) {
 
 	queryErr := tx.QueryRowx(
 		query,
-		file.BucketUuid,
+		file.ContainerUuid,
 		file.FullFileName,
 		file.Size,
 		file.MimeType,
@@ -153,13 +153,13 @@ func (r *FileRepository) Create(file *models.File) (*models.File, error) {
 	return file, nil
 }
 
-func (r *FileRepository) Rename(bucket *models.File) (*models.File, error) {
+func (r *FileRepository) Rename(container *models.File) (*models.File, error) {
 	query := `
 		UPDATE storage.files 
 		SET full_file_name = :full_file_name, updated_at = :updated_at, updated_by = :updated_by
 		WHERE uuid = :uuid`
 
-	res, err := r.db.NamedExec(query, bucket)
+	res, err := r.db.NamedExec(query, container)
 	if err != nil {
 		return &models.File{}, utils.FormatError(err, "update", utils.GetMethodName())
 	}
@@ -169,7 +169,7 @@ func (r *FileRepository) Rename(bucket *models.File) (*models.File, error) {
 		return &models.File{}, utils.FormatError(err, "affectedRows", utils.GetMethodName())
 	}
 
-	return bucket, nil
+	return container, nil
 }
 
 func (r *FileRepository) Delete(fileUUID uuid.UUID) (bool, error) {

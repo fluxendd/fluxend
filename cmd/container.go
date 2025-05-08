@@ -30,7 +30,7 @@ func InitializeContainer() *do.Injector {
 	do.Provide(injector, repositories.NewFormRepository)
 	do.Provide(injector, repositories.NewFormFieldRepository)
 	do.Provide(injector, repositories.NewFormResponseRepository)
-	do.Provide(injector, repositories.NewBucketRepository)
+	do.Provide(injector, repositories.NewContainerRepository)
 	do.Provide(injector, repositories.NewFileRepository)
 	do.Provide(injector, repositories.NewBackupRepository)
 
@@ -58,7 +58,7 @@ func InitializeContainer() *do.Injector {
 	do.Provide(injector, services.NewFormFieldValidationService)
 	do.Provide(injector, services.NewFormFieldService)
 	do.Provide(injector, services.NewFormResponseService)
-	do.Provide(injector, services.NewBucketService)
+	do.Provide(injector, services.NewContainerService)
 	do.Provide(injector, services.NewFileService)
 	do.Provide(injector, services.NewBackupWorkflowService)
 	do.Provide(injector, services.NewBackupService)
@@ -77,7 +77,7 @@ func InitializeContainer() *do.Injector {
 	do.Provide(injector, controllers.NewFormController)
 	do.Provide(injector, controllers.NewFormFieldController)
 	do.Provide(injector, controllers.NewFormResponseController)
-	do.Provide(injector, controllers.NewBucketController)
+	do.Provide(injector, controllers.NewContainerController)
 	do.Provide(injector, controllers.NewFileController)
 	do.Provide(injector, controllers.NewBackupController)
 

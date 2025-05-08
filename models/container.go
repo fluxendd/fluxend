@@ -5,12 +5,13 @@ import (
 	"time"
 )
 
-type Bucket struct {
+type Container struct {
 	BaseModel
 	Uuid        uuid.UUID `db:"uuid" json:"uuid"`
 	ProjectUuid uuid.UUID `db:"project_uuid" json:"projectUuid"`
 	Name        string    `db:"name" json:"name"`
-	AwsName     string    `db:"aws_name" json:"awsName"`
+	NameKey     string    `db:"name_key" json:"nameKey"`
+	Provider    string    `db:"provider" json:"provider"`
 	Description string    `db:"description" json:"description"`
 	IsPublic    bool      `db:"is_public" json:"isPublic"`
 	Url         string    `db:"url" json:"url"`
@@ -22,6 +23,6 @@ type Bucket struct {
 	UpdatedAt   time.Time `db:"updated_at" json:"updatedAt"`
 }
 
-func (u Bucket) GetTableName() string {
-	return "storage.buckets"
+func (u Container) GetTableName() string {
+	return "storage.containers"
 }

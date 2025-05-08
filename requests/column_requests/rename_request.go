@@ -23,6 +23,8 @@ func (r *RenameRequest) BindAndValidate(c echo.Context) []string {
 		return []string{err.Error()}
 	}
 
+	r.SetContext(c)
+
 	err = validation.ValidateStruct(r,
 		validation.Field(
 			&r.Name,

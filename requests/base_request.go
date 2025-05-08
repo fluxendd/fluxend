@@ -47,6 +47,7 @@ var (
 
 type BaseRequest struct {
 	ProjectUUID uuid.UUID `json:"projectUUID,omitempty"`
+	Context     echo.Context
 }
 
 type PaginationParams struct {
@@ -54,6 +55,10 @@ type PaginationParams struct {
 	Limit int
 	Sort  string
 	Order string
+}
+
+func (r *BaseRequest) SetContext(c echo.Context) {
+	r.Context = c
 }
 
 func (r *BaseRequest) WithProjectHeader(c echo.Context) error {

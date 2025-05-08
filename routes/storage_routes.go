@@ -7,18 +7,18 @@ import (
 )
 
 func RegisterStorageRoutes(e *echo.Echo, container *do.Injector, authMiddleware echo.MiddlewareFunc, allowStorageMiddleware echo.MiddlewareFunc) {
-	bucketController := do.MustInvoke[*controllers.BucketController](container)
+	containerController := do.MustInvoke[*controllers.ContainerController](container)
 	fileController := do.MustInvoke[*controllers.FileController](container)
 
-	projectsGroup := e.Group("api/buckets", authMiddleware, allowStorageMiddleware)
+	projectsGroup := e.Group("api/containers", authMiddleware, allowStorageMiddleware)
 
-	projectsGroup.POST("", bucketController.Store)
-	projectsGroup.GET("", bucketController.List)
-	projectsGroup.GET("/:bucketUUID", bucketController.Show)
-	projectsGroup.PUT("/:bucketUUID", bucketController.Update)
-	projectsGroup.DELETE("/:bucketUUID", bucketController.Delete)
+	projectsGroup.POST("", containerController.Store)
+	projectsGroup.GET("", containerController.List)
+	projectsGroup.GET("/:containerUUID", containerController.Show)
+	projectsGroup.PUT("/:containerUUID", containerController.Update)
+	projectsGroup.DELETE("/:containerUUID", containerController.Delete)
 
-	filesGroup := projectsGroup.Group("/:bucketUUID/files")
+	filesGroup := projectsGroup.Group("/:containerUUID/files")
 
 	filesGroup.POST("", fileController.Store)
 	filesGroup.GET("", fileController.List)

@@ -1,4 +1,4 @@
-package bucket_requests
+package container_requests
 
 import (
 	"fluxton/constants"
@@ -20,17 +20,24 @@ func (r *CreateFileRequest) BindAndValidate(c echo.Context) []string {
 		return []string{"Invalid request payload"}
 	}
 
-	err := validation.ValidateStruct(r,
+	err := r.WithProjectHeader(c)
+	if err != nil {
+		return []string{err.Error()}
+	}
+
+	r.SetContext(c)
+
+	err = validation.ValidateStruct(r,
 		validation.Field(
 			&r.FullFileName,
 			validation.Required.Error("full_file_name is required"),
 			validation.Length(
-				constants.MinBucketNameLength, constants.MaxBucketNameLength,
+				constants.MinContainerNameLength, constants.MaxContainerNameLength,
 			).Error(
 				fmt.Sprintf(
 					"File name must be between %d and %d characters",
-					constants.MinBucketNameLength,
-					constants.MaxBucketNameLength,
+					constants.MinContainerNameLength,
+					constants.MaxContainerNameLength,
 				),
 			),
 			/*validation.Match(

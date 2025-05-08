@@ -20,5 +20,7 @@ func (r *CreateResponseRequest) BindAndValidate(c echo.Context) []string {
 		return []string{err.Error()}
 	}
 
+	r.SetContext(c)
+
 	return nil
 }

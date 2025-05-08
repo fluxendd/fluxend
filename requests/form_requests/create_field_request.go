@@ -74,6 +74,8 @@ func (r *CreateFormFieldsRequest) BindAndValidate(c echo.Context) []string {
 		return []string{err.Error()}
 	}
 
+	r.SetContext(c)
+
 	err = validation.ValidateStruct(r,
 		validation.Field(&r.Fields, validation.Required.Error("Fields array is required"), validation.Each(
 			validation.By(validateField),

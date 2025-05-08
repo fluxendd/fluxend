@@ -163,7 +163,7 @@ func (bc *BackupController) Delete(c echo.Context) error {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	if _, err := bc.backupService.Delete(backupUUID, authUser); err != nil {
+	if _, err := bc.backupService.Delete(request, backupUUID, authUser); err != nil {
 		return responses.ErrorResponse(c, err)
 	}
 

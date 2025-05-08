@@ -20,5 +20,7 @@ func (r *UpdateFormFieldRequest) BindAndValidate(c echo.Context) []string {
 		return []string{err.Error()}
 	}
 
+	r.SetContext(c)
+
 	return r.ExtractValidationErrors(validateField(r.FieldRequest))
 }

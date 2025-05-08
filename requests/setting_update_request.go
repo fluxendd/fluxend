@@ -12,6 +12,7 @@ type IndividualSetting struct {
 }
 
 type SettingUpdateRequest struct {
+	BaseRequest
 	Settings []IndividualSetting `json:"settings"`
 }
 
@@ -20,6 +21,8 @@ func (r *SettingUpdateRequest) BindAndValidate(c echo.Context) []string {
 	if err := c.Bind(r); err != nil {
 		return []string{"Invalid request payload"}
 	}
+
+	r.SetContext(c)
 
 	// Check if Settings slice is present
 	if len(r.Settings) == 0 {
