@@ -32,12 +32,12 @@ func (r *CreateFileRequest) BindAndValidate(c echo.Context) []string {
 			&r.FullFileName,
 			validation.Required.Error("full_file_name is required"),
 			validation.Length(
-				constants.MinBucketNameLength, constants.MaxBucketNameLength,
+				constants.MinContainerNameLength, constants.MaxContainerNameLength,
 			).Error(
 				fmt.Sprintf(
 					"File name must be between %d and %d characters",
-					constants.MinBucketNameLength,
-					constants.MaxBucketNameLength,
+					constants.MinContainerNameLength,
+					constants.MaxContainerNameLength,
 				),
 			),
 			/*validation.Match(

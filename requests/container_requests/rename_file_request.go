@@ -30,12 +30,12 @@ func (r *RenameFileRequest) BindAndValidate(c echo.Context) []string {
 			&r.FullFileName,
 			validation.Required.Error("Name is required"),
 			validation.Length(
-				constants.MinBucketNameLength, constants.MaxBucketNameLength,
+				constants.MinContainerNameLength, constants.MaxContainerNameLength,
 			).Error(
 				fmt.Sprintf(
 					"File name must be between %d and %d characters",
-					constants.MinBucketNameLength,
-					constants.MaxBucketNameLength,
+					constants.MinContainerNameLength,
+					constants.MaxContainerNameLength,
 				),
 			),
 			/*validation.Match(

@@ -35,12 +35,12 @@ func (r *CreateRequest) BindAndValidate(c echo.Context) []string {
 			&r.Name,
 			validation.Required.Error("Name is required"),
 			validation.Length(
-				constants.MinBucketNameLength, constants.MaxBucketNameLength,
+				constants.MinContainerNameLength, constants.MaxContainerNameLength,
 			).Error(
 				fmt.Sprintf(
 					"Bucket name must be between %d and %d characters",
-					constants.MinBucketNameLength,
-					constants.MaxBucketNameLength,
+					constants.MinContainerNameLength,
+					constants.MaxContainerNameLength,
 				),
 			),
 			validation.Match(
