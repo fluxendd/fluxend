@@ -18,12 +18,10 @@ type ContainerService interface {
 	GetByUUID(bucketUUID uuid.UUID, authUser models.AuthUser) (models.Bucket, error)
 	Create(request *bucket_requests.CreateRequest, authUser models.AuthUser) (models.Bucket, error)
 	Update(bucketUUID uuid.UUID, authUser models.AuthUser, request *bucket_requests.CreateRequest) (*models.Bucket, error)
-	Delete(bucketUUID uuid.UUID, authUser models.AuthUser) (bool, error)
+	Delete(request requests.DefaultRequestWithProjectHeader, bucketUUID uuid.UUID, authUser models.AuthUser) (bool, error)
 }
 
 type BucketServiceImpl struct {
-	storageService StorageService
-	dropboxService DropboxService
 	settingService SettingService
 	projectPolicy  *policies.ProjectPolicy
 	bucketRepo     *repositories.BucketRepository
@@ -36,23 +34,12 @@ func NewContainerService(injector *do.Injector) (ContainerService, error) {
 		return nil, err
 	}
 
-	storageProviderService, err := NewStorageProviderService()
-	if err != nil {
-		return nil, err
-	}
-
-	storageService, err := storageProviderService.GetProvider(settingService.GetValue(nil, "storageEngine"))
-	if err != nil {
-		return nil, err
-	}
-
 	policy := do.MustInvoke[*policies.ProjectPolicy](injector)
 	bucketRepo := do.MustInvoke[*repositories.BucketRepository](injector)
 	projectRepo := do.MustInvoke[*repositories.ProjectRepository](injector)
 
 	return &BucketServiceImpl{
 		settingService: settingService,
-		storageService: storageService,
 		projectPolicy:  policy,
 		bucketRepo:     bucketRepo,
 		projectRepo:    projectRepo,
@@ -116,7 +103,12 @@ func (s *BucketServiceImpl) Create(request *bucket_requests.CreateRequest, authU
 		UpdatedBy:   authUser.Uuid,
 	}
 
-	createdContainer, err := s.storageService.CreateContainer(bucket.NameKey)
+	storageService, err := GetStorageProvider(s.settingService.GetStorageDriver(request.Context))
+	if err != nil {
+		return models.Bucket{}, err
+	}
+
+	createdContainer, err := storageService.CreateContainer(bucket.NameKey)
 	if err != nil {
 		return models.Bucket{}, err
 	}
@@ -162,7 +154,7 @@ func (s *BucketServiceImpl) Update(bucketUUID uuid.UUID, authUser models.AuthUse
 	return s.bucketRepo.Update(&bucket)
 }
 
-func (s *BucketServiceImpl) Delete(bucketUUID uuid.UUID, authUser models.AuthUser) (bool, error) {
+func (s *BucketServiceImpl) Delete(request requests.DefaultRequestWithProjectHeader, bucketUUID uuid.UUID, authUser models.AuthUser) (bool, error) {
 	bucket, err := s.bucketRepo.GetByUUID(bucketUUID)
 	if err != nil {
 		return false, err
@@ -181,7 +173,11 @@ func (s *BucketServiceImpl) Delete(bucketUUID uuid.UUID, authUser models.AuthUse
 		return false, errs.NewForbiddenError("bucket.error.deleteForbidden")
 	}
 
-	err = s.storageService.DeleteContainer(bucket.NameKey)
+	storageService, err := GetStorageProvider(s.settingService.GetStorageDriver(request.Context))
+	if err != nil {
+		return false, err
+	}
+	err = storageService.DeleteContainer(bucket.NameKey)
 	if err != nil {
 		return false, err
 	}
