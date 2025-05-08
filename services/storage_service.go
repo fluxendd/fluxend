@@ -23,13 +23,15 @@ type FileInput struct {
 }
 
 type UploadFileInput struct {
-	FileInput
-	FileBytes []byte
+	ContainerName string
+	FileName      string
+	FileBytes     []byte
 }
 
 type RenameFileInput struct {
-	FileInput
-	NewFileName string
+	ContainerName string
+	FileName      string
+	NewFileName   string
 }
 
 type StorageService interface {

@@ -208,11 +208,9 @@ func (s *BackupWorkflowServiceImpl) readBackupFile(backupUUID uuid.UUID) ([]byte
 func (s *BackupWorkflowServiceImpl) uploadBackup(databaseName string, backupUUID uuid.UUID, fileBytes []byte) error {
 	filePath := fmt.Sprintf("%s/%s.sql", databaseName, backupUUID)
 	err := s.storageService.UploadFile(UploadFileInput{
-		FileInput: FileInput{
-			ContainerName: constants.BackupBucketName,
-			FileName:      filePath,
-		},
-		FileBytes: fileBytes,
+		ContainerName: constants.BackupBucketName,
+		FileName:      filePath,
+		FileBytes:     fileBytes,
 	})
 	if err != nil {
 		log.Error().

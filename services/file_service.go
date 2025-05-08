@@ -182,7 +182,7 @@ func (s *FileServiceImpl) Rename(fileUUID, bucketUUID uuid.UUID, authUser models
 
 	err = s.storageService.RenameFile(RenameFileInput{
 		ContainerName: bucket.NameKey,
-		OldFileName:   file.FullFileName,
+		FileName:      file.FullFileName,
 		NewFileName:   request.FullFileName,
 	})
 	if err != nil {
