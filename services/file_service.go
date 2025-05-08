@@ -216,7 +216,10 @@ func (s *FileServiceImpl) Delete(fileUUID, bucketUUID uuid.UUID, authUser models
 		return false, err
 	}
 
-	err = s.s3Service.DeleteFile(bucket.NameKey, file.FullFileName)
+	err = s.storageService.DeleteFile(FileInput{
+		ContainerName: bucket.NameKey,
+		FileName:      file.FullFileName,
+	})
 	if err != nil {
 		return false, err
 	}
