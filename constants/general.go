@@ -2,8 +2,8 @@ package constants
 
 const (
 	BackupBucketName        = "fluxton-client-database-backups"
-	StorageEngineFilesystem = "FILESYSTEM"
-	StorageEngineS3         = "S3"
-	StorageEngineDropbox    = "DROPBOX"
-	StorageEngineBackBlaze  = "BACKBLAZE"
+	StorageDriverFilesystem = "FILESYSTEM"
+	StorageDriverS3         = "S3"
+	StorageDriverDropbox    = "DROPBOX"
+	StorageDriverBackBlaze  = "BACKBLAZE"
 )
