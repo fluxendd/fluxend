@@ -119,7 +119,7 @@ func (r *ContainerRepository) Create(container *models.Container) (*models.Conta
 
 	query := `
     INSERT INTO storage.containers (
-        project_uuid, name, aws_name, description, is_public, url, max_file_size, created_by, updated_by
+        project_uuid, name, name_key, description, is_public, url, max_file_size, created_by, updated_by
     ) VALUES (
         $1, $2, $3, $4, $5, $6, $7, $8, $9
     )

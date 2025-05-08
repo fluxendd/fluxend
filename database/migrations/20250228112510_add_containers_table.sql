@@ -6,7 +6,7 @@ CREATE TABLE storage.containers (
     created_by UUID NOT NULL REFERENCES authentication.users(uuid) ON DELETE CASCADE,
     updated_by UUID NOT NULL REFERENCES authentication.users(uuid) ON DELETE CASCADE,
     name varchar NOT NULL,
-    aws_name varchar NOT NULL,
+    name_key varchar NOT NULL,
     description TEXT,
     is_public BOOLEAN DEFAULT FALSE,
     url varchar,
