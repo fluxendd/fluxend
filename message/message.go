@@ -31,19 +31,19 @@ var messages = map[string]string{
 	"organization.error.deleteUserForbidden": "You don't have permission to delete this user from the organization",
 
 	// Storage
-	"bucket.error.notFound":        "Bucket not found",
-	"bucket.error.listForbidden":   "You don't have permission to view buckets",
-	"bucket.error.viewForbidden":   "You don't have permission to view this bucket",
-	"bucket.error.createForbidden": "You don't have permission to create a bucket",
-	"bucket.error.updateForbidden": "You don't have permission to update this bucket",
-	"bucket.error.deleteWithFiles": "You can't delete this bucket because it contains files",
-	"bucket.error.deleteForbidden": "You don't have permission to delete this bucket",
-	"bucket.error.duplicateName":   "Bucket name already exists",
+	"container.error.notFound":        "Container not found",
+	"container.error.listForbidden":   "You don't have permission to view containers",
+	"container.error.viewForbidden":   "You don't have permission to view this container",
+	"container.error.createForbidden": "You don't have permission to create a container",
+	"container.error.updateForbidden": "You don't have permission to update this container",
+	"container.error.deleteWithFiles": "You can't delete this container because it contains files",
+	"container.error.deleteForbidden": "You don't have permission to delete this container",
+	"container.error.duplicateName":   "Container name already exists",
 
 	// S3
-	"s3.error.bucketAlreadyOwned":  "Bucket already owned by you",
-	"s3.error.bucketAlreadyExists": "Bucket already exists",
-	"s3.error.bucketNotFound":      "Bucket not found",
+	"s3.error.containerAlreadyOwned":  "Container already owned by you",
+	"s3.error.containerAlreadyExists": "Container already exists",
+	"s3.error.containerNotFound":      "Container not found",
 
 	// Dropbox
 	"dropbox.error.pathNotFound":           "Path not found",

@@ -6,7 +6,7 @@ import (
 	"fluxton/policies"
 	"fluxton/repositories"
 	"fluxton/requests"
-	"fluxton/requests/bucket_requests"
+	"fluxton/requests/container_requests"
 	"github.com/google/uuid"
 	"github.com/samber/do"
 	"strings"
@@ -14,17 +14,17 @@ import (
 )
 
 type ContainerService interface {
-	List(paginationParams requests.PaginationParams, projectUUID uuid.UUID, authUser models.AuthUser) ([]models.Bucket, error)
-	GetByUUID(bucketUUID uuid.UUID, authUser models.AuthUser) (models.Bucket, error)
-	Create(request *bucket_requests.CreateRequest, authUser models.AuthUser) (models.Bucket, error)
-	Update(bucketUUID uuid.UUID, authUser models.AuthUser, request *bucket_requests.CreateRequest) (*models.Bucket, error)
-	Delete(request requests.DefaultRequestWithProjectHeader, bucketUUID uuid.UUID, authUser models.AuthUser) (bool, error)
+	List(paginationParams requests.PaginationParams, projectUUID uuid.UUID, authUser models.AuthUser) ([]models.Container, error)
+	GetByUUID(containerUUID uuid.UUID, authUser models.AuthUser) (models.Container, error)
+	Create(request *container_requests.CreateRequest, authUser models.AuthUser) (models.Container, error)
+	Update(containerUUID uuid.UUID, authUser models.AuthUser, request *container_requests.CreateRequest) (*models.Container, error)
+	Delete(request requests.DefaultRequestWithProjectHeader, containerUUID uuid.UUID, authUser models.AuthUser) (bool, error)
 }
 
-type BucketServiceImpl struct {
+type ContainerServiceImpl struct {
 	settingService SettingService
 	projectPolicy  *policies.ProjectPolicy
-	bucketRepo     *repositories.BucketRepository
+	containerRepo  *repositories.ContainerRepository
 	projectRepo    *repositories.ProjectRepository
 }
 
@@ -35,67 +35,67 @@ func NewContainerService(injector *do.Injector) (ContainerService, error) {
 	}
 
 	policy := do.MustInvoke[*policies.ProjectPolicy](injector)
-	bucketRepo := do.MustInvoke[*repositories.BucketRepository](injector)
+	containerRepo := do.MustInvoke[*repositories.ContainerRepository](injector)
 	projectRepo := do.MustInvoke[*repositories.ProjectRepository](injector)
 
-	return &BucketServiceImpl{
+	return &ContainerServiceImpl{
 		settingService: settingService,
 		projectPolicy:  policy,
-		bucketRepo:     bucketRepo,
+		containerRepo:  containerRepo,
 		projectRepo:    projectRepo,
 	}, nil
 }
 
-func (s *BucketServiceImpl) List(paginationParams requests.PaginationParams, projectUUID uuid.UUID, authUser models.AuthUser) ([]models.Bucket, error) {
+func (s *ContainerServiceImpl) List(paginationParams requests.PaginationParams, projectUUID uuid.UUID, authUser models.AuthUser) ([]models.Container, error) {
 	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(projectUUID)
 	if err != nil {
-		return []models.Bucket{}, err
+		return []models.Container{}, err
 	}
 
 	if !s.projectPolicy.CanAccess(organizationUUID, authUser) {
-		return []models.Bucket{}, errs.NewForbiddenError("bucket.error.listForbidden")
+		return []models.Container{}, errs.NewForbiddenError("container.error.listForbidden")
 	}
 
-	return s.bucketRepo.ListForProject(paginationParams, projectUUID)
+	return s.containerRepo.ListForProject(paginationParams, projectUUID)
 }
 
-func (s *BucketServiceImpl) GetByUUID(bucketUUID uuid.UUID, authUser models.AuthUser) (models.Bucket, error) {
-	bucket, err := s.bucketRepo.GetByUUID(bucketUUID)
+func (s *ContainerServiceImpl) GetByUUID(containerUUID uuid.UUID, authUser models.AuthUser) (models.Container, error) {
+	container, err := s.containerRepo.GetByUUID(containerUUID)
 	if err != nil {
-		return models.Bucket{}, err
+		return models.Container{}, err
 	}
 
-	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(bucket.ProjectUuid)
+	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(container.ProjectUuid)
 	if err != nil {
-		return models.Bucket{}, err
+		return models.Container{}, err
 	}
 
 	if !s.projectPolicy.CanAccess(organizationUUID, authUser) {
-		return models.Bucket{}, errs.NewForbiddenError("bucket.error.viewForbidden")
+		return models.Container{}, errs.NewForbiddenError("container.error.viewForbidden")
 	}
 
-	return bucket, nil
+	return container, nil
 }
 
-func (s *BucketServiceImpl) Create(request *bucket_requests.CreateRequest, authUser models.AuthUser) (models.Bucket, error) {
+func (s *ContainerServiceImpl) Create(request *container_requests.CreateRequest, authUser models.AuthUser) (models.Container, error) {
 	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(request.ProjectUUID)
 	if err != nil {
-		return models.Bucket{}, err
+		return models.Container{}, err
 	}
 
 	if !s.projectPolicy.CanCreate(organizationUUID, authUser) {
-		return models.Bucket{}, errs.NewForbiddenError("bucket.error.createForbidden")
+		return models.Container{}, errs.NewForbiddenError("container.error.createForbidden")
 	}
 
 	err = s.validateNameForDuplication(request.Name, request.ProjectUUID)
 	if err != nil {
-		return models.Bucket{}, err
+		return models.Container{}, err
 	}
 
-	bucket := models.Bucket{
+	container := models.Container{
 		ProjectUuid: request.ProjectUUID,
 		Name:        request.Name,
-		NameKey:     s.generateBucketName(),
+		NameKey:     s.generateContainerName(),
 		IsPublic:    request.IsPublic,
 		Description: request.Description,
 		MaxFileSize: request.MaxFileSize,
@@ -105,100 +105,100 @@ func (s *BucketServiceImpl) Create(request *bucket_requests.CreateRequest, authU
 
 	storageService, err := GetStorageProvider(s.settingService.GetStorageDriver(request.Context))
 	if err != nil {
-		return models.Bucket{}, err
+		return models.Container{}, err
 	}
 
-	createdContainer, err := storageService.CreateContainer(bucket.NameKey)
+	createdContainer, err := storageService.CreateContainer(container.NameKey)
 	if err != nil {
-		return models.Bucket{}, err
+		return models.Container{}, err
 	}
 
-	bucket.Url = createdContainer
+	container.Url = createdContainer
 
-	_, err = s.bucketRepo.Create(&bucket)
+	_, err = s.containerRepo.Create(&container)
 	if err != nil {
-		return models.Bucket{}, err
+		return models.Container{}, err
 	}
 
-	return bucket, nil
+	return container, nil
 }
 
-func (s *BucketServiceImpl) Update(bucketUUID uuid.UUID, authUser models.AuthUser, request *bucket_requests.CreateRequest) (*models.Bucket, error) {
-	bucket, err := s.bucketRepo.GetByUUID(bucketUUID)
+func (s *ContainerServiceImpl) Update(containerUUID uuid.UUID, authUser models.AuthUser, request *container_requests.CreateRequest) (*models.Container, error) {
+	container, err := s.containerRepo.GetByUUID(containerUUID)
 	if err != nil {
 		return nil, err
 	}
 
-	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(bucket.ProjectUuid)
+	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(container.ProjectUuid)
 	if err != nil {
-		return &models.Bucket{}, err
+		return &models.Container{}, err
 	}
 
 	if !s.projectPolicy.CanUpdate(organizationUUID, authUser) {
-		return &models.Bucket{}, errs.NewForbiddenError("bucket.error.updateForbidden")
+		return &models.Container{}, errs.NewForbiddenError("container.error.updateForbidden")
 	}
 
-	err = bucket.PopulateModel(&bucket, request)
+	err = container.PopulateModel(&container, request)
 	if err != nil {
 		return nil, err
 	}
 
-	bucket.UpdatedAt = time.Now()
-	bucket.UpdatedBy = authUser.Uuid
+	container.UpdatedAt = time.Now()
+	container.UpdatedBy = authUser.Uuid
 
-	err = s.validateNameForDuplication(request.Name, bucket.ProjectUuid)
+	err = s.validateNameForDuplication(request.Name, container.ProjectUuid)
 	if err != nil {
-		return &models.Bucket{}, err
+		return &models.Container{}, err
 	}
 
-	return s.bucketRepo.Update(&bucket)
+	return s.containerRepo.Update(&container)
 }
 
-func (s *BucketServiceImpl) Delete(request requests.DefaultRequestWithProjectHeader, bucketUUID uuid.UUID, authUser models.AuthUser) (bool, error) {
-	bucket, err := s.bucketRepo.GetByUUID(bucketUUID)
+func (s *ContainerServiceImpl) Delete(request requests.DefaultRequestWithProjectHeader, containerUUID uuid.UUID, authUser models.AuthUser) (bool, error) {
+	container, err := s.containerRepo.GetByUUID(containerUUID)
 	if err != nil {
 		return false, err
 	}
 
-	if bucket.TotalFiles > 0 {
-		return false, errs.NewUnprocessableError("bucket.error.deleteWithFiles")
+	if container.TotalFiles > 0 {
+		return false, errs.NewUnprocessableError("container.error.deleteWithFiles")
 	}
 
-	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(bucket.ProjectUuid)
+	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(container.ProjectUuid)
 	if err != nil {
 		return false, err
 	}
 
 	if !s.projectPolicy.CanUpdate(organizationUUID, authUser) {
-		return false, errs.NewForbiddenError("bucket.error.deleteForbidden")
+		return false, errs.NewForbiddenError("container.error.deleteForbidden")
 	}
 
 	storageService, err := GetStorageProvider(s.settingService.GetStorageDriver(request.Context))
 	if err != nil {
 		return false, err
 	}
-	err = storageService.DeleteContainer(bucket.NameKey)
+	err = storageService.DeleteContainer(container.NameKey)
 	if err != nil {
 		return false, err
 	}
 
-	return s.bucketRepo.Delete(bucketUUID)
+	return s.containerRepo.Delete(containerUUID)
 }
 
-func (s *BucketServiceImpl) generateBucketName() string {
-	bucketUUID := uuid.New()
+func (s *ContainerServiceImpl) generateContainerName() string {
+	containerUUID := uuid.New()
 
-	return "bucket-" + strings.Replace(bucketUUID.String(), "-", "", -1)
+	return "container-" + strings.Replace(containerUUID.String(), "-", "", -1)
 }
 
-func (s *BucketServiceImpl) validateNameForDuplication(name string, projectUUID uuid.UUID) error {
-	exists, err := s.bucketRepo.ExistsByNameForProject(name, projectUUID)
+func (s *ContainerServiceImpl) validateNameForDuplication(name string, projectUUID uuid.UUID) error {
+	exists, err := s.containerRepo.ExistsByNameForProject(name, projectUUID)
 	if err != nil {
 		return err
 	}
 
 	if exists {
-		return errs.NewUnprocessableError("bucket.error.duplicateName")
+		return errs.NewUnprocessableError("container.error.duplicateName")
 	}
 
 	return nil

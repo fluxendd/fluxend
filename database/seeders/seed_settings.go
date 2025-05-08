@@ -29,7 +29,7 @@ func SeedSettings(container *do.Injector) {
 		{Name: "allowBackups", Value: "yes", DefaultValue: "yes"},
 
 		// Storage settings
-		{Name: "storageMaxBuckets", Value: "10", DefaultValue: "10"},
+		{Name: "storageMaxContainers", Value: "10", DefaultValue: "10"},
 		{Name: "storageMaxFileSizeInKB", Value: "1024", DefaultValue: "1024"},
 		{Name: "storageAllowedMimes", Value: "jpg,png,pdf", DefaultValue: "jpg,png,pdf"},
 

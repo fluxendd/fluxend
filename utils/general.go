@@ -6,7 +6,7 @@ import (
 )
 
 func FormatError(err error, errType, method string) error {
-	// bucketRepo.ListForProject: select.err => <error>
+	// containerRepo.ListForProject: select.err => <error>
 	return fmt.Errorf("%s: %s.err => %v", method, errType, err)
 }
 

@@ -30,7 +30,7 @@ func InitializeContainer() *do.Injector {
 	do.Provide(injector, repositories.NewFormRepository)
 	do.Provide(injector, repositories.NewFormFieldRepository)
 	do.Provide(injector, repositories.NewFormResponseRepository)
-	do.Provide(injector, repositories.NewBucketRepository)
+	do.Provide(injector, repositories.NewContainerRepository)
 	do.Provide(injector, repositories.NewFileRepository)
 	do.Provide(injector, repositories.NewBackupRepository)
 

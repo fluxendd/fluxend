@@ -1,4 +1,4 @@
-package bucket_requests
+package container_requests
 
 import (
 	"fluxton/constants"

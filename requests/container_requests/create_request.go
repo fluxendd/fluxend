@@ -1,4 +1,4 @@
-package bucket_requests
+package container_requests
 
 import (
 	"fluxton/constants"
@@ -38,14 +38,14 @@ func (r *CreateRequest) BindAndValidate(c echo.Context) []string {
 				constants.MinContainerNameLength, constants.MaxContainerNameLength,
 			).Error(
 				fmt.Sprintf(
-					"Bucket name must be between %d and %d characters",
+					"Container name must be between %d and %d characters",
 					constants.MinContainerNameLength,
 					constants.MaxContainerNameLength,
 				),
 			),
 			validation.Match(
 				regexp.MustCompile(utils.AlphanumericWithUnderscoreAndDashPattern()),
-			).Error("Bucket name must be alphanumeric with underscores and dashes")),
+			).Error("Container name must be alphanumeric with underscores and dashes")),
 		validation.Field(&r.IsPublic, validation.Required.Error("IsPublic is required")),
 		validation.Field(&r.MaxFileSize,
 			validation.Required.Error("max_file_size is required"),
@@ -53,10 +53,10 @@ func (r *CreateRequest) BindAndValidate(c echo.Context) []string {
 		),
 		validation.Field(
 			&r.Description,
-			validation.Length(constants.MinBucketDescriptionLength, constants.MaxBucketDescriptionLength).Error(
+			validation.Length(constants.MinContainerDescriptionLength, constants.MaxContainerDescriptionLength).Error(
 				fmt.Sprintf(
-					"Bucket description must be less than %d characters",
-					constants.MaxBucketDescriptionLength,
+					"Container description must be less than %d characters",
+					constants.MaxContainerDescriptionLength,
 				),
 			),
 		),

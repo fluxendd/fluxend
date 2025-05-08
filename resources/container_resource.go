@@ -5,7 +5,7 @@ import (
 	"github.com/google/uuid"
 )
 
-type BucketResponse struct {
+type ContainerResponse struct {
 	Uuid        uuid.UUID `json:"uuid"`
 	ProjectUuid uuid.UUID `json:"projectUuid"`
 	Name        string    `json:"name"`
@@ -20,28 +20,28 @@ type BucketResponse struct {
 	UpdatedAt   string    `json:"updatedAt"`
 }
 
-func BucketResource(bucket *models.Bucket) BucketResponse {
-	return BucketResponse{
-		Uuid:        bucket.Uuid,
-		ProjectUuid: bucket.ProjectUuid,
-		Name:        bucket.Name,
-		Description: bucket.Description,
-		IsPublic:    bucket.IsPublic,
-		Url:         bucket.Url,
-		TotalFiles:  bucket.TotalFiles,
-		MaxFileSize: bucket.MaxFileSize,
-		CreatedBy:   bucket.CreatedBy,
-		UpdatedBy:   bucket.UpdatedBy,
-		CreatedAt:   bucket.CreatedAt.Format("2006-01-02 15:04:05"),
-		UpdatedAt:   bucket.UpdatedAt.Format("2006-01-02 15:04:05"),
+func ContainerResource(container *models.Container) ContainerResponse {
+	return ContainerResponse{
+		Uuid:        container.Uuid,
+		ProjectUuid: container.ProjectUuid,
+		Name:        container.Name,
+		Description: container.Description,
+		IsPublic:    container.IsPublic,
+		Url:         container.Url,
+		TotalFiles:  container.TotalFiles,
+		MaxFileSize: container.MaxFileSize,
+		CreatedBy:   container.CreatedBy,
+		UpdatedBy:   container.UpdatedBy,
+		CreatedAt:   container.CreatedAt.Format("2006-01-02 15:04:05"),
+		UpdatedAt:   container.UpdatedAt.Format("2006-01-02 15:04:05"),
 	}
 }
 
-func BucketResourceCollection(buckets []models.Bucket) []BucketResponse {
-	resourceBuckets := make([]BucketResponse, len(buckets))
-	for i, bucket := range buckets {
-		resourceBuckets[i] = BucketResource(&bucket)
+func ContainerResourceCollection(containers []models.Container) []ContainerResponse {
+	resourceContainers := make([]ContainerResponse, len(containers))
+	for i, container := range containers {
+		resourceContainers[i] = ContainerResource(&container)
 	}
 
-	return resourceBuckets
+	return resourceContainers
 }

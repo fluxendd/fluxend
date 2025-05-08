@@ -38,7 +38,7 @@ func NewBackupWorkflowService(injector *do.Injector) (BackupWorkflowService, err
 	}, nil
 }
 
-// Create pg_dump, copy file, ensure bucket exists, and upload to S3
+// Create pg_dump, copy file, ensure container exists, and upload to S3
 func (s *BackupWorkflowServiceImpl) Create(ctx echo.Context, databaseName string, backupUUID uuid.UUID) {
 	backupFilePath := fmt.Sprintf("/tmp/%s.sql", backupUUID)
 
@@ -56,7 +56,7 @@ func (s *BackupWorkflowServiceImpl) Create(ctx echo.Context, databaseName string
 		return
 	}
 
-	// 3. Ensure backup bucket exists
+	// 3. Ensure backup container exists
 	if err := s.ensureBackupContainerExists(ctx); err != nil {
 		s.handleBackupFailure(backupUUID, models.BackupStatusCreatingFailed, err.Error())
 
@@ -113,7 +113,7 @@ func (s *BackupWorkflowServiceImpl) Delete(ctx echo.Context, databaseName string
 	}
 
 	err = storageService.DeleteFile(FileInput{
-		ContainerName: constants.BackupBucketName,
+		ContainerName: constants.BackupContainerName,
 		FileName:      filePath,
 	})
 	if err != nil {
@@ -188,15 +188,15 @@ func (s *BackupWorkflowServiceImpl) ensureBackupContainerExists(ctx echo.Context
 		return err
 	}
 
-	bucketExists := storageService.ContainerExists(constants.BackupBucketName)
-	if !bucketExists {
-		_, err := storageService.CreateContainer(constants.BackupBucketName)
+	containerExists := storageService.ContainerExists(constants.BackupContainerName)
+	if !containerExists {
+		_, err := storageService.CreateContainer(constants.BackupContainerName)
 		if err != nil {
 			log.Error().
 				Str("action", constants.ActionBackup).
-				Str("bucket_name", constants.BackupBucketName).
+				Str("container_name", constants.BackupContainerName).
 				Str("error", err.Error()).
-				Msg("failed to create backup bucket")
+				Msg("failed to create backup container")
 
 			return err
 		}
@@ -236,7 +236,7 @@ func (s *BackupWorkflowServiceImpl) uploadBackup(ctx echo.Context, databaseName 
 	}
 
 	err = storageService.UploadFile(UploadFileInput{
-		ContainerName: constants.BackupBucketName,
+		ContainerName: constants.BackupContainerName,
 		FileName:      filePath,
 		FileBytes:     fileBytes,
 	})

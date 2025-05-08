@@ -6,7 +6,7 @@ import (
 	"fluxton/policies"
 	"fluxton/repositories"
 	"fluxton/requests"
-	"fluxton/requests/bucket_requests"
+	"fluxton/requests/container_requests"
 	"fluxton/utils"
 	"fmt"
 	"github.com/google/uuid"
@@ -16,17 +16,17 @@ import (
 )
 
 type FileService interface {
-	List(paginationParams requests.PaginationParams, bucketUUID uuid.UUID, authUser models.AuthUser) ([]models.File, error)
-	GetByUUID(fileUUID, bucketUUID uuid.UUID, authUser models.AuthUser) (models.File, error)
-	Create(bucketUUID uuid.UUID, request *bucket_requests.CreateFileRequest, authUser models.AuthUser) (models.File, error)
-	Rename(fileUUID, bucketUUID uuid.UUID, authUser models.AuthUser, request *bucket_requests.RenameFileRequest) (*models.File, error)
-	Delete(fileUUID, bucketUUID uuid.UUID, authUser models.AuthUser, request requests.DefaultRequestWithProjectHeader) (bool, error)
+	List(paginationParams requests.PaginationParams, containerUUID uuid.UUID, authUser models.AuthUser) ([]models.File, error)
+	GetByUUID(fileUUID, containerUUID uuid.UUID, authUser models.AuthUser) (models.File, error)
+	Create(containerUUID uuid.UUID, request *container_requests.CreateFileRequest, authUser models.AuthUser) (models.File, error)
+	Rename(fileUUID, containerUUID uuid.UUID, authUser models.AuthUser, request *container_requests.RenameFileRequest) (*models.File, error)
+	Delete(fileUUID, containerUUID uuid.UUID, authUser models.AuthUser, request requests.DefaultRequestWithProjectHeader) (bool, error)
 }
 
 type FileServiceImpl struct {
 	settingService SettingService
 	projectPolicy  *policies.ProjectPolicy
-	bucketRepo     *repositories.BucketRepository
+	containerRepo  *repositories.ContainerRepository
 	fileRepo       *repositories.FileRepository
 	projectRepo    *repositories.ProjectRepository
 }
@@ -38,26 +38,26 @@ func NewFileService(injector *do.Injector) (FileService, error) {
 	}
 
 	policy := do.MustInvoke[*policies.ProjectPolicy](injector)
-	bucketRepo := do.MustInvoke[*repositories.BucketRepository](injector)
+	containerRepo := do.MustInvoke[*repositories.ContainerRepository](injector)
 	fileRepo := do.MustInvoke[*repositories.FileRepository](injector)
 	projectRepo := do.MustInvoke[*repositories.ProjectRepository](injector)
 
 	return &FileServiceImpl{
 		settingService: settingService,
 		projectPolicy:  policy,
-		bucketRepo:     bucketRepo,
+		containerRepo:  containerRepo,
 		fileRepo:       fileRepo,
 		projectRepo:    projectRepo,
 	}, nil
 }
 
-func (s *FileServiceImpl) List(paginationParams requests.PaginationParams, bucketUUID uuid.UUID, authUser models.AuthUser) ([]models.File, error) {
-	bucket, err := s.bucketRepo.GetByUUID(bucketUUID)
+func (s *FileServiceImpl) List(paginationParams requests.PaginationParams, containerUUID uuid.UUID, authUser models.AuthUser) ([]models.File, error) {
+	container, err := s.containerRepo.GetByUUID(containerUUID)
 	if err != nil {
 		return []models.File{}, err
 	}
 
-	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(bucket.ProjectUuid)
+	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(container.ProjectUuid)
 	if err != nil {
 		return []models.File{}, err
 	}
@@ -66,16 +66,16 @@ func (s *FileServiceImpl) List(paginationParams requests.PaginationParams, bucke
 		return []models.File{}, errs.NewForbiddenError("file.error.listForbidden")
 	}
 
-	return s.fileRepo.ListForBucket(paginationParams, bucketUUID)
+	return s.fileRepo.ListForContainer(paginationParams, containerUUID)
 }
 
-func (s *FileServiceImpl) GetByUUID(fileUUID, bucketUUID uuid.UUID, authUser models.AuthUser) (models.File, error) {
-	bucket, err := s.bucketRepo.GetByUUID(bucketUUID)
+func (s *FileServiceImpl) GetByUUID(fileUUID, containerUUID uuid.UUID, authUser models.AuthUser) (models.File, error) {
+	container, err := s.containerRepo.GetByUUID(containerUUID)
 	if err != nil {
 		return models.File{}, err
 	}
 
-	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(bucket.ProjectUuid)
+	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(container.ProjectUuid)
 	if err != nil {
 		return models.File{}, err
 	}
@@ -92,13 +92,13 @@ func (s *FileServiceImpl) GetByUUID(fileUUID, bucketUUID uuid.UUID, authUser mod
 	return file, nil
 }
 
-func (s *FileServiceImpl) Create(bucketUUID uuid.UUID, request *bucket_requests.CreateFileRequest, authUser models.AuthUser) (models.File, error) {
-	bucket, err := s.bucketRepo.GetByUUID(bucketUUID)
+func (s *FileServiceImpl) Create(containerUUID uuid.UUID, request *container_requests.CreateFileRequest, authUser models.AuthUser) (models.File, error) {
+	container, err := s.containerRepo.GetByUUID(containerUUID)
 	if err != nil {
 		return models.File{}, err
 	}
 
-	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(bucket.ProjectUuid)
+	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(container.ProjectUuid)
 	if err != nil {
 		return models.File{}, err
 	}
@@ -107,20 +107,20 @@ func (s *FileServiceImpl) Create(bucketUUID uuid.UUID, request *bucket_requests.
 		return models.File{}, errs.NewForbiddenError("file.error.createForbidden")
 	}
 
-	err = s.validate(request, bucket)
+	err = s.validate(request, container)
 	if err != nil {
 		return models.File{}, err
 	}
 
 	file := models.File{
-		BucketUuid:   bucketUUID,
-		FullFileName: request.FullFileName,
-		Size:         utils.ConvertBytesToKiloBytes(int(request.File.Size)),
-		MimeType:     request.File.Header.Get("Content-Type"),
-		CreatedBy:    authUser.Uuid,
-		UpdatedBy:    authUser.Uuid,
-		CreatedAt:    time.Now(),
-		UpdatedAt:    time.Now(),
+		ContainerUuid: containerUUID,
+		FullFileName:  request.FullFileName,
+		Size:          utils.ConvertBytesToKiloBytes(int(request.File.Size)),
+		MimeType:      request.File.Header.Get("Content-Type"),
+		CreatedBy:     authUser.Uuid,
+		UpdatedBy:     authUser.Uuid,
+		CreatedAt:     time.Now(),
+		UpdatedAt:     time.Now(),
 	}
 
 	fileBytes, err := s.getFileContents(*request)
@@ -134,7 +134,7 @@ func (s *FileServiceImpl) Create(bucketUUID uuid.UUID, request *bucket_requests.
 	}
 
 	err = storageService.UploadFile(UploadFileInput{
-		ContainerName: bucket.NameKey,
+		ContainerName: container.NameKey,
 		FileName:      request.FullFileName,
 		FileBytes:     fileBytes,
 	})
@@ -147,7 +147,7 @@ func (s *FileServiceImpl) Create(bucketUUID uuid.UUID, request *bucket_requests.
 		return models.File{}, err
 	}
 
-	err = s.bucketRepo.IncrementTotalFiles(bucketUUID)
+	err = s.containerRepo.IncrementTotalFiles(containerUUID)
 	if err != nil {
 		return models.File{}, err
 	}
@@ -155,8 +155,8 @@ func (s *FileServiceImpl) Create(bucketUUID uuid.UUID, request *bucket_requests.
 	return file, nil
 }
 
-func (s *FileServiceImpl) Rename(fileUUID, bucketUUID uuid.UUID, authUser models.AuthUser, request *bucket_requests.RenameFileRequest) (*models.File, error) {
-	bucket, err := s.bucketRepo.GetByUUID(bucketUUID)
+func (s *FileServiceImpl) Rename(fileUUID, containerUUID uuid.UUID, authUser models.AuthUser, request *container_requests.RenameFileRequest) (*models.File, error) {
+	container, err := s.containerRepo.GetByUUID(containerUUID)
 	if err != nil {
 		return nil, err
 	}
@@ -166,7 +166,7 @@ func (s *FileServiceImpl) Rename(fileUUID, bucketUUID uuid.UUID, authUser models
 		return nil, err
 	}
 
-	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(bucket.ProjectUuid)
+	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(container.ProjectUuid)
 	if err != nil {
 		return &models.File{}, err
 	}
@@ -175,7 +175,7 @@ func (s *FileServiceImpl) Rename(fileUUID, bucketUUID uuid.UUID, authUser models
 		return &models.File{}, errs.NewForbiddenError("file.error.updateForbidden")
 	}
 
-	err = s.validateNameForDuplication(request.FullFileName, bucket.Uuid)
+	err = s.validateNameForDuplication(request.FullFileName, container.Uuid)
 	if err != nil {
 		return &models.File{}, err
 	}
@@ -186,7 +186,7 @@ func (s *FileServiceImpl) Rename(fileUUID, bucketUUID uuid.UUID, authUser models
 	}
 
 	err = storageService.RenameFile(RenameFileInput{
-		ContainerName: bucket.NameKey,
+		ContainerName: container.NameKey,
 		FileName:      file.FullFileName,
 		NewFileName:   request.FullFileName,
 	})
@@ -201,13 +201,13 @@ func (s *FileServiceImpl) Rename(fileUUID, bucketUUID uuid.UUID, authUser models
 	return s.fileRepo.Rename(&file)
 }
 
-func (s *FileServiceImpl) Delete(fileUUID, bucketUUID uuid.UUID, authUser models.AuthUser, request requests.DefaultRequestWithProjectHeader) (bool, error) {
-	bucket, err := s.bucketRepo.GetByUUID(bucketUUID)
+func (s *FileServiceImpl) Delete(fileUUID, containerUUID uuid.UUID, authUser models.AuthUser, request requests.DefaultRequestWithProjectHeader) (bool, error) {
+	container, err := s.containerRepo.GetByUUID(containerUUID)
 	if err != nil {
 		return false, err
 	}
 
-	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(bucket.ProjectUuid)
+	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(container.ProjectUuid)
 	if err != nil {
 		return false, err
 	}
@@ -227,7 +227,7 @@ func (s *FileServiceImpl) Delete(fileUUID, bucketUUID uuid.UUID, authUser models
 	}
 
 	err = storageService.DeleteFile(FileInput{
-		ContainerName: bucket.NameKey,
+		ContainerName: container.NameKey,
 		FileName:      file.FullFileName,
 	})
 	if err != nil {
@@ -240,7 +240,7 @@ func (s *FileServiceImpl) Delete(fileUUID, bucketUUID uuid.UUID, authUser models
 	}
 
 	if fileDeleted {
-		err = s.bucketRepo.DecrementTotalFiles(bucketUUID)
+		err = s.containerRepo.DecrementTotalFiles(containerUUID)
 		if err != nil {
 			return false, err
 		}
@@ -249,7 +249,7 @@ func (s *FileServiceImpl) Delete(fileUUID, bucketUUID uuid.UUID, authUser models
 	return fileDeleted, nil
 }
 
-func (s *FileServiceImpl) getFileContents(request bucket_requests.CreateFileRequest) ([]byte, error) {
+func (s *FileServiceImpl) getFileContents(request container_requests.CreateFileRequest) ([]byte, error) {
 	fileHandler, err := request.File.Open() // Open the file
 	if err != nil {
 		return nil, fmt.Errorf("failed to open file: %w", err)
@@ -264,20 +264,20 @@ func (s *FileServiceImpl) getFileContents(request bucket_requests.CreateFileRequ
 	return fileBytes, nil
 }
 
-func (s *FileServiceImpl) validate(request *bucket_requests.CreateFileRequest, bucket models.Bucket) error {
+func (s *FileServiceImpl) validate(request *container_requests.CreateFileRequest, container models.Container) error {
 	fileSize := utils.ConvertBytesToKiloBytes(int(request.File.Size))
 
-	err := s.validateMimeType(request.File.Header.Get("Content-Type"), bucket)
+	err := s.validateMimeType(request.File.Header.Get("Content-Type"), container)
 	if err != nil {
 		return err
 	}
 
-	err = s.validateFileSize(fileSize, bucket)
+	err = s.validateFileSize(fileSize, container)
 	if err != nil {
 		return err
 	}
 
-	err = s.validateNameForDuplication(request.FullFileName, bucket.Uuid)
+	err = s.validateNameForDuplication(request.FullFileName, container.Uuid)
 	if err != nil {
 		return err
 	}
@@ -285,25 +285,25 @@ func (s *FileServiceImpl) validate(request *bucket_requests.CreateFileRequest, b
 	return nil
 }
 
-func (s *FileServiceImpl) validateMimeType(mimeType string, bucket models.Bucket) error {
+func (s *FileServiceImpl) validateMimeType(mimeType string, container models.Container) error {
 	// TODO: implement mime type validation
-	// if !bucket.AllowedMimeTypes[mimeType] {
+	// if !container.AllowedMimeTypes[mimeType] {
 	//	return errs.NewUnprocessableError("file.error.invalidMimeType")
 	// }
 
 	return nil
 }
 
-func (s *FileServiceImpl) validateFileSize(fileSize int, bucket models.Bucket) error {
-	if fileSize > bucket.MaxFileSize {
+func (s *FileServiceImpl) validateFileSize(fileSize int, container models.Container) error {
+	if fileSize > container.MaxFileSize {
 		return errs.NewUnprocessableError("file.error.sizeExceeded")
 	}
 
 	return nil
 }
 
-func (s *FileServiceImpl) validateNameForDuplication(name string, bucketUUID uuid.UUID) error {
-	exists, err := s.fileRepo.ExistsByNameForBucket(name, bucketUUID)
+func (s *FileServiceImpl) validateNameForDuplication(name string, containerUUID uuid.UUID) error {
+	exists, err := s.fileRepo.ExistsByNameForContainer(name, containerUUID)
 	if err != nil {
 		return err
 	}

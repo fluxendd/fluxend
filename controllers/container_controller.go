@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"fluxton/requests"
-	"fluxton/requests/bucket_requests"
+	"fluxton/requests/container_requests"
 	"fluxton/resources"
 	"fluxton/responses"
 	"fluxton/services"
@@ -21,11 +21,11 @@ func NewContainerController(injector *do.Injector) (*ContainerController, error)
 	return &ContainerController{containerService: containerService}, nil
 }
 
-// List retrieves all buckets
+// List retrieves all container
 //
-// @Summary List all buckets
-// @Description Retrieve a list of buckets in a specified project.
-// @Tags Buckets
+// @Summary List all container
+// @Description Retrieve a list of container in a specified project.
+// @Tags Containers
 //
 // @Accept json
 // @Produce json
@@ -38,7 +38,7 @@ func NewContainerController(injector *do.Injector) (*ContainerController, error)
 // @Param sort query string false "Field to sort by"
 // @Param order query string false "Sort order (asc or desc)"
 //
-// @Success 200 {object} responses.Response{content=[]resources.BucketResponse} "List of buckets"
+// @Success 200 {object} responses.Response{content=[]resources.ContainerResponse} "List of container"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
@@ -53,19 +53,19 @@ func (bc *ContainerController) List(c echo.Context) error {
 	authUser, _ := utils.NewAuth(c).User()
 
 	paginationParams := request.ExtractPaginationParams(c)
-	buckets, err := bc.containerService.List(paginationParams, request.ProjectUUID, authUser)
+	container, err := bc.containerService.List(paginationParams, request.ProjectUUID, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
 
-	return responses.SuccessResponse(c, resources.BucketResourceCollection(buckets))
+	return responses.SuccessResponse(c, resources.ContainerResourceCollection(container))
 }
 
-// Show retrieves details of a specific bucket.
+// Show retrieves details of a specific container.
 //
-// @Summary Show details of a single bucket
-// @Description Get details of a specific bucket
-// @Tags Buckets
+// @Summary Show details of a single container
+// @Description Get details of a specific container
+// @Tags Containers
 //
 // @Accept json
 // @Produce json
@@ -73,15 +73,15 @@ func (bc *ContainerController) List(c echo.Context) error {
 // @Param Authorization header string true "Bearer Token"
 // @Param X-Project header string true "Project UUID"
 //
-// @Param containerUUID path string true "Bucket UUID"
+// @Param containerUUID path string true "Container UUID"
 //
-// @Success 200 {object} responses.Response{content=resources.BucketResponse} "Bucket details"
+// @Success 200 {object} responses.Response{content=resources.ContainerResponse} "Container details"
 // @Failure 422 "Unprocessable entity"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
 //
-// @Router /storage/{containerUUID} [get]
+// @Router /storage/containers/{containerUUID} [get]
 func (bc *ContainerController) Show(c echo.Context) error {
 	var request requests.DefaultRequestWithProjectHeader
 
@@ -92,28 +92,28 @@ func (bc *ContainerController) Show(c echo.Context) error {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	bucket, err := bc.containerService.GetByUUID(containerUUID, authUser)
+	container, err := bc.containerService.GetByUUID(containerUUID, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
 
-	return responses.SuccessResponse(c, resources.BucketResource(&bucket))
+	return responses.SuccessResponse(c, resources.ContainerResource(&container))
 }
 
-// Store creates a new bucket
+// Store creates a new container
 //
-// @Summary Create a new bucket
-// @Description Add a new bucket to a project
-// @Tags Buckets
+// @Summary Create a new container
+// @Description Add a new container to a project
+// @Tags Containers
 //
 // @Accept json
 // @Produce json
 //
 // @Param Authorization header string true "Bearer Token"
 // @Param X-Project header string true "Project UUID"
-// @Param bucket body bucket_requests.CreateRequest true "Bucket details"
+// @Param container body container_requests.CreateRequest true "Container details"
 //
-// @Success 201 {object} responses.Response{content=resources.BucketResponse} "Bucket created"
+// @Success 201 {object} responses.Response{content=resources.ContainerResponse} "Container created"
 // @Failure 422 "Unprocessable entity"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
@@ -121,26 +121,26 @@ func (bc *ContainerController) Show(c echo.Context) error {
 //
 // @Router /storage [post]
 func (bc *ContainerController) Store(c echo.Context) error {
-	var request bucket_requests.CreateRequest
+	var request container_requests.CreateRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return responses.UnprocessableResponse(c, err)
 	}
 
 	authUser, _ := utils.NewAuth(c).User()
 
-	bucket, err := bc.containerService.Create(&request, authUser)
+	container, err := bc.containerService.Create(&request, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
 
-	return responses.CreatedResponse(c, resources.BucketResource(&bucket))
+	return responses.CreatedResponse(c, resources.ContainerResource(&container))
 }
 
-// Update a bucket
+// Update a container
 //
-// @Summary Update a bucket
-// @Description Modify an existing bucket's details
-// @Tags Buckets
+// @Summary Update a container
+// @Description Modify an existing container's details
+// @Tags Containers
 //
 // @Accept json
 // @Produce json
@@ -148,18 +148,18 @@ func (bc *ContainerController) Store(c echo.Context) error {
 // @Param Authorization header string true "Bearer Token"
 // @Param X-Project header string true "Project UUID"
 //
-// @Param containerUUID path string true "Bucket UUID"
-// @Param bucket body bucket_requests.CreateRequest true "Bucket details"
+// @Param containerUUID path string true "Container UUID"
+// @Param container body container_requests.CreateRequest true "Container details"
 //
-// @Success 200 {object} responses.Response{content=resources.BucketResponse} "Bucket updated"
+// @Success 200 {object} responses.Response{content=resources.ContainerResponse} "Container updated"
 // @Failure 422 "Unprocessable entity"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
 //
-// @Router /storage/{containerUUID} [put]
+// @Router /storage/containers/{containerUUID} [put]
 func (bc *ContainerController) Update(c echo.Context) error {
-	var request bucket_requests.CreateRequest
+	var request container_requests.CreateRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return responses.UnprocessableResponse(c, err)
 	}
@@ -171,19 +171,19 @@ func (bc *ContainerController) Update(c echo.Context) error {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	updatedBucket, err := bc.containerService.Update(containerUUID, authUser, &request)
+	updatedContainer, err := bc.containerService.Update(containerUUID, authUser, &request)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
 
-	return responses.SuccessResponse(c, resources.BucketResource(updatedBucket))
+	return responses.SuccessResponse(c, resources.ContainerResource(updatedContainer))
 }
 
-// Delete a bucket
+// Delete a container
 //
-// @Summary Delete a bucket
-// @Description Remove a bucket from a project
-// @Tags Buckets
+// @Summary Delete a container
+// @Description Remove a container from a project
+// @Tags Containers
 //
 // @Accept json
 // @Produce json
@@ -191,14 +191,14 @@ func (bc *ContainerController) Update(c echo.Context) error {
 // @Param Authorization header string true "Bearer Token"
 // @Param X-Project header string true "Project UUID"
 //
-// @Param containerUUID path string true "Bucket UUID"
+// @Param containerUUID path string true "Container UUID"
 //
-// @Success 204 "Bucket deleted"
+// @Success 204 "Container deleted"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
 //
-// @Router /storage/{containerUUID} [delete]
+// @Router /storage/containers/{containerUUID} [delete]
 func (bc *ContainerController) Delete(c echo.Context) error {
 	var request requests.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {

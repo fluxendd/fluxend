@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-type Bucket struct {
+type Container struct {
 	BaseModel
 	Uuid        uuid.UUID `db:"uuid" json:"uuid"`
 	ProjectUuid uuid.UUID `db:"project_uuid" json:"projectUuid"`
@@ -22,6 +22,6 @@ type Bucket struct {
 	UpdatedAt   time.Time `db:"updated_at" json:"updatedAt"`
 }
 
-func (u Bucket) GetTableName() string {
-	return "storage.buckets"
+func (u Container) GetTableName() string {
+	return "storage.containers"
 }
