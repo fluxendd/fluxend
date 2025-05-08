@@ -7,6 +7,7 @@ import (
 	"fluxton/utils"
 	"fmt"
 	"github.com/google/uuid"
+	"github.com/labstack/echo/v4"
 	"github.com/rs/zerolog/log"
 	"github.com/samber/do"
 	"os"
@@ -14,12 +15,12 @@ import (
 )
 
 type BackupWorkflowService interface {
-	Create(databaseName string, backupUUID uuid.UUID)
-	Delete(databaseName string, backupUUID uuid.UUID)
+	Create(ctx echo.Context, databaseName string, backupUUID uuid.UUID)
+	Delete(ctx echo.Context, databaseName string, backupUUID uuid.UUID)
 }
 
 type BackupWorkflowServiceImpl struct {
-	storageService StorageService
+	settingService SettingService
 	backupRepo     *repositories.BackupRepository
 }
 
@@ -29,26 +30,16 @@ func NewBackupWorkflowService(injector *do.Injector) (BackupWorkflowService, err
 		return nil, err
 	}
 
-	storageProviderService, err := NewStorageProviderService()
-	if err != nil {
-		return nil, err
-	}
-
-	storageService, err := storageProviderService.GetProvider(settingService.GetValue(nil, "storageEngine"))
-	if err != nil {
-		return nil, err
-	}
-
 	backupRepo := do.MustInvoke[*repositories.BackupRepository](injector)
 
 	return &BackupWorkflowServiceImpl{
-		storageService: storageService,
+		settingService: settingService,
 		backupRepo:     backupRepo,
 	}, nil
 }
 
 // Create pg_dump, copy file, ensure bucket exists, and upload to S3
-func (s *BackupWorkflowServiceImpl) Create(databaseName string, backupUUID uuid.UUID) {
+func (s *BackupWorkflowServiceImpl) Create(ctx echo.Context, databaseName string, backupUUID uuid.UUID) {
 	backupFilePath := fmt.Sprintf("/tmp/%s.sql", backupUUID)
 
 	// 1. Execute pg_dump
@@ -66,7 +57,7 @@ func (s *BackupWorkflowServiceImpl) Create(databaseName string, backupUUID uuid.
 	}
 
 	// 3. Ensure backup bucket exists
-	if err := s.ensureBackupContainerExists(); err != nil {
+	if err := s.ensureBackupContainerExists(ctx); err != nil {
 		s.handleBackupFailure(backupUUID, models.BackupStatusCreatingFailed, err.Error())
 
 		return
@@ -80,7 +71,7 @@ func (s *BackupWorkflowServiceImpl) Create(databaseName string, backupUUID uuid.
 	}
 
 	// 4. Upload backup to S3
-	err = s.uploadBackup(databaseName, backupUUID, fileBytes)
+	err = s.uploadBackup(ctx, databaseName, backupUUID, fileBytes)
 	if err != nil {
 		s.handleBackupFailure(backupUUID, models.BackupStatusCreatingFailed, err.Error())
 
@@ -105,9 +96,23 @@ func (s *BackupWorkflowServiceImpl) Create(databaseName string, backupUUID uuid.
 	}
 }
 
-func (s *BackupWorkflowServiceImpl) Delete(databaseName string, backupUUID uuid.UUID) {
+func (s *BackupWorkflowServiceImpl) Delete(ctx echo.Context, databaseName string, backupUUID uuid.UUID) {
 	filePath := fmt.Sprintf("%s/%s.sql", databaseName, backupUUID)
-	err := s.storageService.DeleteFile(FileInput{
+
+	storageService, err := GetStorageProvider(s.settingService.GetStorageDriver(ctx))
+	if err != nil {
+		log.Error().
+			Str("action", constants.ActionBackup).
+			Str("db", databaseName).
+			Str("backup_uuid", backupUUID.String()).
+			Str("error", err.Error()).
+			Msg("failed to get storage provider")
+		s.handleBackupFailure(backupUUID, models.BackupStatusDeletingFailed, err.Error())
+
+		return
+	}
+
+	err = storageService.DeleteFile(FileInput{
 		ContainerName: constants.BackupBucketName,
 		FileName:      filePath,
 	})
@@ -172,10 +177,20 @@ func (s *BackupWorkflowServiceImpl) copyBackupToAppContainer(backupFilePath stri
 	return err
 }
 
-func (s *BackupWorkflowServiceImpl) ensureBackupContainerExists() error {
-	bucketExists := s.storageService.ContainerExists(constants.BackupBucketName)
+func (s *BackupWorkflowServiceImpl) ensureBackupContainerExists(ctx echo.Context) error {
+	storageService, err := GetStorageProvider(s.settingService.GetStorageDriver(ctx))
+	if err != nil {
+		log.Error().
+			Str("action", constants.ActionBackup).
+			Str("error", err.Error()).
+			Msg("failed to get storage provider")
+
+		return err
+	}
+
+	bucketExists := storageService.ContainerExists(constants.BackupBucketName)
 	if !bucketExists {
-		_, err := s.storageService.CreateContainer(constants.BackupBucketName)
+		_, err := storageService.CreateContainer(constants.BackupBucketName)
 		if err != nil {
 			log.Error().
 				Str("action", constants.ActionBackup).
@@ -205,9 +220,22 @@ func (s *BackupWorkflowServiceImpl) readBackupFile(backupUUID uuid.UUID) ([]byte
 	return fileBytes, err
 }
 
-func (s *BackupWorkflowServiceImpl) uploadBackup(databaseName string, backupUUID uuid.UUID, fileBytes []byte) error {
+func (s *BackupWorkflowServiceImpl) uploadBackup(ctx echo.Context, databaseName string, backupUUID uuid.UUID, fileBytes []byte) error {
 	filePath := fmt.Sprintf("%s/%s.sql", databaseName, backupUUID)
-	err := s.storageService.UploadFile(UploadFileInput{
+
+	storageService, err := GetStorageProvider(s.settingService.GetStorageDriver(ctx))
+	if err != nil {
+		log.Error().
+			Str("action", constants.ActionBackup).
+			Str("db", databaseName).
+			Str("backup_uuid", backupUUID.String()).
+			Str("error", err.Error()).
+			Msg("failed to get storage provider")
+
+		return err
+	}
+
+	err = storageService.UploadFile(UploadFileInput{
 		ContainerName: constants.BackupBucketName,
 		FileName:      filePath,
 		FileBytes:     fileBytes,

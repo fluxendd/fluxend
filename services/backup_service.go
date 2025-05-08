@@ -15,7 +15,7 @@ type BackupService interface {
 	List(projectUUID uuid.UUID, authUser models.AuthUser) ([]models.Backup, error)
 	GetByUUID(backupUUID uuid.UUID, authUser models.AuthUser) (models.Backup, error)
 	Create(request *requests.DefaultRequestWithProjectHeader, authUser models.AuthUser) (models.Backup, error)
-	Delete(backupUUID uuid.UUID, authUser models.AuthUser) (bool, error)
+	Delete(request requests.DefaultRequestWithProjectHeader, backupUUID uuid.UUID, authUser models.AuthUser) (bool, error)
 }
 
 type BackupServiceImpl struct {
@@ -92,12 +92,12 @@ func (s *BackupServiceImpl) Create(request *requests.DefaultRequestWithProjectHe
 		return models.Backup{}, err
 	}
 
-	go s.backupWorkFlowService.Create(project.DBName, createdBackup.Uuid)
+	go s.backupWorkFlowService.Create(request.Context, project.DBName, createdBackup.Uuid)
 
 	return backup, nil
 }
 
-func (s *BackupServiceImpl) Delete(backupUUID uuid.UUID, authUser models.AuthUser) (bool, error) {
+func (s *BackupServiceImpl) Delete(request requests.DefaultRequestWithProjectHeader, backupUUID uuid.UUID, authUser models.AuthUser) (bool, error) {
 	backup, err := s.backupRepo.GetByUUID(backupUUID)
 	if err != nil {
 		return false, err
@@ -126,7 +126,7 @@ func (s *BackupServiceImpl) Delete(backupUUID uuid.UUID, authUser models.AuthUse
 		return false, err
 	}
 
-	go s.backupWorkFlowService.Delete(databaseName, backupUUID)
+	go s.backupWorkFlowService.Delete(request.Context, databaseName, backupUUID)
 
 	return true, nil
 }
