@@ -22,9 +22,6 @@ const (
 )
 
 type DropboxService interface {
-	CreateFolder(path string) error
-	FolderExists(path string) bool
-	ListFolders(path string, limit int, cursor string) ([]string, string, error)
 	ShowFolder(path string) (*FolderMetadata, error)
 	DeleteFolder(path string) error
 	UploadFile(path string, fileBytes []byte) error
@@ -68,7 +65,7 @@ type ListFolderResult struct {
 	HasMore bool   `json:"has_more"`
 }
 
-func NewDropboxService() (DropboxService, error) {
+func NewDropboxService() (StorageService, error) {
 	accessToken := os.Getenv("DROPBOX_ACCESS_TOKEN")
 	if accessToken == "" {
 		return nil, fmt.Errorf("DROPBOX_ACCESS_TOKEN is not set")
@@ -90,7 +87,7 @@ func NewDropboxService() (DropboxService, error) {
 	}, nil
 }
 
-func (d *DropboxServiceImpl) CreateFolder(path string) error {
+func (d *DropboxServiceImpl) CreateContainer(path string) (string, error) {
 	path = normalizePath(path)
 
 	payload := map[string]interface{}{
@@ -100,25 +97,26 @@ func (d *DropboxServiceImpl) CreateFolder(path string) error {
 
 	resp, err := d.executeAPIRequest("POST", "/files/create_folder_v2", payload)
 	if err != nil {
-		return err
+		return "", err
 	}
 
-	return d.handleAPIError(resp, dropboxActionCreateFolder)
+	// TODO: check if created folder's path or something else can be included
+	return "", d.handleAPIError(resp, dropboxActionCreateFolder)
 }
 
-func (d *DropboxServiceImpl) FolderExists(path string) bool {
-	metadata, err := d.ShowFolder(path)
+func (d *DropboxServiceImpl) ContainerExists(path string) bool {
+	metadata, err := d.ShowContainer(path)
 	return err == nil && metadata != nil
 }
 
-func (d *DropboxServiceImpl) ListFolders(path string, limit int, cursor string) ([]string, string, error) {
+func (d *DropboxServiceImpl) ListContainers(input ListContainersInput) ([]string, string, error) {
 	var endpoint string
 	var payload map[string]interface{}
 
-	if cursor == "" {
+	if input.Token == "" {
 		endpoint = "/files/list_folder"
 		payload = map[string]interface{}{
-			"path":                                path,
+			"path":                                input.Path,
 			"recursive":                           false,
 			"include_media_info":                  false,
 			"include_deleted":                     false,
@@ -126,13 +124,13 @@ func (d *DropboxServiceImpl) ListFolders(path string, limit int, cursor string) 
 			"include_mounted_folders":             true,
 		}
 
-		if limit > 0 {
-			payload["limit"] = limit
+		if input.Limit > 0 {
+			payload["limit"] = input.Limit
 		}
 	} else {
 		endpoint = "/files/list_folder/continue"
 		payload = map[string]interface{}{
-			"cursor": cursor,
+			"cursor": input.Token,
 		}
 	}
 
@@ -165,7 +163,7 @@ func (d *DropboxServiceImpl) ListFolders(path string, limit int, cursor string) 
 	return folderPaths, nextCursor, nil
 }
 
-func (d *DropboxServiceImpl) ShowFolder(path string) (*FolderMetadata, error) {
+func (d *DropboxServiceImpl) ShowContainer(path string) (*ContainerMetadata, error) {
 	path = normalizePath(path)
 
 	payload := map[string]interface{}{
@@ -191,16 +189,14 @@ func (d *DropboxServiceImpl) ShowFolder(path string) (*FolderMetadata, error) {
 		return nil, fmt.Errorf("path is not a folder")
 	}
 
-	folderMeta := &FolderMetadata{
-		Path: metadata["path_display"].(string),
-		Name: metadata["name"].(string),
-		ID:   metadata["id"].(string),
-	}
-
-	return folderMeta, nil
+	return &ContainerMetadata{
+		Identifier: metadata["id"].(string),
+		Name:       metadata["name"].(string),
+		Path:       metadata["path_display"].(string),
+	}, nil
 }
 
-func (d *DropboxServiceImpl) DeleteFolder(path string) error {
+func (d *DropboxServiceImpl) DeleteContainer(path string) error {
 	path = normalizePath(path)
 
 	payload := map[string]interface{}{
