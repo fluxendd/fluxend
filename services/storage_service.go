@@ -18,8 +18,9 @@ type ContainerMetadata struct {
 }
 
 type StorageService interface {
+	ListContainers(input ListContainersInput) ([]string, string, error)
 	CreateContainer(name string) (string, error)
 	ContainerExists(name string) bool
-	ListContainers(input ListContainersInput) ([]string, string, error)
 	ShowContainer(name string) (*ContainerMetadata, error)
+	DeleteContainer(name string) error
 }
