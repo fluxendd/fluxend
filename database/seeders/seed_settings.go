@@ -20,7 +20,7 @@ func SeedSettings(container *do.Injector) {
 		{Name: "appTitle", Value: os.Getenv("APP_TITLE"), DefaultValue: os.Getenv("APP_TITLE")},
 		{Name: "appUrl", Value: os.Getenv("APP_URL"), DefaultValue: os.Getenv("APP_URL")},
 		{Name: "jwtSecret", Value: os.Getenv("JWT_SECRET"), DefaultValue: os.Getenv("JWT_SECRET")},
-		{Name: "storageEngine", Value: os.Getenv("STORAGE_ENGINE"), DefaultValue: constants.StorageEngineFilesystem},
+		{Name: "storageDriver", Value: os.Getenv("STORAGE_DRIVER"), DefaultValue: constants.StorageDriverFilesystem},
 		{Name: "maxProjectsPerOrg", Value: "10", DefaultValue: "10"},
 		{Name: "allowRegistrations", Value: "yes", DefaultValue: "yes"},
 		{Name: "allowProjects", Value: "yes", DefaultValue: "yes"},
