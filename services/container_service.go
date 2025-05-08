@@ -13,7 +13,7 @@ import (
 	"time"
 )
 
-type BucketService interface {
+type ContainerService interface {
 	List(paginationParams requests.PaginationParams, projectUUID uuid.UUID, authUser models.AuthUser) ([]models.Bucket, error)
 	GetByUUID(bucketUUID uuid.UUID, authUser models.AuthUser) (models.Bucket, error)
 	Create(request *bucket_requests.CreateRequest, authUser models.AuthUser) (models.Bucket, error)
@@ -30,7 +30,7 @@ type BucketServiceImpl struct {
 	projectRepo    *repositories.ProjectRepository
 }
 
-func NewBucketService(injector *do.Injector) (BucketService, error) {
+func NewContainerService(injector *do.Injector) (ContainerService, error) {
 	settingService, err := NewSettingService(injector)
 	if err != nil {
 		return nil, err

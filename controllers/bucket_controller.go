@@ -12,11 +12,11 @@ import (
 )
 
 type BucketController struct {
-	bucketService services.BucketService
+	bucketService services.ContainerService
 }
 
 func NewBucketController(injector *do.Injector) (*BucketController, error) {
-	bucketService := do.MustInvoke[services.BucketService](injector)
+	bucketService := do.MustInvoke[services.ContainerService](injector)
 
 	return &BucketController{bucketService: bucketService}, nil
 }

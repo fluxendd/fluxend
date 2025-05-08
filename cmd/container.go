@@ -58,7 +58,7 @@ func InitializeContainer() *do.Injector {
 	do.Provide(injector, services.NewFormFieldValidationService)
 	do.Provide(injector, services.NewFormFieldService)
 	do.Provide(injector, services.NewFormResponseService)
-	do.Provide(injector, services.NewBucketService)
+	do.Provide(injector, services.NewContainerService)
 	do.Provide(injector, services.NewFileService)
 	do.Provide(injector, services.NewBackupWorkflowService)
 	do.Provide(injector, services.NewBackupService)
