@@ -21,15 +21,6 @@ const (
 	dropboxActionDeleteFile   = "DELETE_FILE"
 )
 
-type DropboxService interface {
-	ShowFolder(path string) (*FolderMetadata, error)
-	DeleteFolder(path string) error
-	UploadFile(path string, fileBytes []byte) error
-	RenameFile(oldPath, newPath string) error
-	DownloadFile(path string) ([]byte, error)
-	DeleteFile(path string) error
-}
-
 type DropboxServiceImpl struct {
 	accessToken string
 	client      *resty.Client
@@ -66,6 +57,7 @@ type ListFolderResult struct {
 }
 
 func NewDropboxService() (StorageService, error) {
+	// TODO: go with refreshable tokens instead
 	accessToken := os.Getenv("DROPBOX_ACCESS_TOKEN")
 	if accessToken == "" {
 		return nil, fmt.Errorf("DROPBOX_ACCESS_TOKEN is not set")

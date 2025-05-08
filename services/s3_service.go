@@ -16,15 +16,6 @@ import (
 	"strings"
 )
 
-type S3Service interface {
-	ShowBucket(bucketName string) (*s3.HeadBucketOutput, error)
-	DeleteBucket(bucketName string) error
-	UploadFile(bucketName, filePath string, fileBytes []byte) error
-	RenameFile(bucketName, oldFilePath, newFilePath string) error
-	DownloadFile(bucketName, filePath string) ([]byte, error)
-	DeleteFile(bucketName, filePath string) error
-}
-
 type S3ServiceImpl struct {
 	client *s3.Client
 }
