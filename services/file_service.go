@@ -24,15 +24,20 @@ type FileService interface {
 }
 
 type FileServiceImpl struct {
-	s3Service     S3Service
-	projectPolicy *policies.ProjectPolicy
-	bucketRepo    *repositories.BucketRepository
-	fileRepo      *repositories.FileRepository
-	projectRepo   *repositories.ProjectRepository
+	storageService StorageService
+	projectPolicy  *policies.ProjectPolicy
+	bucketRepo     *repositories.BucketRepository
+	fileRepo       *repositories.FileRepository
+	projectRepo    *repositories.ProjectRepository
 }
 
 func NewFileService(injector *do.Injector) (FileService, error) {
-	s3Service, err := NewS3Service()
+	storageProviderService, err := NewStorageProviderService()
+	if err != nil {
+		return nil, err
+	}
+
+	storageService, err := storageProviderService.GetProvider("s3")
 	if err != nil {
 		return nil, err
 	}
@@ -43,11 +48,11 @@ func NewFileService(injector *do.Injector) (FileService, error) {
 	projectRepo := do.MustInvoke[*repositories.ProjectRepository](injector)
 
 	return &FileServiceImpl{
-		s3Service:     s3Service,
-		projectPolicy: policy,
-		bucketRepo:    bucketRepo,
-		fileRepo:      fileRepo,
-		projectRepo:   projectRepo,
+		storageService: storageService,
+		projectPolicy:  policy,
+		bucketRepo:     bucketRepo,
+		fileRepo:       fileRepo,
+		projectRepo:    projectRepo,
 	}, nil
 }
 
@@ -128,7 +133,11 @@ func (s *FileServiceImpl) Create(bucketUUID uuid.UUID, request *bucket_requests.
 		return models.File{}, err
 	}
 
-	err = s.s3Service.UploadFile(bucket.NameKey, request.FullFileName, fileBytes)
+	err = s.storageService.UploadFile(UploadFileInput{
+		ContainerName: bucket.NameKey,
+		FileName:      request.FullFileName,
+		FileBytes:     fileBytes,
+	})
 	if err != nil {
 		return models.File{}, err
 	}
@@ -171,7 +180,11 @@ func (s *FileServiceImpl) Rename(fileUUID, bucketUUID uuid.UUID, authUser models
 		return &models.File{}, err
 	}
 
-	err = s.s3Service.RenameFile(bucket.NameKey, file.FullFileName, request.FullFileName)
+	err = s.storageService.RenameFile(RenameFileInput{
+		ContainerName: bucket.NameKey,
+		OldFileName:   file.FullFileName,
+		NewFileName:   request.FullFileName,
+	})
 	if err != nil {
 		return nil, err
 	}
