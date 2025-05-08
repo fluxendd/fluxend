@@ -11,14 +11,14 @@ import (
 	"github.com/samber/do"
 )
 
-type BucketController struct {
-	bucketService services.ContainerService
+type ContainerController struct {
+	containerService services.ContainerService
 }
 
-func NewBucketController(injector *do.Injector) (*BucketController, error) {
-	bucketService := do.MustInvoke[services.ContainerService](injector)
+func NewContainerController(injector *do.Injector) (*ContainerController, error) {
+	containerService := do.MustInvoke[services.ContainerService](injector)
 
-	return &BucketController{bucketService: bucketService}, nil
+	return &ContainerController{containerService: containerService}, nil
 }
 
 // List retrieves all buckets
@@ -44,7 +44,7 @@ func NewBucketController(injector *do.Injector) (*BucketController, error) {
 // @Failure 500 "Internal server error"
 //
 // @Router /storage [get]
-func (bc *BucketController) List(c echo.Context) error {
+func (bc *ContainerController) List(c echo.Context) error {
 	var request requests.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
 		return responses.UnprocessableResponse(c, err)
@@ -53,7 +53,7 @@ func (bc *BucketController) List(c echo.Context) error {
 	authUser, _ := utils.NewAuth(c).User()
 
 	paginationParams := request.ExtractPaginationParams(c)
-	buckets, err := bc.bucketService.List(paginationParams, request.ProjectUUID, authUser)
+	buckets, err := bc.containerService.List(paginationParams, request.ProjectUUID, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -73,7 +73,7 @@ func (bc *BucketController) List(c echo.Context) error {
 // @Param Authorization header string true "Bearer Token"
 // @Param X-Project header string true "Project UUID"
 //
-// @Param bucketUUID path string true "Bucket UUID"
+// @Param containerUUID path string true "Bucket UUID"
 //
 // @Success 200 {object} responses.Response{content=resources.BucketResponse} "Bucket details"
 // @Failure 422 "Unprocessable entity"
@@ -81,18 +81,18 @@ func (bc *BucketController) List(c echo.Context) error {
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
 //
-// @Router /storage/{bucketUUID} [get]
-func (bc *BucketController) Show(c echo.Context) error {
+// @Router /storage/{containerUUID} [get]
+func (bc *ContainerController) Show(c echo.Context) error {
 	var request requests.DefaultRequestWithProjectHeader
 
 	authUser, _ := utils.NewAuth(c).User()
 
-	bucketUUID, err := request.GetUUIDPathParam(c, "bucketUUID", true)
+	containerUUID, err := request.GetUUIDPathParam(c, "containerUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	bucket, err := bc.bucketService.GetByUUID(bucketUUID, authUser)
+	bucket, err := bc.containerService.GetByUUID(containerUUID, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -120,7 +120,7 @@ func (bc *BucketController) Show(c echo.Context) error {
 // @Failure 500 "Internal server error"
 //
 // @Router /storage [post]
-func (bc *BucketController) Store(c echo.Context) error {
+func (bc *ContainerController) Store(c echo.Context) error {
 	var request bucket_requests.CreateRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return responses.UnprocessableResponse(c, err)
@@ -128,7 +128,7 @@ func (bc *BucketController) Store(c echo.Context) error {
 
 	authUser, _ := utils.NewAuth(c).User()
 
-	bucket, err := bc.bucketService.Create(&request, authUser)
+	bucket, err := bc.containerService.Create(&request, authUser)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -148,7 +148,7 @@ func (bc *BucketController) Store(c echo.Context) error {
 // @Param Authorization header string true "Bearer Token"
 // @Param X-Project header string true "Project UUID"
 //
-// @Param bucketUUID path string true "Bucket UUID"
+// @Param containerUUID path string true "Bucket UUID"
 // @Param bucket body bucket_requests.CreateRequest true "Bucket details"
 //
 // @Success 200 {object} responses.Response{content=resources.BucketResponse} "Bucket updated"
@@ -157,8 +157,8 @@ func (bc *BucketController) Store(c echo.Context) error {
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
 //
-// @Router /storage/{bucketUUID} [put]
-func (bc *BucketController) Update(c echo.Context) error {
+// @Router /storage/{containerUUID} [put]
+func (bc *ContainerController) Update(c echo.Context) error {
 	var request bucket_requests.CreateRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return responses.UnprocessableResponse(c, err)
@@ -166,12 +166,12 @@ func (bc *BucketController) Update(c echo.Context) error {
 
 	authUser, _ := utils.NewAuth(c).User()
 
-	bucketUUID, err := request.GetUUIDPathParam(c, "bucketUUID", true)
+	containerUUID, err := request.GetUUIDPathParam(c, "containerUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	updatedBucket, err := bc.bucketService.Update(bucketUUID, authUser, &request)
+	updatedBucket, err := bc.containerService.Update(containerUUID, authUser, &request)
 	if err != nil {
 		return responses.ErrorResponse(c, err)
 	}
@@ -191,15 +191,15 @@ func (bc *BucketController) Update(c echo.Context) error {
 // @Param Authorization header string true "Bearer Token"
 // @Param X-Project header string true "Project UUID"
 //
-// @Param bucketUUID path string true "Bucket UUID"
+// @Param containerUUID path string true "Bucket UUID"
 //
 // @Success 204 "Bucket deleted"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
 //
-// @Router /storage/{bucketUUID} [delete]
-func (bc *BucketController) Delete(c echo.Context) error {
+// @Router /storage/{containerUUID} [delete]
+func (bc *ContainerController) Delete(c echo.Context) error {
 	var request requests.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
 		return responses.UnprocessableResponse(c, err)
@@ -207,12 +207,12 @@ func (bc *BucketController) Delete(c echo.Context) error {
 
 	authUser, _ := utils.NewAuth(c).User()
 
-	bucketUUID, err := request.GetUUIDPathParam(c, "bucketUUID", true)
+	containerUUID, err := request.GetUUIDPathParam(c, "containerUUID", true)
 	if err != nil {
 		return responses.BadRequestResponse(c, err.Error())
 	}
 
-	if _, err := bc.bucketService.Delete(bucketUUID, authUser); err != nil {
+	if _, err := bc.containerService.Delete(containerUUID, authUser); err != nil {
 		return responses.ErrorResponse(c, err)
 	}
 

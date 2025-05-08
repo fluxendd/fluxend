@@ -77,7 +77,7 @@ func InitializeContainer() *do.Injector {
 	do.Provide(injector, controllers.NewFormController)
 	do.Provide(injector, controllers.NewFormFieldController)
 	do.Provide(injector, controllers.NewFormResponseController)
-	do.Provide(injector, controllers.NewBucketController)
+	do.Provide(injector, controllers.NewContainerController)
 	do.Provide(injector, controllers.NewFileController)
 	do.Provide(injector, controllers.NewBackupController)
 
