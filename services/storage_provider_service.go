@@ -11,6 +11,8 @@ func GetStorageProvider(provider string) (StorageService, error) {
 		return NewS3Service()
 	case constants.StorageDriverDropbox:
 		return NewDropboxService()
+	case constants.StorageDriverBackBlaze:
+		return NewBackblazeService()
 	default:
 		return nil, fmt.Errorf("unsupported provider: %s", provider)
 	}
