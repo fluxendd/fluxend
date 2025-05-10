@@ -5,10 +5,10 @@ Fluxton creates dynamic endpoints for your projects and tables. These enable you
 ```mermaid
 graph TD
     A[Project Initialization Triggered] --> B[Isolated PostgreSQL Schema Provisioned]
-    B --> C[Bootstrap Process: System Tables Seeded (users, posts, authors)]
+    B --> C[Bootstrap Process: Seeded system tables such as "users", "posts", and "authors"]
     C --> D[Dedicated PostgREST Instance Deployed<br>Tagged with Project Identifier]
     D --> E[Traefik Reverse Proxy Routes *.fluxton.io<br>Based on Project Subdomain]
-    E --> F[Client Issues Request to Resource Endpoint (e.g., /notes)]
-    F --> G[PostgREST Parses Request & Maps to Table<br>via PostgreSQL Introspection]
+    E --> F[Client Issues Request to Resource Endpoint, e.g. /notes]
+    F --> G[PostgREST Parses Request and Maps to Table<br>via PostgreSQL Introspection]
     G --> H[Row-Level Security Enforced via Claims in JWT Payload]
 ```
