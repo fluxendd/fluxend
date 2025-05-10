@@ -16,8 +16,13 @@ Fluxton is a fast, no BS backend server built with Go. It cuts the noise and giv
 - Detailed Audit Logs
 - And much much more
 
-## Flowcharts
-You can refer to the `.flowcharts` directory to understand how Fluxton works and how it can be integrated into your existing stack. These provide insights into dynamic REST endpoints, authentication, forms, storage, and backup processes.
+## How it works
+You can refer to Wiki to understand how different Fluxton components work and how they can be integrated into your existing stack. These explain basic functionality and detailed inner workings backed by flowcharts. Some of the topics include:
+- [Dynamic REST endpoints](https://github.com/fluxton-io/fluxton/wiki/Dynamic-REST-Endpoints)
+- [Authentication](https://github.com/fluxton-io/fluxton/wiki/Authentication)
+- [Forms](https://github.com/fluxton-io/fluxton/wiki/Forms)
+- [Storage](https://github.com/fluxton-io/fluxton/wiki/Storage)
+- [Backup](https://github.com/fluxton-io/fluxton/wiki/Backups).
 
 ## Installation
 
