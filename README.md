@@ -16,6 +16,9 @@ Fluxton is a fast, no BS backend server built with Go. It cuts the noise and giv
 - Detailed Audit Logs
 - And much much more
 
+## Flowcharts
+You can refer to the `.flowcharts` directory to understand how Fluxton works and how it can be integrated into your existing stack. These provide insights into dynamic REST endpoints, authentication, forms, storage, and backup processes.
+
 ## Installation
 
 ### Method 1: Using Docker (Recommended for Easy Setup)
