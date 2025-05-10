@@ -4,11 +4,11 @@ Fluxton creates dynamic endpoints for your projects and tables. These enable you
 ### How do dynamic REST endpoints work?
 ```mermaid
 graph TD
-    A[Project Initialization Triggered] --> B[Isolated PostgreSQL Schema Provisioned]
-    B --> C[Bootstrap Process: Seeded system tables such as "users", "posts", and "authors"]
-    C --> D[Dedicated PostgREST Instance Deployed<br>Tagged with Project Identifier]
-    D --> E[Traefik Reverse Proxy Routes *.fluxton.io<br>Based on Project Subdomain]
-    E --> F[Client Issues Request to Resource Endpoint, e.g. /notes]
-    F --> G[PostgREST Parses Request and Maps to Table<br>via PostgreSQL Introspection]
-    G --> H[Row-Level Security Enforced via Claims in JWT Payload]
+    A[Project initialization triggered] --> B[Isolated PostgreSQL schema provisioned]
+    B --> C[Bootstrap process: system tables seeded - users, posts, authors]
+    C --> D[Dedicated PostgREST instance deployed<br>Tagged with project identifier]
+    D --> E[Traefik reverse proxy routes traffic<br>based on project subdomain]
+    E --> F[Client sends request to endpoint e.g. /notes]
+    F --> G[PostgREST maps request to database table<br>via PostgreSQL introspection]
+    G --> H[Row-level security enforced using JWT claims]
 ```
