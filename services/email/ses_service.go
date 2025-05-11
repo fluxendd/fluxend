@@ -12,15 +12,11 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/ses"
 )
 
-type SESService interface {
-	SendEmail(to, subject, body string) error
-}
-
 type SESServiceImpl struct {
 	client *ses.Client
 }
 
-func NewSESService() (SESService, error) {
+func NewSESService() (EmailInterface, error) {
 	accessKey := os.Getenv("AWS_ACCESS_KEY_ID")
 	secretKey := os.Getenv("AWS_SECRET_ACCESS_KEY")
 	region := os.Getenv("AWS_REGION")
@@ -42,7 +38,7 @@ func NewSESService() (SESService, error) {
 	}, nil
 }
 
-func (s *SESServiceImpl) SendEmail(to, subject, body string) error {
+func (s *SESServiceImpl) Send(to, subject, body string) error {
 	input := &ses.SendEmailInput{
 		Source: aws.String(os.Getenv("SES_EMAIL_SOURCE")),
 		Destination: &types.Destination{
