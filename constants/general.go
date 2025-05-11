@@ -6,7 +6,7 @@ const (
 	StorageDriverS3         = "S3"
 	StorageDriverDropbox    = "DROPBOX"
 	StorageDriverBackBlaze  = "BACKBLAZE"
-	EmailDriver             = "SENDGRID"
+	EmailDriverSendGrid     = "SENDGRID"
 	EmailDriverSMTP         = "SMTP"
 	EmailDriverSES          = "SES"
 	EmailDriverMailgun      = "MAILGUN"

@@ -38,6 +38,7 @@ func SeedSettings(container *do.Injector) {
 		{Name: "apiThrottleInterval", Value: "60", DefaultValue: "60"},
 		{Name: "allowApiThrottle", Value: "yes", DefaultValue: "no"},
 
+		// External services settings          sss
 		{Name: "awsAccessKeyId", Value: os.Getenv("AWS_ACCESS_KEY_ID"), DefaultValue: ""},
 		{Name: "awsSecretAccessKey", Value: os.Getenv("AWS_SECRET_ACCESS_KEY"), DefaultValue: ""},
 		{Name: "awsRegion", Value: os.Getenv("AWS_REGION"), DefaultValue: "eu-central-1"},
