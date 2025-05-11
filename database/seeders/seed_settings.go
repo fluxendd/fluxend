@@ -37,6 +37,20 @@ func SeedSettings(container *do.Injector) {
 		{Name: "apiThrottleLimit", Value: "100", DefaultValue: "100"},
 		{Name: "apiThrottleInterval", Value: "60", DefaultValue: "60"},
 		{Name: "allowApiThrottle", Value: "yes", DefaultValue: "no"},
+
+		{Name: "awsAccessKeyId", Value: os.Getenv("AWS_ACCESS_KEY_ID"), DefaultValue: ""},
+		{Name: "awsSecretAccessKey", Value: os.Getenv("AWS_SECRET_ACCESS_KEY"), DefaultValue: ""},
+		{Name: "awsRegion", Value: os.Getenv("AWS_REGION"), DefaultValue: "eu-central-1"},
+		{Name: "backblazeKeyId", Value: os.Getenv("BACKBLAZE_KEY_ID"), DefaultValue: ""},
+		{Name: "backblazeApplicationKey", Value: os.Getenv("BACKBLAZE_APPLICATION_KEY"), DefaultValue: ""},
+		{Name: "dropboxAccessToken", Value: os.Getenv("DROPBOX_ACCESS_TOKEN"), DefaultValue: ""},
+		{Name: "dropboxAppKey", Value: os.Getenv("DROPBOX_APP_KEY"), DefaultValue: ""},
+		{Name: "sendgridApiKey", Value: os.Getenv("SENDGRID_API_KEY"), DefaultValue: ""},
+		{Name: "sendgridEmailSource", Value: os.Getenv("SENDGRID_EMAIL_SOURCE"), DefaultValue: ""},
+		{Name: "mailgunApiKey", Value: os.Getenv("MAILGUN_API_KEY"), DefaultValue: ""},
+		{Name: "mailgunEmailSource", Value: os.Getenv("MAILGUN_EMAIL_SOURCE"), DefaultValue: ""},
+		{Name: "mailgunDomain", Value: os.Getenv("MAILGUN_DOMAIN"), DefaultValue: ""},
+		{Name: "mailgunRegion", Value: os.Getenv("MAILGUN_REGION"), DefaultValue: "us"},
 	}
 
 	_, err := settingsService.CreateMany(settings)
