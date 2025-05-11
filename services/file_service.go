@@ -7,6 +7,7 @@ import (
 	"fluxton/repositories"
 	"fluxton/requests"
 	"fluxton/requests/container_requests"
+	"fluxton/services/storage"
 	"fluxton/utils"
 	"fmt"
 	"github.com/google/uuid"
@@ -128,12 +129,12 @@ func (s *FileServiceImpl) Create(containerUUID uuid.UUID, request *container_req
 		return models.File{}, err
 	}
 
-	storageService, err := GetStorageProvider(s.settingService.GetStorageDriver(request.Context))
+	storageService, err := storage.GetProvider(s.settingService.GetStorageDriver(request.Context))
 	if err != nil {
 		return models.File{}, err
 	}
 
-	err = storageService.UploadFile(UploadFileInput{
+	err = storageService.UploadFile(storage.UploadFileInput{
 		ContainerName: container.NameKey,
 		FileName:      request.FullFileName,
 		FileBytes:     fileBytes,
@@ -180,12 +181,12 @@ func (s *FileServiceImpl) Rename(fileUUID, containerUUID uuid.UUID, authUser mod
 		return &models.File{}, err
 	}
 
-	storageService, err := GetStorageProvider(s.settingService.GetStorageDriver(request.Context))
+	storageService, err := storage.GetProvider(s.settingService.GetStorageDriver(request.Context))
 	if err != nil {
 		return &models.File{}, err
 	}
 
-	err = storageService.RenameFile(RenameFileInput{
+	err = storageService.RenameFile(storage.RenameFileInput{
 		ContainerName: container.NameKey,
 		FileName:      file.FullFileName,
 		NewFileName:   request.FullFileName,
@@ -221,12 +222,12 @@ func (s *FileServiceImpl) Delete(fileUUID, containerUUID uuid.UUID, authUser mod
 		return false, err
 	}
 
-	storageService, err := GetStorageProvider(s.settingService.GetStorageDriver(request.Context))
+	storageService, err := storage.GetProvider(s.settingService.GetStorageDriver(request.Context))
 	if err != nil {
 		return false, err
 	}
 
-	err = storageService.DeleteFile(FileInput{
+	err = storageService.DeleteFile(storage.FileInput{
 		ContainerName: container.NameKey,
 		FileName:      file.FullFileName,
 	})

@@ -1,4 +1,4 @@
-package services
+package storage
 
 import (
 	"encoding/base64"
@@ -118,7 +118,7 @@ type BackblazeServiceImpl struct {
 	httpClient         *http.Client
 }
 
-func NewBackblazeService() (StorageService, error) {
+func NewBackblazeService() (StorageInterface, error) {
 	applicationKeyID := os.Getenv("BACKBLAZE_KEY_ID")
 	applicationKey := os.Getenv("BACKBLAZE_APPLICATION_KEY")
 

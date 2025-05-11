@@ -1,4 +1,4 @@
-package services
+package storage
 
 import (
 	"context"
@@ -20,7 +20,7 @@ type S3ServiceImpl struct {
 	client *s3.Client
 }
 
-func NewS3Service() (StorageService, error) {
+func NewS3Service() (StorageInterface, error) {
 	accessKey := os.Getenv("AWS_ACCESS_KEY_ID")
 	secretKey := os.Getenv("AWS_SECRET_ACCESS_KEY")
 	region := os.Getenv("AWS_REGION")

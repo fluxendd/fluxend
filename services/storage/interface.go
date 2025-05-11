@@ -1,4 +1,4 @@
-package services
+package storage
 
 import (
 	"github.com/guregu/null/v6"
@@ -34,7 +34,7 @@ type RenameFileInput struct {
 	NewFileName   string
 }
 
-type StorageService interface {
+type StorageInterface interface {
 	ListContainers(input ListContainersInput) ([]string, string, error)
 	CreateContainer(name string) (string, error)
 	ContainerExists(name string) bool

@@ -4,6 +4,7 @@ import (
 	"fluxton/constants"
 	"fluxton/models"
 	"fluxton/repositories"
+	"fluxton/services/storage"
 	"fluxton/utils"
 	"fmt"
 	"github.com/google/uuid"
@@ -99,7 +100,7 @@ func (s *BackupWorkflowServiceImpl) Create(ctx echo.Context, databaseName string
 func (s *BackupWorkflowServiceImpl) Delete(ctx echo.Context, databaseName string, backupUUID uuid.UUID) {
 	filePath := fmt.Sprintf("%s/%s.sql", databaseName, backupUUID)
 
-	storageService, err := GetStorageProvider(s.settingService.GetStorageDriver(ctx))
+	storageService, err := storage.GetProvider(s.settingService.GetStorageDriver(ctx))
 	if err != nil {
 		log.Error().
 			Str("action", constants.ActionBackup).
@@ -112,7 +113,7 @@ func (s *BackupWorkflowServiceImpl) Delete(ctx echo.Context, databaseName string
 		return
 	}
 
-	err = storageService.DeleteFile(FileInput{
+	err = storageService.DeleteFile(storage.FileInput{
 		ContainerName: constants.BackupContainerName,
 		FileName:      filePath,
 	})
@@ -178,7 +179,7 @@ func (s *BackupWorkflowServiceImpl) copyBackupToAppContainer(backupFilePath stri
 }
 
 func (s *BackupWorkflowServiceImpl) ensureBackupContainerExists(ctx echo.Context) error {
-	storageService, err := GetStorageProvider(s.settingService.GetStorageDriver(ctx))
+	storageService, err := storage.GetProvider(s.settingService.GetStorageDriver(ctx))
 	if err != nil {
 		log.Error().
 			Str("action", constants.ActionBackup).
@@ -223,7 +224,7 @@ func (s *BackupWorkflowServiceImpl) readBackupFile(backupUUID uuid.UUID) ([]byte
 func (s *BackupWorkflowServiceImpl) uploadBackup(ctx echo.Context, databaseName string, backupUUID uuid.UUID, fileBytes []byte) error {
 	filePath := fmt.Sprintf("%s/%s.sql", databaseName, backupUUID)
 
-	storageService, err := GetStorageProvider(s.settingService.GetStorageDriver(ctx))
+	storageService, err := storage.GetProvider(s.settingService.GetStorageDriver(ctx))
 	if err != nil {
 		log.Error().
 			Str("action", constants.ActionBackup).
@@ -235,7 +236,7 @@ func (s *BackupWorkflowServiceImpl) uploadBackup(ctx echo.Context, databaseName 
 		return err
 	}
 
-	err = storageService.UploadFile(UploadFileInput{
+	err = storageService.UploadFile(storage.UploadFileInput{
 		ContainerName: constants.BackupContainerName,
 		FileName:      filePath,
 		FileBytes:     fileBytes,

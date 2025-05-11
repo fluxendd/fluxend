@@ -7,6 +7,7 @@ import (
 	"fluxton/repositories"
 	"fluxton/requests"
 	"fluxton/requests/container_requests"
+	"fluxton/services/storage"
 	"github.com/google/uuid"
 	"github.com/samber/do"
 	"strings"
@@ -106,7 +107,7 @@ func (s *ContainerServiceImpl) Create(request *container_requests.CreateRequest,
 		UpdatedBy:   authUser.Uuid,
 	}
 
-	storageService, err := GetStorageProvider(storageDriver)
+	storageService, err := storage.GetProvider(storageDriver)
 	if err != nil {
 		return models.Container{}, err
 	}
@@ -176,7 +177,7 @@ func (s *ContainerServiceImpl) Delete(request requests.DefaultRequestWithProject
 		return false, errs.NewForbiddenError("container.error.deleteForbidden")
 	}
 
-	storageService, err := GetStorageProvider(s.settingService.GetStorageDriver(request.Context))
+	storageService, err := storage.GetProvider(s.settingService.GetStorageDriver(request.Context))
 	if err != nil {
 		return false, err
 	}
