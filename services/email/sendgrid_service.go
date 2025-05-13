@@ -1,34 +1,42 @@
 package email
 
 import (
+	"fluxton/services"
 	"fmt"
-	"os"
-
+	"github.com/labstack/echo/v4"
+	"github.com/samber/do"
 	"github.com/sendgrid/sendgrid-go"
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
 )
 
 type SendGridServiceImpl struct {
-	client *sendgrid.Client
+	client         *sendgrid.Client
+	settingService services.SettingService
 }
 
-func NewSendGridService() (EmailInterface, error) {
-	apiKey := os.Getenv("SENDGRID_API_KEY")
+func NewSendGridService(ctx echo.Context, injector *do.Injector) (EmailInterface, error) {
+	settingService, err := services.NewSettingService(injector)
+	if err != nil {
+		return nil, err
+	}
+
+	apiKey := settingService.GetValue(ctx, "sendgridApiKey")
 	if apiKey == "" {
-		return nil, fmt.Errorf("SENDGRID_API_KEY environment variable is required")
+		return nil, fmt.Errorf("sendgridApiKey is required")
 	}
 
 	client := sendgrid.NewSendClient(apiKey)
 
 	return &SendGridServiceImpl{
-		client: client,
+		client:         client,
+		settingService: settingService,
 	}, nil
 }
 
-func (s *SendGridServiceImpl) Send(to, subject, body string) error {
-	from := os.Getenv("SENDGRID_EMAIL_SOURCE")
+func (s *SendGridServiceImpl) Send(ctx echo.Context, to, subject, body string) error {
+	from := s.settingService.GetValue(ctx, "sendgridEmailSource")
 	if from == "" {
-		return fmt.Errorf("SENDGRID_EMAIL_SOURCE environment variable is required")
+		return fmt.Errorf("sendgridEmailSource is required")
 	}
 
 	message := mail.NewSingleEmail(
