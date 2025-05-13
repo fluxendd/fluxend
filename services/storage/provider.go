@@ -1,11 +1,11 @@
-package services
+package storage
 
 import (
 	"fluxton/constants"
 	"fmt"
 )
 
-func GetStorageProvider(provider string) (StorageService, error) {
+func GetProvider(provider string) (StorageInterface, error) {
 	switch provider {
 	case constants.StorageDriverS3:
 		return NewS3Service()

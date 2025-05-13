@@ -1,29 +1,32 @@
-package services
+package email
 
 import (
 	"context"
+	"fluxton/services"
 	"fmt"
-	"github.com/aws/aws-sdk-go-v2/service/ses/types"
-	"os"
-
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/ses"
+	"github.com/aws/aws-sdk-go-v2/service/ses/types"
+	"github.com/labstack/echo/v4"
+	"github.com/samber/do"
 )
 
-type SESService interface {
-	SendEmail(to, subject, body string) error
-}
-
 type SESServiceImpl struct {
-	client *ses.Client
+	client         *ses.Client
+	settingService services.SettingService
 }
 
-func NewSESService() (SESService, error) {
-	accessKey := os.Getenv("AWS_ACCESS_KEY_ID")
-	secretKey := os.Getenv("AWS_SECRET_ACCESS_KEY")
-	region := os.Getenv("AWS_REGION")
+func NewSESService(ctx echo.Context, injector *do.Injector) (EmailInterface, error) {
+	settingService, err := services.NewSettingService(injector)
+	if err != nil {
+		return nil, err
+	}
+
+	accessKey := settingService.GetValue(ctx, "awsAccessKey")
+	secretKey := settingService.GetValue(ctx, "awsSecretKey")
+	region := settingService.GetValue(ctx, "awsRegion")
 
 	cfg, err := config.LoadDefaultConfig(context.TODO(),
 		config.WithRegion(region),
@@ -38,13 +41,19 @@ func NewSESService() (SESService, error) {
 	client := ses.NewFromConfig(cfg)
 
 	return &SESServiceImpl{
-		client: client,
+		client:         client,
+		settingService: settingService,
 	}, nil
 }
 
-func (s *SESServiceImpl) SendEmail(to, subject, body string) error {
+func (s *SESServiceImpl) Send(ctx echo.Context, to, subject, body string) error {
+	from := s.settingService.GetValue(ctx, "sesEmailSource")
+	if from == "" {
+		return fmt.Errorf("sesEmailSource is required")
+	}
+
 	input := &ses.SendEmailInput{
-		Source: aws.String(os.Getenv("SES_EMAIL_SOURCE")),
+		Source: aws.String(from),
 		Destination: &types.Destination{
 			ToAddresses: []string{to},
 		},

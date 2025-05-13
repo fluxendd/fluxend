@@ -1,4 +1,4 @@
-package services
+package storage
 
 import (
 	"encoding/json"
@@ -57,7 +57,7 @@ type ListFolderResult struct {
 	HasMore bool   `json:"has_more"`
 }
 
-func NewDropboxService() (StorageService, error) {
+func NewDropboxService() (StorageInterface, error) {
 	// TODO: go with refreshable tokens instead
 	accessToken := os.Getenv("DROPBOX_ACCESS_TOKEN")
 	if accessToken == "" {
