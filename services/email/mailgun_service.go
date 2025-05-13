@@ -2,52 +2,60 @@ package email
 
 import (
 	"context"
+	"fluxton/services"
 	"fmt"
-	"os"
+	"github.com/labstack/echo/v4"
+	"github.com/samber/do"
 	"time"
 
 	"github.com/mailgun/mailgun-go/v4"
 )
 
 type MailgunServiceImpl struct {
-	client *mailgun.MailgunImpl
-	domain string
+	client         *mailgun.MailgunImpl
+	domain         string
+	settingService services.SettingService
 }
 
-func NewMailgunService() (EmailInterface, error) {
-	apiKey := os.Getenv("MAILGUN_API_KEY")
+func NewMailgunService(ctx echo.Context, injector *do.Injector) (EmailInterface, error) {
+	settingService, err := services.NewSettingService(injector)
+	if err != nil {
+		return nil, err
+	}
+
+	apiKey := settingService.GetValue(ctx, "mailgunApiKey")
 	if apiKey == "" {
-		return nil, fmt.Errorf("MAILGUN_API_KEY environment variable is required")
+		return nil, fmt.Errorf("mailgun API key is required")
 	}
 
-	domain := os.Getenv("MAILGUN_DOMAIN")
+	domain := settingService.GetValue(ctx, "mailgunDomain")
 	if domain == "" {
-		return nil, fmt.Errorf("MAILGUN_DOMAIN environment variable is required")
+		return nil, fmt.Errorf("mailgun domain is required")
 	}
 
-	// Optional region, defaults to US
-	region := os.Getenv("MAILGUN_REGION")
-	if region == "" {
-		region = "us" // Default to US region
+	userSelectedRegion := settingService.Get(ctx, "mailgunRegion")
+	mailgunRegion := userSelectedRegion.Value
+	if mailgunRegion == "" {
+		mailgunRegion = userSelectedRegion.DefaultValue
 	}
 
 	client := mailgun.NewMailgun(domain, apiKey)
 
-	// Set region if specified
-	if region == "eu" {
+	if mailgunRegion == "eu" {
 		client.SetAPIBase(mailgun.APIBaseEU)
 	}
 
 	return &MailgunServiceImpl{
-		client: client,
-		domain: domain,
+		client:         client,
+		domain:         domain,
+		settingService: settingService,
 	}, nil
 }
 
-func (m *MailgunServiceImpl) Send(to, subject, body string) error {
-	from := os.Getenv("MAILGUN_EMAIL_SOURCE")
+func (m *MailgunServiceImpl) Send(ctx echo.Context, to, subject, body string) error {
+	from := m.settingService.GetValue(ctx, "mailgunEmailSource")
 	if from == "" {
-		return fmt.Errorf("MAILGUN_EMAIL_SOURCE environment variable is required")
+		return fmt.Errorf("mailgunEmailSource is required")
 	}
 
 	message := m.client.NewMessage(
@@ -57,10 +65,10 @@ func (m *MailgunServiceImpl) Send(to, subject, body string) error {
 		to,
 	)
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	backgroundContext, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
 
-	resp, id, err := m.client.Send(ctx, message)
+	resp, _, err := m.client.Send(backgroundContext, message)
 	if err != nil {
 		return fmt.Errorf("failed to send email: %v", err)
 	}
@@ -69,9 +77,6 @@ func (m *MailgunServiceImpl) Send(to, subject, body string) error {
 		// Mailgun returns an empty string on success
 		return fmt.Errorf("unexpected response: %s", resp)
 	}
-
-	// Log the message ID if you want
-	_ = id
 
 	return nil
 }
