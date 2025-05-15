@@ -76,6 +76,10 @@ var messages = map[string]string{
 	"table.error.createForbidden": "You don't have permission to create tables",
 	"table.error.alreadyExists":   "Table already exists",
 
+	// Tables: File Upload
+	"fileImport.error.emptyFile":    "File is empty",
+	"fileImport.error.emptyHeaders": "File has no headers",
+
 	// Columns
 	"column.error.createForbidden":  "You don't have permission to create columns",
 	"column.error.someAlreadyExist": "Some columns already exist",

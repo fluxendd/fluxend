@@ -39,13 +39,13 @@ func (s *FileImportServiceImpl) ImportCSV(file multipart.File) ([]models.Column,
 	}
 
 	if len(records) == 0 {
-		return nil, nil, errors.New("CSV file is empty")
+		return nil, nil, errors.New("fileImport.error.emptyFile")
 	}
 
 	// Process headers
 	headers := records[0]
 	if len(headers) == 0 {
-		return nil, nil, errors.New("CSV file has no headers")
+		return nil, nil, errors.New("fileImport.error.emptyHeaders")
 	}
 
 	// Process data rows
