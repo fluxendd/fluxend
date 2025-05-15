@@ -1,7 +1,7 @@
 package constants
 
 const (
-	ColumnTypeInt       = "int"
+	ColumnTypeInteger   = "integer"
 	ColumnTypeSerial    = "serial"
 	ColumnTypeVarchar   = "varchar"
 	ColumnTypeText      = "text"

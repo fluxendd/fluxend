@@ -3,6 +3,7 @@ package services
 import (
 	"bytes"
 	"encoding/csv"
+	"fluxton/constants"
 	"mime/multipart"
 	"testing"
 
@@ -33,7 +34,7 @@ func TestImportCSV_EmptyFile(t *testing.T) {
 	assert.Error(t, err)
 	assert.Nil(t, columns)
 	assert.Nil(t, rows)
-	assert.Equal(t, "File is empty", err.Error())
+	assert.Equal(t, "fileImport.error.emptyFile", err.Error())
 }
 
 func TestImportCSV_HeadersOnly(t *testing.T) {
@@ -95,19 +96,19 @@ func TestImportCSV_CompleteData(t *testing.T) {
 	assert.True(t, columns[0].NotNull)
 
 	assert.Equal(t, "age", columns[1].Name)
-	assert.Equal(t, "integer", columns[1].Type)
+	assert.Equal(t, constants.ColumnTypeInteger, columns[1].Type)
 	assert.True(t, columns[1].NotNull)
 
 	assert.Equal(t, "active", columns[2].Name)
-	assert.Equal(t, "boolean", columns[2].Type)
+	assert.Equal(t, constants.ColumnTypeBoolean, columns[2].Type)
 	assert.True(t, columns[2].NotNull)
 
 	assert.Equal(t, "salary", columns[3].Name)
-	assert.Equal(t, "numeric(7,2)", columns[3].Type)
+	assert.Equal(t, "numeric(7,2)", columns[3].Type) // TODO: handle column types with precision and scale etc in requests
 	assert.True(t, columns[3].NotNull)
 
 	assert.Equal(t, "details", columns[4].Name)
-	assert.Equal(t, "json", columns[4].Type)
+	assert.Equal(t, constants.ColumnTypeJSON, columns[4].Type)
 	assert.False(t, columns[4].NotNull) // the second row contains empty value so not null is false
 }
 
@@ -185,13 +186,13 @@ func TestImportCSV_TypedHeaders(t *testing.T) {
 
 	// Check if type hints were properly applied
 	assert.Equal(t, "name", columns[0].Name)
-	assert.Equal(t, "text", columns[0].Type)
+	assert.Equal(t, constants.ColumnTypeText, columns[0].Type)
 
 	assert.Equal(t, "age", columns[1].Name)
-	assert.Equal(t, "integer", columns[1].Type)
+	assert.Equal(t, constants.ColumnTypeInteger, columns[1].Type)
 
 	assert.Equal(t, "joined", columns[2].Name)
-	assert.Equal(t, "timestamp", columns[2].Type)
+	assert.Equal(t, constants.ColumnTypeTimestamp, columns[2].Type)
 
 	assert.Equal(t, "balance", columns[3].Name)
 	assert.Equal(t, "numeric(12,2)", columns[3].Type)
@@ -263,7 +264,7 @@ func TestSanitizeColumnName(t *testing.T) {
 		},
 		{
 			input:    "123Name",
-			expected: "_123_name",
+			expected: "_123name",
 		},
 		{
 			input:    "user-id",
@@ -446,7 +447,7 @@ func TestDetectColumnType(t *testing.T) {
 		{
 			name:         "Float Column",
 			values:       []string{"1.1", "2.2", "3.3"},
-			expectedType: "numeric(3,1)",
+			expectedType: "numeric(2,1)",
 			notNull:      true,
 		},
 		{

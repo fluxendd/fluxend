@@ -27,7 +27,7 @@ var (
 	}
 
 	allowedColumnTypes = map[string]bool{
-		constants.ColumnTypeInt:       true,
+		constants.ColumnTypeInteger:   true,
 		constants.ColumnTypeSerial:    true,
 		constants.ColumnTypeVarchar:   true,
 		constants.ColumnTypeText:      true,
