@@ -134,6 +134,43 @@ func (tc *TableController) Store(c echo.Context) error {
 	return responses.CreatedResponse(c, resources.TableResource(&table))
 }
 
+// Upload creates a new table within a project using uploaded file
+//
+// @Summary Create a new table
+// @Description Define and create a new table within a specified project.
+// @Tags Tables
+//
+// @Accept Multipart/form-data
+// @Produce json
+//
+// @Param Authorization header string true "Bearer Token"
+// @param Header X-Project header string true "Project UUID"
+//
+// @Param table body table_requests.UploadRequest true "Table definition multipart/form-data"
+//
+// @Success 201 {object} responses.Response{content=resources.TableResponse} "Table created"
+// @Failure 400 "Invalid input"
+// @Failure 401 "Unauthorized"
+// @Failure 422 "Unprocessable entity"
+// @Failure 500 "Internal server error"
+//
+// @Router /tables/upload [post]
+func (tc *TableController) Upload(c echo.Context) error {
+	var request table_requests.UploadRequest
+	if err := request.BindAndValidate(c); err != nil {
+		return responses.UnprocessableResponse(c, err)
+	}
+
+	authUser, _ := utils.NewAuth(c).User()
+
+	table, err := tc.tableService.Upload(&request, authUser)
+	if err != nil {
+		return responses.ErrorResponse(c, err)
+	}
+
+	return responses.CreatedResponse(c, resources.TableResource(&table))
+}
+
 // Duplicate creates a duplicate of an existing table.
 //
 // @Summary Duplicate a table
