@@ -2,6 +2,7 @@ package requests
 
 import (
 	"errors"
+	"fluxton/constants"
 	"fmt"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/google/uuid"
@@ -26,15 +27,16 @@ var (
 	}
 
 	allowedColumnTypes = map[string]bool{
-		"int":       true,
-		"serial":    true,
-		"varchar":   true,
-		"text":      true,
-		"boolean":   true,
-		"date":      true,
-		"timestamp": true,
-		"float":     true,
-		"uuid":      true,
+		constants.ColumnTypeInt:       true,
+		constants.ColumnTypeSerial:    true,
+		constants.ColumnTypeVarchar:   true,
+		constants.ColumnTypeText:      true,
+		constants.ColumnTypeBoolean:   true,
+		constants.ColumnTypeDate:      true,
+		constants.ColumnTypeTimestamp: true,
+		constants.ColumnTypeFloat:     true,
+		constants.ColumnTypeUUID:      true,
+		constants.ColumnTypeJSON:      true,
 	}
 
 	reservedIndexNames = map[string]bool{
