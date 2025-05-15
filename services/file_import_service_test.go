@@ -36,6 +36,38 @@ func TestImportCSV_EmptyFile(t *testing.T) {
 	assert.Equal(t, "File is empty", err.Error())
 }
 
+func TestImportCSV_HeadersOnly(t *testing.T) {
+	service := &FileImportServiceImpl{}
+
+	// Create a CSV with headers but no data
+	var buf bytes.Buffer
+	writer := csv.NewWriter(&buf)
+	err := writer.Write([]string{"name", "age", "active"})
+	assert.NoError(t, err)
+	writer.Flush()
+
+	file := createMultipartFile(t, buf.Bytes())
+
+	columns, rows, err := service.ImportCSV(file)
+
+	assert.NoError(t, err)
+	assert.Len(t, columns, 3)
+	assert.Empty(t, rows)
+
+	// When no data is present, we default to text type, and they are all consider nullable
+	assert.Equal(t, "name", columns[0].Name)
+	assert.Equal(t, "text", columns[0].Type)
+	assert.False(t, columns[0].NotNull)
+
+	assert.Equal(t, "age", columns[1].Name)
+	assert.Equal(t, "text", columns[1].Type)
+	assert.False(t, columns[1].NotNull)
+
+	assert.Equal(t, "active", columns[2].Name)
+	assert.Equal(t, "text", columns[2].Type)
+	assert.False(t, columns[2].NotNull)
+}
+
 // Helper function to create a multipart file from bytes
 func createMultipartFile(t *testing.T, data []byte) multipart.File {
 	return &bytesFile{
