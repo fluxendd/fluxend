@@ -14,7 +14,8 @@ func RegisterTableRoutes(e *echo.Echo, container *do.Injector, authMiddleware ec
 	tablesGroup := e.Group("api/tables", authMiddleware)
 
 	// table routes
-	tablesGroup.POST("", tableController.Store)
+	tablesGroup.POST("", tableController.Store)         // Create a new table (standard way)
+	tablesGroup.POST("/upload", tableController.Upload) // Create a new table (upload way)
 	tablesGroup.GET("", tableController.List)
 	tablesGroup.GET("/:fullTableName", tableController.Show)
 	tablesGroup.PUT("/:fullTableName/duplicate", tableController.Duplicate)
