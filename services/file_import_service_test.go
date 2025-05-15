@@ -111,6 +111,106 @@ func TestImportCSV_CompleteData(t *testing.T) {
 	assert.False(t, columns[4].NotNull) // the second row contains empty value so not null is false
 }
 
+func TestDetermineColumns(t *testing.T) {
+	service := &FileImportServiceImpl{}
+
+	headers := []string{"Name", "Age", "Email"}
+	dataRows := [][]string{
+		{"John Doe", "30", "john@example.com"},
+		{"Jane Smith", "25", "jane@example.com"},
+	}
+
+	columns, err := service.determineColumns(headers, dataRows)
+
+	assert.NoError(t, err)
+	assert.Len(t, columns, 3)
+
+	// Check sanitized column names
+	assert.Equal(t, "name", columns[0].Name)
+	assert.Equal(t, "age", columns[1].Name)
+	assert.Equal(t, "email", columns[2].Name)
+}
+
+func TestDetectColumnType(t *testing.T) {
+	service := &FileImportServiceImpl{}
+
+	testCases := []struct {
+		name         string
+		values       []string
+		expectedType string
+		notNull      bool
+	}{
+		{
+			name:         "Boolean Column",
+			values:       []string{"true", "false", "true"},
+			expectedType: "boolean",
+			notNull:      true,
+		},
+		{
+			name:         "Integer Column",
+			values:       []string{"1", "2", "3"},
+			expectedType: "integer",
+			notNull:      true,
+		},
+		{
+			name:         "Float Column",
+			values:       []string{"1.1", "2.2", "3.3"},
+			expectedType: "numeric(3,1)",
+			notNull:      true,
+		},
+		{
+			name:         "Text Column",
+			values:       []string{"abc", "def", "ghi"},
+			expectedType: "varchar(3)",
+			notNull:      true,
+		},
+		{
+			name:         "Long Text Column",
+			values:       []string{"a very long text that exceeds 255 characters" + string(make([]byte, 300))},
+			expectedType: "text",
+			notNull:      true,
+		},
+		{
+			name:         "JSON Column",
+			values:       []string{`{"name":"John"}`, `{"name":"Jane"}`},
+			expectedType: "json",
+			notNull:      true,
+		},
+		{
+			name:         "Timestamp Column",
+			values:       []string{"2023-01-01", "2023-02-01"},
+			expectedType: "timestamp",
+			notNull:      true,
+		},
+		{
+			name:         "Nullable Column",
+			values:       []string{"1", "", "3"},
+			expectedType: "integer",
+			notNull:      false,
+		},
+		{
+			name:         "Empty Column",
+			values:       []string{"", "", ""},
+			expectedType: "text",
+			notNull:      false,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			rows := make([][]string, len(tc.values))
+			for i, val := range tc.values {
+				rows[i] = []string{val}
+			}
+
+			colType, notNull := service.detectColumnType(rows, 0)
+
+			assert.Equal(t, tc.expectedType, colType, "Type detection failed for "+tc.name)
+			assert.Equal(t, tc.notNull, notNull, "Nullability detection failed for "+tc.name)
+		})
+	}
+}
+
 // Helper function to create a multipart file from bytes
 func createMultipartFile(t *testing.T, data []byte) multipart.File {
 	return &bytesFile{
