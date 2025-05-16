@@ -51,6 +51,7 @@ func InitializeContainer() *do.Injector {
 	do.Provide(injector, services.NewProjectService)
 	do.Provide(injector, services.NewPostgrestService)
 	do.Provide(injector, services.NewTableService)
+	do.Provide(injector, services.NewFileImportService)
 	do.Provide(injector, services.NewColumnService)
 	do.Provide(injector, services.NewIndexService)
 	do.Provide(injector, services.NewFunctionService)

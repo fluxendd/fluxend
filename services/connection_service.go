@@ -14,6 +14,7 @@ type ConnectionService interface {
 	GetTableRepo(databaseName string, connection *sqlx.DB) (*repositories.TableRepository, *sqlx.DB, error)
 	GetColumnRepo(databaseName string, connection *sqlx.DB) (*repositories.ColumnRepository, *sqlx.DB, error)
 	GetIndexRepo(databaseName string, connection *sqlx.DB) (*repositories.IndexRepository, *sqlx.DB, error)
+	GetRowRepo(databaseName string, connection *sqlx.DB) (*repositories.RowRepository, *sqlx.DB, error)
 	GetFunctionRepoByProjectUUID(projectUUID uuid.UUID, connection *sqlx.DB) (*repositories.FunctionRepository, *sqlx.DB, error)
 }
 
@@ -94,6 +95,20 @@ func (s *ConnectionServiceImpl) GetIndexRepo(databaseName string, connection *sq
 	}
 
 	clientIndexRepo, err := repositories.NewIndexRepository(clientDatabaseConnection)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return clientIndexRepo, clientDatabaseConnection, nil
+}
+
+func (s *ConnectionServiceImpl) GetRowRepo(databaseName string, connection *sqlx.DB) (*repositories.RowRepository, *sqlx.DB, error) {
+	clientDatabaseConnection, err := s.getOrCreateConnection(databaseName, connection)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	clientIndexRepo, err := repositories.NewRowRepository(clientDatabaseConnection)
 	if err != nil {
 		return nil, nil, err
 	}
