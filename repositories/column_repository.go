@@ -194,7 +194,7 @@ func (r *ColumnRepository) mapColumnsToNames(columns []models.Column) []string {
 }
 
 func (r *ColumnRepository) BuildColumnDefinition(column models.Column) string {
-	def := fmt.Sprintf("%s %s", pq.QuoteIdentifier(column.Name), pq.QuoteIdentifier(column.Type))
+	def := fmt.Sprintf("%s %s", pq.QuoteIdentifier(column.Name), column.Type)
 
 	if column.Primary {
 		def += " PRIMARY KEY"

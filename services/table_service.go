@@ -15,6 +15,7 @@ type TableService interface {
 	List(projectUUID uuid.UUID, authUser models.AuthUser) ([]models.Table, error)
 	GetByName(fullTableName string, projectUUID uuid.UUID, authUser models.AuthUser) (models.Table, error)
 	Create(request *table_requests.CreateRequest, authUser models.AuthUser) (models.Table, error)
+	Upload(request *table_requests.UploadRequest, authUser models.AuthUser) (models.Table, error)
 	Duplicate(fullTableName string, authUser models.AuthUser, request *table_requests.RenameRequest) (*models.Table, error)
 	Rename(fullTableName string, authUser models.AuthUser, request *table_requests.RenameRequest) (models.Table, error)
 	Delete(fullTableName string, projectUUID uuid.UUID, authUser models.AuthUser) (bool, error)
@@ -22,6 +23,7 @@ type TableService interface {
 
 type TableServiceImpl struct {
 	connectionService ConnectionService
+	fileImportService FileImportService
 	projectPolicy     *policies.ProjectPolicy
 	databaseRepo      *repositories.DatabaseRepository
 	projectRepo       *repositories.ProjectRepository
@@ -32,9 +34,11 @@ func NewTableService(injector *do.Injector) (TableService, error) {
 	policy := do.MustInvoke[*policies.ProjectPolicy](injector)
 	databaseRepo := do.MustInvoke[*repositories.DatabaseRepository](injector)
 	projectRepo := do.MustInvoke[*repositories.ProjectRepository](injector)
+	fileImportService := do.MustInvoke[FileImportService](injector)
 
 	return &TableServiceImpl{
 		connectionService: connectionService,
+		fileImportService: fileImportService,
 		projectPolicy:     policy,
 		databaseRepo:      databaseRepo,
 		projectRepo:       projectRepo,
@@ -111,6 +115,48 @@ func (s *TableServiceImpl) Create(request *table_requests.CreateRequest, authUse
 	}
 
 	err = clientTableRepo.Create(request.Name, request.Columns)
+	if err != nil {
+		return models.Table{}, err
+	}
+
+	return clientTableRepo.GetByNameInSchema(utils.ParseTableName(request.Name))
+}
+
+func (s *TableServiceImpl) Upload(request *table_requests.UploadRequest, authUser models.AuthUser) (models.Table, error) {
+	project, err := s.projectRepo.GetByUUID(request.ProjectUUID)
+	if err != nil {
+		return models.Table{}, err
+	}
+
+	if !s.projectPolicy.CanCreate(project.OrganizationUuid, authUser) {
+		return models.Table{}, errs.NewForbiddenError("table.error.createForbidden")
+	}
+
+	clientTableRepo, connection, err := s.connectionService.GetTableRepo(project.DBName, nil)
+	if err != nil {
+		return models.Table{}, err
+	}
+	defer connection.Close()
+
+	err = s.validateNameForDuplication(request.Name, clientTableRepo)
+	if err != nil {
+		return models.Table{}, err
+	}
+
+	file, err := request.File.Open()
+	if err != nil {
+		return models.Table{}, err
+	}
+	defer file.Close()
+
+	columns, _, err := s.fileImportService.ImportCSV(file)
+	if err != nil {
+		return models.Table{}, err
+	}
+
+	// TODO: handle inserting rows
+
+	err = clientTableRepo.Create(request.Name, columns)
 	if err != nil {
 		return models.Table{}, err
 	}
