@@ -3199,6 +3199,78 @@ const docTemplate = `{
                 }
             }
         },
+        "/tables/upload": {
+            "post": {
+                "description": "Define and create a new table within a specified project.",
+                "consumes": [
+                    "Multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Tables"
+                ],
+                "summary": "Create a new table",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Project UUID",
+                        "name": "X-Project",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "Table definition multipart/form-data",
+                        "name": "table",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/table_requests.UploadRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Table created",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/responses.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "content": {
+                                            "$ref": "#/definitions/resources.TableResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "422": {
+                        "description": "Unprocessable entity"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
         "/tables/{fullTableName}/columns": {
             "get": {
                 "description": "Retrieve a list of columns in a specified table.",
@@ -4818,6 +4890,9 @@ const docTemplate = `{
             "type": "object"
         },
         "table_requests.RenameRequest": {
+            "type": "object"
+        },
+        "table_requests.UploadRequest": {
             "type": "object"
         },
         "user_requests.CreateRequest": {
