@@ -143,20 +143,25 @@ func (s *TableServiceImpl) Upload(request *table_requests.UploadRequest, authUse
 		return models.Table{}, err
 	}
 
+	clientRowRepo, _, err := s.connectionService.GetRowRepo(project.DBName, connection)
+
 	file, err := request.File.Open()
 	if err != nil {
 		return models.Table{}, err
 	}
 	defer file.Close()
 
-	columns, _, err := s.fileImportService.ImportCSV(file)
+	columns, values, err := s.fileImportService.ImportCSV(file)
 	if err != nil {
 		return models.Table{}, err
 	}
 
-	// TODO: handle inserting rows
-
 	err = clientTableRepo.Create(request.Name, columns)
+	if err != nil {
+		return models.Table{}, err
+	}
+
+	err = clientRowRepo.CreateMany(request.Name, columns, values)
 	if err != nil {
 		return models.Table{}, err
 	}
