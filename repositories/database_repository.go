@@ -13,6 +13,8 @@ import (
 	"time"
 )
 
+const seedDirectory = "internal/database/seeders/client"
+
 type DatabaseRepository struct {
 	db *sqlx.DB
 }
@@ -121,10 +123,8 @@ func (r *DatabaseRepository) importSeedFiles(databaseName string, userUUID uuid.
 	}
 	defer connection.Close()
 
-	seedDir := "database/seeders/client"
-
 	// Read all files in the directory
-	files, err := os.ReadDir(seedDir)
+	files, err := os.ReadDir(seedDirectory)
 	if err != nil {
 		log.Error().
 			Str("action", constants.ActionClientDatabaseSeed).
@@ -140,7 +140,7 @@ func (r *DatabaseRepository) importSeedFiles(databaseName string, userUUID uuid.
 			continue
 		}
 
-		filePath := filepath.Join(seedDir, file.Name())
+		filePath := filepath.Join(seedDirectory, file.Name())
 
 		// Load the contents of the SQL file
 		sqlContent, err := os.ReadFile(filePath)
