@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"fluxton/middlewares"
+	"fluxton/internal/middlewares"
 	"fluxton/repositories"
 	"fluxton/routes"
 	"fluxton/services"
