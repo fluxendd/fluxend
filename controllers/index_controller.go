@@ -1,10 +1,10 @@
 package controllers
 
 import (
+	"fluxton/internal/api/dto"
 	"fluxton/internal/api/response"
 	"fluxton/pkg/auth"
 	"fluxton/requests"
-	"fluxton/resources"
 	"fluxton/services"
 	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
@@ -39,7 +39,7 @@ func NewIndexController(injector *do.Injector) (*IndexController, error) {
 //
 // @Router /tables/{tableUUID}/indexes [get]
 func (ic *IndexController) List(c echo.Context) error {
-	var request requests.DefaultRequestWithProjectHeader
+	var request dto.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
 	}
@@ -56,7 +56,7 @@ func (ic *IndexController) List(c echo.Context) error {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.SuccessResponse(c, resources.GenericResourceCollection(indexes))
+	return response.SuccessResponse(c, dto.GenericResourceCollection(indexes))
 }
 
 // Show Index
@@ -80,7 +80,7 @@ func (ic *IndexController) List(c echo.Context) error {
 //
 // @Router /tables/{tableUUID}/indexes/{indexName} [get]
 func (ic *IndexController) Show(c echo.Context) error {
-	var request requests.DefaultRequestWithProjectHeader
+	var request dto.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
 	}
@@ -99,7 +99,7 @@ func (ic *IndexController) Show(c echo.Context) error {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.SuccessResponse(c, resources.GenericResource(&index))
+	return response.SuccessResponse(c, dto.GenericResource(&index))
 }
 
 // Store Index
@@ -140,7 +140,7 @@ func (ic *IndexController) Store(c echo.Context) error {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.CreatedResponse(c, resources.GenericResource(index))
+	return response.CreatedResponse(c, dto.GenericResource(index))
 }
 
 // Delete Index
@@ -164,7 +164,7 @@ func (ic *IndexController) Store(c echo.Context) error {
 //
 // @Router /tables/{tableUUID}/indexes/{indexName} [delete]
 func (ic *IndexController) Delete(c echo.Context) error {
-	var request requests.DefaultRequestWithProjectHeader
+	var request dto.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
 	}

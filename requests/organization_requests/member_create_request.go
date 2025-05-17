@@ -1,14 +1,14 @@
 package organization_requests
 
 import (
-	"fluxton/requests"
+	"fluxton/internal/api/dto"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
 
 type MemberCreateRequest struct {
-	requests.BaseRequest
+	dto.BaseRequest
 	UserID uuid.UUID `json:"user_id"`
 }
 

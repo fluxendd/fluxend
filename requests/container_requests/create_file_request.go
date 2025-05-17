@@ -2,7 +2,7 @@ package container_requests
 
 import (
 	"fluxton/constants"
-	"fluxton/requests"
+	"fluxton/internal/api/dto"
 	"fmt"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/labstack/echo/v4"
@@ -10,7 +10,7 @@ import (
 )
 
 type CreateFileRequest struct {
-	requests.BaseRequest
+	dto.BaseRequest
 	FullFileName string                `json:"-" form:"full_file_name"`
 	File         *multipart.FileHeader `json:"-" form:"file"`
 }

@@ -2,8 +2,8 @@ package table_requests
 
 import (
 	"fluxton/constants"
+	"fluxton/internal/api/dto"
 	"fluxton/pkg"
-	"fluxton/requests"
 	"fmt"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/labstack/echo/v4"
@@ -12,7 +12,7 @@ import (
 )
 
 type UploadRequest struct {
-	requests.BaseRequest
+	dto.BaseRequest
 	Name string                `form:"name"`
 	File *multipart.FileHeader `form:"file"` // use FileHeader, not string
 }

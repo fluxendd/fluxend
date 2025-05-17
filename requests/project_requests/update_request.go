@@ -1,15 +1,15 @@
 package project_requests
 
 import (
+	"fluxton/internal/api/dto"
 	"fluxton/pkg"
-	"fluxton/requests"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/labstack/echo/v4"
 	"regexp"
 )
 
 type UpdateRequest struct {
-	requests.BaseRequest
+	dto.BaseRequest
 	Name        string `json:"name"`
 	Description string `json:"description"`
 }

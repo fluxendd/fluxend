@@ -1,8 +1,8 @@
 package cmd
 
 import (
+	"fluxton/internal/api/dto"
 	"fluxton/repositories"
-	"fluxton/requests"
 	"fluxton/services"
 	"fmt"
 	"github.com/samber/do"
@@ -24,7 +24,7 @@ func restartPostgrestInstances() error {
 	projectRepository := do.MustInvoke[*repositories.ProjectRepository](container)
 	postgrestService := do.MustInvoke[services.PostgrestService](container)
 
-	projects, err := projectRepository.List(requests.PaginationParams{Page: 1, Limit: 1000})
+	projects, err := projectRepository.List(dto.PaginationParams{Page: 1, Limit: 1000})
 	if err != nil {
 		return fmt.Errorf("error fetching projects: %w", err)
 	}

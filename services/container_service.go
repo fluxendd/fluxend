@@ -1,11 +1,11 @@
 package services
 
 import (
+	"fluxton/internal/api/dto"
 	"fluxton/models"
 	"fluxton/pkg/errors"
 	"fluxton/policies"
 	"fluxton/repositories"
-	"fluxton/requests"
 	"fluxton/requests/container_requests"
 	"fluxton/services/storage"
 	"github.com/google/uuid"
@@ -15,11 +15,11 @@ import (
 )
 
 type ContainerService interface {
-	List(paginationParams requests.PaginationParams, projectUUID uuid.UUID, authUser models.AuthUser) ([]models.Container, error)
+	List(paginationParams dto.PaginationParams, projectUUID uuid.UUID, authUser models.AuthUser) ([]models.Container, error)
 	GetByUUID(containerUUID uuid.UUID, authUser models.AuthUser) (models.Container, error)
 	Create(request *container_requests.CreateRequest, authUser models.AuthUser) (models.Container, error)
 	Update(containerUUID uuid.UUID, authUser models.AuthUser, request *container_requests.CreateRequest) (*models.Container, error)
-	Delete(request requests.DefaultRequestWithProjectHeader, containerUUID uuid.UUID, authUser models.AuthUser) (bool, error)
+	Delete(request dto.DefaultRequestWithProjectHeader, containerUUID uuid.UUID, authUser models.AuthUser) (bool, error)
 }
 
 type ContainerServiceImpl struct {
@@ -47,7 +47,7 @@ func NewContainerService(injector *do.Injector) (ContainerService, error) {
 	}, nil
 }
 
-func (s *ContainerServiceImpl) List(paginationParams requests.PaginationParams, projectUUID uuid.UUID, authUser models.AuthUser) ([]models.Container, error) {
+func (s *ContainerServiceImpl) List(paginationParams dto.PaginationParams, projectUUID uuid.UUID, authUser models.AuthUser) ([]models.Container, error) {
 	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(projectUUID)
 	if err != nil {
 		return []models.Container{}, err
@@ -158,7 +158,7 @@ func (s *ContainerServiceImpl) Update(containerUUID uuid.UUID, authUser models.A
 	return s.containerRepo.Update(&container)
 }
 
-func (s *ContainerServiceImpl) Delete(request requests.DefaultRequestWithProjectHeader, containerUUID uuid.UUID, authUser models.AuthUser) (bool, error) {
+func (s *ContainerServiceImpl) Delete(request dto.DefaultRequestWithProjectHeader, containerUUID uuid.UUID, authUser models.AuthUser) (bool, error) {
 	container, err := s.containerRepo.GetByUUID(containerUUID)
 	if err != nil {
 		return false, err

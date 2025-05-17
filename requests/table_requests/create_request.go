@@ -2,9 +2,9 @@ package table_requests
 
 import (
 	"fluxton/constants"
+	"fluxton/internal/api/dto"
 	"fluxton/models"
 	"fluxton/pkg"
-	"fluxton/requests"
 	"fluxton/requests/column_requests"
 	"fmt"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -13,7 +13,7 @@ import (
 )
 
 type CreateRequest struct {
-	requests.BaseRequest
+	dto.BaseRequest
 	Name    string          `json:"name"`
 	Columns []models.Column `json:"columns"`
 }

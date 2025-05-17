@@ -2,8 +2,8 @@ package organization_requests
 
 import (
 	"fluxton/constants"
+	"fluxton/internal/api/dto"
 	"fluxton/pkg"
-	"fluxton/requests"
 	"fmt"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/labstack/echo/v4"
@@ -11,7 +11,7 @@ import (
 )
 
 type CreateRequest struct {
-	requests.BaseRequest
+	dto.BaseRequest
 	Name string `json:"name"`
 }
 

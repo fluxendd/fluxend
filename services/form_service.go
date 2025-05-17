@@ -1,11 +1,11 @@
 package services
 
 import (
+	"fluxton/internal/api/dto"
 	"fluxton/models"
 	"fluxton/pkg/errors"
 	"fluxton/policies"
 	"fluxton/repositories"
-	"fluxton/requests"
 	"fluxton/requests/form_requests"
 	"github.com/google/uuid"
 	"github.com/samber/do"
@@ -13,7 +13,7 @@ import (
 )
 
 type FormService interface {
-	List(paginationParams requests.PaginationParams, projectUUID uuid.UUID, authUser models.AuthUser) ([]models.Form, error)
+	List(paginationParams dto.PaginationParams, projectUUID uuid.UUID, authUser models.AuthUser) ([]models.Form, error)
 	GetByUUID(formUUID uuid.UUID, authUser models.AuthUser) (models.Form, error)
 	Create(request *form_requests.CreateRequest, authUser models.AuthUser) (models.Form, error)
 	Update(formUUID uuid.UUID, authUser models.AuthUser, request *form_requests.CreateRequest) (*models.Form, error)
@@ -38,7 +38,7 @@ func NewFormService(injector *do.Injector) (FormService, error) {
 	}, nil
 }
 
-func (s *FormServiceImpl) List(paginationParams requests.PaginationParams, projectUUID uuid.UUID, authUser models.AuthUser) ([]models.Form, error) {
+func (s *FormServiceImpl) List(paginationParams dto.PaginationParams, projectUUID uuid.UUID, authUser models.AuthUser) ([]models.Form, error) {
 	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(projectUUID)
 	if err != nil {
 		return nil, err

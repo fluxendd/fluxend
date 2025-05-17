@@ -3,10 +3,10 @@ package repositories
 import (
 	"database/sql"
 	"errors"
+	"fluxton/internal/api/dto"
 	"fluxton/models"
 	"fluxton/pkg"
 	flxErrs "fluxton/pkg/errors"
-	"fluxton/requests"
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
@@ -23,7 +23,7 @@ func NewFormRepository(injector *do.Injector) (*FormRepository, error) {
 	return &FormRepository{db: db}, nil
 }
 
-func (r *FormRepository) ListForProject(paginationParams requests.PaginationParams, projectUUID uuid.UUID) ([]models.Form, error) {
+func (r *FormRepository) ListForProject(paginationParams dto.PaginationParams, projectUUID uuid.UUID) ([]models.Form, error) {
 	offset := (paginationParams.Page - 1) * paginationParams.Limit
 	query := `
 		SELECT 

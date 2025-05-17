@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fluxton/internal/api/dto"
 	"fluxton/internal/api/response"
 	"fluxton/pkg/auth"
 	"fluxton/requests"
@@ -42,7 +43,7 @@ func NewFunctionController(injector *do.Injector) (*FunctionController, error) {
 //
 // @Router /functions/{schema} [get]
 func (fc *FunctionController) List(c echo.Context) error {
-	var request requests.DefaultRequestWithProjectHeader
+	var request dto.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
 	}
@@ -84,7 +85,7 @@ func (fc *FunctionController) List(c echo.Context) error {
 //
 // @Router /functions/{schema}/{functionName} [get]
 func (fc *FunctionController) Show(c echo.Context) error {
-	var request requests.DefaultRequestWithProjectHeader
+	var request dto.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
 	}
@@ -174,7 +175,7 @@ func (fc *FunctionController) Store(c echo.Context) error {
 //
 // @Router /functions/{schema}/{functionName} [delete]
 func (fc *FunctionController) Delete(c echo.Context) error {
-	var request requests.DefaultRequestWithProjectHeader
+	var request dto.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
 	}

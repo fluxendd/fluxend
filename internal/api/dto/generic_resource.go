@@ -1,4 +1,4 @@
-package resources
+package dto
 
 type GenericResponse interface{}
 

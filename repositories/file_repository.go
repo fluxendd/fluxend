@@ -3,10 +3,10 @@ package repositories
 import (
 	"database/sql"
 	"errors"
+	"fluxton/internal/api/dto"
 	"fluxton/models"
 	"fluxton/pkg"
 	flxErrs "fluxton/pkg/errors"
-	"fluxton/requests"
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
@@ -23,7 +23,7 @@ func NewFileRepository(injector *do.Injector) (*FileRepository, error) {
 	return &FileRepository{db: db}, nil
 }
 
-func (r *FileRepository) ListForContainer(paginationParams requests.PaginationParams, containerUUID uuid.UUID) ([]models.File, error) {
+func (r *FileRepository) ListForContainer(paginationParams dto.PaginationParams, containerUUID uuid.UUID) ([]models.File, error) {
 	offset := (paginationParams.Page - 1) * paginationParams.Limit
 	query := `
 		SELECT 

@@ -3,10 +3,10 @@ package repositories
 import (
 	"database/sql"
 	"errors"
+	"fluxton/internal/api/dto"
 	"fluxton/models"
 	"fluxton/pkg"
 	flxErrs "fluxton/pkg/errors"
-	"fluxton/requests"
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
@@ -22,7 +22,7 @@ func NewOrganizationRepository(injector *do.Injector) (*OrganizationRepository, 
 	return &OrganizationRepository{db: db}, nil
 }
 
-func (r *OrganizationRepository) ListForUser(paginationParams requests.PaginationParams, authUserID uuid.UUID) ([]models.Organization, error) {
+func (r *OrganizationRepository) ListForUser(paginationParams dto.PaginationParams, authUserID uuid.UUID) ([]models.Organization, error) {
 	offset := (paginationParams.Page - 1) * paginationParams.Limit
 
 	query := `

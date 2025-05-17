@@ -2,14 +2,14 @@ package container_requests
 
 import (
 	"fluxton/constants"
-	"fluxton/requests"
+	"fluxton/internal/api/dto"
 	"fmt"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/labstack/echo/v4"
 )
 
 type RenameFileRequest struct {
-	requests.BaseRequest
+	dto.BaseRequest
 	FullFileName string `json:"full_file_name"`
 }
 

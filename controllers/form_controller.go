@@ -1,9 +1,9 @@
 package controllers
 
 import (
+	"fluxton/internal/api/dto"
 	"fluxton/internal/api/response"
 	"fluxton/pkg/auth"
-	"fluxton/requests"
 	"fluxton/requests/form_requests"
 	"fluxton/resources"
 	"fluxton/services"
@@ -45,7 +45,7 @@ func NewFormController(injector *do.Injector) (*FormController, error) {
 //
 // @Router /forms [get]
 func (fc *FormController) List(c echo.Context) error {
-	var request requests.DefaultRequestWithProjectHeader
+	var request dto.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
 	}
@@ -81,7 +81,7 @@ func (fc *FormController) List(c echo.Context) error {
 //
 // @Router /forms/{formUUID} [get]
 func (fc *FormController) Show(c echo.Context) error {
-	var request requests.DefaultRequestWithProjectHeader
+	var request dto.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
 	}
@@ -202,7 +202,7 @@ func (fc *FormController) Update(c echo.Context) error {
 //
 // @Router /forms/{formUUID} [delete]
 func (fc *FormController) Delete(c echo.Context) error {
-	var request requests.DefaultRequestWithProjectHeader
+	var request dto.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
 	}

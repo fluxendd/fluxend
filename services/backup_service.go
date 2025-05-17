@@ -1,11 +1,11 @@
 package services
 
 import (
+	"fluxton/internal/api/dto"
 	"fluxton/models"
 	"fluxton/pkg/errors"
 	"fluxton/policies"
 	"fluxton/repositories"
-	"fluxton/requests"
 	"github.com/google/uuid"
 	"github.com/samber/do"
 	"time"
@@ -14,8 +14,8 @@ import (
 type BackupService interface {
 	List(projectUUID uuid.UUID, authUser models.AuthUser) ([]models.Backup, error)
 	GetByUUID(backupUUID uuid.UUID, authUser models.AuthUser) (models.Backup, error)
-	Create(request *requests.DefaultRequestWithProjectHeader, authUser models.AuthUser) (models.Backup, error)
-	Delete(request requests.DefaultRequestWithProjectHeader, backupUUID uuid.UUID, authUser models.AuthUser) (bool, error)
+	Create(request *dto.DefaultRequestWithProjectHeader, authUser models.AuthUser) (models.Backup, error)
+	Delete(request dto.DefaultRequestWithProjectHeader, backupUUID uuid.UUID, authUser models.AuthUser) (bool, error)
 }
 
 type BackupServiceImpl struct {
@@ -70,7 +70,7 @@ func (s *BackupServiceImpl) GetByUUID(backupUUID uuid.UUID, authUser models.Auth
 	return backup, nil
 }
 
-func (s *BackupServiceImpl) Create(request *requests.DefaultRequestWithProjectHeader, authUser models.AuthUser) (models.Backup, error) {
+func (s *BackupServiceImpl) Create(request *dto.DefaultRequestWithProjectHeader, authUser models.AuthUser) (models.Backup, error) {
 	project, err := s.projectRepo.GetByUUID(request.ProjectUUID)
 	if err != nil {
 		return models.Backup{}, err
@@ -97,7 +97,7 @@ func (s *BackupServiceImpl) Create(request *requests.DefaultRequestWithProjectHe
 	return backup, nil
 }
 
-func (s *BackupServiceImpl) Delete(request requests.DefaultRequestWithProjectHeader, backupUUID uuid.UUID, authUser models.AuthUser) (bool, error) {
+func (s *BackupServiceImpl) Delete(request dto.DefaultRequestWithProjectHeader, backupUUID uuid.UUID, authUser models.AuthUser) (bool, error) {
 	backup, err := s.backupRepo.GetByUUID(backupUUID)
 	if err != nil {
 		return false, err

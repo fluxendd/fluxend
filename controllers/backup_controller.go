@@ -1,9 +1,9 @@
 package controllers
 
 import (
+	"fluxton/internal/api/dto"
 	"fluxton/internal/api/response"
 	"fluxton/pkg/auth"
-	"fluxton/requests"
 	"fluxton/resources"
 	"fluxton/services"
 	"github.com/labstack/echo/v4"
@@ -38,7 +38,7 @@ func NewBackupController(injector *do.Injector) (*BackupController, error) {
 //
 // @Router /backups [get]
 func (bc *BackupController) List(c echo.Context) error {
-	var request requests.DefaultRequestWithProjectHeader
+	var request dto.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
 	}
@@ -73,7 +73,7 @@ func (bc *BackupController) List(c echo.Context) error {
 //
 // @Router /backups/{backupUUID} [get]
 func (bc *BackupController) Show(c echo.Context) error {
-	var request requests.DefaultRequestWithProjectHeader
+	var request dto.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
 	}
@@ -115,7 +115,7 @@ func (bc *BackupController) Show(c echo.Context) error {
 //
 // @Router /backups [post]
 func (bc *BackupController) Store(c echo.Context) error {
-	var request requests.DefaultRequestWithProjectHeader
+	var request dto.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
 	}
@@ -151,7 +151,7 @@ func (bc *BackupController) Store(c echo.Context) error {
 //
 // @Router /backups/{backupUUID} [delete]
 func (bc *BackupController) Delete(c echo.Context) error {
-	var request requests.DefaultRequestWithProjectHeader
+	var request dto.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
 	}

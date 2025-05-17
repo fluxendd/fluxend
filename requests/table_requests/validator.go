@@ -1,7 +1,7 @@
 package table_requests
 
 import (
-	"fluxton/requests"
+	"fluxton/internal/api/dto"
 	"fmt"
 	"strings"
 )
@@ -9,7 +9,7 @@ import (
 func validateName(value interface{}) error {
 	name := value.(string)
 
-	if requests.IsReservedTableName(strings.ToLower(name)) {
+	if dto.IsReservedTableName(strings.ToLower(name)) {
 		return fmt.Errorf("table name '%s' is reserved and cannot be used", name)
 	}
 

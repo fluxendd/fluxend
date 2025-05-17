@@ -1,12 +1,12 @@
 package user_requests
 
 import (
-	"fluxton/requests"
+	"fluxton/internal/api/dto"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
 type UpdateRequest struct {
-	requests.BaseRequest
+	dto.BaseRequest
 	Bio string `json:"bio"`
 }
 

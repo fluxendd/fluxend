@@ -1,9 +1,9 @@
 package controllers
 
 import (
+	"fluxton/internal/api/dto"
 	"fluxton/internal/api/response"
 	"fluxton/pkg/auth"
-	"fluxton/requests"
 	"fluxton/requests/container_requests"
 	"fluxton/resources"
 	"fluxton/services"
@@ -45,7 +45,7 @@ func NewFileController(injector *do.Injector) (*FileController, error) {
 //
 // @Router /containers/{containerUUID}/files [get]
 func (fc *FileController) List(c echo.Context) error {
-	var request requests.DefaultRequestWithProjectHeader
+	var request dto.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
 	}
@@ -86,7 +86,7 @@ func (fc *FileController) List(c echo.Context) error {
 //
 // @Router /containers/{containerUUID}/files/{fileUUID} [get]
 func (fc *FileController) Show(c echo.Context) error {
-	var request requests.DefaultRequestWithProjectHeader
+	var request dto.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
 	}
@@ -217,7 +217,7 @@ func (fc *FileController) Rename(c echo.Context) error {
 //
 // @Router /containers/{containerUUID}/files/{fileUUID} [delete]
 func (fc *FileController) Delete(c echo.Context) error {
-	var request requests.DefaultRequestWithProjectHeader
+	var request dto.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
 	}

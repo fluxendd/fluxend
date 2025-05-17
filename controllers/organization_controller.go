@@ -1,9 +1,9 @@
 package controllers
 
 import (
+	"fluxton/internal/api/dto"
 	"fluxton/internal/api/response"
 	"fluxton/pkg/auth"
-	"fluxton/requests"
 	"fluxton/requests/organization_requests"
 	"fluxton/resources"
 	"fluxton/services"
@@ -43,7 +43,7 @@ func NewOrganizationController(injector *do.Injector) (*OrganizationController, 
 //
 // @Router /organizations [get]
 func (oc *OrganizationController) List(c echo.Context) error {
-	var request requests.DefaultRequest
+	var request dto.DefaultRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
 	}
@@ -79,7 +79,7 @@ func (oc *OrganizationController) List(c echo.Context) error {
 //
 // @Router /organizations/{organizationUUID} [get]
 func (oc *OrganizationController) Show(c echo.Context) error {
-	var request requests.DefaultRequest
+	var request dto.DefaultRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
 	}
@@ -196,7 +196,7 @@ func (oc *OrganizationController) Update(c echo.Context) error {
 //
 // @Router /organizations/{organizationUUID} [delete]
 func (oc *OrganizationController) Delete(c echo.Context) error {
-	var request requests.DefaultRequest
+	var request dto.DefaultRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
 	}

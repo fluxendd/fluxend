@@ -2,8 +2,8 @@ package project_requests
 
 import (
 	"fluxton/constants"
+	"fluxton/internal/api/dto"
 	"fluxton/pkg"
-	"fluxton/requests"
 	"fmt"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/google/uuid"
@@ -12,7 +12,7 @@ import (
 )
 
 type CreateRequest struct {
-	requests.BaseRequest
+	dto.BaseRequest
 	Name             string    `json:"name"`
 	Description      string    `json:"description"`
 	OrganizationUUID uuid.UUID `json:"organization_uuid"`

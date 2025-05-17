@@ -1,12 +1,12 @@
 package form_requests
 
 import (
-	"fluxton/requests"
+	"fluxton/internal/api/dto"
 	"github.com/labstack/echo/v4"
 )
 
 type UpdateFormFieldRequest struct {
-	requests.BaseRequest
+	dto.BaseRequest
 	FieldRequest
 }
 

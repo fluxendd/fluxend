@@ -1,9 +1,9 @@
 package controllers
 
 import (
+	"fluxton/internal/api/dto"
 	"fluxton/internal/api/response"
 	"fluxton/pkg/auth"
-	"fluxton/requests"
 	"fluxton/requests/user_requests"
 	"fluxton/resources"
 	"fluxton/services"
@@ -40,7 +40,7 @@ func NewUserController(injector *do.Injector) (*UserController, error) {
 //
 // @Router /users/{userUUID} [get]
 func (uc *UserController) Show(c echo.Context) error {
-	var request requests.DefaultRequest
+	var request dto.DefaultRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
 	}

@@ -1,9 +1,9 @@
 package controllers
 
 import (
+	"fluxton/internal/api/dto"
 	"fluxton/internal/api/response"
 	"fluxton/pkg/auth"
-	"fluxton/requests"
 	"fluxton/requests/container_requests"
 	"fluxton/resources"
 	"fluxton/services"
@@ -45,7 +45,7 @@ func NewContainerController(injector *do.Injector) (*ContainerController, error)
 //
 // @Router /storage [get]
 func (bc *ContainerController) List(c echo.Context) error {
-	var request requests.DefaultRequestWithProjectHeader
+	var request dto.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
 	}
@@ -83,7 +83,7 @@ func (bc *ContainerController) List(c echo.Context) error {
 //
 // @Router /storage/containers/{containerUUID} [get]
 func (bc *ContainerController) Show(c echo.Context) error {
-	var request requests.DefaultRequestWithProjectHeader
+	var request dto.DefaultRequestWithProjectHeader
 
 	authUser, _ := auth.NewAuth(c).User()
 
@@ -200,7 +200,7 @@ func (bc *ContainerController) Update(c echo.Context) error {
 //
 // @Router /storage/containers/{containerUUID} [delete]
 func (bc *ContainerController) Delete(c echo.Context) error {
-	var request requests.DefaultRequestWithProjectHeader
+	var request dto.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
 	}

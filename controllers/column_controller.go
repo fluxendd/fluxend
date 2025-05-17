@@ -1,10 +1,10 @@
 package controllers
 
 import (
+	"fluxton/internal/api/dto"
 	"fluxton/internal/api/response"
 	"fluxton/pkg/auth"
 	"fluxton/pkg/errors"
-	"fluxton/requests"
 	"fluxton/requests/column_requests"
 	"fluxton/resources"
 	"fluxton/services"
@@ -41,7 +41,7 @@ func NewColumnController(injector *do.Injector) (*ColumnController, error) {
 //
 // @Router /tables/{fullTableName}/columns [get]
 func (cc *ColumnController) List(c echo.Context) error {
-	var request requests.DefaultRequestWithProjectHeader
+	var request dto.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
 	}
@@ -214,7 +214,7 @@ func (cc *ColumnController) Rename(c echo.Context) error {
 //
 // @Router /tables/{fullTableName}/columns/{columnName} [delete]
 func (cc *ColumnController) Delete(c echo.Context) error {
-	var request requests.DefaultRequestWithProjectHeader
+	var request dto.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
 	}

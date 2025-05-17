@@ -1,9 +1,9 @@
 package controllers
 
 import (
+	"fluxton/internal/api/dto"
 	"fluxton/internal/api/response"
 	"fluxton/pkg/auth"
-	"fluxton/requests"
 	"fluxton/requests/table_requests"
 	"fluxton/resources"
 	"fluxton/services"
@@ -40,7 +40,7 @@ func NewTableController(injector *do.Injector) (*TableController, error) {
 //
 // @Router /tables [get]
 func (tc *TableController) List(c echo.Context) error {
-	var request requests.DefaultRequestWithProjectHeader
+	var request dto.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
 	}
@@ -77,7 +77,7 @@ func (tc *TableController) List(c echo.Context) error {
 //
 // @Router /tables/{tableUUID} [get]
 func (tc *TableController) Show(c echo.Context) error {
-	var request requests.DefaultRequestWithProjectHeader
+	var request dto.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
 	}
@@ -279,7 +279,7 @@ func (tc *TableController) Rename(c echo.Context) error {
 //
 // @Router /tables/{tableUUID} [delete]
 func (tc *TableController) Delete(c echo.Context) error {
-	var request requests.DefaultRequestWithProjectHeader
+	var request dto.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
 	}

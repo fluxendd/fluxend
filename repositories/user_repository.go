@@ -3,11 +3,11 @@ package repositories
 import (
 	"database/sql"
 	"errors"
+	"fluxton/internal/api/dto"
 	"fluxton/models"
 	"fluxton/pkg"
 	"fluxton/pkg/auth"
 	flxErrs "fluxton/pkg/errors"
-	"fluxton/requests"
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
@@ -24,7 +24,7 @@ func NewUserRepository(injector *do.Injector) (*UserRepository, error) {
 	return &UserRepository{db: db}, nil
 }
 
-func (r *UserRepository) List(paginationParams requests.PaginationParams) ([]models.User, error) {
+func (r *UserRepository) List(paginationParams dto.PaginationParams) ([]models.User, error) {
 	offset := (paginationParams.Page - 1) * paginationParams.Limit
 
 	query := fmt.Sprintf(

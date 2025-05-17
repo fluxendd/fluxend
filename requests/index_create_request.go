@@ -2,6 +2,7 @@ package requests
 
 import (
 	"fluxton/constants"
+	"fluxton/internal/api/dto"
 	"fluxton/pkg"
 	"fmt"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -11,7 +12,7 @@ import (
 )
 
 type IndexCreateRequest struct {
-	BaseRequest
+	dto.BaseRequest
 	Name     string   `json:"name"`
 	Columns  []string `json:"columns"`
 	IsUnique bool     `json:"is_unique"`
@@ -56,7 +57,7 @@ func (r *IndexCreateRequest) BindAndValidate(c echo.Context) []string {
 		return errors
 	}
 
-	if IsReservedIndexName(strings.ToLower(r.Name)) {
+	if dto.IsReservedIndexName(strings.ToLower(r.Name)) {
 		return append(errors, fmt.Sprintf("Index name '%s' is reserved and cannot be used", r.Name))
 	}
 

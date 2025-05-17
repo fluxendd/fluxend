@@ -1,6 +1,7 @@
 package requests
 
 import (
+	"fluxton/internal/api/dto"
 	"fmt"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/labstack/echo/v4"
@@ -12,7 +13,7 @@ type IndividualSetting struct {
 }
 
 type SettingUpdateRequest struct {
-	BaseRequest
+	dto.BaseRequest
 	Settings []IndividualSetting `json:"settings"`
 }
 

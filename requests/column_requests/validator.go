@@ -2,8 +2,8 @@ package column_requests
 
 import (
 	"errors"
+	"fluxton/internal/api/dto"
 	"fluxton/models"
-	"fluxton/requests"
 	"fmt"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"strings"
@@ -12,7 +12,7 @@ import (
 func validateName(value interface{}) error {
 	name := value.(string)
 
-	if requests.IsReservedColumnName(strings.ToLower(name)) {
+	if dto.IsReservedColumnName(strings.ToLower(name)) {
 		return fmt.Errorf("column name '%s' is reserved and cannot be used", name)
 	}
 
@@ -22,7 +22,7 @@ func validateName(value interface{}) error {
 func validateType(value interface{}) error {
 	columnType := value.(string)
 
-	if !requests.IsAllowedColumnType(strings.ToLower(columnType)) {
+	if !dto.IsAllowedColumnType(strings.ToLower(columnType)) {
 		return fmt.Errorf("column type '%s' is not allowed", columnType)
 	}
 

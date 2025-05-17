@@ -1,12 +1,12 @@
 package services
 
 import (
+	"fluxton/internal/api/dto"
 	"fluxton/models"
 	"fluxton/pkg"
 	"fluxton/pkg/errors"
 	"fluxton/policies"
 	"fluxton/repositories"
-	"fluxton/requests"
 	"fluxton/requests/container_requests"
 	"fluxton/services/storage"
 	"fmt"
@@ -17,11 +17,11 @@ import (
 )
 
 type FileService interface {
-	List(paginationParams requests.PaginationParams, containerUUID uuid.UUID, authUser models.AuthUser) ([]models.File, error)
+	List(paginationParams dto.PaginationParams, containerUUID uuid.UUID, authUser models.AuthUser) ([]models.File, error)
 	GetByUUID(fileUUID, containerUUID uuid.UUID, authUser models.AuthUser) (models.File, error)
 	Create(containerUUID uuid.UUID, request *container_requests.CreateFileRequest, authUser models.AuthUser) (models.File, error)
 	Rename(fileUUID, containerUUID uuid.UUID, authUser models.AuthUser, request *container_requests.RenameFileRequest) (*models.File, error)
-	Delete(fileUUID, containerUUID uuid.UUID, authUser models.AuthUser, request requests.DefaultRequestWithProjectHeader) (bool, error)
+	Delete(fileUUID, containerUUID uuid.UUID, authUser models.AuthUser, request dto.DefaultRequestWithProjectHeader) (bool, error)
 }
 
 type FileServiceImpl struct {
@@ -52,7 +52,7 @@ func NewFileService(injector *do.Injector) (FileService, error) {
 	}, nil
 }
 
-func (s *FileServiceImpl) List(paginationParams requests.PaginationParams, containerUUID uuid.UUID, authUser models.AuthUser) ([]models.File, error) {
+func (s *FileServiceImpl) List(paginationParams dto.PaginationParams, containerUUID uuid.UUID, authUser models.AuthUser) ([]models.File, error) {
 	container, err := s.containerRepo.GetByUUID(containerUUID)
 	if err != nil {
 		return []models.File{}, err
@@ -202,7 +202,7 @@ func (s *FileServiceImpl) Rename(fileUUID, containerUUID uuid.UUID, authUser mod
 	return s.fileRepo.Rename(&file)
 }
 
-func (s *FileServiceImpl) Delete(fileUUID, containerUUID uuid.UUID, authUser models.AuthUser, request requests.DefaultRequestWithProjectHeader) (bool, error) {
+func (s *FileServiceImpl) Delete(fileUUID, containerUUID uuid.UUID, authUser models.AuthUser, request dto.DefaultRequestWithProjectHeader) (bool, error) {
 	container, err := s.containerRepo.GetByUUID(containerUUID)
 	if err != nil {
 		return false, err

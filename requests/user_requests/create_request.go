@@ -1,7 +1,7 @@
 package user_requests
 
 import (
-	"fluxton/requests"
+	"fluxton/internal/api/dto"
 	"regexp"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -9,7 +9,7 @@ import (
 )
 
 type CreateRequest struct {
-	requests.BaseRequest
+	dto.BaseRequest
 	Username string `json:"username"`
 	Email    string `json:"email"`
 	Password string `json:"password"`

@@ -2,6 +2,7 @@ package requests
 
 import (
 	"fluxton/constants"
+	"fluxton/internal/api/dto"
 	"fluxton/pkg"
 	"fmt"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -16,7 +17,7 @@ type functionParameter struct {
 }
 
 type CreateFunctionRequest struct {
-	BaseRequest
+	dto.BaseRequest
 	Name       string              `json:"name"`
 	Parameters []functionParameter `json:"parameters"`
 	Definition string              `json:"definition"`

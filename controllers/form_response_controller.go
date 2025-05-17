@@ -1,9 +1,9 @@
 package controllers
 
 import (
+	"fluxton/internal/api/dto"
 	"fluxton/internal/api/response"
 	"fluxton/pkg/auth"
-	"fluxton/requests"
 	"fluxton/requests/form_requests"
 	"fluxton/resources"
 	"fluxton/services"
@@ -42,7 +42,7 @@ func NewFormResponseController(injector *do.Injector) (*FormResponseController, 
 //
 // @Router /forms/{formUUID}/responses [get]
 func (ffc *FormResponseController) List(c echo.Context) error {
-	var request requests.DefaultRequestWithProjectHeader
+	var request dto.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
 	}
@@ -84,7 +84,7 @@ func (ffc *FormResponseController) List(c echo.Context) error {
 //
 // @Router /forms/{formUUID}/responses/{formResponseUUID} [get]
 func (ffc *FormResponseController) Show(c echo.Context) error {
-	var request requests.DefaultRequestWithProjectHeader
+	var request dto.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
 	}
@@ -169,7 +169,7 @@ func (ffc *FormResponseController) Store(c echo.Context) error {
 //
 // @Router /forms/{formUUID}/responses/{formResponseUUID} [delete]
 func (ffc *FormResponseController) Delete(c echo.Context) error {
-	var request requests.DefaultRequestWithProjectHeader
+	var request dto.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
 	}
@@ -188,7 +188,7 @@ func (ffc *FormResponseController) Delete(c echo.Context) error {
 	return response.DeletedResponse(c, nil)
 }
 
-func (ffc *FormResponseController) parseRequest(request requests.DefaultRequestWithProjectHeader, c echo.Context) (uuid.UUID, uuid.UUID, error) {
+func (ffc *FormResponseController) parseRequest(request dto.DefaultRequestWithProjectHeader, c echo.Context) (uuid.UUID, uuid.UUID, error) {
 	formUUID, err := request.GetUUIDPathParam(c, "formUUID", true)
 	if err != nil {
 		return uuid.Nil, uuid.Nil, err

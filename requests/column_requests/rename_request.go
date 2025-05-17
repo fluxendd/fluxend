@@ -2,14 +2,14 @@ package column_requests
 
 import (
 	"fluxton/constants"
-	"fluxton/requests"
+	"fluxton/internal/api/dto"
 	"fmt"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/labstack/echo/v4"
 )
 
 type RenameRequest struct {
-	requests.BaseRequest
+	dto.BaseRequest
 	Name string `json:"name"`
 }
 
