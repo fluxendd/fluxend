@@ -1,18 +1,18 @@
 package project
 
 import (
-	"fluxton/internal/database/repositories"
 	"fluxton/internal/domain/auth"
+	"fluxton/internal/domain/organization"
 	"github.com/google/uuid"
 	"github.com/samber/do"
 )
 
 type Policy struct {
-	organizationRepo *repositories.OrganizationRepository
+	organizationRepo *organization.Repository
 }
 
 func NewProjectPolicy(injector *do.Injector) (*Policy, error) {
-	repo := do.MustInvoke[*repositories.OrganizationRepository](injector)
+	repo := do.MustInvoke[*organization.Repository](injector)
 
 	return &Policy{
 		organizationRepo: repo,
