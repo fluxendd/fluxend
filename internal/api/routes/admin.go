@@ -1,14 +1,14 @@
 package routes
 
 import (
-	"fluxton/controllers"
+	"fluxton/internal/api/handlers"
 	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
 )
 
 func RegisterAdminRoutes(e *echo.Echo, container *do.Injector, authMiddleware echo.MiddlewareFunc) {
-	settingController := do.MustInvoke[*controllers.SettingController](container)
-	healthController := do.MustInvoke[*controllers.HealthController](container)
+	settingController := do.MustInvoke[*handlers.SettingHandler](container)
+	healthController := do.MustInvoke[*handlers.HealthHandler](container)
 
 	adminGroup := e.Group("api/admin", authMiddleware)
 

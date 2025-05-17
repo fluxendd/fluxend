@@ -2,8 +2,8 @@ package seeders
 
 import (
 	"fluxton/internal/config/constants"
-	"fluxton/models"
-	"fluxton/repositories"
+	"fluxton/internal/database/repositories"
+	"fluxton/internal/domain/setting"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/samber/do"
@@ -15,7 +15,7 @@ func SeedSettings(container *do.Injector) {
 
 	settingsService := do.MustInvoke[*repositories.SettingRepository](container)
 
-	settings := []models.Setting{
+	settings := []setting.Setting{
 		// General settings
 		{Name: "appTitle", Value: os.Getenv("APP_TITLE"), DefaultValue: os.Getenv("APP_TITLE")},
 		{Name: "appUrl", Value: os.Getenv("APP_URL"), DefaultValue: os.Getenv("APP_URL")},

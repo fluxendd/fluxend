@@ -4,7 +4,7 @@ import (
 	"fluxton/internal/adapters/postgrest"
 	"fluxton/internal/api/dto"
 	"fluxton/internal/app"
-	"fluxton/repositories"
+	"fluxton/internal/database/repositories"
 	"fmt"
 	"github.com/samber/do"
 	"github.com/spf13/cobra"

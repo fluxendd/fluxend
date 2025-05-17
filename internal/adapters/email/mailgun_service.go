@@ -2,7 +2,7 @@ package email
 
 import (
 	"context"
-	"fluxton/services"
+	"fluxton/internal/domain/setting"
 	"fmt"
 	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
@@ -14,11 +14,11 @@ import (
 type MailgunServiceImpl struct {
 	client         *mailgun.MailgunImpl
 	domain         string
-	settingService services.SettingService
+	settingService setting.SettingService
 }
 
 func NewMailgunService(ctx echo.Context, injector *do.Injector) (EmailInterface, error) {
-	settingService, err := services.NewSettingService(injector)
+	settingService, err := setting.NewSettingService(injector)
 	if err != nil {
 		return nil, err
 	}

@@ -1,7 +1,7 @@
 package email
 
 import (
-	"fluxton/services"
+	"fluxton/internal/domain/setting"
 	"fmt"
 	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
@@ -11,11 +11,11 @@ import (
 
 type SendGridServiceImpl struct {
 	client         *sendgrid.Client
-	settingService services.SettingService
+	settingService setting.SettingService
 }
 
 func NewSendGridService(ctx echo.Context, injector *do.Injector) (EmailInterface, error) {
-	settingService, err := services.NewSettingService(injector)
+	settingService, err := setting.NewSettingService(injector)
 	if err != nil {
 		return nil, err
 	}

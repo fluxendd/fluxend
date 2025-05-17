@@ -2,9 +2,10 @@ package commands
 
 import (
 	"fluxton/internal/app"
+	"fluxton/internal/domain/database/stat"
+	"fluxton/internal/domain/stats"
 	"fluxton/models"
 	"fluxton/pkg"
-	"fluxton/services"
 	"github.com/google/uuid"
 	"github.com/samber/do"
 	"github.com/spf13/cobra"
@@ -34,7 +35,7 @@ var udbStats = &cobra.Command{
 	},
 }
 
-func getDatabaseStats(databaseName string) (models.DatabaseStat, error) {
+func getDatabaseStats(databaseName string) (stat.DatabaseStat, error) {
 	container := app.InitializeContainer()
 
 	authUser := models.AuthUser{
@@ -42,11 +43,11 @@ func getDatabaseStats(databaseName string) (models.DatabaseStat, error) {
 		RoleID: 1,
 	}
 
-	databaseStatsService := do.MustInvoke[services.DatabaseStatsService](container)
+	databaseStatsService := do.MustInvoke[stats.DatabaseStatsService](container)
 
 	stats, err := databaseStatsService.GetAll(databaseName, authUser)
 	if err != nil {
-		return models.DatabaseStat{}, err
+		return stat.DatabaseStat{}, err
 	}
 
 	return stats, nil

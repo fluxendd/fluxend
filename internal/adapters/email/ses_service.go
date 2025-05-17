@@ -2,7 +2,7 @@ package email
 
 import (
 	"context"
-	"fluxton/services"
+	"fluxton/internal/domain/setting"
 	"fmt"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
@@ -15,11 +15,11 @@ import (
 
 type SESServiceImpl struct {
 	client         *ses.Client
-	settingService services.SettingService
+	settingService setting.SettingService
 }
 
 func NewSESService(ctx echo.Context, injector *do.Injector) (EmailInterface, error) {
-	settingService, err := services.NewSettingService(injector)
+	settingService, err := setting.NewSettingService(injector)
 	if err != nil {
 		return nil, err
 	}

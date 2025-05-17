@@ -4,11 +4,9 @@ import (
 	middlewares2 "fluxton/internal/api/middlewares"
 	routes2 "fluxton/internal/api/routes"
 	"fluxton/internal/app"
+	"fluxton/internal/database/repositories"
+	"fluxton/internal/domain/setting"
 	"fluxton/internal/domain/user"
-	"fluxton/repositories"
-	"fluxton/routes"
-	"fluxton/services"
-
 	//"fluxton/repositories"
 	"fmt"
 	"github.com/getsentry/sentry-go"
@@ -58,7 +56,7 @@ func setupServer(container *do.Injector) *echo.Echo {
 }
 
 func registerRoutes(e *echo.Echo, container *do.Injector) {
-	settingService := do.MustInvoke[services.SettingService](container)
+	settingService := do.MustInvoke[setting.SettingService](container)
 	userRepo := do.MustInvoke[*user.Repository](container)
 
 	authMiddleware := middlewares2.AuthMiddleware(userRepo)
@@ -74,12 +72,12 @@ func registerRoutes(e *echo.Echo, container *do.Injector) {
 	routes2.RegisterUserRoutes(e, container, authMiddleware)
 	routes2.RegisterAdminRoutes(e, container, authMiddleware)
 	routes2.RegisterOrganizationRoutes(e, container, authMiddleware)
-	routes.RegisterProjectRoutes(e, container, authMiddleware, allowProjectMiddleware)
-	routes.RegisterTableRoutes(e, container, authMiddleware)
-	routes.RegisterFormRoutes(e, container, authMiddleware, allowFormMiddleware)
-	routes.RegisterStorageRoutes(e, container, authMiddleware, allowStorageMiddleware)
-	routes.RegisterFunctionRoutes(e, container, authMiddleware)
-	routes.RegisterBackup(e, container, authMiddleware, allowBackupMiddleware)
+	routes2.RegisterProjectRoutes(e, container, authMiddleware, allowProjectMiddleware)
+	routes2.RegisterTableRoutes(e, container, authMiddleware)
+	routes2.RegisterFormRoutes(e, container, authMiddleware, allowFormMiddleware)
+	routes2.RegisterStorageRoutes(e, container, authMiddleware, allowStorageMiddleware)
+	routes2.RegisterFunctionRoutes(e, container, authMiddleware)
+	routes2.RegisterBackup(e, container, authMiddleware, allowBackupMiddleware)
 
 	e.GET("/docs/*", echoSwagger.WrapHandler)
 }

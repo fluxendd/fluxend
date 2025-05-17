@@ -2,9 +2,9 @@ package postgrest
 
 import (
 	"fluxton/internal/config/constants"
-	"fluxton/models"
+	"fluxton/internal/database/repositories"
+	"fluxton/internal/domain/project"
 	"fluxton/pkg"
-	"fluxton/repositories"
 	"fmt"
 	"github.com/rs/zerolog/log"
 	"github.com/samber/do"
@@ -64,7 +64,7 @@ func (s *PostgrestServiceImpl) StartContainer(dbName string) {
 			Str("error", err.Error()).
 			Msg("failed to start container")
 
-		_, err := s.projectRepo.UpdateStatusByDatabaseName(dbName, models.ProjectStatusError)
+		_, err := s.projectRepo.UpdateStatusByDatabaseName(dbName, project.ProjectStatusError)
 		if err != nil {
 			log.Error().
 				Str("action", constants.ActionPostgrest).
@@ -78,7 +78,7 @@ func (s *PostgrestServiceImpl) StartContainer(dbName string) {
 	}
 
 	// Update project status to active
-	_, err := s.projectRepo.UpdateStatusByDatabaseName(dbName, models.ProjectStatusActive)
+	_, err := s.projectRepo.UpdateStatusByDatabaseName(dbName, project.ProjectStatusActive)
 	if err != nil {
 		log.Error().
 			Str("action", constants.ActionPostgrest).
@@ -114,7 +114,7 @@ func (s *PostgrestServiceImpl) RemoveContainer(dbName string) {
 			Msg("failed to remove container")
 	}
 
-	_, err := s.projectRepo.UpdateStatusByDatabaseName(dbName, models.ProjectStatusInactive)
+	_, err := s.projectRepo.UpdateStatusByDatabaseName(dbName, project.ProjectStatusInactive)
 	if err != nil {
 		log.Error().
 			Str("action", constants.ActionPostgrest).

@@ -1,13 +1,13 @@
 package organization
 
 import (
-	"fluxton/models"
+	"fluxton/internal/domain/shared"
 	"github.com/google/uuid"
 	"time"
 )
 
 type Organization struct {
-	models.BaseModel
+	shared.BaseModel
 	Uuid      uuid.UUID `db:"uuid"`
 	Name      string    `db:"name"`
 	CreatedBy uuid.UUID `db:"created_by"`

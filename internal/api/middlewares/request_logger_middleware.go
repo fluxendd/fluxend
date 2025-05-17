@@ -3,9 +3,9 @@ package middlewares
 import (
 	"bytes"
 	"fluxton/internal/config/constants"
-	"fluxton/models"
+	"fluxton/internal/database/repositories"
+	"fluxton/internal/domain/logging"
 	"fluxton/pkg/auth"
-	"fluxton/repositories"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/rs/zerolog/log"
@@ -23,7 +23,7 @@ func RequestLoggerMiddleware(requestLogRepo *repositories.RequestLogRepository) 
 			res := next(c)
 			authUserUUID, _ := auth.NewAuth(c).Uuid()
 
-			logEntry := models.RequestLog{
+			logEntry := logging.RequestLog{
 				UserUuid:  authUserUUID,
 				APIKey:    uuid.MustParse("00000000-0000-0000-0000-000000000000"), // TODO: implement API key parsing/reading later
 				Method:    request.Method,

@@ -3,10 +3,10 @@ package user
 import (
 	"fluxton/internal/api/dto"
 	"fluxton/internal/api/dto/user"
+	"fluxton/internal/domain/setting"
 	"fluxton/pkg/auth"
 	"fluxton/pkg/errors"
 	"fluxton/policies"
-	"fluxton/services"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
@@ -28,12 +28,12 @@ type UserService interface {
 }
 
 type UserServiceImpl struct {
-	settingService services.SettingService
+	settingService setting.SettingService
 	userRepo       *Repository
 }
 
 func NewUserService(injector *do.Injector) (UserService, error) {
-	settingService := do.MustInvoke[services.SettingService](injector)
+	settingService := do.MustInvoke[setting.SettingService](injector)
 	repo := do.MustInvoke[*Repository](injector)
 
 	return &UserServiceImpl{
