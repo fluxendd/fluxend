@@ -2,6 +2,7 @@ package services
 
 import (
 	"fluxton/internal/api/dto"
+	//repositories2 "fluxton/internal/database/repositories"
 	"fluxton/models"
 	"fluxton/pkg/errors"
 	"fluxton/policies"
@@ -26,13 +27,13 @@ type OrganizationService interface {
 type OrganizationServiceImpl struct {
 	organizationPolicy *policies.OrganizationPolicy
 	organizationRepo   *repositories.OrganizationRepository
-	userRepo           *repositories.UserRepository
+	userRepo           *repositories2.UserRepository
 }
 
 func NewOrganizationService(injector *do.Injector) (OrganizationService, error) {
 	policy := do.MustInvoke[*policies.OrganizationPolicy](injector)
 	organizationRepo := do.MustInvoke[*repositories.OrganizationRepository](injector)
-	userRepo := do.MustInvoke[*repositories.UserRepository](injector)
+	userRepo := do.MustInvoke[*repositories2.UserRepository](injector)
 
 	return &OrganizationServiceImpl{
 		organizationPolicy: policy,

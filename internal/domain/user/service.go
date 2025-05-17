@@ -6,7 +6,6 @@ import (
 	"fluxton/pkg/auth"
 	"fluxton/pkg/errors"
 	"fluxton/policies"
-	"fluxton/repositories"
 	"fluxton/services"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
@@ -30,12 +29,12 @@ type UserService interface {
 
 type UserServiceImpl struct {
 	settingService services.SettingService
-	userRepo       *repositories.UserRepository
+	userRepo       *Repository
 }
 
 func NewUserService(injector *do.Injector) (UserService, error) {
 	settingService := do.MustInvoke[services.SettingService](injector)
-	repo := do.MustInvoke[*repositories.UserRepository](injector)
+	repo := do.MustInvoke[*Repository](injector)
 
 	return &UserServiceImpl{
 		settingService: settingService,

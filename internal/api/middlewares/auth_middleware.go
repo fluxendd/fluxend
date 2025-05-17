@@ -2,9 +2,9 @@ package middlewares
 
 import (
 	"fluxton/internal/api/response"
+	"fluxton/internal/database/repositories"
 	"fluxton/models"
 	"fluxton/pkg/errors"
-	"fluxton/repositories"
 	"fmt"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"

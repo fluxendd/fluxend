@@ -4,8 +4,10 @@ import (
 	"fluxton/controllers"
 	"fluxton/internal/adapters/connection"
 	"fluxton/internal/adapters/postgrest"
+	"fluxton/internal/api/handlers"
 	"fluxton/internal/database"
 	"fluxton/internal/database/factories"
+	repositories2 "fluxton/internal/database/repositories"
 	"fluxton/internal/domain/user"
 	"fluxton/policies"
 	"fluxton/repositories"
@@ -24,7 +26,7 @@ func InitializeContainer() *do.Injector {
 	})
 
 	// Repositories
-	do.Provide(injector, repositories.NewUserRepository)
+	do.Provide(injector, repositories2.NewUserRepository)
 	do.Provide(injector, repositories.NewRequestLogRepository)
 	do.Provide(injector, repositories.NewDatabaseRepository)
 	do.Provide(injector, repositories.NewSettingRepository)
@@ -67,8 +69,8 @@ func InitializeContainer() *do.Injector {
 	do.Provide(injector, services.NewBackupWorkflowService)
 	do.Provide(injector, services.NewBackupService)
 
-	// Controllers
-	do.Provide(injector, controllers.NewUserController)
+	// Handlers
+	do.Provide(injector, handlers.NewUserHandler)
 	do.Provide(injector, controllers.NewSettingController)
 	do.Provide(injector, controllers.NewHealthController)
 	do.Provide(injector, controllers.NewOrganizationController)

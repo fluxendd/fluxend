@@ -1,12 +1,12 @@
 package factories
 
 import (
+	"fluxton/internal/database/repositories"
 	"fluxton/pkg"
 	"github.com/samber/do"
 	"time"
 
 	"fluxton/models"
-	"fluxton/repositories"
 )
 
 const defaultPassword = "password"

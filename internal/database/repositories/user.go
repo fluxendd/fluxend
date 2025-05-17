@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"fluxton/internal/api/dto"
-	"fluxton/models"
+	"fluxton/internal/domain/user"
 	"fluxton/pkg"
 	"fluxton/pkg/auth"
 	flxErrs "fluxton/pkg/errors"
@@ -19,17 +19,17 @@ type UserRepository struct {
 	db *sqlx.DB
 }
 
-func NewUserRepository(injector *do.Injector) (*UserRepository, error) {
+func NewUserRepository(injector *do.Injector) (user.Repository, error) {
 	db := do.MustInvoke[*sqlx.DB](injector)
 	return &UserRepository{db: db}, nil
 }
 
-func (r *UserRepository) List(paginationParams dto.PaginationParams) ([]models.User, error) {
+func (r *UserRepository) List(paginationParams dto.PaginationParams) ([]user.User, error) {
 	offset := (paginationParams.Page - 1) * paginationParams.Limit
 
 	query := fmt.Sprintf(
 		"SELECT %s FROM authentication.users ORDER BY :sort DESC LIMIT :limit OFFSET :offset",
-		pkg.GetColumns[models.User](),
+		pkg.GetColumns[user.User](),
 	)
 
 	params := map[string]interface{}{
@@ -44,13 +44,13 @@ func (r *UserRepository) List(paginationParams dto.PaginationParams) ([]models.U
 	}
 	defer rows.Close()
 
-	var users []models.User
+	var users []user.User
 	for rows.Next() {
-		var user models.User
-		if err := rows.StructScan(&user); err != nil {
+		var currentUser user.User
+		if err := rows.StructScan(&currentUser); err != nil {
 			return nil, pkg.FormatError(err, "scan", pkg.GetMethodName())
 		}
-		users = append(users, user)
+		users = append(users, currentUser)
 	}
 
 	if err := rows.Err(); err != nil {
@@ -60,19 +60,19 @@ func (r *UserRepository) List(paginationParams dto.PaginationParams) ([]models.U
 	return users, nil
 }
 
-func (r *UserRepository) GetByID(userUUID uuid.UUID) (models.User, error) {
-	query := fmt.Sprintf("SELECT %s FROM authentication.users WHERE uuid = $1", pkg.GetColumns[models.User]())
-	var user models.User
-	err := r.db.Get(&user, query, userUUID)
+func (r *UserRepository) GetByID(userUUID uuid.UUID) (user.User, error) {
+	query := fmt.Sprintf("SELECT %s FROM authentication.users WHERE uuid = $1", pkg.GetColumns[user.User]())
+	var fetchedUser user.User
+	err := r.db.Get(&fetchedUser, query, userUUID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return models.User{}, flxErrs.NewNotFoundError("user.error.notFound")
+			return user.User{}, flxErrs.NewNotFoundError("user.error.notFound")
 		}
 
-		return models.User{}, pkg.FormatError(err, "fetch", pkg.GetMethodName())
+		return user.User{}, pkg.FormatError(err, "fetch", pkg.GetMethodName())
 	}
 
-	return user, nil
+	return fetchedUser, nil
 }
 
 func (r *UserRepository) ExistsByID(userUUID uuid.UUID) (bool, error) {
@@ -108,29 +108,29 @@ func (r *UserRepository) ExistsByUsername(username string) (bool, error) {
 	return exists, nil
 }
 
-func (r *UserRepository) GetByEmail(email string) (models.User, error) {
-	query := fmt.Sprintf("SELECT %s FROM authentication.users WHERE email = $1", pkg.GetColumns[models.User]())
-	var user models.User
-	err := r.db.Get(&user, query, email)
+func (r *UserRepository) GetByEmail(email string) (user.User, error) {
+	query := fmt.Sprintf("SELECT %s FROM authentication.users WHERE email = $1", pkg.GetColumns[user.User]())
+	var fetchedUser user.User
+	err := r.db.Get(&fetchedUser, query, email)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return models.User{}, flxErrs.NewNotFoundError("user.error.notFound")
+			return user.User{}, flxErrs.NewNotFoundError("user.error.notFound")
 		}
 
-		return models.User{}, fmt.Errorf("could not fetch rowx: %v", err)
+		return user.User{}, fmt.Errorf("could not fetch rowx: %v", err)
 	}
 
-	return user, nil
+	return fetchedUser, nil
 }
 
-func (r *UserRepository) Create(user *models.User) (*models.User, error) {
+func (r *UserRepository) Create(input *user.User) (*user.User, error) {
 	query := "INSERT INTO authentication.users (username, email, status, role_id, password) VALUES ($1, $2, $3, $4, $5) RETURNING uuid"
-	err := r.db.QueryRowx(query, user.Username, user.Email, models.UserStatusActive, user.RoleID, auth.HashPassword(user.Password)).Scan(&user.Uuid)
+	err := r.db.QueryRowx(query, input.Username, input.Email, user.UserStatusActive, input.RoleID, auth.HashPassword(input.Password)).Scan(&input.Uuid)
 	if err != nil {
-		return &models.User{}, fmt.Errorf("could not create row: %v", err)
+		return &user.User{}, fmt.Errorf("could not create row: %v", err)
 	}
 
-	return user, nil
+	return input, nil
 }
 
 func (r *UserRepository) CreateJWTVersion(userId uuid.UUID) (int, error) {
@@ -168,26 +168,26 @@ func (r *UserRepository) GetJWTVersion(userId uuid.UUID) (int, error) {
 	return version, nil
 }
 
-func (r *UserRepository) Update(userUUID uuid.UUID, user *models.User) (*models.User, error) {
-	user.UpdatedAt = time.Now()
-	user.Uuid = userUUID
+func (r *UserRepository) Update(userUUID uuid.UUID, inputUser *user.User) (*user.User, error) {
+	inputUser.UpdatedAt = time.Now()
+	inputUser.Uuid = userUUID
 
 	query := `
 		UPDATE authentication.users 
 		SET bio = :bio, updated_at = :updated_at 
 		WHERE uuid = :uuid`
 
-	res, err := r.db.NamedExec(query, user)
+	res, err := r.db.NamedExec(query, inputUser)
 	if err != nil {
-		return &models.User{}, pkg.FormatError(err, "update", pkg.GetMethodName())
+		return &user.User{}, pkg.FormatError(err, "update", pkg.GetMethodName())
 	}
 
 	_, err = res.RowsAffected()
 	if err != nil {
-		return &models.User{}, pkg.FormatError(err, "affectedRows", pkg.GetMethodName())
+		return &user.User{}, pkg.FormatError(err, "affectedRows", pkg.GetMethodName())
 	}
 
-	return user, nil
+	return inputUser, nil
 }
 
 func (r *UserRepository) Delete(userUUID uuid.UUID) (bool, error) {

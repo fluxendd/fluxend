@@ -4,6 +4,7 @@ import (
 	middlewares2 "fluxton/internal/api/middlewares"
 	routes2 "fluxton/internal/api/routes"
 	"fluxton/internal/app"
+	repositories2 "fluxton/internal/database/repositories"
 	"fluxton/repositories"
 	"fluxton/routes"
 	"fluxton/services"
@@ -56,7 +57,7 @@ func setupServer(container *do.Injector) *echo.Echo {
 
 func registerRoutes(e *echo.Echo, container *do.Injector) {
 	settingService := do.MustInvoke[services.SettingService](container)
-	userRepo := do.MustInvoke[*repositories.UserRepository](container)
+	userRepo := do.MustInvoke[*repositories2.UserRepository](container)
 
 	authMiddleware := middlewares2.AuthMiddleware(userRepo)
 	allowProjectMiddleware := middlewares2.AllowProjectMiddleware(settingService)

@@ -15,7 +15,7 @@ type UserController struct {
 	userService userDomain.UserService
 }
 
-func NewUserController(injector *do.Injector) (*UserController, error) {
+func NewUserHandler(injector *do.Injector) (*UserController, error) {
 	userService := do.MustInvoke[userDomain.UserService](injector)
 
 	return &UserController{userService: userService}, nil
