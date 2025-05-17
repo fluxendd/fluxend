@@ -1,9 +1,9 @@
 package services
 
 import (
-	"fluxton/errs"
 	"fluxton/models"
 	"fluxton/pkg"
+	"fluxton/pkg/errors"
 	"fluxton/policies"
 	"fluxton/repositories"
 	"fluxton/requests/table_requests"
@@ -52,7 +52,7 @@ func (s *TableServiceImpl) List(projectUUID uuid.UUID, authUser models.AuthUser)
 	}
 
 	if !s.projectPolicy.CanAccess(project.OrganizationUuid, authUser) {
-		return []models.Table{}, errs.NewForbiddenError("project.error.listForbidden")
+		return []models.Table{}, errors.NewForbiddenError("project.error.listForbidden")
 	}
 
 	clientTableRepo, connection, err := s.connectionService.GetTableRepo(project.DBName, nil)
@@ -76,7 +76,7 @@ func (s *TableServiceImpl) GetByName(fullTableName string, projectUUID uuid.UUID
 	}
 
 	if !s.projectPolicy.CanAccess(project.OrganizationUuid, authUser) {
-		return models.Table{}, errs.NewForbiddenError("project.error.viewForbidden")
+		return models.Table{}, errors.NewForbiddenError("project.error.viewForbidden")
 	}
 
 	clientTableRepo, connection, err := s.connectionService.GetTableRepo(project.DBName, nil)
@@ -100,7 +100,7 @@ func (s *TableServiceImpl) Create(request *table_requests.CreateRequest, authUse
 	}
 
 	if !s.projectPolicy.CanCreate(project.OrganizationUuid, authUser) {
-		return models.Table{}, errs.NewForbiddenError("table.error.createForbidden")
+		return models.Table{}, errors.NewForbiddenError("table.error.createForbidden")
 	}
 
 	clientTableRepo, connection, err := s.connectionService.GetTableRepo(project.DBName, nil)
@@ -129,7 +129,7 @@ func (s *TableServiceImpl) Upload(request *table_requests.UploadRequest, authUse
 	}
 
 	if !s.projectPolicy.CanCreate(project.OrganizationUuid, authUser) {
-		return models.Table{}, errs.NewForbiddenError("table.error.createForbidden")
+		return models.Table{}, errors.NewForbiddenError("table.error.createForbidden")
 	}
 
 	clientTableRepo, connection, err := s.connectionService.GetTableRepo(project.DBName, nil)
@@ -176,7 +176,7 @@ func (s *TableServiceImpl) Duplicate(fullTableName string, authUser models.AuthU
 	}
 
 	if !s.projectPolicy.CanUpdate(project.OrganizationUuid, authUser) {
-		return &models.Table{}, errs.NewForbiddenError("project.error.updateForbidden")
+		return &models.Table{}, errors.NewForbiddenError("project.error.updateForbidden")
 	}
 
 	clientTableRepo, connection, err := s.connectionService.GetTableRepo(project.DBName, nil)
@@ -212,7 +212,7 @@ func (s *TableServiceImpl) Rename(fullTableName string, authUser models.AuthUser
 	}
 
 	if !s.projectPolicy.CanUpdate(project.OrganizationUuid, authUser) {
-		return models.Table{}, errs.NewForbiddenError("project.error.updateForbidden")
+		return models.Table{}, errors.NewForbiddenError("project.error.updateForbidden")
 	}
 
 	clientTableRepo, connection, err := s.connectionService.GetTableRepo(project.DBName, nil)
@@ -248,7 +248,7 @@ func (s *TableServiceImpl) Delete(fullTableName string, projectUUID uuid.UUID, a
 	}
 
 	if !s.projectPolicy.CanUpdate(project.OrganizationUuid, authUser) {
-		return false, errs.NewForbiddenError("project.error.updateForbidden")
+		return false, errors.NewForbiddenError("project.error.updateForbidden")
 	}
 
 	clientTableRepo, connection, err := s.connectionService.GetTableRepo(project.DBName, nil)
@@ -272,7 +272,7 @@ func (s *TableServiceImpl) validateNameForDuplication(name string, clientTableRe
 	}
 
 	if exists {
-		return errs.NewUnprocessableError("table.error.alreadyExists")
+		return errors.NewUnprocessableError("table.error.alreadyExists")
 	}
 
 	return nil

@@ -3,9 +3,9 @@ package repositories
 import (
 	"database/sql"
 	"errors"
-	"fluxton/errs"
 	"fluxton/models"
 	"fluxton/pkg"
+	flxErrs "fluxton/pkg/errors"
 	"fluxton/requests"
 	"fmt"
 	"github.com/google/uuid"
@@ -116,7 +116,7 @@ func (r *ProjectRepository) GetByUUID(projectUUID uuid.UUID) (models.Project, er
 	err := r.db.Get(&project, query, projectUUID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return models.Project{}, errs.NewNotFoundError("project.error.notFound")
+			return models.Project{}, flxErrs.NewNotFoundError("project.error.notFound")
 		}
 
 		return models.Project{}, pkg.FormatError(err, "fetch", pkg.GetMethodName())
@@ -132,7 +132,7 @@ func (r *ProjectRepository) GetDatabaseNameByUUID(projectUUID uuid.UUID) (string
 	err := r.db.Get(&dbName, query, projectUUID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return "", errs.NewNotFoundError("project.error.notFound")
+			return "", flxErrs.NewNotFoundError("project.error.notFound")
 		}
 
 		return "", pkg.FormatError(err, "fetch", pkg.GetMethodName())
@@ -148,7 +148,7 @@ func (r *ProjectRepository) GetUUIDByDatabaseName(dbName string) (uuid.UUID, err
 	err := r.db.Get(&projectUUID, query, dbName)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return uuid.UUID{}, errs.NewNotFoundError("project.error.notFound")
+			return uuid.UUID{}, flxErrs.NewNotFoundError("project.error.notFound")
 		}
 
 		return uuid.UUID{}, pkg.FormatError(err, "fetch", pkg.GetMethodName())
@@ -164,7 +164,7 @@ func (r *ProjectRepository) GetOrganizationUUIDByProjectUUID(id uuid.UUID) (uuid
 	err := r.db.Get(&organizationUUID, query, id)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return uuid.UUID{}, errs.NewNotFoundError("project.error.notFound")
+			return uuid.UUID{}, flxErrs.NewNotFoundError("project.error.notFound")
 		}
 
 		return uuid.UUID{}, pkg.FormatError(err, "fetch", pkg.GetMethodName())

@@ -2,9 +2,9 @@ package services
 
 import (
 	"encoding/json"
-	"fluxton/errs"
 	"fluxton/models"
 	"fluxton/pkg"
+	"fluxton/pkg/errors"
 	"fluxton/requests/form_requests"
 	"github.com/samber/do"
 )
@@ -28,7 +28,7 @@ func NewFormFieldValidationService(injector *do.Injector) (FormFieldValidationSe
 func (s *FormFieldValidationServiceImpl) Validate(value string, formField models.FormField) error {
 	var validationErr error
 	if formField.IsRequired && value == "" {
-		return errs.NewUnprocessableError("formResponse.error.fieldRequired")
+		return errors.NewUnprocessableError("formResponse.error.fieldRequired")
 	}
 
 	switch formField.Type {
@@ -52,15 +52,15 @@ func (s *FormFieldValidationServiceImpl) Validate(value string, formField models
 func (s *FormFieldValidationServiceImpl) validateNumber(value string, formField models.FormField) error {
 	numericValue, err := pkg.ConvertStringToInt(value)
 	if err != nil {
-		return errs.NewUnprocessableError("formResponse.error.invalidNumber")
+		return errors.NewUnprocessableError("formResponse.error.invalidNumber")
 	}
 
 	if formField.MinValue.Valid && numericValue < int(formField.MinValue.Int64) {
-		return errs.NewUnprocessableError("formResponse.error.numberTooLow")
+		return errors.NewUnprocessableError("formResponse.error.numberTooLow")
 	}
 
 	if formField.MaxValue.Valid && numericValue > int(formField.MaxValue.Int64) {
-		return errs.NewUnprocessableError("formResponse.error.numberTooHigh")
+		return errors.NewUnprocessableError("formResponse.error.numberTooHigh")
 	}
 
 	return nil
@@ -68,17 +68,17 @@ func (s *FormFieldValidationServiceImpl) validateNumber(value string, formField 
 
 func (s *FormFieldValidationServiceImpl) validateString(value string, formField models.FormField) error {
 	if formField.MinLength.Valid && len(value) < int(formField.MinLength.Int64) {
-		return errs.NewUnprocessableError("formResponse.error.stringTooShort")
+		return errors.NewUnprocessableError("formResponse.error.stringTooShort")
 	}
 
 	if formField.MaxLength.Valid && len(value) > int(formField.MaxLength.Int64) {
-		return errs.NewUnprocessableError("formResponse.error.stringTooLong")
+		return errors.NewUnprocessableError("formResponse.error.stringTooLong")
 	}
 
 	if formField.Pattern.Valid {
 		matched, err := pkg.MatchRegex(value, formField.Pattern.String)
 		if err != nil || !matched {
-			return errs.NewUnprocessableError("formResponse.error.invalidPattern")
+			return errors.NewUnprocessableError("formResponse.error.invalidPattern")
 		}
 	}
 
@@ -89,7 +89,7 @@ func (s *FormFieldValidationServiceImpl) validateEmail(value string, formField m
 	emailRegex := `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`
 	matched, err := pkg.MatchRegex(value, emailRegex)
 	if err != nil || !matched {
-		return errs.NewUnprocessableError("formResponse.error.invalidEmail")
+		return errors.NewUnprocessableError("formResponse.error.invalidEmail")
 	}
 
 	return nil
@@ -111,7 +111,7 @@ func (s *FormFieldValidationServiceImpl) validateSelect(value string, formField 
 	var options []string
 	err := json.Unmarshal([]byte(formField.Options.String), &options)
 	if err != nil {
-		return errs.NewUnprocessableError("formResponse.error.invalidSelectOptions")
+		return errors.NewUnprocessableError("formResponse.error.invalidSelectOptions")
 	}
 
 	if formField.Options.Valid {
@@ -121,7 +121,7 @@ func (s *FormFieldValidationServiceImpl) validateSelect(value string, formField 
 			}
 		}
 
-		return errs.NewUnprocessableError("formResponse.error.invalidSelectOption")
+		return errors.NewUnprocessableError("formResponse.error.invalidSelectOption")
 	}
 
 	return nil

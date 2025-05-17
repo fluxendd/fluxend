@@ -1,8 +1,8 @@
 package services
 
 import (
-	"fluxton/errs"
 	"fluxton/models"
+	"fluxton/pkg/errors"
 	"fluxton/policies"
 	"fluxton/repositories"
 	"fluxton/requests"
@@ -46,7 +46,7 @@ func NewProjectService(injector *do.Injector) (ProjectService, error) {
 
 func (s *ProjectServiceImpl) List(paginationParams requests.PaginationParams, organizationUUID uuid.UUID, authUser models.AuthUser) ([]models.Project, error) {
 	if !s.projectPolicy.CanAccess(organizationUUID, authUser) {
-		return []models.Project{}, errs.NewForbiddenError("project.error.listForbidden")
+		return []models.Project{}, errors.NewForbiddenError("project.error.listForbidden")
 	}
 
 	return s.projectRepo.ListForUser(paginationParams, authUser.Uuid)
@@ -59,7 +59,7 @@ func (s *ProjectServiceImpl) GetByUUID(projectUUID uuid.UUID, authUser models.Au
 	}
 
 	if !s.projectPolicy.CanAccess(project.OrganizationUuid, authUser) {
-		return models.Project{}, errs.NewForbiddenError("project.error.viewForbidden")
+		return models.Project{}, errors.NewForbiddenError("project.error.viewForbidden")
 	}
 
 	return project, nil
@@ -72,7 +72,7 @@ func (s *ProjectServiceImpl) GetDatabaseNameByUUID(projectUUID uuid.UUID, authUs
 	}
 
 	if !s.projectPolicy.CanAccess(project.OrganizationUuid, authUser) {
-		return "", errs.NewForbiddenError("project.error.viewForbidden")
+		return "", errors.NewForbiddenError("project.error.viewForbidden")
 	}
 
 	return project.DBName, nil
@@ -80,7 +80,7 @@ func (s *ProjectServiceImpl) GetDatabaseNameByUUID(projectUUID uuid.UUID, authUs
 
 func (s *ProjectServiceImpl) Create(request *project_requests.CreateRequest, authUser models.AuthUser) (models.Project, error) {
 	if !s.projectPolicy.CanCreate(request.OrganizationUUID, authUser) {
-		return models.Project{}, errs.NewForbiddenError("project.error.createForbidden")
+		return models.Project{}, errors.NewForbiddenError("project.error.createForbidden")
 	}
 
 	err := s.validateNameForDuplication(request.Name, request.OrganizationUUID)
@@ -122,7 +122,7 @@ func (s *ProjectServiceImpl) Update(projectUUID uuid.UUID, authUser models.AuthU
 	}
 
 	if !s.projectPolicy.CanUpdate(project.OrganizationUuid, authUser) {
-		return &models.Project{}, errs.NewForbiddenError("project.error.updateForbidden")
+		return &models.Project{}, errors.NewForbiddenError("project.error.updateForbidden")
 	}
 
 	err = project.PopulateModel(&project, request)
@@ -148,7 +148,7 @@ func (s *ProjectServiceImpl) Delete(projectUUID uuid.UUID, authUser models.AuthU
 	}
 
 	if !s.projectPolicy.CanUpdate(project.OrganizationUuid, authUser) {
-		return false, errs.NewForbiddenError("project.error.updateForbidden")
+		return false, errors.NewForbiddenError("project.error.updateForbidden")
 	}
 
 	err = s.databaseRepo.DropIfExists(project.DBName)
@@ -176,7 +176,7 @@ func (s *ProjectServiceImpl) validateNameForDuplication(name string, organizatio
 	}
 
 	if exists {
-		return errs.NewUnprocessableError("project.error.duplicateName")
+		return errors.NewUnprocessableError("project.error.duplicateName")
 	}
 
 	return nil

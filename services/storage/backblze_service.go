@@ -3,7 +3,7 @@ package storage
 import (
 	"encoding/base64"
 	"encoding/json"
-	"fluxton/errs"
+	"fluxton/pkg/errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -301,7 +301,7 @@ func (b *BackblazeServiceImpl) ShowContainer(bucketName string) (*ContainerMetad
 	}
 
 	if len(listResponse.Buckets) == 0 {
-		return nil, errs.NewNotFoundError(fmt.Sprintf("bucket %q not found", bucketName))
+		return nil, errors.NewNotFoundError(fmt.Sprintf("bucket %q not found", bucketName))
 	}
 
 	bucket := listResponse.Buckets[0]
@@ -510,7 +510,7 @@ func (b *BackblazeServiceImpl) getFileID(bucketID, fileName string) (string, err
 	}
 
 	if len(listResponse.Files) == 0 || listResponse.Files[0].FileName != fileName {
-		return "", errs.NewNotFoundError(fmt.Sprintf("file %q not found", fileName))
+		return "", errors.NewNotFoundError(fmt.Sprintf("file %q not found", fileName))
 	}
 
 	return listResponse.Files[0].FileID, nil
@@ -559,15 +559,15 @@ func (b *BackblazeServiceImpl) transformError(err error) error {
 	errorString := err.Error()
 
 	if strings.Contains(errorString, "duplicate_bucket_name") {
-		return errs.NewBadRequestError("backblaze.error.bucketAlreadyExists")
+		return errors.NewBadRequestError("backblaze.error.bucketAlreadyExists")
 	}
 
 	if strings.Contains(errorString, "not_found") && strings.Contains(errorString, "bucket") {
-		return errs.NewNotFoundError("backblaze.error.bucketNotFound")
+		return errors.NewNotFoundError("backblaze.error.bucketNotFound")
 	}
 
 	if strings.Contains(errorString, "file_not_present") {
-		return errs.NewNotFoundError("backblaze.error.fileNotFound")
+		return errors.NewNotFoundError("backblaze.error.fileNotFound")
 	}
 
 	return err

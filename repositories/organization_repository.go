@@ -3,9 +3,9 @@ package repositories
 import (
 	"database/sql"
 	"errors"
-	"fluxton/errs"
 	"fluxton/models"
 	"fluxton/pkg"
+	flxErrs "fluxton/pkg/errors"
 	"fluxton/requests"
 	"fmt"
 	"github.com/google/uuid"
@@ -126,7 +126,7 @@ func (r *OrganizationRepository) GetUser(organizationUUID, userUUID uuid.UUID) (
 	err := r.db.Get(&user, query, organizationUUID, userUUID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return models.User{}, errs.NewNotFoundError("organization.error.userNotFound")
+			return models.User{}, flxErrs.NewNotFoundError("organization.error.userNotFound")
 		}
 
 		return models.User{}, pkg.FormatError(err, "fetch", pkg.GetMethodName())
@@ -163,7 +163,7 @@ func (r *OrganizationRepository) GetByUUID(organizationUUID uuid.UUID) (models.O
 	err := r.db.Get(&organization, query, organizationUUID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return models.Organization{}, errs.NewNotFoundError("organization.error.notFound")
+			return models.Organization{}, flxErrs.NewNotFoundError("organization.error.notFound")
 		}
 
 		return models.Organization{}, pkg.FormatError(err, "fetch", pkg.GetMethodName())

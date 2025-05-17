@@ -1,9 +1,9 @@
 package repositories
 
 import (
-	"fluxton/errs"
 	"fluxton/models"
 	"fluxton/pkg"
+	flxErrs "fluxton/pkg/errors"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 	"github.com/samber/do"
@@ -169,7 +169,7 @@ func (r *FormResponseRepository) GetByUUID(formResponseUUID uuid.UUID) (*models.
 	}
 
 	if len(formResponseMap) == 0 {
-		return nil, errs.NewNotFoundError("formResponse.error.notFound")
+		return nil, flxErrs.NewNotFoundError("formResponse.error.notFound")
 	}
 
 	formResponse := formResponseMap[formResponseUUID]

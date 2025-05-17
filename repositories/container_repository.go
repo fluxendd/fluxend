@@ -3,9 +3,9 @@ package repositories
 import (
 	"database/sql"
 	"errors"
-	"fluxton/errs"
 	"fluxton/models"
 	"fluxton/pkg"
+	flxErrs "fluxton/pkg/errors"
 	"fluxton/requests"
 	"fmt"
 	"github.com/google/uuid"
@@ -78,7 +78,7 @@ func (r *ContainerRepository) GetByUUID(containerUUID uuid.UUID) (models.Contain
 	err := r.db.Get(&container, query, containerUUID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return models.Container{}, errs.NewNotFoundError("container.error.notFound")
+			return models.Container{}, flxErrs.NewNotFoundError("container.error.notFound")
 		}
 
 		return models.Container{}, pkg.FormatError(err, "fetch", pkg.GetMethodName())

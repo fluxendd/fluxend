@@ -3,9 +3,9 @@ package repositories
 import (
 	"database/sql"
 	"errors"
-	"fluxton/errs"
 	"fluxton/models"
 	"fluxton/pkg"
+	flxErrs "fluxton/pkg/errors"
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
@@ -65,7 +65,7 @@ func (r *BackupRepository) GetByUUID(backupUUID uuid.UUID) (models.Backup, error
 	err := r.db.Get(&form, query, backupUUID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return models.Backup{}, errs.NewNotFoundError("backup.error.notFound")
+			return models.Backup{}, flxErrs.NewNotFoundError("backup.error.notFound")
 		}
 
 		return models.Backup{}, pkg.FormatError(err, "fetch", pkg.GetMethodName())

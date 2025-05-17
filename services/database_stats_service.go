@@ -1,8 +1,8 @@
 package services
 
 import (
-	"fluxton/errs"
 	"fluxton/models"
+	"fluxton/pkg/errors"
 	"fluxton/policies"
 	"fluxton/repositories"
 	"fluxton/types"
@@ -41,7 +41,7 @@ func NewDatabaseStatsService(injector *do.Injector) (DatabaseStatsService, error
 
 func (s *DatabaseStatsServiceImpl) GetTotalDatabaseSize(databaseName string, authUser models.AuthUser) (string, error) {
 	if !s.adminPolicy.CanAccess(authUser) {
-		return "", errs.NewForbiddenError("database_stats.error.forbidden")
+		return "", errors.NewForbiddenError("database_stats.error.forbidden")
 	}
 
 	dbStatsRepo, _, err := s.connectionService.GetDatabaseStatsRepo(databaseName, nil)
@@ -54,7 +54,7 @@ func (s *DatabaseStatsServiceImpl) GetTotalDatabaseSize(databaseName string, aut
 
 func (s *DatabaseStatsServiceImpl) GetTotalIndexSize(databaseName string, authUser models.AuthUser) (string, error) {
 	if !s.adminPolicy.CanAccess(authUser) {
-		return "", errs.NewForbiddenError("database_stats.error.forbidden")
+		return "", errors.NewForbiddenError("database_stats.error.forbidden")
 	}
 
 	dbStatsRepo, _, err := s.connectionService.GetDatabaseStatsRepo(databaseName, nil)
@@ -67,7 +67,7 @@ func (s *DatabaseStatsServiceImpl) GetTotalIndexSize(databaseName string, authUs
 
 func (s *DatabaseStatsServiceImpl) GetUnusedIndexes(databaseName string, authUser models.AuthUser) ([]types.UnusedIndex, error) {
 	if !s.adminPolicy.CanAccess(authUser) {
-		return []types.UnusedIndex{}, errs.NewForbiddenError("database_stats.error.forbidden")
+		return []types.UnusedIndex{}, errors.NewForbiddenError("database_stats.error.forbidden")
 	}
 
 	dbStatsRepo, _, err := s.connectionService.GetDatabaseStatsRepo(databaseName, nil)
@@ -80,7 +80,7 @@ func (s *DatabaseStatsServiceImpl) GetUnusedIndexes(databaseName string, authUse
 
 func (s *DatabaseStatsServiceImpl) GetSlowQueries(databaseName string, authUser models.AuthUser) ([]types.SlowQuery, error) {
 	if !s.adminPolicy.CanAccess(authUser) {
-		return []types.SlowQuery{}, errs.NewForbiddenError("database_stats.error.forbidden")
+		return []types.SlowQuery{}, errors.NewForbiddenError("database_stats.error.forbidden")
 	}
 
 	dbStatsRepo, _, err := s.connectionService.GetDatabaseStatsRepo(databaseName, nil)
@@ -93,7 +93,7 @@ func (s *DatabaseStatsServiceImpl) GetSlowQueries(databaseName string, authUser 
 
 func (s *DatabaseStatsServiceImpl) GetIndexScansPerTable(databaseName string, authUser models.AuthUser) ([]types.IndexScan, error) {
 	if !s.adminPolicy.CanAccess(authUser) {
-		return []types.IndexScan{}, errs.NewForbiddenError("database_stats.error.forbidden")
+		return []types.IndexScan{}, errors.NewForbiddenError("database_stats.error.forbidden")
 	}
 
 	dbStatsRepo, _, err := s.connectionService.GetDatabaseStatsRepo(databaseName, nil)
@@ -106,7 +106,7 @@ func (s *DatabaseStatsServiceImpl) GetIndexScansPerTable(databaseName string, au
 
 func (s *DatabaseStatsServiceImpl) GetSizePerTable(databaseName string, authUser models.AuthUser) ([]types.TableSize, error) {
 	if !s.adminPolicy.CanAccess(authUser) {
-		return []types.TableSize{}, errs.NewForbiddenError("database_stats.error.forbidden")
+		return []types.TableSize{}, errors.NewForbiddenError("database_stats.error.forbidden")
 	}
 
 	dbStatsRepo, _, err := s.connectionService.GetDatabaseStatsRepo(databaseName, nil)
@@ -119,7 +119,7 @@ func (s *DatabaseStatsServiceImpl) GetSizePerTable(databaseName string, authUser
 
 func (s *DatabaseStatsServiceImpl) GetRowCountPerTable(databaseName string, authUser models.AuthUser) ([]types.TableRowCount, error) {
 	if !s.adminPolicy.CanAccess(authUser) {
-		return []types.TableRowCount{}, errs.NewForbiddenError("database_stats.error.forbidden")
+		return []types.TableRowCount{}, errors.NewForbiddenError("database_stats.error.forbidden")
 	}
 
 	dbStatsRepo, _, err := s.connectionService.GetDatabaseStatsRepo(databaseName, nil)
@@ -132,7 +132,7 @@ func (s *DatabaseStatsServiceImpl) GetRowCountPerTable(databaseName string, auth
 
 func (s *DatabaseStatsServiceImpl) GetAll(databaseName string, authUser models.AuthUser) (models.DatabaseStat, error) {
 	if !s.adminPolicy.CanAccess(authUser) {
-		return models.DatabaseStat{}, errs.NewForbiddenError("database_stats.error.forbidden")
+		return models.DatabaseStat{}, errors.NewForbiddenError("database_stats.error.forbidden")
 	}
 
 	totalDatabaseSize, err := s.GetTotalDatabaseSize(databaseName, authUser)

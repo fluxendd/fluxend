@@ -3,10 +3,10 @@ package repositories
 import (
 	"database/sql"
 	"errors"
-	"fluxton/errs"
 	"fluxton/models"
 	"fluxton/pkg"
 	"fluxton/pkg/auth"
+	flxErrs "fluxton/pkg/errors"
 	"fluxton/requests"
 	"fmt"
 	"github.com/google/uuid"
@@ -66,7 +66,7 @@ func (r *UserRepository) GetByID(userUUID uuid.UUID) (models.User, error) {
 	err := r.db.Get(&user, query, userUUID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return models.User{}, errs.NewNotFoundError("user.error.notFound")
+			return models.User{}, flxErrs.NewNotFoundError("user.error.notFound")
 		}
 
 		return models.User{}, pkg.FormatError(err, "fetch", pkg.GetMethodName())
@@ -114,7 +114,7 @@ func (r *UserRepository) GetByEmail(email string) (models.User, error) {
 	err := r.db.Get(&user, query, email)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return models.User{}, errs.NewNotFoundError("user.error.notFound")
+			return models.User{}, flxErrs.NewNotFoundError("user.error.notFound")
 		}
 
 		return models.User{}, fmt.Errorf("could not fetch rowx: %v", err)
@@ -159,7 +159,7 @@ func (r *UserRepository) GetJWTVersion(userId uuid.UUID) (int, error) {
 	err := r.db.Get(&version, query, userId)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return 0, errs.NewUnauthorizedError("auth.error.tokenExpired")
+			return 0, flxErrs.NewUnauthorizedError("auth.error.tokenExpired")
 		}
 
 		return 0, fmt.Errorf("could not fetch JWT version: %v", err)

@@ -3,8 +3,8 @@ package repositories
 import (
 	"database/sql"
 	"errors"
-	"fluxton/errs"
 	"fluxton/models"
+	flxErrs "fluxton/pkg/errors"
 	"fmt"
 	"github.com/jmoiron/sqlx"
 	"github.com/lib/pq"
@@ -116,7 +116,7 @@ func (r *TableRepository) GetByNameInSchema(schema, name string) (models.Table, 
 	err := r.connection.Get(&table, query, schema, name)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return models.Table{}, errs.NewNotFoundError("table.error.notFound")
+			return models.Table{}, flxErrs.NewNotFoundError("table.error.notFound")
 		}
 
 		return models.Table{}, err

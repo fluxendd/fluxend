@@ -1,8 +1,8 @@
 package services
 
 import (
-	"fluxton/errs"
 	"fluxton/models"
+	"fluxton/pkg/errors"
 	"fluxton/policies"
 	"fluxton/repositories"
 	"fluxton/requests"
@@ -52,7 +52,7 @@ func (s *OrganizationServiceImpl) GetByID(organizationUUID uuid.UUID, authUser m
 	}
 
 	if !s.organizationPolicy.CanAccess(organizationUUID, authUser) {
-		return models.Organization{}, errs.NewForbiddenError("organization.error.viewForbidden")
+		return models.Organization{}, errors.NewForbiddenError("organization.error.viewForbidden")
 	}
 
 	return organization, nil
@@ -65,7 +65,7 @@ func (s *OrganizationServiceImpl) ExistsByUUID(organizationUUID uuid.UUID) error
 	}
 
 	if !exists {
-		return errs.NewNotFoundError("organization.error.notFound")
+		return errors.NewNotFoundError("organization.error.notFound")
 	}
 
 	return nil
@@ -73,7 +73,7 @@ func (s *OrganizationServiceImpl) ExistsByUUID(organizationUUID uuid.UUID) error
 
 func (s *OrganizationServiceImpl) Create(request *organization_requests.CreateRequest, authUser models.AuthUser) (models.Organization, error) {
 	if !s.organizationPolicy.CanCreate(authUser) {
-		return models.Organization{}, errs.NewForbiddenError("organization.error.createForbidden")
+		return models.Organization{}, errors.NewForbiddenError("organization.error.createForbidden")
 	}
 
 	organization := models.Organization{
@@ -97,7 +97,7 @@ func (s *OrganizationServiceImpl) Update(organizationUUID uuid.UUID, authUser mo
 	}
 
 	if !s.organizationPolicy.CanUpdate(organizationUUID, authUser) {
-		return &models.Organization{}, errs.NewForbiddenError("organization.error.updateForbidden")
+		return &models.Organization{}, errors.NewForbiddenError("organization.error.updateForbidden")
 	}
 
 	err = organization.PopulateModel(&organization, request)
@@ -118,7 +118,7 @@ func (s *OrganizationServiceImpl) Delete(organizationUUID uuid.UUID, authUser mo
 	}
 
 	if !s.organizationPolicy.CanUpdate(organizationUUID, authUser) {
-		return false, errs.NewForbiddenError("organization.error.updateForbidden")
+		return false, errors.NewForbiddenError("organization.error.updateForbidden")
 	}
 
 	return s.organizationRepo.Delete(organizationUUID)
@@ -126,7 +126,7 @@ func (s *OrganizationServiceImpl) Delete(organizationUUID uuid.UUID, authUser mo
 
 func (s *OrganizationServiceImpl) ListUsers(organizationUUID uuid.UUID, authUser models.AuthUser) ([]models.User, error) {
 	if !s.organizationPolicy.CanAccess(organizationUUID, authUser) {
-		return nil, errs.NewForbiddenError("organization.error.viewForbidden")
+		return nil, errors.NewForbiddenError("organization.error.viewForbidden")
 	}
 
 	return s.organizationRepo.ListUsers(organizationUUID)
@@ -134,7 +134,7 @@ func (s *OrganizationServiceImpl) ListUsers(organizationUUID uuid.UUID, authUser
 
 func (s *OrganizationServiceImpl) CreateUser(request *organization_requests.MemberCreateRequest, organizationUUID uuid.UUID, authUser models.AuthUser) (models.User, error) {
 	if !s.organizationPolicy.CanCreate(authUser) {
-		return models.User{}, errs.NewForbiddenError("organization.error.createUserForbidden")
+		return models.User{}, errors.NewForbiddenError("organization.error.createUserForbidden")
 	}
 
 	err := s.ExistsByUUID(organizationUUID)
@@ -148,7 +148,7 @@ func (s *OrganizationServiceImpl) CreateUser(request *organization_requests.Memb
 	}
 
 	if !exists {
-		return models.User{}, errs.NewNotFoundError("user.error.notFound")
+		return models.User{}, errors.NewNotFoundError("user.error.notFound")
 	}
 
 	userExists, err := s.organizationRepo.IsOrganizationMember(organizationUUID, request.UserID)
@@ -157,7 +157,7 @@ func (s *OrganizationServiceImpl) CreateUser(request *organization_requests.Memb
 	}
 
 	if userExists {
-		return models.User{}, errs.NewUnprocessableError("organization.error.userAlreadyExists")
+		return models.User{}, errors.NewUnprocessableError("organization.error.userAlreadyExists")
 	}
 
 	err = s.organizationRepo.CreateUser(organizationUUID, request.UserID)
@@ -170,7 +170,7 @@ func (s *OrganizationServiceImpl) CreateUser(request *organization_requests.Memb
 
 func (s *OrganizationServiceImpl) DeleteUser(organizationUUID, userUUID uuid.UUID, authUser models.AuthUser) error {
 	if !s.organizationPolicy.CanUpdate(organizationUUID, authUser) {
-		return errs.NewForbiddenError("organization.error.deleteUserForbidden")
+		return errors.NewForbiddenError("organization.error.deleteUserForbidden")
 	}
 
 	userExists, err := s.organizationRepo.IsOrganizationMember(organizationUUID, userUUID)
@@ -179,7 +179,7 @@ func (s *OrganizationServiceImpl) DeleteUser(organizationUUID, userUUID uuid.UUI
 	}
 
 	if !userExists {
-		return errs.NewNotFoundError("organization.error.userNotFound")
+		return errors.NewNotFoundError("organization.error.userNotFound")
 	}
 
 	return s.organizationRepo.DeleteUser(organizationUUID, userUUID)

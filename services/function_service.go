@@ -1,8 +1,8 @@
 package services
 
 import (
-	"fluxton/errs"
 	"fluxton/models"
+	"fluxton/pkg/errors"
 	"fluxton/policies"
 	"fluxton/repositories"
 	"fluxton/requests"
@@ -49,7 +49,7 @@ func (s *FunctionServiceImpl) List(schema string, projectUUID uuid.UUID, authUse
 	}
 
 	if !s.projectPolicy.CanAccess(organizationUUID, authUser) {
-		return []models.Function{}, errs.NewForbiddenError("function.error.listForbidden")
+		return []models.Function{}, errors.NewForbiddenError("function.error.listForbidden")
 	}
 
 	clientFunctionRepo, connection, err := s.connectService.GetFunctionRepoByProjectUUID(projectUUID, nil)
@@ -68,7 +68,7 @@ func (s *FunctionServiceImpl) GetByName(name, schema string, projectUUID uuid.UU
 	}
 
 	if !s.projectPolicy.CanAccess(organizationUUID, authUser) {
-		return models.Function{}, errs.NewForbiddenError("function.error.listForbidden")
+		return models.Function{}, errors.NewForbiddenError("function.error.listForbidden")
 	}
 
 	clientFunctionRepo, connection, err := s.connectService.GetFunctionRepoByProjectUUID(projectUUID, nil)
@@ -87,7 +87,7 @@ func (s *FunctionServiceImpl) Create(schema string, request *requests.CreateFunc
 	}
 
 	if !s.projectPolicy.CanCreate(organizationUUID, authUser) {
-		return models.Function{}, errs.NewForbiddenError("function.error.listForbidden")
+		return models.Function{}, errors.NewForbiddenError("function.error.listForbidden")
 	}
 
 	clientFunctionRepo, connection, err := s.connectService.GetFunctionRepoByProjectUUID(request.ProjectUUID, nil)
@@ -116,7 +116,7 @@ func (s *FunctionServiceImpl) Delete(schema, name string, projectUUID uuid.UUID,
 	}
 
 	if !s.projectPolicy.CanUpdate(organizationUUID, authUser) {
-		return false, errs.NewForbiddenError("function.error.listForbidden")
+		return false, errors.NewForbiddenError("function.error.listForbidden")
 	}
 
 	clientFunctionRepo, connection, err := s.connectService.GetFunctionRepoByProjectUUID(projectUUID, nil)

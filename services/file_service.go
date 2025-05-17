@@ -1,9 +1,9 @@
 package services
 
 import (
-	"fluxton/errs"
 	"fluxton/models"
 	"fluxton/pkg"
+	"fluxton/pkg/errors"
 	"fluxton/policies"
 	"fluxton/repositories"
 	"fluxton/requests"
@@ -64,7 +64,7 @@ func (s *FileServiceImpl) List(paginationParams requests.PaginationParams, conta
 	}
 
 	if !s.projectPolicy.CanAccess(organizationUUID, authUser) {
-		return []models.File{}, errs.NewForbiddenError("file.error.listForbidden")
+		return []models.File{}, errors.NewForbiddenError("file.error.listForbidden")
 	}
 
 	return s.fileRepo.ListForContainer(paginationParams, containerUUID)
@@ -82,7 +82,7 @@ func (s *FileServiceImpl) GetByUUID(fileUUID, containerUUID uuid.UUID, authUser 
 	}
 
 	if !s.projectPolicy.CanAccess(organizationUUID, authUser) {
-		return models.File{}, errs.NewForbiddenError("file.error.viewForbidden")
+		return models.File{}, errors.NewForbiddenError("file.error.viewForbidden")
 	}
 
 	file, err := s.fileRepo.GetByUUID(fileUUID)
@@ -105,7 +105,7 @@ func (s *FileServiceImpl) Create(containerUUID uuid.UUID, request *container_req
 	}
 
 	if !s.projectPolicy.CanCreate(organizationUUID, authUser) {
-		return models.File{}, errs.NewForbiddenError("file.error.createForbidden")
+		return models.File{}, errors.NewForbiddenError("file.error.createForbidden")
 	}
 
 	err = s.validate(request, container)
@@ -173,7 +173,7 @@ func (s *FileServiceImpl) Rename(fileUUID, containerUUID uuid.UUID, authUser mod
 	}
 
 	if !s.projectPolicy.CanUpdate(organizationUUID, authUser) {
-		return &models.File{}, errs.NewForbiddenError("file.error.updateForbidden")
+		return &models.File{}, errors.NewForbiddenError("file.error.updateForbidden")
 	}
 
 	err = s.validateNameForDuplication(request.FullFileName, container.Uuid)
@@ -214,7 +214,7 @@ func (s *FileServiceImpl) Delete(fileUUID, containerUUID uuid.UUID, authUser mod
 	}
 
 	if !s.projectPolicy.CanUpdate(organizationUUID, authUser) {
-		return false, errs.NewForbiddenError("file.error.deleteForbidden")
+		return false, errors.NewForbiddenError("file.error.deleteForbidden")
 	}
 
 	file, err := s.fileRepo.GetByUUID(fileUUID)
@@ -289,7 +289,7 @@ func (s *FileServiceImpl) validate(request *container_requests.CreateFileRequest
 func (s *FileServiceImpl) validateMimeType(mimeType string, container models.Container) error {
 	// TODO: implement mime type validation
 	// if !container.AllowedMimeTypes[mimeType] {
-	//	return errs.NewUnprocessableError("file.error.invalidMimeType")
+	//	return errors.NewUnprocessableError("file.error.invalidMimeType")
 	// }
 
 	return nil
@@ -297,7 +297,7 @@ func (s *FileServiceImpl) validateMimeType(mimeType string, container models.Con
 
 func (s *FileServiceImpl) validateFileSize(fileSize int, container models.Container) error {
 	if fileSize > container.MaxFileSize {
-		return errs.NewUnprocessableError("file.error.sizeExceeded")
+		return errors.NewUnprocessableError("file.error.sizeExceeded")
 	}
 
 	return nil
@@ -310,7 +310,7 @@ func (s *FileServiceImpl) validateNameForDuplication(name string, containerUUID 
 	}
 
 	if exists {
-		return errs.NewUnprocessableError("file.error.duplicateName")
+		return errors.NewUnprocessableError("file.error.duplicateName")
 	}
 
 	return nil

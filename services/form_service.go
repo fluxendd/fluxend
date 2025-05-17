@@ -1,8 +1,8 @@
 package services
 
 import (
-	"fluxton/errs"
 	"fluxton/models"
+	"fluxton/pkg/errors"
 	"fluxton/policies"
 	"fluxton/repositories"
 	"fluxton/requests"
@@ -45,7 +45,7 @@ func (s *FormServiceImpl) List(paginationParams requests.PaginationParams, proje
 	}
 
 	if !s.projectPolicy.CanAccess(organizationUUID, authUser) {
-		return nil, errs.NewForbiddenError("form.error.listForbidden")
+		return nil, errors.NewForbiddenError("form.error.listForbidden")
 	}
 
 	return s.formRepo.ListForProject(paginationParams, projectUUID)
@@ -63,7 +63,7 @@ func (s *FormServiceImpl) GetByUUID(formUUID uuid.UUID, authUser models.AuthUser
 	}
 
 	if !s.projectPolicy.CanAccess(organizationUUID, authUser) {
-		return models.Form{}, errs.NewForbiddenError("form.error.viewForbidden")
+		return models.Form{}, errors.NewForbiddenError("form.error.viewForbidden")
 	}
 
 	return form, nil
@@ -76,7 +76,7 @@ func (s *FormServiceImpl) Create(request *form_requests.CreateRequest, authUser 
 	}
 
 	if !s.projectPolicy.CanCreate(organizationUUID, authUser) {
-		return models.Form{}, errs.NewForbiddenError("form.error.createForbidden")
+		return models.Form{}, errors.NewForbiddenError("form.error.createForbidden")
 	}
 
 	err = s.validateNameForDuplication(request.Name, request.ProjectUUID)
@@ -113,7 +113,7 @@ func (s *FormServiceImpl) Update(formUUID uuid.UUID, authUser models.AuthUser, r
 	}
 
 	if !s.projectPolicy.CanUpdate(organizationUUID, authUser) {
-		return &models.Form{}, errs.NewForbiddenError("form.error.updateForbidden")
+		return &models.Form{}, errors.NewForbiddenError("form.error.updateForbidden")
 	}
 
 	err = form.PopulateModel(&form, request)
@@ -144,7 +144,7 @@ func (s *FormServiceImpl) Delete(formUUID uuid.UUID, authUser models.AuthUser) (
 	}
 
 	if !s.projectPolicy.CanUpdate(organizationUUID, authUser) {
-		return false, errs.NewForbiddenError("form.error.deleteForbidden")
+		return false, errors.NewForbiddenError("form.error.deleteForbidden")
 	}
 
 	return s.formRepo.Delete(formUUID)
@@ -157,7 +157,7 @@ func (s *FormServiceImpl) validateNameForDuplication(name string, projectUUID uu
 	}
 
 	if exists {
-		return errs.NewUnprocessableError("form.error.duplicateName")
+		return errors.NewUnprocessableError("form.error.duplicateName")
 	}
 
 	return nil

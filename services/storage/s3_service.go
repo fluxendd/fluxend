@@ -2,8 +2,8 @@ package storage
 
 import (
 	"context"
-	"fluxton/errs"
 	"fluxton/pkg"
+	"fluxton/pkg/errors"
 	"fmt"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
@@ -56,7 +56,7 @@ func (s *S3ServiceImpl) CreateContainer(bucketName string) (string, error) {
 	}
 
 	if !s.ContainerExists(bucketName) {
-		return "", errs.NewBadRequestError(fmt.Sprintf("failed to confirm bucket %q exists", bucketName))
+		return "", errors.NewBadRequestError(fmt.Sprintf("failed to confirm bucket %q exists", bucketName))
 	}
 
 	return pkg.ConvertPointerToString(createdBucket.Location), nil
@@ -197,15 +197,15 @@ func (s *S3ServiceImpl) transformError(err error) error {
 	errorString := err.Error()
 
 	if strings.Contains(errorString, "BucketAlreadyOwnedByYou") {
-		return errs.NewNotFoundError("s3.error.bucketAlreadyOwned")
+		return errors.NewNotFoundError("s3.error.bucketAlreadyOwned")
 	}
 
 	if strings.Contains(errorString, "BucketAlreadyExists") {
-		return errs.NewBadRequestError("s3.error.bucketAlreadyExists")
+		return errors.NewBadRequestError("s3.error.bucketAlreadyExists")
 	}
 
 	if strings.Contains(errorString, "NoSuchBucket") {
-		return errs.NewNotFoundError("s3.error.bucketNotFound")
+		return errors.NewNotFoundError("s3.error.bucketNotFound")
 	}
 
 	return err

@@ -1,8 +1,8 @@
 package middlewares
 
 import (
-	"fluxton/errs"
 	"fluxton/models"
+	"fluxton/pkg/errors"
 	"fluxton/repositories"
 	"fluxton/responses"
 	"fmt"
@@ -43,12 +43,12 @@ func AuthMiddleware(userRepo *repositories.UserRepository) echo.MiddlewareFunc {
 
 			if err != nil || !token.Valid {
 				// Token is invalid or expired
-				return responses.ErrorResponse(c, errs.NewUnauthorizedError("auth.error.tokenInvalid"))
+				return responses.ErrorResponse(c, errors.NewUnauthorizedError("auth.error.tokenInvalid"))
 			}
 
 			userUUID, err := uuid.Parse(claims["uuid"].(string))
 			if err != nil {
-				return responses.ErrorResponse(c, errs.NewUnauthorizedError("auth.error.tokenInvalid"))
+				return responses.ErrorResponse(c, errors.NewUnauthorizedError("auth.error.tokenInvalid"))
 			}
 
 			currentJWTVersion := int(claims["version"].(float64))

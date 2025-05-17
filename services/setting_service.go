@@ -1,8 +1,8 @@
 package services
 
 import (
-	"fluxton/errs"
 	"fluxton/models"
+	"fluxton/pkg/errors"
 	"fluxton/policies"
 	"fluxton/repositories"
 	"fluxton/requests"
@@ -95,7 +95,7 @@ func (s *SettingServiceImpl) GetBool(ctx echo.Context, name string) bool {
 func (s *SettingServiceImpl) Update(ctx echo.Context, authUser models.AuthUser, request *requests.SettingUpdateRequest) ([]models.Setting, error) {
 	// Authorization check
 	if !s.adminPolicy.CanUpdate(authUser) {
-		return nil, errs.NewForbiddenError("setting.error.updateForbidden")
+		return nil, errors.NewForbiddenError("setting.error.updateForbidden")
 	}
 
 	// Fetch current settings from the repository
@@ -125,7 +125,7 @@ func (s *SettingServiceImpl) Update(ctx echo.Context, authUser models.AuthUser, 
 
 func (s *SettingServiceImpl) Reset(ctx echo.Context, authUser models.AuthUser) ([]models.Setting, error) {
 	if !s.adminPolicy.CanUpdate(authUser) {
-		return []models.Setting{}, errs.NewForbiddenError("setting.error.resetForbidden")
+		return []models.Setting{}, errors.NewForbiddenError("setting.error.resetForbidden")
 	}
 
 	settings, err := s.settingRepo.List()

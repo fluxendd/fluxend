@@ -1,9 +1,9 @@
 package services
 
 import (
-	"fluxton/errs"
 	"fluxton/models"
 	"fluxton/pkg"
+	"fluxton/pkg/errors"
 	"fluxton/policies"
 	"fluxton/repositories"
 	"fluxton/requests/column_requests"
@@ -44,7 +44,7 @@ func (s *ColumnServiceImpl) List(fullTableName string, projectUUID uuid.UUID, au
 	}
 
 	if !s.projectPolicy.CanAccess(project.OrganizationUuid, authUser) {
-		return nil, errs.NewForbiddenError("project.error.viewForbidden")
+		return nil, errors.NewForbiddenError("project.error.viewForbidden")
 	}
 
 	clientTableRepo, connection, err := s.connectionService.GetTableRepo(project.DBName, nil)
@@ -78,7 +78,7 @@ func (s *ColumnServiceImpl) CreateMany(fullTableName string, request *column_req
 	}
 
 	if !s.projectPolicy.CanCreate(project.OrganizationUuid, authUser) {
-		return []models.Column{}, errs.NewForbiddenError("column.error.createForbidden")
+		return []models.Column{}, errors.NewForbiddenError("column.error.createForbidden")
 	}
 
 	clientTableRepo, connection, err := s.connectionService.GetTableRepo(project.DBName, nil)
@@ -103,7 +103,7 @@ func (s *ColumnServiceImpl) CreateMany(fullTableName string, request *column_req
 	}
 
 	if anyColumnExists {
-		return []models.Column{}, errs.NewUnprocessableError("column.error.someAlreadyExist")
+		return []models.Column{}, errors.NewUnprocessableError("column.error.someAlreadyExist")
 	}
 
 	err = clientColumnRepo.CreateMany(table.Name, request.Columns)
@@ -121,7 +121,7 @@ func (s *ColumnServiceImpl) AlterMany(fullTableName string, request *column_requ
 	}
 
 	if !s.projectPolicy.CanUpdate(project.OrganizationUuid, authUser) {
-		return []models.Column{}, errs.NewForbiddenError("project.error.updateForbidden")
+		return []models.Column{}, errors.NewForbiddenError("project.error.updateForbidden")
 	}
 
 	clientTableRepo, connection, err := s.connectionService.GetTableRepo(project.DBName, nil)
@@ -146,7 +146,7 @@ func (s *ColumnServiceImpl) AlterMany(fullTableName string, request *column_requ
 	}
 
 	if !allColumnsExist {
-		return []models.Column{}, errs.NewNotFoundError("column.error.someNotFound")
+		return []models.Column{}, errors.NewNotFoundError("column.error.someNotFound")
 	}
 
 	err = clientColumnRepo.AlterMany(table.Name, request.Columns)
@@ -164,7 +164,7 @@ func (s *ColumnServiceImpl) Rename(columnName string, fullTableName string, requ
 	}
 
 	if !s.projectPolicy.CanUpdate(project.OrganizationUuid, authUser) {
-		return []models.Column{}, errs.NewForbiddenError("project.error.updateForbidden")
+		return []models.Column{}, errors.NewForbiddenError("project.error.updateForbidden")
 	}
 
 	clientTableRepo, connection, err := s.connectionService.GetTableRepo(project.DBName, nil)
@@ -189,7 +189,7 @@ func (s *ColumnServiceImpl) Rename(columnName string, fullTableName string, requ
 	}
 
 	if !columnExists {
-		return []models.Column{}, errs.NewNotFoundError("column.error.notFound")
+		return []models.Column{}, errors.NewNotFoundError("column.error.notFound")
 	}
 
 	err = clientColumnRepo.Rename(table.Name, columnName, request.Name)
@@ -207,7 +207,7 @@ func (s *ColumnServiceImpl) Delete(columnName, fullTableName string, projectUUID
 	}
 
 	if !s.projectPolicy.CanUpdate(project.OrganizationUuid, authUser) {
-		return false, errs.NewForbiddenError("project.error.updateForbidden")
+		return false, errors.NewForbiddenError("project.error.updateForbidden")
 	}
 
 	clientColumnRepo, connection, err := s.connectionService.GetColumnRepo(project.DBName, nil)
@@ -223,7 +223,7 @@ func (s *ColumnServiceImpl) Delete(columnName, fullTableName string, projectUUID
 	}
 
 	if !columnExists {
-		return false, errs.NewNotFoundError("column.error.notFound")
+		return false, errors.NewNotFoundError("column.error.notFound")
 	}
 
 	err = clientColumnRepo.Drop(fullTableName, columnName)

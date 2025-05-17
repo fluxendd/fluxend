@@ -1,7 +1,7 @@
 package responses
 
 import (
-	"fluxton/message"
+	"fluxton/pkg/message"
 	"github.com/labstack/echo/v4"
 	"net/http"
 )

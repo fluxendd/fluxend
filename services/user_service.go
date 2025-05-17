@@ -1,9 +1,9 @@
 package services
 
 import (
-	"fluxton/errs"
 	"fluxton/models"
 	"fluxton/pkg/auth"
+	"fluxton/pkg/errors"
 	"fluxton/policies"
 	"fluxton/repositories"
 	"fluxton/requests"
@@ -50,7 +50,7 @@ func (s *UserServiceImpl) Login(request *user_requests.LoginRequest) (models.Use
 	}
 
 	if !auth.ComparePassword(user.Password, request.Password) {
-		return models.User{}, "", errs.NewUnauthorizedError("user.error.invalidCredentials")
+		return models.User{}, "", errors.NewUnauthorizedError("user.error.invalidCredentials")
 	}
 
 	jwtVersion, err := s.userRepo.CreateJWTVersion(user.Uuid)
@@ -81,7 +81,7 @@ func (s *UserServiceImpl) ExistsByUUID(id uuid.UUID) error {
 	}
 
 	if !exists {
-		return errs.NewNotFoundError("user.error.notFound")
+		return errors.NewNotFoundError("user.error.notFound")
 	}
 
 	return nil
@@ -89,7 +89,7 @@ func (s *UserServiceImpl) ExistsByUUID(id uuid.UUID) error {
 
 func (s *UserServiceImpl) Create(ctx echo.Context, request *user_requests.CreateRequest) (models.User, string, error) {
 	if !s.settingService.GetBool(ctx, "allowRegistrations") {
-		return models.User{}, "", errs.NewBadRequestError("user.error.registrationDisabled")
+		return models.User{}, "", errors.NewBadRequestError("user.error.registrationDisabled")
 	}
 
 	existsByEmail, err := s.userRepo.ExistsByEmail(request.Email)
@@ -98,7 +98,7 @@ func (s *UserServiceImpl) Create(ctx echo.Context, request *user_requests.Create
 	}
 
 	if existsByEmail {
-		return models.User{}, "", errs.NewBadRequestError("user.error.emailAlreadyExists")
+		return models.User{}, "", errors.NewBadRequestError("user.error.emailAlreadyExists")
 	}
 
 	existsByUsername, err := s.userRepo.ExistsByUsername(request.Username)
@@ -107,7 +107,7 @@ func (s *UserServiceImpl) Create(ctx echo.Context, request *user_requests.Create
 	}
 
 	if existsByUsername {
-		return models.User{}, "", errs.NewBadRequestError("user.error.usernameAlreadyExists")
+		return models.User{}, "", errors.NewBadRequestError("user.error.usernameAlreadyExists")
 	}
 
 	user := models.User{
@@ -138,7 +138,7 @@ func (s *UserServiceImpl) Create(ctx echo.Context, request *user_requests.Create
 
 func (s *UserServiceImpl) Update(userUUID, authUserUUID uuid.UUID, request *user_requests.UpdateRequest) (*models.User, error) {
 	if !policies.CanUpdateUser(userUUID, authUserUUID) {
-		return nil, errs.NewForbiddenError("user.error.updateForbidden")
+		return nil, errors.NewForbiddenError("user.error.updateForbidden")
 	}
 
 	user, err := s.userRepo.GetByID(userUUID)

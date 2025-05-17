@@ -1,8 +1,8 @@
 package services
 
 import (
-	"fluxton/errs"
 	"fluxton/models"
+	"fluxton/pkg/errors"
 	"fluxton/policies"
 	"fluxton/repositories"
 	"fluxton/requests"
@@ -54,7 +54,7 @@ func (s *ContainerServiceImpl) List(paginationParams requests.PaginationParams, 
 	}
 
 	if !s.projectPolicy.CanAccess(organizationUUID, authUser) {
-		return []models.Container{}, errs.NewForbiddenError("container.error.listForbidden")
+		return []models.Container{}, errors.NewForbiddenError("container.error.listForbidden")
 	}
 
 	return s.containerRepo.ListForProject(paginationParams, projectUUID)
@@ -72,7 +72,7 @@ func (s *ContainerServiceImpl) GetByUUID(containerUUID uuid.UUID, authUser model
 	}
 
 	if !s.projectPolicy.CanAccess(organizationUUID, authUser) {
-		return models.Container{}, errs.NewForbiddenError("container.error.viewForbidden")
+		return models.Container{}, errors.NewForbiddenError("container.error.viewForbidden")
 	}
 
 	return container, nil
@@ -85,7 +85,7 @@ func (s *ContainerServiceImpl) Create(request *container_requests.CreateRequest,
 	}
 
 	if !s.projectPolicy.CanCreate(organizationUUID, authUser) {
-		return models.Container{}, errs.NewForbiddenError("container.error.createForbidden")
+		return models.Container{}, errors.NewForbiddenError("container.error.createForbidden")
 	}
 
 	err = s.validateNameForDuplication(request.Name, request.ProjectUUID)
@@ -139,7 +139,7 @@ func (s *ContainerServiceImpl) Update(containerUUID uuid.UUID, authUser models.A
 	}
 
 	if !s.projectPolicy.CanUpdate(organizationUUID, authUser) {
-		return &models.Container{}, errs.NewForbiddenError("container.error.updateForbidden")
+		return &models.Container{}, errors.NewForbiddenError("container.error.updateForbidden")
 	}
 
 	err = container.PopulateModel(&container, request)
@@ -165,7 +165,7 @@ func (s *ContainerServiceImpl) Delete(request requests.DefaultRequestWithProject
 	}
 
 	if container.TotalFiles > 0 {
-		return false, errs.NewUnprocessableError("container.error.deleteWithFiles")
+		return false, errors.NewUnprocessableError("container.error.deleteWithFiles")
 	}
 
 	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(container.ProjectUuid)
@@ -174,7 +174,7 @@ func (s *ContainerServiceImpl) Delete(request requests.DefaultRequestWithProject
 	}
 
 	if !s.projectPolicy.CanUpdate(organizationUUID, authUser) {
-		return false, errs.NewForbiddenError("container.error.deleteForbidden")
+		return false, errors.NewForbiddenError("container.error.deleteForbidden")
 	}
 
 	storageService, err := storage.GetProvider(s.settingService.GetStorageDriver(request.Context))
@@ -202,7 +202,7 @@ func (s *ContainerServiceImpl) validateNameForDuplication(name string, projectUU
 	}
 
 	if exists {
-		return errs.NewUnprocessableError("container.error.duplicateName")
+		return errors.NewUnprocessableError("container.error.duplicateName")
 	}
 
 	return nil

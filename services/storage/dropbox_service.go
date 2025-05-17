@@ -2,8 +2,8 @@ package storage
 
 import (
 	"encoding/json"
-	"fluxton/errs"
 	"fluxton/pkg"
+	"fluxton/pkg/errors"
 	"fmt"
 	"os"
 	"resty.dev/v3"
@@ -351,23 +351,23 @@ func (d *DropboxServiceImpl) transformError(err error) error {
 	errorString := err.Error()
 
 	if strings.Contains(errorString, "path/not_found") {
-		return errs.NewNotFoundError("dropbox.error.pathNotFound")
+		return errors.NewNotFoundError("dropbox.error.pathNotFound")
 	}
 
 	if strings.Contains(errorString, "path/conflict") {
-		return errs.NewBadRequestError("dropbox.error.pathConflict")
+		return errors.NewBadRequestError("dropbox.error.pathConflict")
 	}
 
 	if strings.Contains(errorString, "insufficient_space") {
-		return errs.NewBadRequestError("dropbox.error.insufficientSpace")
+		return errors.NewBadRequestError("dropbox.error.insufficientSpace")
 	}
 
 	if strings.Contains(errorString, "too_many_write_operations") {
-		return errs.NewBadRequestError("dropbox.error.tooManyWriteOperations")
+		return errors.NewBadRequestError("dropbox.error.tooManyWriteOperations")
 	}
 
 	if strings.Contains(errorString, "too_many_files") {
-		return errs.NewBadRequestError("dropbox.error.tooManyFiles")
+		return errors.NewBadRequestError("dropbox.error.tooManyFiles")
 	}
 
 	return err

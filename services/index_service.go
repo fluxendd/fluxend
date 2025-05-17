@@ -1,9 +1,9 @@
 package services
 
 import (
-	"fluxton/errs"
 	"fluxton/models"
 	"fluxton/pkg"
+	"fluxton/pkg/errors"
 	"fluxton/policies"
 	"fluxton/repositories"
 	"fluxton/requests"
@@ -43,7 +43,7 @@ func (s *IndexServiceImpl) List(fullTableName string, projectUUID uuid.UUID, aut
 	}
 
 	if !s.projectPolicy.CanAccess(project.OrganizationUuid, authUser) {
-		return nil, errs.NewForbiddenError("project.error.viewForbidden")
+		return nil, errors.NewForbiddenError("project.error.viewForbidden")
 	}
 
 	clientIndexRepo, connection, err := s.connectionService.GetIndexRepo(project.DBName, nil)
@@ -63,7 +63,7 @@ func (s *IndexServiceImpl) GetByName(indexName, fullTableName string, projectUUI
 	}
 
 	if !s.projectPolicy.CanAccess(project.OrganizationUuid, authUser) {
-		return "", errs.NewForbiddenError("project.error.viewForbidden")
+		return "", errors.NewForbiddenError("project.error.viewForbidden")
 	}
 
 	clientIndexRepo, connection, err := s.connectionService.GetIndexRepo(project.DBName, nil)
@@ -83,7 +83,7 @@ func (s *IndexServiceImpl) Create(fullTableName string, request *requests.IndexC
 	}
 
 	if !s.projectPolicy.CanCreate(project.OrganizationUuid, authUser) {
-		return "", errs.NewForbiddenError("table.error.createForbidden")
+		return "", errors.NewForbiddenError("table.error.createForbidden")
 	}
 
 	clientIndexRepo, connection, err := s.connectionService.GetIndexRepo(project.DBName, nil)
@@ -98,7 +98,7 @@ func (s *IndexServiceImpl) Create(fullTableName string, request *requests.IndexC
 	}
 
 	if hasIndex {
-		return "", errs.NewUnprocessableError("index.error.alreadyExists")
+		return "", errors.NewUnprocessableError("index.error.alreadyExists")
 	}
 
 	_, err = clientIndexRepo.Create(fullTableName, request.Name, request.Columns, request.IsUnique)
@@ -118,7 +118,7 @@ func (s *IndexServiceImpl) Delete(indexName, fullTableName string, projectUUID u
 	}
 
 	if !s.projectPolicy.CanUpdate(project.OrganizationUuid, authUser) {
-		return false, errs.NewForbiddenError("project.error.updateForbidden")
+		return false, errors.NewForbiddenError("project.error.updateForbidden")
 	}
 
 	clientIndexRepo, connection, err := s.connectionService.GetIndexRepo(project.DBName, nil)
@@ -134,7 +134,7 @@ func (s *IndexServiceImpl) Delete(indexName, fullTableName string, projectUUID u
 	}
 
 	if !hasIndex {
-		return false, errs.NewNotFoundError("index.error.notFound")
+		return false, errors.NewNotFoundError("index.error.notFound")
 	}
 
 	return clientIndexRepo.DropIfExists(indexName)

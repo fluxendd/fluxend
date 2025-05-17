@@ -1,8 +1,8 @@
 package services
 
 import (
-	"fluxton/errs"
 	"fluxton/models"
+	"fluxton/pkg/errors"
 	"fluxton/policies"
 	"fluxton/repositories"
 	"fluxton/requests/form_requests"
@@ -56,7 +56,7 @@ func (s *FormResponseServiceImpl) List(formUUID uuid.UUID, authUser models.AuthU
 	}
 
 	if !s.projectPolicy.CanAccess(organizationUUID, authUser) {
-		return []models.FormResponse{}, errs.NewForbiddenError("formFieldResponse.error.listForbidden")
+		return []models.FormResponse{}, errors.NewForbiddenError("formFieldResponse.error.listForbidden")
 	}
 
 	return s.formResponseRepo.ListForForm(formUUID)
@@ -74,7 +74,7 @@ func (s *FormResponseServiceImpl) GetByUUID(formResponseUUID, formUUID uuid.UUID
 	}
 
 	if !s.projectPolicy.CanAccess(organizationUUID, authUser) {
-		return &models.FormResponse{}, errs.NewForbiddenError("formFieldResponse.error.showForbidden")
+		return &models.FormResponse{}, errors.NewForbiddenError("formFieldResponse.error.showForbidden")
 	}
 
 	return s.formResponseRepo.GetByUUID(formResponseUUID)
@@ -92,7 +92,7 @@ func (s *FormResponseServiceImpl) Create(formUUID uuid.UUID, request *form_reque
 	}
 
 	if !s.projectPolicy.CanCreate(organizationUUID, authUser) {
-		return models.FormResponse{}, errs.NewForbiddenError("formResponse.error.createForbidden")
+		return models.FormResponse{}, errors.NewForbiddenError("formResponse.error.createForbidden")
 	}
 
 	formFields, err := s.formFieldRepo.ListForForm(formUUID)
@@ -108,7 +108,7 @@ func (s *FormResponseServiceImpl) Create(formUUID uuid.UUID, request *form_reque
 
 	for _, formField := range formFields {
 		if _, ok := request.Response[formField.Label]; !ok {
-			return models.FormResponse{}, errs.NewUnprocessableError("formResponse.error.missingField")
+			return models.FormResponse{}, errors.NewUnprocessableError("formResponse.error.missingField")
 		}
 
 		currentFieldValue := request.Response[formField.Label].(string)
@@ -143,7 +143,7 @@ func (s *FormResponseServiceImpl) Delete(formUUID, formResponseUUID uuid.UUID, a
 	}
 
 	if !s.projectPolicy.CanUpdate(organizationUUID, authUser) {
-		return errs.NewForbiddenError("form.error.deleteForbidden")
+		return errors.NewForbiddenError("form.error.deleteForbidden")
 	}
 
 	return s.formResponseRepo.Delete(formResponseUUID)

@@ -1,8 +1,8 @@
 package services
 
 import (
-	"fluxton/errs"
 	"fluxton/models"
+	"fluxton/pkg/errors"
 	"fluxton/policies"
 	"fluxton/repositories"
 	"fluxton/requests/form_requests"
@@ -52,7 +52,7 @@ func (s *FormFieldServiceImpl) List(formUUID uuid.UUID, authUser models.AuthUser
 	}
 
 	if !s.projectPolicy.CanAccess(organizationUUID, authUser) {
-		return []models.FormField{}, errs.NewForbiddenError("formField.error.listForbidden")
+		return []models.FormField{}, errors.NewForbiddenError("formField.error.listForbidden")
 	}
 
 	return s.formFieldRepo.ListForForm(formUUID)
@@ -75,7 +75,7 @@ func (s *FormFieldServiceImpl) GetByUUID(fieldUUID uuid.UUID, authUser models.Au
 	}
 
 	if !s.projectPolicy.CanAccess(organizationUUID, authUser) {
-		return models.FormField{}, errs.NewForbiddenError("formField.error.viewForbidden")
+		return models.FormField{}, errors.NewForbiddenError("formField.error.viewForbidden")
 	}
 
 	return formField, nil
@@ -93,7 +93,7 @@ func (s *FormFieldServiceImpl) CreateMany(formUUID uuid.UUID, request *form_requ
 	}
 
 	if !s.projectPolicy.CanCreate(organizationUUID, authUser) {
-		return []models.FormField{}, errs.NewForbiddenError("formField.error.createForbidden")
+		return []models.FormField{}, errors.NewForbiddenError("formField.error.createForbidden")
 	}
 
 	err = s.validateManyForLabelDuplication(request, formUUID)
@@ -132,7 +132,7 @@ func (s *FormFieldServiceImpl) Update(formUUID, fieldUUID uuid.UUID, authUser mo
 	}
 
 	if !s.projectPolicy.CanUpdate(organizationUUID, authUser) {
-		return &models.FormField{}, errs.NewForbiddenError("formField.error.updateForbidden")
+		return &models.FormField{}, errors.NewForbiddenError("formField.error.updateForbidden")
 	}
 
 	formField, err := s.formFieldRepo.GetByUUID(fieldUUID)
@@ -167,7 +167,7 @@ func (s *FormFieldServiceImpl) Delete(formUUID, fieldUUID uuid.UUID, authUser mo
 	}
 
 	if !s.projectPolicy.CanUpdate(organizationUUID, authUser) {
-		return false, errs.NewForbiddenError("formField.error.deleteForbidden")
+		return false, errors.NewForbiddenError("formField.error.deleteForbidden")
 	}
 
 	return s.formFieldRepo.Delete(fieldUUID)
@@ -186,7 +186,7 @@ func (s *FormFieldServiceImpl) validateManyForLabelDuplication(request *form_req
 	}
 
 	if exists {
-		return errs.NewUnprocessableError("formField.error.someDuplicateLabels")
+		return errors.NewUnprocessableError("formField.error.someDuplicateLabels")
 	}
 
 	return nil
@@ -199,7 +199,7 @@ func (s *FormFieldServiceImpl) validateOneForLabelDuplication(label string, form
 	}
 
 	if exists {
-		return errs.NewUnprocessableError("formField.error.duplicateLabel")
+		return errors.NewUnprocessableError("formField.error.duplicateLabel")
 	}
 
 	return nil

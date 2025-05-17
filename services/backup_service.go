@@ -1,8 +1,8 @@
 package services
 
 import (
-	"fluxton/errs"
 	"fluxton/models"
+	"fluxton/pkg/errors"
 	"fluxton/policies"
 	"fluxton/repositories"
 	"fluxton/requests"
@@ -46,7 +46,7 @@ func (s *BackupServiceImpl) List(projectUUID uuid.UUID, authUser models.AuthUser
 	}
 
 	if !s.projectPolicy.CanAccess(organizationUUID, authUser) {
-		return []models.Backup{}, errs.NewForbiddenError("backup.error.listForbidden")
+		return []models.Backup{}, errors.NewForbiddenError("backup.error.listForbidden")
 	}
 
 	return s.backupRepo.ListForProject(projectUUID)
@@ -64,7 +64,7 @@ func (s *BackupServiceImpl) GetByUUID(backupUUID uuid.UUID, authUser models.Auth
 	}
 
 	if !s.projectPolicy.CanAccess(organizationUUID, authUser) {
-		return models.Backup{}, errs.NewForbiddenError("backup.error.viewForbidden")
+		return models.Backup{}, errors.NewForbiddenError("backup.error.viewForbidden")
 	}
 
 	return backup, nil
@@ -77,7 +77,7 @@ func (s *BackupServiceImpl) Create(request *requests.DefaultRequestWithProjectHe
 	}
 
 	if !s.projectPolicy.CanCreate(project.OrganizationUuid, authUser) {
-		return models.Backup{}, errs.NewForbiddenError("backup.error.createForbidden")
+		return models.Backup{}, errors.NewForbiddenError("backup.error.createForbidden")
 	}
 
 	backup := models.Backup{
@@ -114,11 +114,11 @@ func (s *BackupServiceImpl) Delete(request requests.DefaultRequestWithProjectHea
 	}
 
 	if !s.projectPolicy.CanUpdate(organizationUUID, authUser) {
-		return false, errs.NewForbiddenError("backup.error.deleteForbidden")
+		return false, errors.NewForbiddenError("backup.error.deleteForbidden")
 	}
 
 	if backup.Status == models.BackupStatusDeleting {
-		return false, errs.NewBadRequestError("backup.error.deleteInProgress")
+		return false, errors.NewBadRequestError("backup.error.deleteInProgress")
 	}
 
 	err = s.backupRepo.UpdateStatus(backupUUID, models.BackupStatusDeleting, "", time.Now())

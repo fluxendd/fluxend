@@ -1,8 +1,8 @@
 package services
 
 import (
-	"fluxton/errs"
 	"fluxton/models"
+	"fluxton/pkg/errors"
 	"fluxton/policies"
 	"fluxton/repositories"
 	"github.com/samber/do"
@@ -32,7 +32,7 @@ func NewHealthService(injector *do.Injector) (HealthService, error) {
 
 func (s *HealthServiceImpl) Pulse(authUser models.AuthUser) (models.Health, error) {
 	if !s.adminPolicy.CanAccess(authUser) {
-		return models.Health{}, errs.NewForbiddenError("setting.error.listForbidden")
+		return models.Health{}, errors.NewForbiddenError("setting.error.listForbidden")
 	}
 
 	return models.Health{}, nil

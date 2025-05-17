@@ -2,15 +2,15 @@ package responses
 
 import (
 	"errors"
-	"fluxton/errs"
+	flxErrors "fluxton/pkg/errors"
 	"github.com/labstack/echo/v4"
 )
 
 func ErrorResponse(c echo.Context, err error) error {
-	var notFoundErr *errs.NotFoundError
-	var unauthorizedErr *errs.UnauthorizedError
-	var forbiddenErr *errs.ForbiddenError
-	var badRequestErr *errs.BadRequestError
+	var notFoundErr *flxErrors.NotFoundError
+	var unauthorizedErr *flxErrors.UnauthorizedError
+	var forbiddenErr *flxErrors.ForbiddenError
+	var badRequestErr *flxErrors.BadRequestError
 
 	if errors.As(err, &notFoundErr) {
 		return NotFoundResponse(c, err.Error())

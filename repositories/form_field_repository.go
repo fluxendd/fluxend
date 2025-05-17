@@ -3,9 +3,9 @@ package repositories
 import (
 	"database/sql"
 	"errors"
-	"fluxton/errs"
 	"fluxton/models"
 	"fluxton/pkg"
+	flxErrs "fluxton/pkg/errors"
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
@@ -56,7 +56,7 @@ func (r *FormFieldRepository) GetByUUID(formUUID uuid.UUID) (models.FormField, e
 	err := r.db.Get(&form, query, formUUID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return models.FormField{}, errs.NewNotFoundError("form.error.notFound")
+			return models.FormField{}, flxErrs.NewNotFoundError("form.error.notFound")
 		}
 
 		return models.FormField{}, pkg.FormatError(err, "fetch", pkg.GetMethodName())
