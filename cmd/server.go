@@ -2,6 +2,7 @@ package cmd
 
 import (
 	middlewares2 "fluxton/internal/api/middlewares"
+	routes2 "fluxton/internal/api/routes"
 	"fluxton/repositories"
 	"fluxton/routes"
 	"fluxton/services"
@@ -67,7 +68,7 @@ func registerRoutes(e *echo.Echo, container *do.Injector) {
 	e.Use(requestLogMiddleware)
 
 	routes.RegisterUserRoutes(e, container, authMiddleware)
-	routes.RegisterAdminRoutes(e, container, authMiddleware)
+	routes2.RegisterAdminRoutes(e, container, authMiddleware)
 	routes.RegisterOrganizationRoutes(e, container, authMiddleware)
 	routes.RegisterProjectRoutes(e, container, authMiddleware, allowProjectMiddleware)
 	routes.RegisterTableRoutes(e, container, authMiddleware)
