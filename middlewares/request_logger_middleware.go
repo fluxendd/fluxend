@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"fluxton/constants"
 	"fluxton/models"
-	"fluxton/pkg"
+	"fluxton/pkg/auth"
 	"fluxton/repositories"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
@@ -21,7 +21,7 @@ func RequestLoggerMiddleware(requestLogRepo *repositories.RequestLogRepository) 
 			requestBody := readBody(request)
 
 			res := next(c)
-			authUserUUID, _ := pkg.NewAuth(c).Uuid()
+			authUserUUID, _ := auth.NewAuth(c).Uuid()
 
 			logEntry := models.RequestLog{
 				UserUuid:  authUserUUID,
