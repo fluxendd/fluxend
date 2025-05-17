@@ -3,10 +3,10 @@ package services
 import (
 	"fluxton/errs"
 	"fluxton/models"
+	"fluxton/pkg"
 	"fluxton/policies"
 	"fluxton/repositories"
 	"fluxton/requests/column_requests"
-	"fluxton/utils"
 	"github.com/google/uuid"
 	"github.com/samber/do"
 )
@@ -53,7 +53,7 @@ func (s *ColumnServiceImpl) List(fullTableName string, projectUUID uuid.UUID, au
 	}
 	defer connection.Close()
 
-	table, err := clientTableRepo.GetByNameInSchema(utils.ParseTableName(fullTableName))
+	table, err := clientTableRepo.GetByNameInSchema(pkg.ParseTableName(fullTableName))
 	if err != nil {
 		return nil, err
 	}
@@ -87,7 +87,7 @@ func (s *ColumnServiceImpl) CreateMany(fullTableName string, request *column_req
 	}
 	defer connection.Close()
 
-	table, err := clientTableRepo.GetByNameInSchema(utils.ParseTableName(fullTableName))
+	table, err := clientTableRepo.GetByNameInSchema(pkg.ParseTableName(fullTableName))
 	if err != nil {
 		return []models.Column{}, err
 	}
@@ -130,7 +130,7 @@ func (s *ColumnServiceImpl) AlterMany(fullTableName string, request *column_requ
 	}
 	defer connection.Close()
 
-	table, err := clientTableRepo.GetByNameInSchema(utils.ParseTableName(fullTableName))
+	table, err := clientTableRepo.GetByNameInSchema(pkg.ParseTableName(fullTableName))
 	if err != nil {
 		return []models.Column{}, err
 	}
@@ -173,7 +173,7 @@ func (s *ColumnServiceImpl) Rename(columnName string, fullTableName string, requ
 	}
 	defer connection.Close()
 
-	table, err := clientTableRepo.GetByNameInSchema(utils.ParseTableName(fullTableName))
+	table, err := clientTableRepo.GetByNameInSchema(pkg.ParseTableName(fullTableName))
 	if err != nil {
 		return []models.Column{}, err
 	}
@@ -216,7 +216,7 @@ func (s *ColumnServiceImpl) Delete(columnName, fullTableName string, projectUUID
 	}
 	defer connection.Close()
 
-	_, tableName := utils.ParseTableName(fullTableName)
+	_, tableName := pkg.ParseTableName(fullTableName)
 	columnExists, err := clientColumnRepo.Has(tableName, columnName)
 	if err != nil {
 		return false, err

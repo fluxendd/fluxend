@@ -2,8 +2,8 @@ package repositories
 
 import (
 	"fluxton/models"
+	"fluxton/pkg"
 	"fluxton/requests"
-	"fluxton/utils"
 	"github.com/jmoiron/sqlx"
 	"github.com/samber/do"
 )
@@ -30,7 +30,7 @@ func (r *RequestLogRepository) List(paginationParams requests.PaginationParams) 
 
 	rows, err := r.db.NamedQuery(query, params)
 	if err != nil {
-		return nil, utils.FormatError(err, "select", utils.GetMethodName())
+		return nil, pkg.FormatError(err, "select", pkg.GetMethodName())
 	}
 	defer rows.Close()
 
@@ -38,13 +38,13 @@ func (r *RequestLogRepository) List(paginationParams requests.PaginationParams) 
 	for rows.Next() {
 		var form models.RequestLog
 		if err := rows.StructScan(&form); err != nil {
-			return nil, utils.FormatError(err, "scan", utils.GetMethodName())
+			return nil, pkg.FormatError(err, "scan", pkg.GetMethodName())
 		}
 		requestLogs = append(requestLogs, form)
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, utils.FormatError(err, "iterate", utils.GetMethodName())
+		return nil, pkg.FormatError(err, "iterate", pkg.GetMethodName())
 	}
 
 	return requestLogs, nil
@@ -53,7 +53,7 @@ func (r *RequestLogRepository) List(paginationParams requests.PaginationParams) 
 func (r *RequestLogRepository) Create(requestLog *models.RequestLog) (*models.RequestLog, error) {
 	tx, err := r.db.Beginx()
 	if err != nil {
-		return nil, utils.FormatError(err, "transactionBegin", utils.GetMethodName())
+		return nil, pkg.FormatError(err, "transactionBegin", pkg.GetMethodName())
 	}
 
 	query := `
@@ -82,12 +82,12 @@ func (r *RequestLogRepository) Create(requestLog *models.RequestLog) (*models.Re
 		if err := tx.Rollback(); err != nil {
 			return nil, err
 		}
-		return nil, utils.FormatError(queryErr, "insert", utils.GetMethodName())
+		return nil, pkg.FormatError(queryErr, "insert", pkg.GetMethodName())
 	}
 
 	// Commit transaction
 	if err = tx.Commit(); err != nil {
-		return nil, utils.FormatError(err, "transactionCommit", utils.GetMethodName())
+		return nil, pkg.FormatError(err, "transactionCommit", pkg.GetMethodName())
 	}
 
 	return requestLog, nil

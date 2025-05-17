@@ -1,12 +1,12 @@
 package controllers
 
 import (
+	"fluxton/pkg"
 	"fluxton/requests"
 	"fluxton/requests/form_requests"
 	"fluxton/resources"
 	"fluxton/responses"
 	"fluxton/services"
-	"fluxton/utils"
 	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
 )
@@ -45,7 +45,7 @@ func (ffc *FormFieldController) List(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	authUser, _ := utils.NewAuth(c).User()
+	authUser, _ := pkg.NewAuth(c).User()
 
 	formUUID, err := request.GetUUIDPathParam(c, "formUUID", true)
 	if err != nil {
@@ -85,7 +85,7 @@ func (ffc *FormFieldController) Show(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	authUser, _ := utils.NewAuth(c).User()
+	authUser, _ := pkg.NewAuth(c).User()
 
 	formUUID, err := request.GetUUIDPathParam(c, "formUUID", true)
 	if err != nil {
@@ -126,7 +126,7 @@ func (ffc *FormFieldController) Store(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	authUser, _ := utils.NewAuth(c).User()
+	authUser, _ := pkg.NewAuth(c).User()
 
 	formUUID, err := request.GetUUIDPathParam(c, "formUUID", true)
 	if err != nil {
@@ -168,7 +168,7 @@ func (ffc *FormFieldController) Update(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	authUser, _ := utils.NewAuth(c).User()
+	authUser, _ := pkg.NewAuth(c).User()
 
 	fieldUUID, err := request.GetUUIDPathParam(c, "fieldUUID", true)
 	if err != nil {
@@ -213,7 +213,7 @@ func (ffc *FormFieldController) Delete(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	authUser, _ := utils.NewAuth(c).User()
+	authUser, _ := pkg.NewAuth(c).User()
 
 	fieldUUID, err := request.GetUUIDPathParam(c, "fieldUUID", true)
 	if err != nil {

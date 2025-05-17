@@ -3,7 +3,7 @@ package storage
 import (
 	"encoding/json"
 	"fluxton/errs"
-	"fluxton/utils"
+	"fluxton/pkg"
 	"fmt"
 	"os"
 	"resty.dev/v3"
@@ -93,7 +93,7 @@ func (d *DropboxServiceImpl) CreateContainer(path string) (string, error) {
 		return "", err
 	}
 
-	utils.DumpJSON(resp.StatusCode())
+	pkg.DumpJSON(resp.StatusCode())
 	// TODO: check if created folder's path or something else can be included
 	return "", d.handleAPIError(resp, dropboxActionCreateFolder)
 }

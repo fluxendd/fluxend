@@ -1,4 +1,4 @@
-package utils
+package pkg
 
 // AlphaValidationPattern returns the regex pattern for alpha validation (only letters, no spaces)
 // Example: "Hello" will match, but "Hello123" or "Hello World" will not match.

@@ -3,8 +3,8 @@ package column_requests
 import (
 	"fluxton/constants"
 	"fluxton/models"
+	"fluxton/pkg"
 	"fluxton/requests"
-	"fluxton/utils"
 	"fmt"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/labstack/echo/v4"
@@ -56,7 +56,7 @@ func ValidateColumn(column models.Column) error {
 				),
 			),
 			validation.Match(
-				regexp.MustCompile(utils.AlphanumericWithUnderscoreAndDashPattern()),
+				regexp.MustCompile(pkg.AlphanumericWithUnderscoreAndDashPattern()),
 			).Error("Column name must be alphanumeric and start with a letter"),
 			validation.By(validateName),
 		),

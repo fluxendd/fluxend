@@ -1,12 +1,12 @@
 package controllers
 
 import (
+	"fluxton/pkg"
 	"fluxton/requests"
 	"fluxton/requests/organization_requests"
 	"fluxton/resources"
 	"fluxton/responses"
 	"fluxton/services"
-	"fluxton/utils"
 	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
 )
@@ -48,7 +48,7 @@ func (oc *OrganizationController) List(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	authUserId, _ := utils.NewAuth(c).Uuid()
+	authUserId, _ := pkg.NewAuth(c).Uuid()
 
 	paginationParams := request.ExtractPaginationParams(c)
 	organizations, err := oc.organizationService.List(paginationParams, authUserId)
@@ -84,7 +84,7 @@ func (oc *OrganizationController) Show(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	authUser, _ := utils.NewAuth(c).User()
+	authUser, _ := pkg.NewAuth(c).User()
 
 	organizationUUID, err := request.GetUUIDPathParam(c, "organizationUUID", true)
 	if err != nil {
@@ -124,7 +124,7 @@ func (oc *OrganizationController) Store(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	authUser, err := utils.NewAuth(c).User()
+	authUser, err := pkg.NewAuth(c).User()
 	if err != nil {
 		return responses.UnauthorizedResponse(c, err.Error())
 	}
@@ -163,7 +163,7 @@ func (oc *OrganizationController) Update(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	authUser, _ := utils.NewAuth(c).User()
+	authUser, _ := pkg.NewAuth(c).User()
 
 	organizationUUID, err := request.GetUUIDPathParam(c, "organizationUUID", true)
 	if err != nil {
@@ -201,7 +201,7 @@ func (oc *OrganizationController) Delete(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	authUser, _ := utils.NewAuth(c).User()
+	authUser, _ := pkg.NewAuth(c).User()
 
 	organizationUUID, err := request.GetUUIDPathParam(c, "organizationUUID", true)
 	if err != nil {

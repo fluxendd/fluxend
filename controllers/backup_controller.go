@@ -1,11 +1,11 @@
 package controllers
 
 import (
+	"fluxton/pkg"
 	"fluxton/requests"
 	"fluxton/resources"
 	"fluxton/responses"
 	"fluxton/services"
-	"fluxton/utils"
 	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
 )
@@ -42,7 +42,7 @@ func (bc *BackupController) List(c echo.Context) error {
 	if err := request.BindAndValidate(c); err != nil {
 		return responses.UnprocessableResponse(c, err)
 	}
-	authUser, _ := utils.NewAuth(c).User()
+	authUser, _ := pkg.NewAuth(c).User()
 
 	backups, err := bc.backupService.List(request.ProjectUUID, authUser)
 	if err != nil {
@@ -78,7 +78,7 @@ func (bc *BackupController) Show(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	authUser, _ := utils.NewAuth(c).User()
+	authUser, _ := pkg.NewAuth(c).User()
 
 	backupUUID, err := request.GetUUIDPathParam(c, "backupUUID", true)
 	if err != nil {
@@ -120,7 +120,7 @@ func (bc *BackupController) Store(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	authUser, _ := utils.NewAuth(c).User()
+	authUser, _ := pkg.NewAuth(c).User()
 
 	backup, err := bc.backupService.Create(&request, authUser)
 	if err != nil {
@@ -156,7 +156,7 @@ func (bc *BackupController) Delete(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	authUser, _ := utils.NewAuth(c).User()
+	authUser, _ := pkg.NewAuth(c).User()
 
 	backupUUID, err := request.GetUUIDPathParam(c, "backupUUID", true)
 	if err != nil {

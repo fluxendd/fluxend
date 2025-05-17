@@ -3,10 +3,10 @@ package services
 import (
 	"fluxton/errs"
 	"fluxton/models"
+	"fluxton/pkg"
 	"fluxton/policies"
 	"fluxton/repositories"
 	"fluxton/requests/table_requests"
-	"fluxton/utils"
 	"github.com/google/uuid"
 	"github.com/samber/do"
 )
@@ -85,7 +85,7 @@ func (s *TableServiceImpl) GetByName(fullTableName string, projectUUID uuid.UUID
 	}
 	defer connection.Close()
 
-	table, err := clientTableRepo.GetByNameInSchema(utils.ParseTableName(fullTableName))
+	table, err := clientTableRepo.GetByNameInSchema(pkg.ParseTableName(fullTableName))
 	if err != nil {
 		return models.Table{}, err
 	}
@@ -119,7 +119,7 @@ func (s *TableServiceImpl) Create(request *table_requests.CreateRequest, authUse
 		return models.Table{}, err
 	}
 
-	return clientTableRepo.GetByNameInSchema(utils.ParseTableName(request.Name))
+	return clientTableRepo.GetByNameInSchema(pkg.ParseTableName(request.Name))
 }
 
 func (s *TableServiceImpl) Upload(request *table_requests.UploadRequest, authUser models.AuthUser) (models.Table, error) {
@@ -166,7 +166,7 @@ func (s *TableServiceImpl) Upload(request *table_requests.UploadRequest, authUse
 		return models.Table{}, err
 	}
 
-	return clientTableRepo.GetByNameInSchema(utils.ParseTableName(request.Name))
+	return clientTableRepo.GetByNameInSchema(pkg.ParseTableName(request.Name))
 }
 
 func (s *TableServiceImpl) Duplicate(fullTableName string, authUser models.AuthUser, request *table_requests.RenameRequest) (*models.Table, error) {
@@ -190,7 +190,7 @@ func (s *TableServiceImpl) Duplicate(fullTableName string, authUser models.AuthU
 		return &models.Table{}, err
 	}
 
-	table, err := clientTableRepo.GetByNameInSchema(utils.ParseTableName(fullTableName))
+	table, err := clientTableRepo.GetByNameInSchema(pkg.ParseTableName(fullTableName))
 	if err != nil {
 		return &models.Table{}, err
 	}
@@ -226,7 +226,7 @@ func (s *TableServiceImpl) Rename(fullTableName string, authUser models.AuthUser
 		return models.Table{}, err
 	}
 
-	table, err := clientTableRepo.GetByNameInSchema(utils.ParseTableName(fullTableName))
+	table, err := clientTableRepo.GetByNameInSchema(pkg.ParseTableName(fullTableName))
 	if err != nil {
 		return models.Table{}, err
 	}

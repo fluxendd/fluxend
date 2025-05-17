@@ -5,8 +5,8 @@ import (
 	"errors"
 	"fluxton/errs"
 	"fluxton/models"
+	"fluxton/pkg"
 	"fluxton/requests"
-	"fluxton/utils"
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
@@ -43,7 +43,7 @@ func (r *OrganizationRepository) ListForUser(paginationParams requests.Paginatio
 
 	`
 
-	query = fmt.Sprintf(query, utils.GetColumnsWithAlias[models.Organization]("organizations"))
+	query = fmt.Sprintf(query, pkg.GetColumnsWithAlias[models.Organization]("organizations"))
 
 	params := map[string]interface{}{
 		"user_uuid": authUserID,
@@ -54,7 +54,7 @@ func (r *OrganizationRepository) ListForUser(paginationParams requests.Paginatio
 
 	rows, err := r.db.NamedQuery(query, params)
 	if err != nil {
-		return nil, utils.FormatError(err, "select", utils.GetMethodName())
+		return nil, pkg.FormatError(err, "select", pkg.GetMethodName())
 	}
 	defer rows.Close()
 
@@ -62,13 +62,13 @@ func (r *OrganizationRepository) ListForUser(paginationParams requests.Paginatio
 	for rows.Next() {
 		var organization models.Organization
 		if err := rows.StructScan(&organization); err != nil {
-			return nil, utils.FormatError(err, "scan", utils.GetMethodName())
+			return nil, pkg.FormatError(err, "scan", pkg.GetMethodName())
 		}
 		organizations = append(organizations, organization)
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, utils.FormatError(err, "iterate", utils.GetMethodName())
+		return nil, pkg.FormatError(err, "iterate", pkg.GetMethodName())
 	}
 
 	return organizations, nil
@@ -86,10 +86,10 @@ func (r *OrganizationRepository) ListUsers(organizationUUID uuid.UUID) ([]models
 			organization_members.organization_uuid = $1
 	`
 
-	query = fmt.Sprintf(query, utils.GetColumnsWithAlias[models.User]("users"))
+	query = fmt.Sprintf(query, pkg.GetColumnsWithAlias[models.User]("users"))
 	rows, err := r.db.Queryx(query, organizationUUID)
 	if err != nil {
-		return nil, utils.FormatError(err, "select", utils.GetMethodName())
+		return nil, pkg.FormatError(err, "select", pkg.GetMethodName())
 	}
 	defer rows.Close()
 
@@ -97,13 +97,13 @@ func (r *OrganizationRepository) ListUsers(organizationUUID uuid.UUID) ([]models
 	for rows.Next() {
 		var user models.User
 		if err := rows.StructScan(&user); err != nil {
-			return nil, utils.FormatError(err, "scan", utils.GetMethodName())
+			return nil, pkg.FormatError(err, "scan", pkg.GetMethodName())
 		}
 		users = append(users, user)
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, utils.FormatError(err, "iterate", utils.GetMethodName())
+		return nil, pkg.FormatError(err, "iterate", pkg.GetMethodName())
 	}
 
 	return users, nil
@@ -120,7 +120,7 @@ func (r *OrganizationRepository) GetUser(organizationUUID, userUUID uuid.UUID) (
 		WHERE 
 			organization_members.organization_uuid = $1 AND organization_members.user_uuid = $2
 	`
-	query = fmt.Sprintf(query, utils.GetColumnsWithAlias[models.User]("users"))
+	query = fmt.Sprintf(query, pkg.GetColumnsWithAlias[models.User]("users"))
 
 	var user models.User
 	err := r.db.Get(&user, query, organizationUUID, userUUID)
@@ -129,7 +129,7 @@ func (r *OrganizationRepository) GetUser(organizationUUID, userUUID uuid.UUID) (
 			return models.User{}, errs.NewNotFoundError("organization.error.userNotFound")
 		}
 
-		return models.User{}, utils.FormatError(err, "fetch", utils.GetMethodName())
+		return models.User{}, pkg.FormatError(err, "fetch", pkg.GetMethodName())
 	}
 
 	return user, nil
@@ -149,7 +149,7 @@ func (r *OrganizationRepository) DeleteUser(organizationUUID, userUUID uuid.UUID
 	query := "DELETE FROM fluxton.organization_members WHERE organization_uuid = $1 AND user_uuid = $2"
 	_, err := r.db.Exec(query, organizationUUID, userUUID)
 	if err != nil {
-		return utils.FormatError(err, "delete", utils.GetMethodName())
+		return pkg.FormatError(err, "delete", pkg.GetMethodName())
 	}
 
 	return nil
@@ -157,7 +157,7 @@ func (r *OrganizationRepository) DeleteUser(organizationUUID, userUUID uuid.UUID
 
 func (r *OrganizationRepository) GetByUUID(organizationUUID uuid.UUID) (models.Organization, error) {
 	query := "SELECT %s FROM fluxton.organizations WHERE uuid = $1"
-	query = fmt.Sprintf(query, utils.GetColumns[models.Organization]())
+	query = fmt.Sprintf(query, pkg.GetColumns[models.Organization]())
 
 	var organization models.Organization
 	err := r.db.Get(&organization, query, organizationUUID)
@@ -166,7 +166,7 @@ func (r *OrganizationRepository) GetByUUID(organizationUUID uuid.UUID) (models.O
 			return models.Organization{}, errs.NewNotFoundError("organization.error.notFound")
 		}
 
-		return models.Organization{}, utils.FormatError(err, "fetch", utils.GetMethodName())
+		return models.Organization{}, pkg.FormatError(err, "fetch", pkg.GetMethodName())
 	}
 
 	return organization, nil
@@ -177,7 +177,7 @@ func (r *OrganizationRepository) ExistsByID(organizationUUID uuid.UUID) (bool, e
 	var exists bool
 	err := r.db.Get(&exists, query, organizationUUID)
 	if err != nil {
-		return false, utils.FormatError(err, "fetch", utils.GetMethodName())
+		return false, pkg.FormatError(err, "fetch", pkg.GetMethodName())
 	}
 
 	return exists, nil
@@ -186,7 +186,7 @@ func (r *OrganizationRepository) ExistsByID(organizationUUID uuid.UUID) (bool, e
 func (r *OrganizationRepository) Create(organization *models.Organization, authUserID uuid.UUID) (*models.Organization, error) {
 	tx, err := r.db.Beginx()
 	if err != nil {
-		return nil, utils.FormatError(err, "transactionBegin", utils.GetMethodName())
+		return nil, pkg.FormatError(err, "transactionBegin", pkg.GetMethodName())
 	}
 
 	// Insert into organizations table
@@ -214,7 +214,7 @@ func (r *OrganizationRepository) Create(organization *models.Organization, authU
 
 	// Commit transaction
 	if err = tx.Commit(); err != nil {
-		return nil, utils.FormatError(err, "transactionCommit", utils.GetMethodName())
+		return nil, pkg.FormatError(err, "transactionCommit", pkg.GetMethodName())
 	}
 
 	return organization, nil
@@ -228,12 +228,12 @@ func (r *OrganizationRepository) Update(organization *models.Organization) (*mod
 
 	res, err := r.db.NamedExec(query, organization)
 	if err != nil {
-		return &models.Organization{}, utils.FormatError(err, "update", utils.GetMethodName())
+		return &models.Organization{}, pkg.FormatError(err, "update", pkg.GetMethodName())
 	}
 
 	_, err = res.RowsAffected()
 	if err != nil {
-		return &models.Organization{}, utils.FormatError(err, "affectedRows", utils.GetMethodName())
+		return &models.Organization{}, pkg.FormatError(err, "affectedRows", pkg.GetMethodName())
 	}
 
 	return organization, nil
@@ -243,12 +243,12 @@ func (r *OrganizationRepository) Delete(organizationUUID uuid.UUID) (bool, error
 	query := "DELETE FROM fluxton.organizations WHERE uuid = $1"
 	res, err := r.db.Exec(query, organizationUUID)
 	if err != nil {
-		return false, utils.FormatError(err, "delete", utils.GetMethodName())
+		return false, pkg.FormatError(err, "delete", pkg.GetMethodName())
 	}
 
 	rowsAffected, err := res.RowsAffected()
 	if err != nil {
-		return false, utils.FormatError(err, "affectedRows", utils.GetMethodName())
+		return false, pkg.FormatError(err, "affectedRows", pkg.GetMethodName())
 	}
 
 	return rowsAffected == 1, nil
@@ -260,7 +260,7 @@ func (r *OrganizationRepository) IsOrganizationMember(organizationUUID, authUser
 	var exists bool
 	err := r.db.Get(&exists, query, organizationUUID, authUserID)
 	if err != nil {
-		return false, utils.FormatError(err, "fetch", utils.GetMethodName())
+		return false, pkg.FormatError(err, "fetch", pkg.GetMethodName())
 	}
 
 	return exists, nil

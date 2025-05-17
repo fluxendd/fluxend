@@ -2,8 +2,8 @@ package cmd
 
 import (
 	"fluxton/models"
+	"fluxton/pkg"
 	"fluxton/services"
-	"fluxton/utils"
 	"github.com/google/uuid"
 	"github.com/samber/do"
 	"github.com/spf13/cobra"
@@ -27,7 +27,7 @@ var udbStats = &cobra.Command{
 			return nil
 		}
 
-		utils.DumpJSON(stats)
+		pkg.DumpJSON(stats)
 
 		return nil
 	},

@@ -1,11 +1,11 @@
 package controllers
 
 import (
+	"fluxton/pkg"
 	"fluxton/requests"
 	"fluxton/resources"
 	"fluxton/responses"
 	"fluxton/services"
-	"fluxton/utils"
 	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
 )
@@ -47,7 +47,7 @@ func (fc *FunctionController) List(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	authUser, _ := utils.NewAuth(c).User()
+	authUser, _ := pkg.NewAuth(c).User()
 
 	schema := c.Param("schema")
 	if schema == "" {
@@ -89,7 +89,7 @@ func (fc *FunctionController) Show(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	authUser, _ := utils.NewAuth(c).User()
+	authUser, _ := pkg.NewAuth(c).User()
 
 	schema := c.Param("schema")
 	if schema == "" {
@@ -136,7 +136,7 @@ func (fc *FunctionController) Store(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	authUser, _ := utils.NewAuth(c).User()
+	authUser, _ := pkg.NewAuth(c).User()
 
 	schema := c.Param("schema")
 	if schema == "" {
@@ -179,7 +179,7 @@ func (fc *FunctionController) Delete(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	authUser, _ := utils.NewAuth(c).User()
+	authUser, _ := pkg.NewAuth(c).User()
 
 	schema := c.Param("schema")
 	if schema == "" {

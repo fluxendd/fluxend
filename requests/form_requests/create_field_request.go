@@ -2,8 +2,8 @@ package form_requests
 
 import (
 	"fluxton/constants"
+	"fluxton/pkg"
 	"fluxton/requests"
-	"fluxton/utils"
 	"fmt"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/guregu/null/v6"
@@ -105,7 +105,7 @@ func validateField(value interface{}) error {
 				),
 			),
 			validation.Match(
-				regexp.MustCompile(utils.AlphanumericWithUnderscoreAndDashPattern()),
+				regexp.MustCompile(pkg.AlphanumericWithUnderscoreAndDashPattern()),
 			).Error("Label must be alphanumeric with underscores and dashes"),
 		),
 		validation.Field(

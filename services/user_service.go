@@ -3,11 +3,11 @@ package services
 import (
 	"fluxton/errs"
 	"fluxton/models"
+	"fluxton/pkg"
 	"fluxton/policies"
 	"fluxton/repositories"
 	"fluxton/requests"
 	"fluxton/requests/user_requests"
-	"fluxton/utils"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
@@ -49,7 +49,7 @@ func (s *UserServiceImpl) Login(request *user_requests.LoginRequest) (models.Use
 		return models.User{}, "", err
 	}
 
-	if !utils.ComparePassword(user.Password, request.Password) {
+	if !pkg.ComparePassword(user.Password, request.Password) {
 		return models.User{}, "", errs.NewUnauthorizedError("user.error.invalidCredentials")
 	}
 

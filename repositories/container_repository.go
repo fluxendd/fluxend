@@ -5,8 +5,8 @@ import (
 	"errors"
 	"fluxton/errs"
 	"fluxton/models"
+	"fluxton/pkg"
 	"fluxton/requests"
-	"fluxton/utils"
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
@@ -39,7 +39,7 @@ func (r *ContainerRepository) ListForProject(paginationParams requests.Paginatio
 
 	`
 
-	query = fmt.Sprintf(query, utils.GetColumns[models.Container]())
+	query = fmt.Sprintf(query, pkg.GetColumns[models.Container]())
 
 	params := map[string]interface{}{
 		"project_uuid": projectUUID,
@@ -50,7 +50,7 @@ func (r *ContainerRepository) ListForProject(paginationParams requests.Paginatio
 
 	rows, err := r.db.NamedQuery(query, params)
 	if err != nil {
-		return nil, utils.FormatError(err, "select", utils.GetMethodName())
+		return nil, pkg.FormatError(err, "select", pkg.GetMethodName())
 	}
 	defer rows.Close()
 
@@ -58,13 +58,13 @@ func (r *ContainerRepository) ListForProject(paginationParams requests.Paginatio
 	for rows.Next() {
 		var container models.Container
 		if err := rows.StructScan(&container); err != nil {
-			return nil, utils.FormatError(err, "scan", utils.GetMethodName())
+			return nil, pkg.FormatError(err, "scan", pkg.GetMethodName())
 		}
 		containers = append(containers, container)
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, utils.FormatError(err, "iterate", utils.GetMethodName())
+		return nil, pkg.FormatError(err, "iterate", pkg.GetMethodName())
 	}
 
 	return containers, nil
@@ -72,7 +72,7 @@ func (r *ContainerRepository) ListForProject(paginationParams requests.Paginatio
 
 func (r *ContainerRepository) GetByUUID(containerUUID uuid.UUID) (models.Container, error) {
 	query := "SELECT %s FROM storage.containers WHERE uuid = $1"
-	query = fmt.Sprintf(query, utils.GetColumns[models.Container]())
+	query = fmt.Sprintf(query, pkg.GetColumns[models.Container]())
 
 	var container models.Container
 	err := r.db.Get(&container, query, containerUUID)
@@ -81,7 +81,7 @@ func (r *ContainerRepository) GetByUUID(containerUUID uuid.UUID) (models.Contain
 			return models.Container{}, errs.NewNotFoundError("container.error.notFound")
 		}
 
-		return models.Container{}, utils.FormatError(err, "fetch", utils.GetMethodName())
+		return models.Container{}, pkg.FormatError(err, "fetch", pkg.GetMethodName())
 	}
 
 	return container, nil
@@ -93,7 +93,7 @@ func (r *ContainerRepository) ExistsByUUID(containerUUID uuid.UUID) (bool, error
 	var exists bool
 	err := r.db.Get(&exists, query, containerUUID)
 	if err != nil {
-		return false, utils.FormatError(err, "fetch", utils.GetMethodName())
+		return false, pkg.FormatError(err, "fetch", pkg.GetMethodName())
 	}
 
 	return exists, nil
@@ -105,7 +105,7 @@ func (r *ContainerRepository) ExistsByNameForProject(name string, projectUUID uu
 	var exists bool
 	err := r.db.Get(&exists, query, name, projectUUID)
 	if err != nil {
-		return false, utils.FormatError(err, "fetch", utils.GetMethodName())
+		return false, pkg.FormatError(err, "fetch", pkg.GetMethodName())
 	}
 
 	return exists, nil
@@ -114,7 +114,7 @@ func (r *ContainerRepository) ExistsByNameForProject(name string, projectUUID uu
 func (r *ContainerRepository) Create(container *models.Container) (*models.Container, error) {
 	tx, err := r.db.Beginx()
 	if err != nil {
-		return nil, utils.FormatError(err, "transactionBegin", utils.GetMethodName())
+		return nil, pkg.FormatError(err, "transactionBegin", pkg.GetMethodName())
 	}
 
 	query := `
@@ -144,12 +144,12 @@ func (r *ContainerRepository) Create(container *models.Container) (*models.Conta
 		if err := tx.Rollback(); err != nil {
 			return nil, err
 		}
-		return nil, utils.FormatError(err, "create", utils.GetMethodName())
+		return nil, pkg.FormatError(err, "create", pkg.GetMethodName())
 	}
 
 	// Commit transaction
 	if err = tx.Commit(); err != nil {
-		return nil, utils.FormatError(err, "transactionCommit", utils.GetMethodName())
+		return nil, pkg.FormatError(err, "transactionCommit", pkg.GetMethodName())
 	}
 
 	return container, nil
@@ -169,12 +169,12 @@ func (r *ContainerRepository) Update(container *models.Container) (*models.Conta
 
 	res, err := r.db.NamedExec(query, container)
 	if err != nil {
-		return &models.Container{}, utils.FormatError(err, "update", utils.GetMethodName())
+		return &models.Container{}, pkg.FormatError(err, "update", pkg.GetMethodName())
 	}
 
 	_, err = res.RowsAffected()
 	if err != nil {
-		return &models.Container{}, utils.FormatError(err, "affectedRows", utils.GetMethodName())
+		return &models.Container{}, pkg.FormatError(err, "affectedRows", pkg.GetMethodName())
 	}
 
 	return container, nil
@@ -184,7 +184,7 @@ func (r *ContainerRepository) IncrementTotalFiles(containerUUID uuid.UUID) error
 	query := "UPDATE storage.containers SET total_files = total_files + 1 WHERE uuid = $1"
 	_, err := r.db.Exec(query, containerUUID)
 	if err != nil {
-		return utils.FormatError(err, "update", utils.GetMethodName())
+		return pkg.FormatError(err, "update", pkg.GetMethodName())
 	}
 
 	return nil
@@ -194,7 +194,7 @@ func (r *ContainerRepository) DecrementTotalFiles(containerUUID uuid.UUID) error
 	query := "UPDATE storage.containers SET total_files = total_files - 1 WHERE uuid = $1"
 	_, err := r.db.Exec(query, containerUUID)
 	if err != nil {
-		return utils.FormatError(err, "update", utils.GetMethodName())
+		return pkg.FormatError(err, "update", pkg.GetMethodName())
 	}
 
 	return nil
@@ -204,12 +204,12 @@ func (r *ContainerRepository) Delete(containerUUID uuid.UUID) (bool, error) {
 	query := "DELETE FROM storage.containers WHERE uuid = $1"
 	res, err := r.db.Exec(query, containerUUID)
 	if err != nil {
-		return false, utils.FormatError(err, "delete", utils.GetMethodName())
+		return false, pkg.FormatError(err, "delete", pkg.GetMethodName())
 	}
 
 	rowsAffected, err := res.RowsAffected()
 	if err != nil {
-		return false, utils.FormatError(err, "affectedRows", utils.GetMethodName())
+		return false, pkg.FormatError(err, "affectedRows", pkg.GetMethodName())
 	}
 
 	return rowsAffected == 1, nil

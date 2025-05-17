@@ -1,12 +1,12 @@
 package controllers
 
 import (
+	"fluxton/pkg"
 	"fluxton/requests"
 	"fluxton/requests/organization_requests"
 	"fluxton/resources"
 	"fluxton/responses"
 	"fluxton/services"
-	"fluxton/utils"
 	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
 )
@@ -46,7 +46,7 @@ func (ouc *OrganizationMemberController) List(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	authUser, _ := utils.NewAuth(c).User()
+	authUser, _ := pkg.NewAuth(c).User()
 
 	organizationUUID, err := request.GetUUIDPathParam(c, "organizationUUID", true)
 	if err != nil {
@@ -87,7 +87,7 @@ func (ouc *OrganizationMemberController) Store(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	authUser, _ := utils.NewAuth(c).User()
+	authUser, _ := pkg.NewAuth(c).User()
 
 	organizationUUID, err := request.GetUUIDPathParam(c, "organizationUUID", true)
 	if err != nil {
@@ -128,7 +128,7 @@ func (ouc *OrganizationMemberController) Delete(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	authUser, _ := utils.NewAuth(c).User()
+	authUser, _ := pkg.NewAuth(c).User()
 
 	organizationUUID, err := request.GetUUIDPathParam(c, "organizationUUID", true)
 	if err != nil {

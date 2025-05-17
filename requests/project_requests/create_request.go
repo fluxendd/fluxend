@@ -2,8 +2,8 @@ package project_requests
 
 import (
 	"fluxton/constants"
+	"fluxton/pkg"
 	"fluxton/requests"
-	"fluxton/utils"
 	"fmt"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/google/uuid"
@@ -39,7 +39,7 @@ func (r *CreateRequest) BindAndValidate(c echo.Context) []string {
 				),
 			),
 			validation.Match(
-				regexp.MustCompile(utils.AlphanumericWithSpaceUnderScoreAndDashPattern()),
+				regexp.MustCompile(pkg.AlphanumericWithSpaceUnderScoreAndDashPattern()),
 			).Error("Project name must be alphanumeric with underscores, spaces and dashes")),
 		validation.Field(&r.OrganizationUUID, validation.Required.Error("Organization UUID is required")),
 	)

@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fluxton/errs"
 	"fluxton/models"
-	"fluxton/utils"
+	"fluxton/pkg"
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
@@ -28,7 +28,7 @@ func (r *FormFieldRepository) ListForForm(formUUID uuid.UUID) ([]models.FormFiel
 
 	rows, err := r.db.Queryx(query, formUUID)
 	if err != nil {
-		return nil, utils.FormatError(err, "select", utils.GetMethodName())
+		return nil, pkg.FormatError(err, "select", pkg.GetMethodName())
 	}
 	defer rows.Close()
 
@@ -36,13 +36,13 @@ func (r *FormFieldRepository) ListForForm(formUUID uuid.UUID) ([]models.FormFiel
 	for rows.Next() {
 		var form models.FormField
 		if err := rows.StructScan(&form); err != nil {
-			return nil, utils.FormatError(err, "scan", utils.GetMethodName())
+			return nil, pkg.FormatError(err, "scan", pkg.GetMethodName())
 		}
 		forms = append(forms, form)
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, utils.FormatError(err, "iterate", utils.GetMethodName())
+		return nil, pkg.FormatError(err, "iterate", pkg.GetMethodName())
 	}
 
 	return forms, nil
@@ -50,7 +50,7 @@ func (r *FormFieldRepository) ListForForm(formUUID uuid.UUID) ([]models.FormFiel
 
 func (r *FormFieldRepository) GetByUUID(formUUID uuid.UUID) (models.FormField, error) {
 	query := "SELECT %s FROM fluxton.form_fields WHERE uuid = $1"
-	query = fmt.Sprintf(query, utils.GetColumns[models.FormField]())
+	query = fmt.Sprintf(query, pkg.GetColumns[models.FormField]())
 
 	var form models.FormField
 	err := r.db.Get(&form, query, formUUID)
@@ -59,7 +59,7 @@ func (r *FormFieldRepository) GetByUUID(formUUID uuid.UUID) (models.FormField, e
 			return models.FormField{}, errs.NewNotFoundError("form.error.notFound")
 		}
 
-		return models.FormField{}, utils.FormatError(err, "fetch", utils.GetMethodName())
+		return models.FormField{}, pkg.FormatError(err, "fetch", pkg.GetMethodName())
 	}
 
 	return form, nil
@@ -71,7 +71,7 @@ func (r *FormFieldRepository) ExistsByUUID(formFieldUUID uuid.UUID) (bool, error
 	var exists bool
 	err := r.db.Get(&exists, query, formFieldUUID)
 	if err != nil {
-		return false, utils.FormatError(err, "fetch", utils.GetMethodName())
+		return false, pkg.FormatError(err, "fetch", pkg.GetMethodName())
 	}
 
 	return exists, nil
@@ -83,7 +83,7 @@ func (r *FormFieldRepository) ExistsByAnyLabelForForm(labels []string, formUUID 
 	var exists bool
 	err := r.db.Get(&exists, query, pq.Array(labels), formUUID)
 	if err != nil {
-		return false, utils.FormatError(err, "fetch", utils.GetMethodName())
+		return false, pkg.FormatError(err, "fetch", pkg.GetMethodName())
 	}
 
 	return exists, nil
@@ -95,7 +95,7 @@ func (r *FormFieldRepository) ExistsByLabelForForm(label string, formUUID uuid.U
 	var exists bool
 	err := r.db.Get(&exists, query, label, formUUID)
 	if err != nil {
-		return false, utils.FormatError(err, "fetch", utils.GetMethodName())
+		return false, pkg.FormatError(err, "fetch", pkg.GetMethodName())
 	}
 
 	return exists, nil
@@ -104,7 +104,7 @@ func (r *FormFieldRepository) ExistsByLabelForForm(label string, formUUID uuid.U
 func (r *FormFieldRepository) Create(formField *models.FormField) (*models.FormField, error) {
 	tx, err := r.db.Beginx()
 	if err != nil {
-		return nil, utils.FormatError(err, "transactionBegin", utils.GetMethodName())
+		return nil, pkg.FormatError(err, "transactionBegin", pkg.GetMethodName())
 	}
 
 	query := `
@@ -153,12 +153,12 @@ func (r *FormFieldRepository) Create(formField *models.FormField) (*models.FormF
 		if err := tx.Rollback(); err != nil {
 			return nil, err
 		}
-		return nil, utils.FormatError(queryErr, "insert", utils.GetMethodName())
+		return nil, pkg.FormatError(queryErr, "insert", pkg.GetMethodName())
 	}
 
 	// Commit transaction
 	if err = tx.Commit(); err != nil {
-		return nil, utils.FormatError(err, "transactionCommit", utils.GetMethodName())
+		return nil, pkg.FormatError(err, "transactionCommit", pkg.GetMethodName())
 	}
 
 	return formField, nil
@@ -194,12 +194,12 @@ func (r *FormFieldRepository) Update(formField *models.FormField) (*models.FormF
 
 	res, err := r.db.NamedExec(query, formField)
 	if err != nil {
-		return &models.FormField{}, utils.FormatError(err, "update", utils.GetMethodName())
+		return &models.FormField{}, pkg.FormatError(err, "update", pkg.GetMethodName())
 	}
 
 	_, err = res.RowsAffected()
 	if err != nil {
-		return &models.FormField{}, utils.FormatError(err, "affectedRows", utils.GetMethodName())
+		return &models.FormField{}, pkg.FormatError(err, "affectedRows", pkg.GetMethodName())
 	}
 
 	return formField, nil
@@ -209,12 +209,12 @@ func (r *FormFieldRepository) Delete(formFieldUUID uuid.UUID) (bool, error) {
 	query := "DELETE FROM fluxton.form_fields WHERE uuid = $1"
 	res, err := r.db.Exec(query, formFieldUUID)
 	if err != nil {
-		return false, utils.FormatError(err, "delete", utils.GetMethodName())
+		return false, pkg.FormatError(err, "delete", pkg.GetMethodName())
 	}
 
 	rowsAffected, err := res.RowsAffected()
 	if err != nil {
-		return false, utils.FormatError(err, "affectedRows", utils.GetMethodName())
+		return false, pkg.FormatError(err, "affectedRows", pkg.GetMethodName())
 	}
 
 	return rowsAffected == 1, nil

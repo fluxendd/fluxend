@@ -1,9 +1,9 @@
 package controllers
 
 import (
+	"fluxton/pkg"
 	"fluxton/responses"
 	"fluxton/services"
-	"fluxton/utils"
 	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
 )
@@ -19,7 +19,7 @@ func NewHealthController(injector *do.Injector) (*HealthController, error) {
 }
 
 func (hc *HealthController) Pulse(c echo.Context) error {
-	_, err := utils.NewAuth(c).User()
+	_, err := pkg.NewAuth(c).User()
 	if err != nil {
 		return responses.UnauthorizedResponse(c, err.Error())
 	}

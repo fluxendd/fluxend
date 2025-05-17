@@ -1,12 +1,12 @@
 package controllers
 
 import (
+	"fluxton/pkg"
 	"fluxton/requests"
 	"fluxton/requests/user_requests"
 	"fluxton/resources"
 	"fluxton/responses"
 	"fluxton/services"
-	"fluxton/utils"
 	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
 )
@@ -155,7 +155,7 @@ func (uc *UserController) Store(c echo.Context) error {
 //
 // @Router /users/{userUUID} [put]
 func (uc *UserController) Update(c echo.Context) error {
-	authUserUUID, err := utils.NewAuth(c).Uuid()
+	authUserUUID, err := pkg.NewAuth(c).Uuid()
 	if err != nil {
 		return responses.UnauthorizedResponse(c, err.Error())
 	}
@@ -196,7 +196,7 @@ func (uc *UserController) Update(c echo.Context) error {
 //
 // @Router /users/logout [post]
 func (uc *UserController) Logout(c echo.Context) error {
-	userUUID, err := utils.NewAuth(c).Uuid()
+	userUUID, err := pkg.NewAuth(c).Uuid()
 	if err != nil {
 		return responses.UnauthorizedResponse(c, err.Error())
 	}

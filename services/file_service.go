@@ -3,12 +3,12 @@ package services
 import (
 	"fluxton/errs"
 	"fluxton/models"
+	"fluxton/pkg"
 	"fluxton/policies"
 	"fluxton/repositories"
 	"fluxton/requests"
 	"fluxton/requests/container_requests"
 	"fluxton/services/storage"
-	"fluxton/utils"
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/samber/do"
@@ -116,7 +116,7 @@ func (s *FileServiceImpl) Create(containerUUID uuid.UUID, request *container_req
 	file := models.File{
 		ContainerUuid: containerUUID,
 		FullFileName:  request.FullFileName,
-		Size:          utils.ConvertBytesToKiloBytes(int(request.File.Size)),
+		Size:          pkg.ConvertBytesToKiloBytes(int(request.File.Size)),
 		MimeType:      request.File.Header.Get("Content-Type"),
 		CreatedBy:     authUser.Uuid,
 		UpdatedBy:     authUser.Uuid,
@@ -266,7 +266,7 @@ func (s *FileServiceImpl) getFileContents(request container_requests.CreateFileR
 }
 
 func (s *FileServiceImpl) validate(request *container_requests.CreateFileRequest, container models.Container) error {
-	fileSize := utils.ConvertBytesToKiloBytes(int(request.File.Size))
+	fileSize := pkg.ConvertBytesToKiloBytes(int(request.File.Size))
 
 	err := s.validateMimeType(request.File.Header.Get("Content-Type"), container)
 	if err != nil {

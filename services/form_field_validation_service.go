@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"fluxton/errs"
 	"fluxton/models"
+	"fluxton/pkg"
 	"fluxton/requests/form_requests"
-	"fluxton/utils"
 	"github.com/samber/do"
 )
 
@@ -50,7 +50,7 @@ func (s *FormFieldValidationServiceImpl) Validate(value string, formField models
 }
 
 func (s *FormFieldValidationServiceImpl) validateNumber(value string, formField models.FormField) error {
-	numericValue, err := utils.ConvertStringToInt(value)
+	numericValue, err := pkg.ConvertStringToInt(value)
 	if err != nil {
 		return errs.NewUnprocessableError("formResponse.error.invalidNumber")
 	}
@@ -76,7 +76,7 @@ func (s *FormFieldValidationServiceImpl) validateString(value string, formField 
 	}
 
 	if formField.Pattern.Valid {
-		matched, err := utils.MatchRegex(value, formField.Pattern.String)
+		matched, err := pkg.MatchRegex(value, formField.Pattern.String)
 		if err != nil || !matched {
 			return errs.NewUnprocessableError("formResponse.error.invalidPattern")
 		}
@@ -87,7 +87,7 @@ func (s *FormFieldValidationServiceImpl) validateString(value string, formField 
 
 func (s *FormFieldValidationServiceImpl) validateEmail(value string, formField models.FormField) error {
 	emailRegex := `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`
-	matched, err := utils.MatchRegex(value, emailRegex)
+	matched, err := pkg.MatchRegex(value, emailRegex)
 	if err != nil || !matched {
 		return errs.NewUnprocessableError("formResponse.error.invalidEmail")
 	}

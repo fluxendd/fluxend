@@ -1,7 +1,7 @@
 package factories
 
 import (
-	"fluxton/utils"
+	"fluxton/pkg"
 	"github.com/samber/do"
 	"time"
 
@@ -26,8 +26,8 @@ func NewUserFactory(injector *do.Injector) (*UserFactory, error) {
 // Create a user with options
 func (f *UserFactory) Create(opts ...UserOption) (*models.User, error) {
 	user := &models.User{
-		Username:  utils.Faker.Internet().User(),
-		Email:     utils.Faker.Internet().Email(),
+		Username:  pkg.Faker.Internet().User(),
+		Email:     pkg.Faker.Internet().Email(),
 		Password:  defaultPassword,
 		RoleID:    models.UserRoleAdmin,
 		CreatedAt: time.Now(),

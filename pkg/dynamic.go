@@ -1,4 +1,4 @@
-package utils
+package pkg
 
 import (
 	"github.com/labstack/gommon/log"

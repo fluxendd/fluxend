@@ -3,9 +3,9 @@ package table_requests
 import (
 	"fluxton/constants"
 	"fluxton/models"
+	"fluxton/pkg"
 	"fluxton/requests"
 	"fluxton/requests/column_requests"
-	"fluxton/utils"
 	"fmt"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/labstack/echo/v4"
@@ -55,7 +55,7 @@ func (r *CreateRequest) validate() error {
 			&r.Name,
 			validation.Required.Error("Name is required"),
 			validation.Match(
-				regexp.MustCompile(utils.AlphanumericWithUnderscorePattern()),
+				regexp.MustCompile(pkg.AlphanumericWithUnderscorePattern()),
 			).Error("Table name must be alphanumeric with underscores"),
 			validation.Length(
 				constants.MinTableNameLength, constants.MaxTableNameLength,

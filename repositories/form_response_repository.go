@@ -3,7 +3,7 @@ package repositories
 import (
 	"fluxton/errs"
 	"fluxton/models"
-	"fluxton/utils"
+	"fluxton/pkg"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 	"github.com/samber/do"
@@ -42,7 +42,7 @@ func (r *FormResponseRepository) ListForForm(formUUID uuid.UUID) ([]models.FormR
 
 	rows, err := r.db.Queryx(query, formUUID)
 	if err != nil {
-		return nil, utils.FormatError(err, "select", utils.GetMethodName())
+		return nil, pkg.FormatError(err, "select", pkg.GetMethodName())
 	}
 	defer rows.Close()
 
@@ -62,7 +62,7 @@ func (r *FormResponseRepository) ListForForm(formUUID uuid.UUID) ([]models.FormR
 		}
 
 		if err := rows.StructScan(&row); err != nil {
-			return nil, utils.FormatError(err, "scan", utils.GetMethodName())
+			return nil, pkg.FormatError(err, "scan", pkg.GetMethodName())
 		}
 
 		formResponse, exists := formResponseMap[row.FormResponseUUID]
@@ -120,7 +120,7 @@ func (r *FormResponseRepository) GetByUUID(formResponseUUID uuid.UUID) (*models.
 
 	rows, err := r.db.Queryx(query, formResponseUUID)
 	if err != nil {
-		return nil, utils.FormatError(err, "select", utils.GetMethodName())
+		return nil, pkg.FormatError(err, "select", pkg.GetMethodName())
 	}
 	defer rows.Close()
 
@@ -140,7 +140,7 @@ func (r *FormResponseRepository) GetByUUID(formResponseUUID uuid.UUID) (*models.
 		}
 
 		if err := rows.StructScan(&row); err != nil {
-			return nil, utils.FormatError(err, "scan", utils.GetMethodName())
+			return nil, pkg.FormatError(err, "scan", pkg.GetMethodName())
 		}
 
 		formResponse, exists := formResponseMap[row.FormResponseUUID]
@@ -183,7 +183,7 @@ func (r *FormResponseRepository) Create(
 ) (*models.FormResponse, error) {
 	tx, err := r.db.Beginx()
 	if err != nil {
-		return nil, utils.FormatError(err, "transactionBegin", utils.GetMethodName())
+		return nil, pkg.FormatError(err, "transactionBegin", pkg.GetMethodName())
 	}
 
 	query := `INSERT INTO fluxton.form_responses (form_uuid) VALUES ($1) RETURNING uuid`
@@ -196,7 +196,7 @@ func (r *FormResponseRepository) Create(
 		if err := tx.Rollback(); err != nil {
 			return nil, err
 		}
-		return nil, utils.FormatError(queryErr, "insert", utils.GetMethodName())
+		return nil, pkg.FormatError(queryErr, "insert", pkg.GetMethodName())
 	}
 
 	for _, ffr := range *formFieldResponse {
@@ -210,13 +210,13 @@ func (r *FormResponseRepository) Create(
 			if err := tx.Rollback(); err != nil {
 				return nil, err
 			}
-			return nil, utils.FormatError(queryErr, "insert", utils.GetMethodName())
+			return nil, pkg.FormatError(queryErr, "insert", pkg.GetMethodName())
 		}
 	}
 
 	// Commit transaction
 	if err = tx.Commit(); err != nil {
-		return nil, utils.FormatError(err, "transactionCommit", utils.GetMethodName())
+		return nil, pkg.FormatError(err, "transactionCommit", pkg.GetMethodName())
 	}
 
 	formResponse.Responses = *formFieldResponse
@@ -227,7 +227,7 @@ func (r *FormResponseRepository) Create(
 func (r *FormResponseRepository) Delete(formResponseUUID uuid.UUID) error {
 	tx, err := r.db.Beginx()
 	if err != nil {
-		return utils.FormatError(err, "transactionBegin", utils.GetMethodName())
+		return pkg.FormatError(err, "transactionBegin", pkg.GetMethodName())
 	}
 
 	query := `DELETE FROM fluxton.form_field_responses WHERE form_response_uuid = $1`
@@ -236,7 +236,7 @@ func (r *FormResponseRepository) Delete(formResponseUUID uuid.UUID) error {
 		if err := tx.Rollback(); err != nil {
 			return err
 		}
-		return utils.FormatError(err, "delete", utils.GetMethodName())
+		return pkg.FormatError(err, "delete", pkg.GetMethodName())
 	}
 
 	query = `DELETE FROM fluxton.form_responses WHERE uuid = $1`
@@ -245,12 +245,12 @@ func (r *FormResponseRepository) Delete(formResponseUUID uuid.UUID) error {
 		if err := tx.Rollback(); err != nil {
 			return err
 		}
-		return utils.FormatError(err, "delete", utils.GetMethodName())
+		return pkg.FormatError(err, "delete", pkg.GetMethodName())
 	}
 
 	// Commit transaction
 	if err = tx.Commit(); err != nil {
-		return utils.FormatError(err, "transactionCommit", utils.GetMethodName())
+		return pkg.FormatError(err, "transactionCommit", pkg.GetMethodName())
 	}
 
 	return nil

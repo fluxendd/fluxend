@@ -3,10 +3,10 @@ package services
 import (
 	"fluxton/errs"
 	"fluxton/models"
+	"fluxton/pkg"
 	"fluxton/policies"
 	"fluxton/repositories"
 	"fluxton/requests"
-	"fluxton/utils"
 	"github.com/google/uuid"
 	"github.com/samber/do"
 )
@@ -52,7 +52,7 @@ func (s *IndexServiceImpl) List(fullTableName string, projectUUID uuid.UUID, aut
 	}
 	defer connection.Close()
 
-	_, tableName := utils.ParseTableName(fullTableName)
+	_, tableName := pkg.ParseTableName(fullTableName)
 	return clientIndexRepo.List(tableName)
 }
 
@@ -72,7 +72,7 @@ func (s *IndexServiceImpl) GetByName(indexName, fullTableName string, projectUUI
 	}
 	defer connection.Close()
 
-	_, tableName := utils.ParseTableName(fullTableName)
+	_, tableName := pkg.ParseTableName(fullTableName)
 	return clientIndexRepo.GetByName(tableName, indexName)
 }
 
@@ -106,7 +106,7 @@ func (s *IndexServiceImpl) Create(fullTableName string, request *requests.IndexC
 		return "", err
 	}
 
-	_, tableName := utils.ParseTableName(fullTableName)
+	_, tableName := pkg.ParseTableName(fullTableName)
 
 	return clientIndexRepo.GetByName(tableName, request.Name)
 }
@@ -127,7 +127,7 @@ func (s *IndexServiceImpl) Delete(indexName, fullTableName string, projectUUID u
 	}
 	defer connection.Close()
 
-	_, tableName := utils.ParseTableName(fullTableName)
+	_, tableName := pkg.ParseTableName(fullTableName)
 	hasIndex, err := clientIndexRepo.Has(tableName, indexName)
 	if err != nil {
 		return false, err

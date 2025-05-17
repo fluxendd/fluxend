@@ -3,9 +3,9 @@ package services
 import (
 	"fluxton/constants"
 	"fluxton/models"
+	"fluxton/pkg"
 	"fluxton/repositories"
 	"fluxton/services/storage"
-	"fluxton/utils"
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
@@ -145,7 +145,7 @@ func (s *BackupWorkflowServiceImpl) executePgDump(databaseName, backupFilePath s
 		"-f", backupFilePath,
 	}
 
-	err := utils.ExecuteCommand(command)
+	err := pkg.ExecuteCommand(command)
 	if err != nil {
 		log.Error().
 			Str("action", constants.ActionBackup).
@@ -167,7 +167,7 @@ func (s *BackupWorkflowServiceImpl) copyBackupToAppContainer(backupFilePath stri
 		fmt.Sprintf("/tmp/%s.sql", backupUUID),                                     // Destination inside app container
 	}
 
-	err := utils.ExecuteCommand(dockerCpCommand)
+	err := pkg.ExecuteCommand(dockerCpCommand)
 	if err != nil {
 		log.Error().
 			Str("action", constants.ActionBackup).

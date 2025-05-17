@@ -2,7 +2,7 @@ package requests
 
 import (
 	"fluxton/constants"
-	"fluxton/utils"
+	"fluxton/pkg"
 	"fmt"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/labstack/echo/v4"
@@ -69,7 +69,7 @@ func (r *CreateFunctionRequest) validate() error {
 			&r.Name,
 			validation.Required.Error("name is required"),
 			validation.Match(
-				regexp.MustCompile(utils.AlphanumericWithUnderscorePattern()),
+				regexp.MustCompile(pkg.AlphanumericWithUnderscorePattern()),
 			).Error("name must be alphanumeric with underscores"),
 			validation.Length(
 				constants.MinTableNameLength, constants.MaxTableNameLength,

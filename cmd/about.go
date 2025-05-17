@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"fluxton/configs"
-	"fluxton/utils"
+	"fluxton/pkg"
 	"github.com/spf13/cobra"
 )
 
@@ -16,5 +16,5 @@ var aboutCmd = &cobra.Command{
 }
 
 func aboutFluxton() {
-	utils.DumpJSON(configs.AboutFluxton)
+	pkg.DumpJSON(configs.AboutFluxton)
 }

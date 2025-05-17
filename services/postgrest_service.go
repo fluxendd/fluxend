@@ -3,8 +3,8 @@ package services
 import (
 	"fluxton/constants"
 	"fluxton/models"
+	"fluxton/pkg"
 	"fluxton/repositories"
-	"fluxton/utils"
 	"fmt"
 	"github.com/rs/zerolog/log"
 	"github.com/samber/do"
@@ -57,7 +57,7 @@ func NewPostgrestService(injector *do.Injector) (PostgrestService, error) {
 }
 
 func (s *PostgrestServiceImpl) StartContainer(dbName string) {
-	if err := utils.ExecuteCommand(s.buildStartCommand(dbName)); err != nil {
+	if err := pkg.ExecuteCommand(s.buildStartCommand(dbName)); err != nil {
 		log.Error().
 			Str("action", constants.ActionPostgrest).
 			Str("db", dbName).
@@ -98,7 +98,7 @@ func (s *PostgrestServiceImpl) StartContainer(dbName string) {
 func (s *PostgrestServiceImpl) RemoveContainer(dbName string) {
 	containerName := s.getContainerName(dbName)
 
-	if err := utils.ExecuteCommand([]string{"docker", "stop", containerName}); err != nil {
+	if err := pkg.ExecuteCommand([]string{"docker", "stop", containerName}); err != nil {
 		log.Error().
 			Str("action", constants.ActionPostgrest).
 			Str("db", dbName).
@@ -106,7 +106,7 @@ func (s *PostgrestServiceImpl) RemoveContainer(dbName string) {
 			Msg("failed to stop container")
 	}
 
-	if err := utils.ExecuteCommand([]string{"docker", "rm", containerName}); err != nil {
+	if err := pkg.ExecuteCommand([]string{"docker", "rm", containerName}); err != nil {
 		log.Error().
 			Str("action", constants.ActionPostgrest).
 			Str("db", dbName).
@@ -128,7 +128,7 @@ func (s *PostgrestServiceImpl) RemoveContainer(dbName string) {
 
 func (s *PostgrestServiceImpl) HasContainer(dbName string) bool {
 	cmd := []string{"docker", "inspect", "--format='{{.State.Running}}'", s.getContainerName(dbName)}
-	output, err := utils.ExecuteCommandWithOutput(cmd)
+	output, err := pkg.ExecuteCommandWithOutput(cmd)
 	if err != nil {
 		log.Error().
 			Str("action", constants.ActionPostgrest).

@@ -5,8 +5,8 @@ import (
 	"errors"
 	"fluxton/errs"
 	"fluxton/models"
+	"fluxton/pkg"
 	"fluxton/requests"
-	"fluxton/utils"
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
@@ -39,7 +39,7 @@ func (r *FileRepository) ListForContainer(paginationParams requests.PaginationPa
 
 	`
 
-	query = fmt.Sprintf(query, utils.GetColumns[models.File]())
+	query = fmt.Sprintf(query, pkg.GetColumns[models.File]())
 
 	params := map[string]interface{}{
 		"container_uuid": containerUUID,
@@ -50,7 +50,7 @@ func (r *FileRepository) ListForContainer(paginationParams requests.PaginationPa
 
 	rows, err := r.db.NamedQuery(query, params)
 	if err != nil {
-		return nil, utils.FormatError(err, "select", utils.GetMethodName())
+		return nil, pkg.FormatError(err, "select", pkg.GetMethodName())
 	}
 	defer rows.Close()
 
@@ -58,13 +58,13 @@ func (r *FileRepository) ListForContainer(paginationParams requests.PaginationPa
 	for rows.Next() {
 		var file models.File
 		if err := rows.StructScan(&file); err != nil {
-			return nil, utils.FormatError(err, "scan", utils.GetMethodName())
+			return nil, pkg.FormatError(err, "scan", pkg.GetMethodName())
 		}
 		files = append(files, file)
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, utils.FormatError(err, "iterate", utils.GetMethodName())
+		return nil, pkg.FormatError(err, "iterate", pkg.GetMethodName())
 	}
 
 	return files, nil
@@ -72,7 +72,7 @@ func (r *FileRepository) ListForContainer(paginationParams requests.PaginationPa
 
 func (r *FileRepository) GetByUUID(fileUUID uuid.UUID) (models.File, error) {
 	query := "SELECT %s FROM storage.files WHERE uuid = $1"
-	query = fmt.Sprintf(query, utils.GetColumns[models.File]())
+	query = fmt.Sprintf(query, pkg.GetColumns[models.File]())
 
 	var file models.File
 	err := r.db.Get(&file, query, fileUUID)
@@ -81,7 +81,7 @@ func (r *FileRepository) GetByUUID(fileUUID uuid.UUID) (models.File, error) {
 			return models.File{}, errs.NewNotFoundError("file.error.notFound")
 		}
 
-		return models.File{}, utils.FormatError(err, "fetch", utils.GetMethodName())
+		return models.File{}, pkg.FormatError(err, "fetch", pkg.GetMethodName())
 	}
 
 	return file, nil
@@ -93,7 +93,7 @@ func (r *FileRepository) ExistsByUUID(containerUUID uuid.UUID) (bool, error) {
 	var exists bool
 	err := r.db.Get(&exists, query, containerUUID)
 	if err != nil {
-		return false, utils.FormatError(err, "fetch", utils.GetMethodName())
+		return false, pkg.FormatError(err, "fetch", pkg.GetMethodName())
 	}
 
 	return exists, nil
@@ -105,7 +105,7 @@ func (r *FileRepository) ExistsByNameForContainer(name string, containerUUID uui
 	var exists bool
 	err := r.db.Get(&exists, query, name, containerUUID)
 	if err != nil {
-		return false, utils.FormatError(err, "fetch", utils.GetMethodName())
+		return false, pkg.FormatError(err, "fetch", pkg.GetMethodName())
 	}
 
 	return exists, nil
@@ -114,7 +114,7 @@ func (r *FileRepository) ExistsByNameForContainer(name string, containerUUID uui
 func (r *FileRepository) Create(file *models.File) (*models.File, error) {
 	tx, err := r.db.Beginx()
 	if err != nil {
-		return nil, utils.FormatError(err, "transactionBegin", utils.GetMethodName())
+		return nil, pkg.FormatError(err, "transactionBegin", pkg.GetMethodName())
 	}
 
 	query := `
@@ -142,12 +142,12 @@ func (r *FileRepository) Create(file *models.File) (*models.File, error) {
 		if err := tx.Rollback(); err != nil {
 			return nil, err
 		}
-		return nil, utils.FormatError(queryErr, "insert", utils.GetMethodName())
+		return nil, pkg.FormatError(queryErr, "insert", pkg.GetMethodName())
 	}
 
 	// Commit transaction
 	if err = tx.Commit(); err != nil {
-		return nil, utils.FormatError(err, "transactionCommit", utils.GetMethodName())
+		return nil, pkg.FormatError(err, "transactionCommit", pkg.GetMethodName())
 	}
 
 	return file, nil
@@ -161,12 +161,12 @@ func (r *FileRepository) Rename(container *models.File) (*models.File, error) {
 
 	res, err := r.db.NamedExec(query, container)
 	if err != nil {
-		return &models.File{}, utils.FormatError(err, "update", utils.GetMethodName())
+		return &models.File{}, pkg.FormatError(err, "update", pkg.GetMethodName())
 	}
 
 	_, err = res.RowsAffected()
 	if err != nil {
-		return &models.File{}, utils.FormatError(err, "affectedRows", utils.GetMethodName())
+		return &models.File{}, pkg.FormatError(err, "affectedRows", pkg.GetMethodName())
 	}
 
 	return container, nil
@@ -176,12 +176,12 @@ func (r *FileRepository) Delete(fileUUID uuid.UUID) (bool, error) {
 	query := "DELETE FROM storage.files WHERE uuid = $1"
 	res, err := r.db.Exec(query, fileUUID)
 	if err != nil {
-		return false, utils.FormatError(err, "delete", utils.GetMethodName())
+		return false, pkg.FormatError(err, "delete", pkg.GetMethodName())
 	}
 
 	rowsAffected, err := res.RowsAffected()
 	if err != nil {
-		return false, utils.FormatError(err, "affectedRows", utils.GetMethodName())
+		return false, pkg.FormatError(err, "affectedRows", pkg.GetMethodName())
 	}
 
 	return rowsAffected == 1, nil

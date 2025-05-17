@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fluxton/errs"
 	"fluxton/models"
-	"fluxton/utils"
+	"fluxton/pkg"
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
@@ -29,7 +29,7 @@ func (r *BackupRepository) ListForProject(projectUUID uuid.UUID) ([]models.Backu
 		ORDER BY started_at DESC
 	`
 
-	query = fmt.Sprintf(query, utils.GetColumns[models.Backup]())
+	query = fmt.Sprintf(query, pkg.GetColumns[models.Backup]())
 
 	params := map[string]interface{}{
 		"project_uuid": projectUUID,
@@ -37,7 +37,7 @@ func (r *BackupRepository) ListForProject(projectUUID uuid.UUID) ([]models.Backu
 
 	rows, err := r.db.NamedQuery(query, params)
 	if err != nil {
-		return nil, utils.FormatError(err, "select", utils.GetMethodName())
+		return nil, pkg.FormatError(err, "select", pkg.GetMethodName())
 	}
 	defer rows.Close()
 
@@ -45,13 +45,13 @@ func (r *BackupRepository) ListForProject(projectUUID uuid.UUID) ([]models.Backu
 	for rows.Next() {
 		var form models.Backup
 		if err := rows.StructScan(&form); err != nil {
-			return nil, utils.FormatError(err, "scan", utils.GetMethodName())
+			return nil, pkg.FormatError(err, "scan", pkg.GetMethodName())
 		}
 		backups = append(backups, form)
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, utils.FormatError(err, "iterate", utils.GetMethodName())
+		return nil, pkg.FormatError(err, "iterate", pkg.GetMethodName())
 	}
 
 	return backups, nil
@@ -59,7 +59,7 @@ func (r *BackupRepository) ListForProject(projectUUID uuid.UUID) ([]models.Backu
 
 func (r *BackupRepository) GetByUUID(backupUUID uuid.UUID) (models.Backup, error) {
 	query := "SELECT %s FROM storage.backups WHERE uuid = $1"
-	query = fmt.Sprintf(query, utils.GetColumns[models.Backup]())
+	query = fmt.Sprintf(query, pkg.GetColumns[models.Backup]())
 
 	var form models.Backup
 	err := r.db.Get(&form, query, backupUUID)
@@ -68,7 +68,7 @@ func (r *BackupRepository) GetByUUID(backupUUID uuid.UUID) (models.Backup, error
 			return models.Backup{}, errs.NewNotFoundError("backup.error.notFound")
 		}
 
-		return models.Backup{}, utils.FormatError(err, "fetch", utils.GetMethodName())
+		return models.Backup{}, pkg.FormatError(err, "fetch", pkg.GetMethodName())
 	}
 
 	return form, nil
@@ -80,7 +80,7 @@ func (r *BackupRepository) ExistsByUUID(backupUUID uuid.UUID) (bool, error) {
 	var exists bool
 	err := r.db.Get(&exists, query, backupUUID)
 	if err != nil {
-		return false, utils.FormatError(err, "fetch", utils.GetMethodName())
+		return false, pkg.FormatError(err, "fetch", pkg.GetMethodName())
 	}
 
 	return exists, nil
@@ -89,7 +89,7 @@ func (r *BackupRepository) ExistsByUUID(backupUUID uuid.UUID) (bool, error) {
 func (r *BackupRepository) Create(backup *models.Backup) (*models.Backup, error) {
 	tx, err := r.db.Beginx()
 	if err != nil {
-		return nil, utils.FormatError(err, "transactionBegin", utils.GetMethodName())
+		return nil, pkg.FormatError(err, "transactionBegin", pkg.GetMethodName())
 	}
 
 	query := `
@@ -110,12 +110,12 @@ func (r *BackupRepository) Create(backup *models.Backup) (*models.Backup, error)
 		if err := tx.Rollback(); err != nil {
 			return nil, err
 		}
-		return nil, utils.FormatError(queryErr, "insert", utils.GetMethodName())
+		return nil, pkg.FormatError(queryErr, "insert", pkg.GetMethodName())
 	}
 
 	// Commit transaction
 	if err = tx.Commit(); err != nil {
-		return nil, utils.FormatError(err, "transactionCommit", utils.GetMethodName())
+		return nil, pkg.FormatError(err, "transactionCommit", pkg.GetMethodName())
 	}
 
 	return backup, nil
@@ -125,7 +125,7 @@ func (r *BackupRepository) UpdateStatus(backupUUID uuid.UUID, status, error stri
 	query := "UPDATE storage.backups SET status = $1, error = $2, completed_at = $3 WHERE uuid = $4"
 	_, err := r.db.Exec(query, status, error, completedAt, backupUUID)
 	if err != nil {
-		return utils.FormatError(err, "update", utils.GetMethodName())
+		return pkg.FormatError(err, "update", pkg.GetMethodName())
 	}
 
 	return nil
@@ -135,12 +135,12 @@ func (r *BackupRepository) Delete(backupUUID uuid.UUID) (bool, error) {
 	query := "DELETE FROM storage.backups WHERE uuid = $1"
 	res, err := r.db.Exec(query, backupUUID)
 	if err != nil {
-		return false, utils.FormatError(err, "delete", utils.GetMethodName())
+		return false, pkg.FormatError(err, "delete", pkg.GetMethodName())
 	}
 
 	rowsAffected, err := res.RowsAffected()
 	if err != nil {
-		return false, utils.FormatError(err, "affectedRows", utils.GetMethodName())
+		return false, pkg.FormatError(err, "affectedRows", pkg.GetMethodName())
 	}
 
 	return rowsAffected == 1, nil

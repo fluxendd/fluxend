@@ -3,7 +3,7 @@ package storage
 import (
 	"context"
 	"fluxton/errs"
-	"fluxton/utils"
+	"fluxton/pkg"
 	"fmt"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
@@ -59,7 +59,7 @@ func (s *S3ServiceImpl) CreateContainer(bucketName string) (string, error) {
 		return "", errs.NewBadRequestError(fmt.Sprintf("failed to confirm bucket %q exists", bucketName))
 	}
 
-	return utils.ConvertPointerToString(createdBucket.Location), nil
+	return pkg.ConvertPointerToString(createdBucket.Location), nil
 }
 
 func (s *S3ServiceImpl) ContainerExists(bucketName string) bool {
@@ -95,7 +95,7 @@ func (s *S3ServiceImpl) ListContainers(input ListContainersInput) ([]string, str
 
 	var nextToken string
 	if resp.ContinuationToken != nil {
-		nextToken = utils.ConvertPointerToString(resp.ContinuationToken)
+		nextToken = pkg.ConvertPointerToString(resp.ContinuationToken)
 	}
 
 	return bucketNames, nextToken, nil
@@ -111,7 +111,7 @@ func (s *S3ServiceImpl) ShowContainer(bucketName string) (*ContainerMetadata, er
 
 	return &ContainerMetadata{
 		Identifier: bucketName,
-		Region:     null.StringFrom(utils.ConvertPointerToString(resp.BucketRegion)),
+		Region:     null.StringFrom(pkg.ConvertPointerToString(resp.BucketRegion)),
 	}, nil
 }
 
