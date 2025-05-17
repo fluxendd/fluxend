@@ -1,7 +1,6 @@
 package client
 
 import (
-	repositories2 "fluxton/internal/database/repositories"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 	"github.com/samber/do"
@@ -20,30 +19,18 @@ type Service interface {
 
 type ServiceImpl struct {
 	databaseRepo *Repository
-	projectRepo  *repositories2.ProjectRepository
 }
 
 func NewClientService(injector *do.Injector) (Service, error) {
 	databaseRepo := do.MustInvoke[*Repository](injector)
-	projectRepo := do.MustInvoke[*repositories2.ProjectRepository](injector)
 
 	return &ServiceImpl{
 		databaseRepo: databaseRepo,
-		projectRepo:  projectRepo,
 	}, nil
 }
 
 func (s *ServiceImpl) ConnectByDatabaseName(name string) (*sqlx.DB, error) {
 	return s.databaseRepo.Connect(name)
-}
-
-func (s *ServiceImpl) ConnectByProjectUUID(projectUUID uuid.UUID) (*sqlx.DB, error) {
-	project, err := s.projectRepo.GetByUUID(projectUUID)
-	if err != nil {
-		return nil, err
-	}
-
-	return s.databaseRepo.Connect(project.DBName)
 }
 
 func (s *ServiceImpl) GetDatabaseStatsRepo(databaseName string, connection *sqlx.DB) (*repositories2.DatabaseStatsRepository, *sqlx.DB, error) {
@@ -114,15 +101,6 @@ func (s *ServiceImpl) GetRowRepo(databaseName string, connection *sqlx.DB) (*rep
 	}
 
 	return clientIndexRepo, clientDatabaseConnection, nil
-}
-
-func (s *ServiceImpl) GetFunctionRepoByProjectUUID(projectUUID uuid.UUID, connection *sqlx.DB) (*repositories2.FunctionRepository, *sqlx.DB, error) {
-	databaseName, err := s.projectRepo.GetDatabaseNameByUUID(projectUUID)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	return s.getClientFunctionRepo(databaseName, connection)
 }
 
 func (s *ServiceImpl) getClientFunctionRepo(databaseName string, connection *sqlx.DB) (*repositories2.FunctionRepository, *sqlx.DB, error) {

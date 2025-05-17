@@ -1,11 +1,9 @@
 package setting
 
 import (
-	"fluxton/internal/adapters/client"
-	setting2 "fluxton/internal/api/dto/setting"
-	repositories2 "fluxton/internal/database/repositories"
+	"fluxton/internal/api/dto/setting"
 	"fluxton/internal/domain/admin"
-	"fluxton/models"
+	"fluxton/internal/domain/auth"
 	"fluxton/pkg/errors"
 	"github.com/labstack/echo/v4"
 	"github.com/rs/zerolog/log"
@@ -20,26 +18,23 @@ type SettingService interface {
 	Get(ctx echo.Context, name string) Setting
 	GetValue(ctx echo.Context, name string) string
 	GetBool(ctx echo.Context, name string) bool
-	Update(ctx echo.Context, authUser models.AuthUser, request *setting2.SettingUpdateRequest) ([]Setting, error)
-	Reset(ctx echo.Context, authUser models.AuthUser) ([]Setting, error)
+	Update(ctx echo.Context, authUser auth.AuthUser, request *setting.UpdateRequest) ([]Setting, error)
+	Reset(ctx echo.Context, authUser auth.AuthUser) ([]Setting, error)
 	GetStorageDriver(ctx echo.Context) string
 }
 
 type SettingServiceImpl struct {
-	adminPolicy  *admin.AdminPolicy
-	databaseRepo *client.Repository
-	settingRepo  *repositories2.SettingRepository
+	adminPolicy *admin.AdminPolicy
+	settingRepo *Repository
 }
 
 func NewSettingService(injector *do.Injector) (SettingService, error) {
 	policy := admin.NewAdminPolicy()
-	databaseRepo := do.MustInvoke[*client.Repository](injector)
-	settingRepo := do.MustInvoke[*repositories2.SettingRepository](injector)
+	settingRepo := do.MustInvoke[*Repository](injector)
 
 	return &SettingServiceImpl{
-		adminPolicy:  policy,
-		databaseRepo: databaseRepo,
-		settingRepo:  settingRepo,
+		adminPolicy: policy,
+		settingRepo: settingRepo,
 	}, nil
 }
 
@@ -68,9 +63,9 @@ func (s *SettingServiceImpl) Get(ctx echo.Context, name string) Setting {
 			Msg("Error fetching settings")
 	}
 
-	for _, setting := range settings {
-		if setting.Name == name {
-			return setting
+	for _, currentSetting := range settings {
+		if currentSetting.Name == name {
+			return currentSetting
 		}
 	}
 
@@ -82,18 +77,18 @@ func (s *SettingServiceImpl) Get(ctx echo.Context, name string) Setting {
 }
 
 func (s *SettingServiceImpl) GetValue(ctx echo.Context, name string) string {
-	setting := s.Get(ctx, name)
+	currentSetting := s.Get(ctx, name)
 
-	return setting.Value
+	return currentSetting.Value
 }
 
 func (s *SettingServiceImpl) GetBool(ctx echo.Context, name string) bool {
-	setting := s.Get(ctx, name)
+	currentSetting := s.Get(ctx, name)
 
-	return setting.Value == "yes"
+	return currentSetting.Value == "yes"
 }
 
-func (s *SettingServiceImpl) Update(ctx echo.Context, authUser models.AuthUser, request *setting2.SettingUpdateRequest) ([]Setting, error) {
+func (s *SettingServiceImpl) Update(ctx echo.Context, authUser auth.AuthUser, request *setting.UpdateRequest) ([]Setting, error) {
 	// Authorization check
 	if !s.adminPolicy.CanUpdate(authUser) {
 		return nil, errors.NewForbiddenError("setting.error.updateForbidden")
@@ -106,10 +101,10 @@ func (s *SettingServiceImpl) Update(ctx echo.Context, authUser models.AuthUser, 
 	}
 
 	// Loop through each setting and update the value
-	for _, setting := range request.Settings {
+	for _, currentSetting := range request.Settings {
 		for i, existingSetting := range existingSettings {
-			if existingSetting.Name == setting.Name {
-				existingSettings[i].Value = setting.Value
+			if existingSetting.Name == currentSetting.Name {
+				existingSettings[i].Value = currentSetting.Value
 				existingSettings[i].UpdatedAt = time.Now()
 			}
 		}
@@ -124,7 +119,7 @@ func (s *SettingServiceImpl) Update(ctx echo.Context, authUser models.AuthUser, 
 	return s.List(ctx, true)
 }
 
-func (s *SettingServiceImpl) Reset(ctx echo.Context, authUser models.AuthUser) ([]Setting, error) {
+func (s *SettingServiceImpl) Reset(ctx echo.Context, authUser auth.AuthUser) ([]Setting, error) {
 	if !s.adminPolicy.CanUpdate(authUser) {
 		return []Setting{}, errors.NewForbiddenError("setting.error.resetForbidden")
 	}

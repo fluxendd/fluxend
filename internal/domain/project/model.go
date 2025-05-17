@@ -6,11 +6,6 @@ import (
 	"time"
 )
 
-const ProjectStatusActive = "active"
-const ProjectStatusInactive = "inactive"
-const ProjectStatusError = "error"
-const ProjectStatusFrozen = "frozen"
-
 type Project struct {
 	shared.BaseModel
 	Uuid             uuid.UUID `db:"uuid"`

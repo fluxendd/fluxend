@@ -3,7 +3,6 @@ package postgrest
 import (
 	"fluxton/internal/config/constants"
 	"fluxton/internal/database/repositories"
-	"fluxton/internal/domain/project"
 	"fluxton/pkg"
 	"fmt"
 	"github.com/rs/zerolog/log"
@@ -16,7 +15,7 @@ const (
 	ImageName = "postgrest/postgrest"
 )
 
-type PostgrestConfig struct {
+type Config struct {
 	DBUser     string
 	DBPassword string
 	DBHost     string
@@ -26,19 +25,19 @@ type PostgrestConfig struct {
 	AppURL     string
 }
 
-type PostgrestService interface {
+type Service interface {
 	StartContainer(dbName string)
 	RemoveContainer(dbName string)
 	HasContainer(dbName string) bool
 }
 
-type PostgrestServiceImpl struct {
+type ServiceImpl struct {
 	projectRepo *repositories.ProjectRepository
-	config      *PostgrestConfig
+	config      *Config
 }
 
-func NewPostgrestService(injector *do.Injector) (PostgrestService, error) {
-	config := &PostgrestConfig{
+func NewPostgrestService(injector *do.Injector) (Service, error) {
+	config := &Config{
 		DBUser:     os.Getenv("POSTGREST_DB_USER"),
 		DBPassword: os.Getenv("POSTGREST_DB_PASSWORD"),
 		DBHost:     os.Getenv("POSTGREST_DB_HOST"),
@@ -50,13 +49,13 @@ func NewPostgrestService(injector *do.Injector) (PostgrestService, error) {
 
 	projectRepo := do.MustInvoke[*repositories.ProjectRepository](injector)
 
-	return &PostgrestServiceImpl{
+	return &ServiceImpl{
 		projectRepo: projectRepo,
 		config:      config,
 	}, nil
 }
 
-func (s *PostgrestServiceImpl) StartContainer(dbName string) {
+func (s *ServiceImpl) StartContainer(dbName string) {
 	if err := pkg.ExecuteCommand(s.buildStartCommand(dbName)); err != nil {
 		log.Error().
 			Str("action", constants.ActionPostgrest).
@@ -64,7 +63,7 @@ func (s *PostgrestServiceImpl) StartContainer(dbName string) {
 			Str("error", err.Error()).
 			Msg("failed to start container")
 
-		_, err := s.projectRepo.UpdateStatusByDatabaseName(dbName, project.ProjectStatusError)
+		_, err := s.projectRepo.UpdateStatusByDatabaseName(dbName, constants.ProjectStatusError)
 		if err != nil {
 			log.Error().
 				Str("action", constants.ActionPostgrest).
@@ -78,7 +77,7 @@ func (s *PostgrestServiceImpl) StartContainer(dbName string) {
 	}
 
 	// Update project status to active
-	_, err := s.projectRepo.UpdateStatusByDatabaseName(dbName, project.ProjectStatusActive)
+	_, err := s.projectRepo.UpdateStatusByDatabaseName(dbName, constants.ProjectStatusActive)
 	if err != nil {
 		log.Error().
 			Str("action", constants.ActionPostgrest).
@@ -95,7 +94,7 @@ func (s *PostgrestServiceImpl) StartContainer(dbName string) {
 		Msg("container started successfully")
 }
 
-func (s *PostgrestServiceImpl) RemoveContainer(dbName string) {
+func (s *ServiceImpl) RemoveContainer(dbName string) {
 	containerName := s.getContainerName(dbName)
 
 	if err := pkg.ExecuteCommand([]string{"docker", "stop", containerName}); err != nil {
@@ -114,7 +113,7 @@ func (s *PostgrestServiceImpl) RemoveContainer(dbName string) {
 			Msg("failed to remove container")
 	}
 
-	_, err := s.projectRepo.UpdateStatusByDatabaseName(dbName, project.ProjectStatusInactive)
+	_, err := s.projectRepo.UpdateStatusByDatabaseName(dbName, constants.ProjectStatusInactive)
 	if err != nil {
 		log.Error().
 			Str("action", constants.ActionPostgrest).
@@ -126,7 +125,7 @@ func (s *PostgrestServiceImpl) RemoveContainer(dbName string) {
 	}
 }
 
-func (s *PostgrestServiceImpl) HasContainer(dbName string) bool {
+func (s *ServiceImpl) HasContainer(dbName string) bool {
 	cmd := []string{"docker", "inspect", "--format='{{.State.Running}}'", s.getContainerName(dbName)}
 	output, err := pkg.ExecuteCommandWithOutput(cmd)
 	if err != nil {
@@ -142,7 +141,7 @@ func (s *PostgrestServiceImpl) HasContainer(dbName string) bool {
 	return strings.Contains(output, "true")
 }
 
-func (s *PostgrestServiceImpl) buildStartCommand(dbName string) []string {
+func (s *ServiceImpl) buildStartCommand(dbName string) []string {
 	return []string{
 		"docker", "run", "-d", "--name", s.getContainerName(dbName),
 		"--network", "fluxton_network",
@@ -157,6 +156,6 @@ func (s *PostgrestServiceImpl) buildStartCommand(dbName string) []string {
 	}
 }
 
-func (s *PostgrestServiceImpl) getContainerName(dbName string) string {
+func (s *ServiceImpl) getContainerName(dbName string) string {
 	return fmt.Sprintf("postgrest_%s", dbName)
 }

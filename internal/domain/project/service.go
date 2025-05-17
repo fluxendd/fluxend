@@ -4,7 +4,7 @@ import (
 	"fluxton/internal/adapters/client"
 	"fluxton/internal/adapters/postgrest"
 	"fluxton/internal/api/dto"
-	project2 "fluxton/internal/api/dto/project"
+	"fluxton/internal/api/dto/project"
 	"fluxton/internal/domain/auth"
 	"fluxton/pkg/errors"
 	"github.com/google/uuid"
@@ -18,8 +18,8 @@ type Service interface {
 	List(paginationParams dto.PaginationParams, organizationUUID uuid.UUID, authUser auth.AuthUser) ([]Project, error)
 	GetByUUID(projectUUID uuid.UUID, authUser auth.AuthUser) (Project, error)
 	GetDatabaseNameByUUID(projectUUID uuid.UUID, authUser auth.AuthUser) (string, error)
-	Create(request *project2.CreateRequest, authUser auth.AuthUser) (Project, error)
-	Update(projectUUID uuid.UUID, authUser auth.AuthUser, request *project2.UpdateRequest) (*Project, error)
+	Create(request *project.CreateRequest, authUser auth.AuthUser) (Project, error)
+	Update(projectUUID uuid.UUID, authUser auth.AuthUser, request *project.UpdateRequest) (*Project, error)
 	Delete(projectUUID uuid.UUID, authUser auth.AuthUser) (bool, error)
 }
 
@@ -27,14 +27,14 @@ type ServiceImpl struct {
 	projectPolicy    *Policy
 	databaseRepo     *client.Repository
 	projectRepo      *Repository
-	postgrestService postgrest.PostgrestService
+	postgrestService postgrest.Service
 }
 
 func NewProjectService(injector *do.Injector) (Service, error) {
 	policy := do.MustInvoke[*Policy](injector)
 	databaseRepo := do.MustInvoke[*client.Repository](injector)
 	projectRepo := do.MustInvoke[*Repository](injector)
-	postgrestService := do.MustInvoke[postgrest.PostgrestService](injector)
+	postgrestService := do.MustInvoke[postgrest.Service](injector)
 
 	return &ServiceImpl{
 		projectPolicy:    policy,
@@ -78,7 +78,7 @@ func (s *ServiceImpl) GetDatabaseNameByUUID(projectUUID uuid.UUID, authUser auth
 	return project.DBName, nil
 }
 
-func (s *ServiceImpl) Create(request *project2.CreateRequest, authUser auth.AuthUser) (Project, error) {
+func (s *ServiceImpl) Create(request *project.CreateRequest, authUser auth.AuthUser) (Project, error) {
 	if !s.projectPolicy.CanCreate(request.OrganizationUUID, authUser) {
 		return Project{}, errors.NewForbiddenError("project.error.createForbidden")
 	}
@@ -115,7 +115,7 @@ func (s *ServiceImpl) Create(request *project2.CreateRequest, authUser auth.Auth
 	return project, nil
 }
 
-func (s *ServiceImpl) Update(projectUUID uuid.UUID, authUser auth.AuthUser, request *project2.UpdateRequest) (*Project, error) {
+func (s *ServiceImpl) Update(projectUUID uuid.UUID, authUser auth.AuthUser, request *project.UpdateRequest) (*Project, error) {
 	project, err := s.projectRepo.GetByUUID(projectUUID)
 	if err != nil {
 		return nil, err

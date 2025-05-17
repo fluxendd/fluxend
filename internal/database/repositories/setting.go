@@ -13,7 +13,7 @@ type SettingRepository struct {
 	db *sqlx.DB
 }
 
-func NewSettingRepository(injector *do.Injector) (*SettingRepository, error) {
+func NewSettingRepository(injector *do.Injector) (setting.Repository, error) {
 	db := do.MustInvoke[*sqlx.DB](injector)
 	return &SettingRepository{db: db}, nil
 }
@@ -34,10 +34,10 @@ func (r *SettingRepository) CreateMany(settings []setting.Setting) (bool, error)
 	var valuePlaceholders []string
 	var args []interface{}
 
-	for i, setting := range settings {
+	for i, currentSetting := range settings {
 		placeholder := fmt.Sprintf("($%d, $%d, $%d)", 3*i+1, 3*i+2, 3*i+3)
 		valuePlaceholders = append(valuePlaceholders, placeholder)
-		args = append(args, setting.Name, setting.Value, setting.DefaultValue)
+		args = append(args, currentSetting.Name, currentSetting.Value, currentSetting.DefaultValue)
 	}
 
 	query := fmt.Sprintf("INSERT INTO fluxton.settings (name, value, default_value) VALUES %s;",
@@ -58,9 +58,9 @@ func (r *SettingRepository) Update(settings []setting.Setting) (bool, error) {
 	}
 	defer tx.Rollback()
 
-	for _, setting := range settings {
+	for _, currentSetting := range settings {
 		query := "UPDATE fluxton.settings SET value = $1, default_value = $2, updated_at = NOW() WHERE name = $3;"
-		_, err := tx.Exec(query, setting.Value, setting.DefaultValue, setting.Name)
+		_, err := tx.Exec(query, currentSetting.Value, currentSetting.DefaultValue, currentSetting.Name)
 		if err != nil {
 			return false, fmt.Errorf("could not update setting: %v", err)
 		}

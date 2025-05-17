@@ -12,12 +12,12 @@ type IndividualSetting struct {
 	Value string `json:"value"`
 }
 
-type SettingUpdateRequest struct {
+type UpdateRequest struct {
 	dto.BaseRequest
 	Settings []IndividualSetting `json:"settings"`
 }
 
-func (r *SettingUpdateRequest) BindAndValidate(c echo.Context) []string {
+func (r *UpdateRequest) BindAndValidate(c echo.Context) []string {
 	// Bind the JSON payload
 	if err := c.Bind(r); err != nil {
 		return []string{"Invalid request payload"}

@@ -29,7 +29,7 @@ func (sc *SettingHandler) List(c echo.Context) error {
 }
 
 func (sc *SettingHandler) Update(c echo.Context) error {
-	var request setting.SettingUpdateRequest
+	var request setting.UpdateRequest
 	authUser, _ := auth.NewAuth(c).User()
 
 	if err := request.BindAndValidate(c); err != nil {
