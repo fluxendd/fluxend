@@ -1,11 +1,10 @@
 package form
 
 import (
-	"fluxton/internal/domain/form"
 	"github.com/google/uuid"
 )
 
-type FormResponse struct {
+type Response struct {
 	Uuid        uuid.UUID `json:"uuid"`
 	Name        string    `json:"name"`
 	Description string    `json:"description"`
@@ -14,26 +13,4 @@ type FormResponse struct {
 	UpdatedBy   uuid.UUID `json:"updatedBy"`
 	CreatedAt   string    `json:"createdAt"`
 	UpdatedAt   string    `json:"updatedAt"`
-}
-
-func FormResource(form *form.Form) FormResponse {
-	return FormResponse{
-		Uuid:        form.Uuid,
-		Name:        form.Name,
-		Description: form.Description,
-		ProjectUuid: form.ProjectUuid,
-		CreatedBy:   form.CreatedBy,
-		UpdatedBy:   form.UpdatedBy,
-		CreatedAt:   form.CreatedAt.Format("2006-01-02 15:04:05"),
-		UpdatedAt:   form.UpdatedAt.Format("2006-01-02 15:04:05"),
-	}
-}
-
-func FormResourceCollection(forms []form.Form) []FormResponse {
-	resourceForms := make([]FormResponse, len(forms))
-	for i, organization := range forms {
-		resourceForms[i] = FormResource(&organization)
-	}
-
-	return resourceForms
 }

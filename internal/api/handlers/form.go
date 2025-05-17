@@ -2,20 +2,20 @@ package handlers
 
 import (
 	"fluxton/internal/api/dto"
-	"fluxton/internal/api/dto/form"
+	formDto "fluxton/internal/api/dto/form"
 	"fluxton/internal/api/response"
-	form2 "fluxton/internal/domain/form"
+	formDomain "fluxton/internal/domain/form"
 	"fluxton/pkg/auth"
 	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
 )
 
 type FormHandler struct {
-	formService form2.Service
+	formService formDomain.Service
 }
 
 func NewFormHandler(injector *do.Injector) (*FormHandler, error) {
-	formService := do.MustInvoke[form2.Service](injector)
+	formService := do.MustInvoke[formDomain.Service](injector)
 
 	return &FormHandler{formService: formService}, nil
 }
@@ -56,7 +56,7 @@ func (fc *FormHandler) List(c echo.Context) error {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.SuccessResponse(c, form.FormResourceCollection(forms))
+	return response.SuccessResponse(c, formDto.FormResourceCollection(forms))
 }
 
 // Show retrieves details of a specific form

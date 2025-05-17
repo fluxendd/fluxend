@@ -8,7 +8,7 @@ import (
 	"github.com/samber/do"
 )
 
-type FormFieldValidationService interface {
+type FieldValidationService interface {
 	Validate(value string, formField Field) error
 	validateNumber(value string, formField Field) error
 	validateString(value string, formField Field) error
@@ -18,13 +18,13 @@ type FormFieldValidationService interface {
 	validateSelect(value string, formField Field) error
 }
 
-type FormFieldValidationServiceImpl struct{}
+type FieldValidationServiceImpl struct{}
 
-func NewFormFieldValidationService(injector *do.Injector) (FormFieldValidationService, error) {
-	return &FormFieldValidationServiceImpl{}, nil
+func NewFormFieldValidationService(injector *do.Injector) (FieldValidationService, error) {
+	return &FieldValidationServiceImpl{}, nil
 }
 
-func (s *FormFieldValidationServiceImpl) Validate(value string, formField Field) error {
+func (s *FieldValidationServiceImpl) Validate(value string, formField Field) error {
 	var validationErr error
 	if formField.IsRequired && value == "" {
 		return errors.NewUnprocessableError("formResponse.error.fieldRequired")
@@ -48,7 +48,7 @@ func (s *FormFieldValidationServiceImpl) Validate(value string, formField Field)
 	return validationErr
 }
 
-func (s *FormFieldValidationServiceImpl) validateNumber(value string, formField Field) error {
+func (s *FieldValidationServiceImpl) validateNumber(value string, formField Field) error {
 	numericValue, err := pkg.ConvertStringToInt(value)
 	if err != nil {
 		return errors.NewUnprocessableError("formResponse.error.invalidNumber")
@@ -65,7 +65,7 @@ func (s *FormFieldValidationServiceImpl) validateNumber(value string, formField 
 	return nil
 }
 
-func (s *FormFieldValidationServiceImpl) validateString(value string, formField Field) error {
+func (s *FieldValidationServiceImpl) validateString(value string, formField Field) error {
 	if formField.MinLength.Valid && len(value) < int(formField.MinLength.Int64) {
 		return errors.NewUnprocessableError("formResponse.error.stringTooShort")
 	}
@@ -84,7 +84,7 @@ func (s *FormFieldValidationServiceImpl) validateString(value string, formField 
 	return nil
 }
 
-func (s *FormFieldValidationServiceImpl) validateEmail(value string, formField Field) error {
+func (s *FieldValidationServiceImpl) validateEmail(value string, formField Field) error {
 	emailRegex := `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`
 	matched, err := pkg.MatchRegex(value, emailRegex)
 	if err != nil || !matched {
@@ -94,19 +94,19 @@ func (s *FormFieldValidationServiceImpl) validateEmail(value string, formField F
 	return nil
 }
 
-func (s *FormFieldValidationServiceImpl) validateDate(value string, formField Field) error {
+func (s *FieldValidationServiceImpl) validateDate(value string, formField Field) error {
 	// TODO: Implement date validation logic
 
 	return nil
 }
 
-func (s *FormFieldValidationServiceImpl) validateCheckbox(value string, formField Field) error {
+func (s *FieldValidationServiceImpl) validateCheckbox(value string, formField Field) error {
 	// TODO: Implement checkbox validation logic
 
 	return nil
 }
 
-func (s *FormFieldValidationServiceImpl) validateSelect(value string, formField Field) error {
+func (s *FieldValidationServiceImpl) validateSelect(value string, formField Field) error {
 	var options []string
 	err := json.Unmarshal([]byte(formField.Options.String), &options)
 	if err != nil {

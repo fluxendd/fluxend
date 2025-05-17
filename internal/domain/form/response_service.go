@@ -1,40 +1,39 @@
 package form
 
 import (
-	form2 "fluxton/internal/api/dto/form"
-	repositories2 "fluxton/internal/database/repositories"
+	"fluxton/internal/api/dto/form"
+	"fluxton/internal/domain/auth"
 	"fluxton/internal/domain/project"
-	"fluxton/models"
 	"fluxton/pkg/errors"
 	"github.com/google/uuid"
 	"github.com/samber/do"
 )
 
-type FormResponseService interface {
-	List(formUUID uuid.UUID, authUser models.AuthUser) ([]FormResponse, error)
-	GetByUUID(formResponseUUID, formUUID uuid.UUID, authUser models.AuthUser) (*FormResponse, error)
-	Create(formUUID uuid.UUID, request *form2.CreateResponseRequest, authUser models.AuthUser) (FormResponse, error)
-	Delete(formUUID, formResponseUUID uuid.UUID, authUser models.AuthUser) error
+type ResponseService interface {
+	List(formUUID uuid.UUID, authUser auth.User) ([]FormResponse, error)
+	GetByUUID(formResponseUUID, formUUID uuid.UUID, authUser auth.User) (*FormResponse, error)
+	Create(formUUID uuid.UUID, request *form.CreateResponseRequest, authUser auth.User) (FormResponse, error)
+	Delete(formUUID, formResponseUUID uuid.UUID, authUser auth.User) error
 }
 
-type FormResponseServiceImpl struct {
+type ResponseServiceImpl struct {
 	projectPolicy              *project.Policy
-	formFieldValidationService FormFieldValidationService
-	formRepo                   *repositories2.FormRepository
-	formFieldRepo              *repositories2.FormFieldRepository
-	projectRepo                *repositories2.ProjectRepository
-	formResponseRepo           *repositories2.FormResponseRepository
+	formFieldValidationService FieldValidationService
+	formRepo                   *Repository
+	formFieldRepo              *FieldRepository
+	projectRepo                *project.Repository
+	formResponseRepo           *FieldResponseRepository
 }
 
-func NewFormResponseService(injector *do.Injector) (FormResponseService, error) {
+func NewFormResponseService(injector *do.Injector) (ResponseService, error) {
 	policy := do.MustInvoke[*project.Policy](injector)
-	formFieldValidationService := do.MustInvoke[FormFieldValidationService](injector)
-	formRepo := do.MustInvoke[*repositories2.FormRepository](injector)
-	formFieldRepo := do.MustInvoke[*repositories2.FormFieldRepository](injector)
-	projectRepo := do.MustInvoke[*repositories2.ProjectRepository](injector)
-	formResponseRepo := do.MustInvoke[*repositories2.FormResponseRepository](injector)
+	formFieldValidationService := do.MustInvoke[FieldValidationService](injector)
+	formRepo := do.MustInvoke[*Repository](injector)
+	formFieldRepo := do.MustInvoke[*FieldRepository](injector)
+	projectRepo := do.MustInvoke[*project.Repository](injector)
+	formResponseRepo := do.MustInvoke[*FieldResponseRepository](injector)
 
-	return &FormResponseServiceImpl{
+	return &ResponseServiceImpl{
 		projectPolicy:              policy,
 		formFieldValidationService: formFieldValidationService,
 		formRepo:                   formRepo,
@@ -44,7 +43,7 @@ func NewFormResponseService(injector *do.Injector) (FormResponseService, error) 
 	}, nil
 }
 
-func (s *FormResponseServiceImpl) List(formUUID uuid.UUID, authUser models.AuthUser) ([]FormResponse, error) {
+func (s *ResponseServiceImpl) List(formUUID uuid.UUID, authUser auth.User) ([]FormResponse, error) {
 	projectUUID, err := s.formRepo.GetProjectUUIDByFormUUID(formUUID)
 	if err != nil {
 		return []FormResponse{}, err
@@ -62,7 +61,7 @@ func (s *FormResponseServiceImpl) List(formUUID uuid.UUID, authUser models.AuthU
 	return s.formResponseRepo.ListForForm(formUUID)
 }
 
-func (s *FormResponseServiceImpl) GetByUUID(formResponseUUID, formUUID uuid.UUID, authUser models.AuthUser) (*FormResponse, error) {
+func (s *ResponseServiceImpl) GetByUUID(formResponseUUID, formUUID uuid.UUID, authUser auth.User) (*FormResponse, error) {
 	projectUUID, err := s.formRepo.GetProjectUUIDByFormUUID(formUUID)
 	if err != nil {
 		return &FormResponse{}, err
@@ -80,7 +79,7 @@ func (s *FormResponseServiceImpl) GetByUUID(formResponseUUID, formUUID uuid.UUID
 	return s.formResponseRepo.GetByUUID(formResponseUUID)
 }
 
-func (s *FormResponseServiceImpl) Create(formUUID uuid.UUID, request *form2.CreateResponseRequest, authUser models.AuthUser) (FormResponse, error) {
+func (s *ResponseServiceImpl) Create(formUUID uuid.UUID, request *form.CreateResponseRequest, authUser auth.User) (FormResponse, error) {
 	projectUUID, err := s.formRepo.GetProjectUUIDByFormUUID(formUUID)
 	if err != nil {
 		return FormResponse{}, err
@@ -131,7 +130,7 @@ func (s *FormResponseServiceImpl) Create(formUUID uuid.UUID, request *form2.Crea
 	return formResponse, nil
 }
 
-func (s *FormResponseServiceImpl) Delete(formUUID, formResponseUUID uuid.UUID, authUser models.AuthUser) error {
+func (s *ResponseServiceImpl) Delete(formUUID, formResponseUUID uuid.UUID, authUser auth.User) error {
 	projectUUID, err := s.formRepo.GetProjectUUIDByFormUUID(formUUID)
 	if err != nil {
 		return err

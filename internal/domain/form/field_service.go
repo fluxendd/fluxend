@@ -1,8 +1,7 @@
 package form
 
 import (
-	form2 "fluxton/internal/api/dto/form"
-	repositories2 "fluxton/internal/database/repositories"
+	"fluxton/internal/api/dto/form"
 	"fluxton/internal/domain/auth"
 	"fluxton/internal/domain/project"
 	"fluxton/pkg/errors"
@@ -14,23 +13,23 @@ import (
 type FieldService interface {
 	List(formUUID uuid.UUID, authUser auth.User) ([]Field, error)
 	GetByUUID(formUUID uuid.UUID, authUser auth.User) (Field, error)
-	CreateMany(formUUID uuid.UUID, request *form2.CreateFormFieldsRequest, authUser auth.User) ([]Field, error)
-	Update(formUUID, fieldUUID uuid.UUID, authUser auth.User, request *form2.UpdateFormFieldRequest) (*Field, error)
+	CreateMany(formUUID uuid.UUID, request *form.CreateFormFieldsRequest, authUser auth.User) ([]Field, error)
+	Update(formUUID, fieldUUID uuid.UUID, authUser auth.User, request *form.UpdateFormFieldRequest) (*Field, error)
 	Delete(formUUID, fieldUUID uuid.UUID, authUser auth.User) (bool, error)
 }
 
 type FieldServiceImpl struct {
 	projectPolicy *project.Policy
-	formRepo      *repositories2.FormRepository
-	formFieldRepo *repositories2.FormFieldRepository
-	projectRepo   *repositories2.ProjectRepository
+	formRepo      *Repository
+	formFieldRepo *FieldRepository
+	projectRepo   *project.Repository
 }
 
 func NewFieldService(injector *do.Injector) (FieldService, error) {
 	policy := do.MustInvoke[*project.Policy](injector)
-	formRepo := do.MustInvoke[*repositories2.FormRepository](injector)
-	formFieldRepo := do.MustInvoke[*repositories2.FormFieldRepository](injector)
-	projectRepo := do.MustInvoke[*repositories2.ProjectRepository](injector)
+	formRepo := do.MustInvoke[*Repository](injector)
+	formFieldRepo := do.MustInvoke[*FieldRepository](injector)
+	projectRepo := do.MustInvoke[*project.Repository](injector)
 
 	return &FieldServiceImpl{
 		projectPolicy: policy,
@@ -81,7 +80,7 @@ func (s *FieldServiceImpl) GetByUUID(fieldUUID uuid.UUID, authUser auth.User) (F
 	return formField, nil
 }
 
-func (s *FieldServiceImpl) CreateMany(formUUID uuid.UUID, request *form2.CreateFormFieldsRequest, authUser auth.User) ([]Field, error) {
+func (s *FieldServiceImpl) CreateMany(formUUID uuid.UUID, request *form.CreateFormFieldsRequest, authUser auth.User) ([]Field, error) {
 	projectUUID, err := s.formRepo.GetProjectUUIDByFormUUID(formUUID)
 	if err != nil {
 		return []Field{}, err
@@ -120,7 +119,7 @@ func (s *FieldServiceImpl) CreateMany(formUUID uuid.UUID, request *form2.CreateF
 	return createdFields, nil
 }
 
-func (s *FieldServiceImpl) Update(formUUID, fieldUUID uuid.UUID, authUser auth.User, request *form2.UpdateFormFieldRequest) (*Field, error) {
+func (s *FieldServiceImpl) Update(formUUID, fieldUUID uuid.UUID, authUser auth.User, request *form.UpdateFormFieldRequest) (*Field, error) {
 	projectUUID, err := s.formRepo.GetProjectUUIDByFormUUID(formUUID)
 	if err != nil {
 		return &Field{}, err
@@ -173,7 +172,7 @@ func (s *FieldServiceImpl) Delete(formUUID, fieldUUID uuid.UUID, authUser auth.U
 	return s.formFieldRepo.Delete(fieldUUID)
 }
 
-func (s *FieldServiceImpl) validateManyForLabelDuplication(request *form2.CreateFormFieldsRequest, formUUID uuid.UUID) error {
+func (s *FieldServiceImpl) validateManyForLabelDuplication(request *form.CreateFormFieldsRequest, formUUID uuid.UUID) error {
 	labels := make([]string, len(request.Fields))
 
 	for i, field := range request.Fields {
