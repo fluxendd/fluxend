@@ -2,7 +2,7 @@ package auth
 
 import (
 	"errors"
-	"fluxton/models"
+	"fluxton/internal/domain/auth"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
@@ -15,13 +15,13 @@ func NewAuth(ctx echo.Context) *Auth {
 	return &Auth{ctx: ctx}
 }
 
-func (a *Auth) User() (models.AuthUser, error) {
+func (a *Auth) User() (auth.AuthUser, error) {
 	user := a.ctx.Get("user")
 
 	// Ensure the value is a map as expected from JWT claims
-	userData, ok := user.(models.AuthUser)
+	userData, ok := user.(auth.AuthUser)
 	if !ok {
-		return models.AuthUser{}, errors.New("user.error.invalid_claim_structure")
+		return auth.AuthUser{}, errors.New("user.error.invalid_claim_structure")
 	}
 
 	return userData, nil

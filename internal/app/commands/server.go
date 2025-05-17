@@ -68,7 +68,7 @@ func registerRoutes(e *echo.Echo, container *do.Injector) {
 	requestLogMiddleware := middlewares2.RequestLoggerMiddleware(requestLogRepo)
 	e.Use(requestLogMiddleware)
 
-	routes.RegisterUserRoutes(e, container, authMiddleware)
+	routes2.RegisterUserRoutes(e, container, authMiddleware)
 	routes2.RegisterAdminRoutes(e, container, authMiddleware)
 	routes.RegisterOrganizationRoutes(e, container, authMiddleware)
 	routes.RegisterProjectRoutes(e, container, authMiddleware, allowProjectMiddleware)

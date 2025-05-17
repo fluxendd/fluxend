@@ -6,6 +6,7 @@ import (
 	"fluxton/internal/adapters/postgrest"
 	"fluxton/internal/database"
 	"fluxton/internal/database/factories"
+	"fluxton/internal/domain/user"
 	"fluxton/policies"
 	"fluxton/repositories"
 	"fluxton/services"
@@ -44,7 +45,7 @@ func InitializeContainer() *do.Injector {
 	do.Provide(injector, policies.NewProjectPolicy)
 
 	// Services
-	do.Provide(injector, services.NewUserService)
+	do.Provide(injector, user.NewUserService)
 	do.Provide(injector, services.NewSettingService)
 	do.Provide(injector, services.NewHealthService)
 	do.Provide(injector, connection.NewConnectionService)

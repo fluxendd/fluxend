@@ -1,22 +1,22 @@
-package controllers
+package handlers
 
 import (
 	"fluxton/internal/api/dto"
+	userDto "fluxton/internal/api/dto/user"
+	userMapper "fluxton/internal/api/mapper/user"
 	"fluxton/internal/api/response"
+	userDomain "fluxton/internal/domain/user"
 	"fluxton/pkg/auth"
-	"fluxton/requests/user_requests"
-	"fluxton/resources"
-	"fluxton/services"
 	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
 )
 
 type UserController struct {
-	userService services.UserService
+	userService userDomain.UserService
 }
 
 func NewUserController(injector *do.Injector) (*UserController, error) {
-	userService := do.MustInvoke[services.UserService](injector)
+	userService := do.MustInvoke[userDomain.UserService](injector)
 
 	return &UserController{userService: userService}, nil
 }
@@ -55,7 +55,7 @@ func (uc *UserController) Show(c echo.Context) error {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.SuccessResponse(c, resources.UserResource(&user))
+	return response.SuccessResponse(c, userMapper.ToResponse(&user))
 }
 
 // Login authenticates a user and returns a JWT token.
@@ -67,7 +67,7 @@ func (uc *UserController) Show(c echo.Context) error {
 // @Accept json
 // @Produce json
 //
-// @Param user body user_requests.LoginRequest true "Login request"
+// @Param user body user.LoginRequest true "Login request"
 //
 // @Success 200 {object} responses.Response{content=resources.UserResponse} "User details"
 // @Failure 400 "Invalid input"
@@ -76,7 +76,7 @@ func (uc *UserController) Show(c echo.Context) error {
 //
 // @Router /users/login [post]
 func (uc *UserController) Login(c echo.Context) error {
-	var request user_requests.LoginRequest
+	var request userDto.LoginRequest
 	if err := c.Bind(&request); err != nil {
 		return response.BadRequestResponse(c, "user.error.invalidPayload")
 	}
@@ -91,7 +91,7 @@ func (uc *UserController) Login(c echo.Context) error {
 	}
 
 	return response.SuccessResponse(c, map[string]interface{}{
-		"user":  resources.UserResource(&user),
+		"user":  userMapper.ToResponse(&user),
 		"token": token,
 	})
 }
@@ -105,7 +105,7 @@ func (uc *UserController) Login(c echo.Context) error {
 // @Accept json
 // @Produce json
 //
-// @Param user body user_requests.CreateRequest true "User details"
+// @Param user body user.CreateRequest true "User details"
 //
 // @Success 201 {object} responses.Response{content=resources.UserResponse} "User created"
 // @Failure 422 "Unprocessable entity"
@@ -114,7 +114,7 @@ func (uc *UserController) Login(c echo.Context) error {
 //
 // @Router /users [post]
 func (uc *UserController) Store(c echo.Context) error {
-	var request user_requests.CreateRequest
+	var request userDto.CreateRequest
 	if err := c.Bind(&request); err != nil {
 		return response.BadRequestResponse(c, "user.error.invalidPayload")
 	}
@@ -129,7 +129,7 @@ func (uc *UserController) Store(c echo.Context) error {
 	}
 
 	return response.CreatedResponse(c, map[string]interface{}{
-		"user":  resources.UserResource(&user),
+		"user":  userMapper.ToResponse(&user),
 		"token": token,
 	})
 }
@@ -145,7 +145,7 @@ func (uc *UserController) Store(c echo.Context) error {
 //
 // @Param Authorization header string true "Bearer Token"
 // @Param userUUID path string true "User UUID"
-// @Param user body user_requests.UpdateRequest true "User details"
+// @Param user body user.UpdateRequest true "User details"
 //
 // @Success 200 {object} responses.Response{content=resources.UserResponse} "User updated"
 // @Failure 422 "Unprocessable entity"
@@ -160,7 +160,7 @@ func (uc *UserController) Update(c echo.Context) error {
 		return response.UnauthorizedResponse(c, err.Error())
 	}
 
-	var request user_requests.UpdateRequest
+	var request userDto.UpdateRequest
 	userUUID, err := request.GetUUIDPathParam(c, "userUUID", true)
 	if err != nil {
 		return response.BadRequestResponse(c, err.Error())
@@ -175,7 +175,7 @@ func (uc *UserController) Update(c echo.Context) error {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.SuccessResponse(c, resources.UserResource(updatedUser))
+	return response.SuccessResponse(c, userMapper.ToResponse(updatedUser))
 }
 
 // Logout logs out a user by invalidating the JWT token.

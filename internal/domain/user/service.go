@@ -1,13 +1,13 @@
-package services
+package user
 
 import (
 	"fluxton/internal/api/dto"
-	"fluxton/models"
+	"fluxton/internal/api/dto/user"
 	"fluxton/pkg/auth"
 	"fluxton/pkg/errors"
 	"fluxton/policies"
 	"fluxton/repositories"
-	"fluxton/requests/user_requests"
+	"fluxton/services"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
@@ -18,23 +18,23 @@ import (
 )
 
 type UserService interface {
-	Login(request *user_requests.LoginRequest) (models.User, string, error)
-	List(paginationParams dto.PaginationParams) ([]models.User, error)
+	Login(request *user.LoginRequest) (User, string, error)
+	List(paginationParams dto.PaginationParams) ([]User, error)
 	ExistsByUUID(id uuid.UUID) error
-	GetByID(id uuid.UUID) (models.User, error)
-	Create(ctx echo.Context, request *user_requests.CreateRequest) (models.User, string, error)
-	Update(userUUID, authUserUUID uuid.UUID, request *user_requests.UpdateRequest) (*models.User, error)
+	GetByID(id uuid.UUID) (User, error)
+	Create(ctx echo.Context, request *user.CreateRequest) (User, string, error)
+	Update(userUUID, authUserUUID uuid.UUID, request *user.UpdateRequest) (*User, error)
 	Delete(userUUID uuid.UUID) (bool, error)
 	Logout(userUUID uuid.UUID) error
 }
 
 type UserServiceImpl struct {
-	settingService SettingService
+	settingService services.SettingService
 	userRepo       *repositories.UserRepository
 }
 
 func NewUserService(injector *do.Injector) (UserService, error) {
-	settingService := do.MustInvoke[SettingService](injector)
+	settingService := do.MustInvoke[services.SettingService](injector)
 	repo := do.MustInvoke[*repositories.UserRepository](injector)
 
 	return &UserServiceImpl{
@@ -43,34 +43,34 @@ func NewUserService(injector *do.Injector) (UserService, error) {
 	}, nil
 }
 
-func (s *UserServiceImpl) Login(request *user_requests.LoginRequest) (models.User, string, error) {
-	user, err := s.userRepo.GetByEmail(request.Email)
+func (s *UserServiceImpl) Login(request *user.LoginRequest) (User, string, error) {
+	fetchedUser, err := s.userRepo.GetByEmail(request.Email)
 	if err != nil {
-		return models.User{}, "", err
+		return User{}, "", err
 	}
 
-	if !auth.ComparePassword(user.Password, request.Password) {
-		return models.User{}, "", errors.NewUnauthorizedError("user.error.invalidCredentials")
+	if !auth.ComparePassword(fetchedUser.Password, request.Password) {
+		return User{}, "", errors.NewUnauthorizedError("user.error.invalidCredentials")
 	}
 
-	jwtVersion, err := s.userRepo.CreateJWTVersion(user.Uuid)
+	jwtVersion, err := s.userRepo.CreateJWTVersion(fetchedUser.Uuid)
 	if err != nil {
-		return models.User{}, "", err
+		return User{}, "", err
 	}
 
-	token, err := s.generateToken(&user, jwtVersion)
+	token, err := s.generateToken(&fetchedUser, jwtVersion)
 	if err != nil {
-		return models.User{}, "", err
+		return User{}, "", err
 	}
 
-	return user, token, nil
+	return fetchedUser, token, nil
 }
 
-func (s *UserServiceImpl) List(paginationParams dto.PaginationParams) ([]models.User, error) {
+func (s *UserServiceImpl) List(paginationParams dto.PaginationParams) ([]User, error) {
 	return s.userRepo.List(paginationParams)
 }
 
-func (s *UserServiceImpl) GetByID(id uuid.UUID) (models.User, error) {
+func (s *UserServiceImpl) GetByID(id uuid.UUID) (User, error) {
 	return s.userRepo.GetByID(id)
 }
 
@@ -87,71 +87,72 @@ func (s *UserServiceImpl) ExistsByUUID(id uuid.UUID) error {
 	return nil
 }
 
-func (s *UserServiceImpl) Create(ctx echo.Context, request *user_requests.CreateRequest) (models.User, string, error) {
+func (s *UserServiceImpl) Create(ctx echo.Context, request *user.CreateRequest) (User, string, error) {
 	if !s.settingService.GetBool(ctx, "allowRegistrations") {
-		return models.User{}, "", errors.NewBadRequestError("user.error.registrationDisabled")
+		return User{}, "", errors.NewBadRequestError("user.error.registrationDisabled")
 	}
 
 	existsByEmail, err := s.userRepo.ExistsByEmail(request.Email)
 	if err != nil {
-		return models.User{}, "", err
+		return User{}, "", err
 	}
 
 	if existsByEmail {
-		return models.User{}, "", errors.NewBadRequestError("user.error.emailAlreadyExists")
+		return User{}, "", errors.NewBadRequestError("user.error.emailAlreadyExists")
 	}
 
 	existsByUsername, err := s.userRepo.ExistsByUsername(request.Username)
 	if err != nil {
-		return models.User{}, "", err
+		return User{}, "", err
 	}
 
 	if existsByUsername {
-		return models.User{}, "", errors.NewBadRequestError("user.error.usernameAlreadyExists")
+		return User{}, "", errors.NewBadRequestError("user.error.usernameAlreadyExists")
 	}
 
-	user := models.User{
+	userData := User{
 		Username: request.Username,
 		Email:    request.Email,
 		Password: request.Password,
-		Status:   models.UserStatusActive,
-		RoleID:   models.UserRoleOwner,
+		Status:   UserStatusActive,
+		RoleID:   UserRoleOwner,
 	}
 
-	_, err = s.userRepo.Create(&user)
+	_, err = s.userRepo.Create(&userData)
 	if err != nil {
-		return models.User{}, "", err
+		return User{}, "", err
 	}
 
-	jwtVersion, err := s.userRepo.CreateJWTVersion(user.Uuid)
+	jwtVersion, err := s.userRepo.CreateJWTVersion(userData.Uuid)
 	if err != nil {
-		return models.User{}, "", err
+		return User{}, "", err
 	}
 
-	token, err := s.generateToken(&user, jwtVersion)
+	token, err := s.generateToken(&userData, jwtVersion)
 	if err != nil {
-		return models.User{}, "", err
+		return User{}, "", err
 	}
 
-	return user, token, nil
+	return userData, token, nil
 }
 
-func (s *UserServiceImpl) Update(userUUID, authUserUUID uuid.UUID, request *user_requests.UpdateRequest) (*models.User, error) {
+func (s *UserServiceImpl) Update(userUUID, authUserUUID uuid.UUID, request *user.UpdateRequest) (*User, error) {
 	if !policies.CanUpdateUser(userUUID, authUserUUID) {
 		return nil, errors.NewForbiddenError("user.error.updateForbidden")
 	}
 
-	user, err := s.userRepo.GetByID(userUUID)
+	updatedUser, err := s.userRepo.GetByID(userUUID)
 	if err != nil {
 		return nil, err
 	}
 
-	err = user.PopulateModel(&user, request)
+	// TODO: COME_BACK_FOR_ME
+	/*err = user.PopulateModel(&user, request)
 	if err != nil {
 		return nil, err
-	}
+	}*/
 
-	return s.userRepo.Update(userUUID, &user)
+	return s.userRepo.Update(userUUID, &updatedUser)
 }
 
 func (s *UserServiceImpl) Delete(userUUID uuid.UUID) (bool, error) {
@@ -174,7 +175,7 @@ func (s *UserServiceImpl) Logout(userUUID uuid.UUID) error {
 	return err
 }
 
-func (s *UserServiceImpl) generateToken(user *models.User, jwtVersion int) (string, error) {
+func (s *UserServiceImpl) generateToken(user *User, jwtVersion int) (string, error) {
 	claims := jwt.MapClaims{
 		"version": jwtVersion,
 		"exp":     time.Now().Add(time.Hour * 24).Unix(),
