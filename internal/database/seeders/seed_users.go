@@ -1,7 +1,7 @@
 package seeders
 
 import (
-	"fluxton/database/factories"
+	"fluxton/internal/database/factories"
 	"fluxton/models"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"

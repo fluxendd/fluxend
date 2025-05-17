@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"fluxton/database/seeders"
+	seeders2 "fluxton/internal/database/seeders"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/samber/do"
@@ -25,8 +25,8 @@ func runSeeders() {
 	log.Info().Msg("Database seeding started")
 
 	seedersToRun := []func(*do.Injector){
-		seeders.SeedSettings,
-		seeders.SeedUsers,
+		seeders2.SeedSettings,
+		seeders2.SeedUsers,
 	}
 
 	for _, seeder := range seedersToRun {

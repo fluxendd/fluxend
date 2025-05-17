@@ -2,8 +2,8 @@ package cmd
 
 import (
 	"fluxton/controllers"
-	"fluxton/database"
-	"fluxton/database/factories"
+	"fluxton/internal/database"
+	"fluxton/internal/database/factories"
 	"fluxton/policies"
 	"fluxton/repositories"
 	"fluxton/services"

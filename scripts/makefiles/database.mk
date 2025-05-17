@@ -8,22 +8,22 @@ drop.user.dbs: ## Drop all user-created databases
 
 migration.create: ## Create a new database migration
 	@read -p "Enter migration name: " name; \
-	goose -dir database/migrations create $$name sql
+	goose -dir internal/database/migrations create $$name sql
 
 migration.up: ## Run database migrations
-	goose -dir database/migrations postgres ${DATABASE_CONNECTION} up
+	goose -dir internal/database/migrations postgres ${DATABASE_CONNECTION} up
 
 migration.down: ## Rollback database migrations
-	goose -dir database/migrations postgres ${DATABASE_CONNECTION} down
+	goose -dir internal/database/migrations postgres ${DATABASE_CONNECTION} down
 
 migration.status: ## Show the status of the database migrations
-	goose -dir database/migrations postgres ${DATABASE_CONNECTION} status
+	goose -dir internal/database/migrations postgres ${DATABASE_CONNECTION} status
 
 migration.reset: ## Rollback all migrations and run them again
-	goose -dir database/migrations postgres ${DATABASE_CONNECTION} reset
+	goose -dir internal/database/migrations postgres ${DATABASE_CONNECTION} reset
 
 migration.redo: ## Rollback the last migration and run it again
-	goose -dir database/migrations postgres ${DATABASE_CONNECTION} redo
+	goose -dir internal/database/migrations postgres ${DATABASE_CONNECTION} redo
 
 migration.fresh: ## Rollback all migrations and run them again
 	make drop.user.dbs
