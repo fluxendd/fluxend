@@ -6,6 +6,7 @@ import (
 	"fluxton/errs"
 	"fluxton/models"
 	"fluxton/pkg"
+	"fluxton/pkg/auth"
 	"fluxton/requests"
 	"fmt"
 	"github.com/google/uuid"
@@ -124,7 +125,7 @@ func (r *UserRepository) GetByEmail(email string) (models.User, error) {
 
 func (r *UserRepository) Create(user *models.User) (*models.User, error) {
 	query := "INSERT INTO authentication.users (username, email, status, role_id, password) VALUES ($1, $2, $3, $4, $5) RETURNING uuid"
-	err := r.db.QueryRowx(query, user.Username, user.Email, models.UserStatusActive, user.RoleID, pkg.HashPassword(user.Password)).Scan(&user.Uuid)
+	err := r.db.QueryRowx(query, user.Username, user.Email, models.UserStatusActive, user.RoleID, auth.HashPassword(user.Password)).Scan(&user.Uuid)
 	if err != nil {
 		return &models.User{}, fmt.Errorf("could not create row: %v", err)
 	}

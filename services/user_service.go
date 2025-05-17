@@ -3,7 +3,7 @@ package services
 import (
 	"fluxton/errs"
 	"fluxton/models"
-	"fluxton/pkg"
+	"fluxton/pkg/auth"
 	"fluxton/policies"
 	"fluxton/repositories"
 	"fluxton/requests"
@@ -49,7 +49,7 @@ func (s *UserServiceImpl) Login(request *user_requests.LoginRequest) (models.Use
 		return models.User{}, "", err
 	}
 
-	if !pkg.ComparePassword(user.Password, request.Password) {
+	if !auth.ComparePassword(user.Password, request.Password) {
 		return models.User{}, "", errs.NewUnauthorizedError("user.error.invalidCredentials")
 	}
 
