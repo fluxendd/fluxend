@@ -1,8 +1,8 @@
 package controllers
 
 import (
-	"fluxton/errs"
 	"fluxton/pkg/auth"
+	"fluxton/pkg/errors"
 	"fluxton/requests"
 	"fluxton/requests/column_requests"
 	"fluxton/resources"
@@ -236,7 +236,7 @@ func (cc *ColumnController) Delete(c echo.Context) error {
 func (cc *ColumnController) parseRequest(c echo.Context) (string, string, error) {
 	fullTableName := c.Param("fullTableName")
 	if fullTableName == "" {
-		return "", "", errs.NewBadRequestError("Table name is required")
+		return "", "", errors.NewBadRequestError("Table name is required")
 	}
 
 	columnName := c.Param("columnName")
