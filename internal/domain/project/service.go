@@ -27,7 +27,7 @@ type Service interface {
 type ServiceImpl struct {
 	projectPolicy    *Policy
 	databaseRepo     *client.Repository
-	projectRepo      *repositories2.ProjectRepository
+	projectRepo      *Repository
 	postgrestService postgrest.PostgrestService
 }
 

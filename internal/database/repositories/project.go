@@ -17,7 +17,7 @@ type ProjectRepository struct {
 	db *sqlx.DB
 }
 
-func NewProjectRepository(injector *do.Injector) (*ProjectRepository, error) {
+func NewProjectRepository(injector *do.Injector) (project.Repository, error) {
 	db := do.MustInvoke[*sqlx.DB](injector)
 
 	return &ProjectRepository{db: db}, nil
@@ -112,8 +112,8 @@ func (r *ProjectRepository) GetByUUID(projectUUID uuid.UUID) (project.Project, e
 	query := "SELECT %s FROM fluxton.projects WHERE uuid = $1"
 	query = fmt.Sprintf(query, pkg.GetColumns[project.Project]())
 
-	var project project.Project
-	err := r.db.Get(&project, query, projectUUID)
+	var fetchedProject project.Project
+	err := r.db.Get(&fetchedProject, query, projectUUID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return project.Project{}, flxErrs.NewNotFoundError("project.error.notFound")
@@ -122,7 +122,7 @@ func (r *ProjectRepository) GetByUUID(projectUUID uuid.UUID) (project.Project, e
 		return project.Project{}, pkg.FormatError(err, "fetch", pkg.GetMethodName())
 	}
 
-	return project, nil
+	return fetchedProject, nil
 }
 
 func (r *ProjectRepository) GetDatabaseNameByUUID(projectUUID uuid.UUID) (string, error) {
@@ -240,13 +240,13 @@ func (r *ProjectRepository) Create(project *project.Project) (*project.Project, 
 	return project, nil
 }
 
-func (r *ProjectRepository) Update(project *project.Project) (*project.Project, error) {
+func (r *ProjectRepository) Update(projectInput *project.Project) (*project.Project, error) {
 	query := `
 		UPDATE fluxton.projects 
 		SET name = :name, description = :description, updated_at = :updated_at, updated_by = :updated_by
 		WHERE uuid = :uuid`
 
-	res, err := r.db.NamedExec(query, project)
+	res, err := r.db.NamedExec(query, projectInput)
 	if err != nil {
 		return &project.Project{}, pkg.FormatError(err, "update", pkg.GetMethodName())
 	}
@@ -256,7 +256,7 @@ func (r *ProjectRepository) Update(project *project.Project) (*project.Project, 
 		return &project.Project{}, pkg.FormatError(err, "affectedRows", pkg.GetMethodName())
 	}
 
-	return project, nil
+	return projectInput, nil
 }
 
 func (r *ProjectRepository) UpdateStatusByDatabaseName(databaseName, status string) (bool, error) {
