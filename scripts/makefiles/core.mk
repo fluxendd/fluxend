@@ -1,7 +1,7 @@
 # These are core command also available in binary CLI
 
-serve: ## Run the project in development mode
-	@go run main.go server
+server: ## Run the project in development mode
+	@go run cmd/fluxton/main.go server
 
 routes.list: ## Show all the available routes
 	@go run main.go routes

@@ -93,7 +93,7 @@ docs.generate                  Generate docs
 lint                           Run linter
 lint.fix                       Run linter and fix
 
-serve                          Run the project in development mode
+server                         Run the project in development mode
 seed                           Seed the database
 about                          Show the project information
 optimize                       Optimize the project
