@@ -1,8 +1,8 @@
 package table_requests
 
 import (
-	"fluxton/constants"
 	"fluxton/internal/api/dto"
+	"fluxton/internal/config/constants"
 	"fluxton/models"
 	"fluxton/pkg"
 	"fluxton/requests/column_requests"

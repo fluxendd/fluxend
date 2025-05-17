@@ -1,8 +1,8 @@
 package column_requests
 
 import (
-	"fluxton/constants"
 	"fluxton/internal/api/dto"
+	"fluxton/internal/config/constants"
 	"fmt"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/labstack/echo/v4"

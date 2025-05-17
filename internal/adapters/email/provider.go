@@ -1,7 +1,7 @@
 package email
 
 import (
-	"fluxton/constants"
+	"fluxton/internal/config/constants"
 	"fmt"
 	"github.com/labstack/echo/v4"
 	"github.com/samber/do"

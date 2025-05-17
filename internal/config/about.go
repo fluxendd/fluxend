@@ -1,4 +1,4 @@
-package configs
+package config
 
 var AboutFluxton = map[string]string{
 	"author":      "Fluxton",

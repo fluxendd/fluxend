@@ -1,8 +1,8 @@
 package services
 
 import (
-	"fluxton/constants"
 	storage2 "fluxton/internal/adapters/storage"
+	constants2 "fluxton/internal/config/constants"
 	"fluxton/models"
 	"fluxton/pkg"
 	"fluxton/repositories"
@@ -89,7 +89,7 @@ func (s *BackupWorkflowServiceImpl) Create(ctx echo.Context, databaseName string
 	err = os.Remove(backupFilePath)
 	if err != nil {
 		log.Error().
-			Str("action", constants.ActionBackup).
+			Str("action", constants2.ActionBackup).
 			Str("db", databaseName).
 			Str("backup_uuid", backupUUID.String()).
 			Str("error", err.Error()).
@@ -103,7 +103,7 @@ func (s *BackupWorkflowServiceImpl) Delete(ctx echo.Context, databaseName string
 	storageService, err := storage2.GetProvider(s.settingService.GetStorageDriver(ctx))
 	if err != nil {
 		log.Error().
-			Str("action", constants.ActionBackup).
+			Str("action", constants2.ActionBackup).
 			Str("db", databaseName).
 			Str("backup_uuid", backupUUID.String()).
 			Str("error", err.Error()).
@@ -114,7 +114,7 @@ func (s *BackupWorkflowServiceImpl) Delete(ctx echo.Context, databaseName string
 	}
 
 	err = storageService.DeleteFile(storage2.FileInput{
-		ContainerName: constants.BackupContainerName,
+		ContainerName: constants2.BackupContainerName,
 		FileName:      filePath,
 	})
 	if err != nil {
@@ -124,7 +124,7 @@ func (s *BackupWorkflowServiceImpl) Delete(ctx echo.Context, databaseName string
 	_, err = s.backupRepo.Delete(backupUUID)
 	if err != nil {
 		log.Error().
-			Str("action", constants.ActionBackup).
+			Str("action", constants2.ActionBackup).
 			Str("db", databaseName).
 			Str("backup_uuid", backupUUID.String()).
 			Str("error", err.Error()).
@@ -148,7 +148,7 @@ func (s *BackupWorkflowServiceImpl) executePgDump(databaseName, backupFilePath s
 	err := pkg.ExecuteCommand(command)
 	if err != nil {
 		log.Error().
-			Str("action", constants.ActionBackup).
+			Str("action", constants2.ActionBackup).
 			Str("db", databaseName).
 			Str("backup_uuid", backupFilePath).
 			Msg("failed to execute pg_dump command")
@@ -170,7 +170,7 @@ func (s *BackupWorkflowServiceImpl) copyBackupToAppContainer(backupFilePath stri
 	err := pkg.ExecuteCommand(dockerCpCommand)
 	if err != nil {
 		log.Error().
-			Str("action", constants.ActionBackup).
+			Str("action", constants2.ActionBackup).
 			Str("backup_uuid", backupUUID.String()).
 			Msg("failed to copy backup file from fluxton_db to fluxton_app container")
 	}
@@ -182,20 +182,20 @@ func (s *BackupWorkflowServiceImpl) ensureBackupContainerExists(ctx echo.Context
 	storageService, err := storage2.GetProvider(s.settingService.GetStorageDriver(ctx))
 	if err != nil {
 		log.Error().
-			Str("action", constants.ActionBackup).
+			Str("action", constants2.ActionBackup).
 			Str("error", err.Error()).
 			Msg("failed to get storage provider")
 
 		return err
 	}
 
-	containerExists := storageService.ContainerExists(constants.BackupContainerName)
+	containerExists := storageService.ContainerExists(constants2.BackupContainerName)
 	if !containerExists {
-		_, err := storageService.CreateContainer(constants.BackupContainerName)
+		_, err := storageService.CreateContainer(constants2.BackupContainerName)
 		if err != nil {
 			log.Error().
-				Str("action", constants.ActionBackup).
-				Str("container_name", constants.BackupContainerName).
+				Str("action", constants2.ActionBackup).
+				Str("container_name", constants2.BackupContainerName).
 				Str("error", err.Error()).
 				Msg("failed to create backup container")
 
@@ -210,7 +210,7 @@ func (s *BackupWorkflowServiceImpl) readBackupFile(backupUUID uuid.UUID) ([]byte
 	fileBytes, err := os.ReadFile(fmt.Sprintf("/tmp/%s.sql", backupUUID))
 	if err != nil {
 		log.Error().
-			Str("action", constants.ActionBackup).
+			Str("action", constants2.ActionBackup).
 			Str("backup_uuid", backupUUID.String()).
 			Str("error", err.Error()).
 			Msg("failed to read backup file from fluxton_app container")
@@ -227,7 +227,7 @@ func (s *BackupWorkflowServiceImpl) uploadBackup(ctx echo.Context, databaseName 
 	storageService, err := storage2.GetProvider(s.settingService.GetStorageDriver(ctx))
 	if err != nil {
 		log.Error().
-			Str("action", constants.ActionBackup).
+			Str("action", constants2.ActionBackup).
 			Str("db", databaseName).
 			Str("backup_uuid", backupUUID.String()).
 			Str("error", err.Error()).
@@ -237,13 +237,13 @@ func (s *BackupWorkflowServiceImpl) uploadBackup(ctx echo.Context, databaseName 
 	}
 
 	err = storageService.UploadFile(storage2.UploadFileInput{
-		ContainerName: constants.BackupContainerName,
+		ContainerName: constants2.BackupContainerName,
 		FileName:      filePath,
 		FileBytes:     fileBytes,
 	})
 	if err != nil {
 		log.Error().
-			Str("action", constants.ActionBackup).
+			Str("action", constants2.ActionBackup).
 			Str("db", databaseName).
 			Str("backup_uuid", backupUUID.String()).
 			Str("error", err.Error()).
@@ -260,7 +260,7 @@ func (s *BackupWorkflowServiceImpl) handleBackupFailure(backupUUID uuid.UUID, st
 	err := s.backupRepo.UpdateStatus(backupUUID, status, errorMessage, time.Now())
 	if err != nil {
 		log.Error().
-			Str("action", constants.ActionBackup).
+			Str("action", constants2.ActionBackup).
 			Str("backup_uuid", backupUUID.String()).
 			Str("error", err.Error()).
 			Msg("failed to update backup status in database")
@@ -268,7 +268,7 @@ func (s *BackupWorkflowServiceImpl) handleBackupFailure(backupUUID uuid.UUID, st
 	}
 
 	log.Error().
-		Str("action", constants.ActionBackup).
+		Str("action", constants2.ActionBackup).
 		Str("backup_uuid", backupUUID.String()).
 		Str("status", status).
 		Str("error", errorMessage).

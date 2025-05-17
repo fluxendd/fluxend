@@ -1,7 +1,7 @@
 package storage
 
 import (
-	"fluxton/constants"
+	"fluxton/internal/config/constants"
 	"fmt"
 )
 

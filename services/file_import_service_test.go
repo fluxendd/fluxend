@@ -3,7 +3,7 @@ package services
 import (
 	"bytes"
 	"encoding/csv"
-	"fluxton/constants"
+	"fluxton/internal/config/constants"
 	"mime/multipart"
 	"testing"
 

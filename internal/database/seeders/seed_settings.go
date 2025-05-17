@@ -1,7 +1,7 @@
 package seeders
 
 import (
-	"fluxton/constants"
+	"fluxton/internal/config/constants"
 	"fluxton/models"
 	"fluxton/repositories"
 	"github.com/rs/zerolog"

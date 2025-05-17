@@ -1,7 +1,7 @@
 package postgrest
 
 import (
-	"fluxton/constants"
+	"fluxton/internal/config/constants"
 	"fluxton/models"
 	"fluxton/pkg"
 	"fluxton/repositories"

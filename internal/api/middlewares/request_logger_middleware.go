@@ -2,7 +2,7 @@ package middlewares
 
 import (
 	"bytes"
-	"fluxton/constants"
+	"fluxton/internal/config/constants"
 	"fluxton/models"
 	"fluxton/pkg/auth"
 	"fluxton/repositories"

@@ -1,8 +1,8 @@
 package container_requests
 
 import (
-	"fluxton/constants"
 	"fluxton/internal/api/dto"
+	"fluxton/internal/config/constants"
 	"fluxton/pkg"
 	"fmt"
 	validation "github.com/go-ozzo/ozzo-validation/v4"

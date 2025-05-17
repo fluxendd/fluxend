@@ -1,8 +1,8 @@
 package column_requests
 
 import (
-	"fluxton/constants"
 	"fluxton/internal/api/dto"
+	"fluxton/internal/config/constants"
 	"fluxton/models"
 	"fluxton/pkg"
 	"fmt"

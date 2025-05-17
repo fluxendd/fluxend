@@ -1,7 +1,7 @@
 package repositories
 
 import (
-	"fluxton/constants"
+	"fluxton/internal/config/constants"
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
