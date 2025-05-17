@@ -1,8 +1,8 @@
 package main
 
 import (
-	"fluxton/cmd"
 	_ "fluxton/docs"
+	"fluxton/internal/app/commands"
 	"github.com/joho/godotenv"
 	"github.com/labstack/gommon/log"
 )
@@ -22,5 +22,5 @@ func main() {
 		log.Fatalf("Error loading .env file: %v", err)
 	}
 
-	cmd.Execute()
+	commands.Execute()
 }

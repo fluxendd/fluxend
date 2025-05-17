@@ -1,8 +1,9 @@
-package cmd
+package commands
 
 import (
 	"fluxton/internal/adapters/postgrest"
 	"fluxton/internal/api/dto"
+	"fluxton/internal/app"
 	"fluxton/repositories"
 	"fmt"
 	"github.com/samber/do"
@@ -18,7 +19,7 @@ var udbRestart = &cobra.Command{
 }
 
 func restartPostgrestInstances() error {
-	container := InitializeContainer()
+	container := app.InitializeContainer()
 
 	// Inject dependencies
 	projectRepository := do.MustInvoke[*repositories.ProjectRepository](container)

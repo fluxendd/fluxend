@@ -1,6 +1,7 @@
-package cmd
+package commands
 
 import (
+	"fluxton/internal/app"
 	"fluxton/models"
 	"fluxton/pkg"
 	"fluxton/services"
@@ -34,7 +35,7 @@ var udbStats = &cobra.Command{
 }
 
 func getDatabaseStats(databaseName string) (models.DatabaseStat, error) {
-	container := InitializeContainer()
+	container := app.InitializeContainer()
 
 	authUser := models.AuthUser{
 		Uuid:   uuid.MustParse("00000000-0000-0000-0000-000000000000"),

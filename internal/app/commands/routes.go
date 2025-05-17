@@ -1,6 +1,7 @@
-package cmd
+package commands
 
 import (
+	"fluxton/internal/app"
 	"fmt"
 	"github.com/spf13/cobra"
 	"strings"
@@ -16,7 +17,7 @@ var routesCmd = &cobra.Command{
 }
 
 func printRoutes() {
-	e := setupServer(InitializeContainer())
+	e := setupServer(app.InitializeContainer())
 
 	registeredRoutes := e.Routes()
 	routesGrouped := make(map[string][]string)

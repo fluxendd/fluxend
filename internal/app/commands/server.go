@@ -1,8 +1,9 @@
-package cmd
+package commands
 
 import (
 	middlewares2 "fluxton/internal/api/middlewares"
 	routes2 "fluxton/internal/api/routes"
+	"fluxton/internal/app"
 	"fluxton/repositories"
 	"fluxton/routes"
 	"fluxton/services"
@@ -26,7 +27,7 @@ var serverCmd = &cobra.Command{
 }
 
 func startServer() {
-	e := setupServer(InitializeContainer())
+	e := setupServer(app.InitializeContainer())
 	e.Logger.Fatal(e.Start("0.0.0.0:8080"))
 }
 

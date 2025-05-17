@@ -1,6 +1,7 @@
-package cmd
+package commands
 
 import (
+	"fluxton/internal/app"
 	seeders2 "fluxton/internal/database/seeders"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -21,7 +22,7 @@ var seedCmd = &cobra.Command{
 }
 
 func runSeeders() {
-	container := InitializeContainer()
+	container := app.InitializeContainer()
 	log.Info().Msg("Database seeding started")
 
 	seedersToRun := []func(*do.Injector){
