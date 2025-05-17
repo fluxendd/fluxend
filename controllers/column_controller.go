@@ -1,12 +1,12 @@
 package controllers
 
 import (
+	"fluxton/internal/api/response"
 	"fluxton/pkg/auth"
 	"fluxton/pkg/errors"
 	"fluxton/requests"
 	"fluxton/requests/column_requests"
 	"fluxton/resources"
-	"fluxton/responses"
 	"fluxton/services"
 	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
@@ -43,22 +43,22 @@ func NewColumnController(injector *do.Injector) (*ColumnController, error) {
 func (cc *ColumnController) List(c echo.Context) error {
 	var request requests.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
-		return responses.UnprocessableResponse(c, err)
+		return response.UnprocessableResponse(c, err)
 	}
 
 	authUser, _ := auth.NewAuth(c).User()
 
 	fullTableName := c.Param("fullTableName")
 	if fullTableName == "" {
-		return responses.BadRequestResponse(c, "Table name is required")
+		return response.BadRequestResponse(c, "Table name is required")
 	}
 
 	columns, err := cc.columnService.List(fullTableName, request.ProjectUUID, authUser)
 	if err != nil {
-		return responses.ErrorResponse(c, err)
+		return response.ErrorResponse(c, err)
 	}
 
-	return responses.SuccessResponse(c, resources.ColumnResourceCollection(columns))
+	return response.SuccessResponse(c, resources.ColumnResourceCollection(columns))
 }
 
 // Store adds new columns to a table.
@@ -86,22 +86,22 @@ func (cc *ColumnController) List(c echo.Context) error {
 func (cc *ColumnController) Store(c echo.Context) error {
 	var request column_requests.CreateRequest
 	if err := request.BindAndValidate(c); err != nil {
-		return responses.UnprocessableResponse(c, err)
+		return response.UnprocessableResponse(c, err)
 	}
 
 	authUser, _ := auth.NewAuth(c).User()
 
 	fullTableName := c.Param("fullTableName")
 	if fullTableName == "" {
-		return responses.BadRequestResponse(c, "Table name is required")
+		return response.BadRequestResponse(c, "Table name is required")
 	}
 
 	columns, err := cc.columnService.CreateMany(fullTableName, &request, authUser)
 	if err != nil {
-		return responses.ErrorResponse(c, err)
+		return response.ErrorResponse(c, err)
 	}
 
-	return responses.CreatedResponse(c, resources.ColumnResourceCollection(columns))
+	return response.CreatedResponse(c, resources.ColumnResourceCollection(columns))
 }
 
 // Alter modifies column types in a table.
@@ -129,22 +129,22 @@ func (cc *ColumnController) Store(c echo.Context) error {
 func (cc *ColumnController) Alter(c echo.Context) error {
 	var request column_requests.CreateRequest
 	if err := request.BindAndValidate(c); err != nil {
-		return responses.UnprocessableResponse(c, err)
+		return response.UnprocessableResponse(c, err)
 	}
 
 	authUser, _ := auth.NewAuth(c).User()
 
 	fullTableName := c.Param("fullTableName")
 	if fullTableName == "" {
-		return responses.BadRequestResponse(c, "Table name is required")
+		return response.BadRequestResponse(c, "Table name is required")
 	}
 
 	columns, err := cc.columnService.AlterMany(fullTableName, &request, authUser)
 	if err != nil {
-		return responses.ErrorResponse(c, err)
+		return response.ErrorResponse(c, err)
 	}
 
-	return responses.SuccessResponse(c, resources.ColumnResourceCollection(columns))
+	return response.SuccessResponse(c, resources.ColumnResourceCollection(columns))
 }
 
 // Rename updates the name of an existing column.
@@ -173,22 +173,22 @@ func (cc *ColumnController) Alter(c echo.Context) error {
 func (cc *ColumnController) Rename(c echo.Context) error {
 	var request column_requests.RenameRequest
 	if err := request.BindAndValidate(c); err != nil {
-		return responses.UnprocessableResponse(c, err)
+		return response.UnprocessableResponse(c, err)
 	}
 
 	authUser, _ := auth.NewAuth(c).User()
 
 	fullTableName, columnName, err := cc.parseRequest(c)
 	if err != nil {
-		return responses.BadRequestResponse(c, err.Error())
+		return response.BadRequestResponse(c, err.Error())
 	}
 
 	columns, err := cc.columnService.Rename(columnName, fullTableName, &request, authUser)
 	if err != nil {
-		return responses.ErrorResponse(c, err)
+		return response.ErrorResponse(c, err)
 	}
 
-	return responses.SuccessResponse(c, resources.ColumnResourceCollection(columns))
+	return response.SuccessResponse(c, resources.ColumnResourceCollection(columns))
 }
 
 // Delete removes a column from a table.
@@ -216,21 +216,21 @@ func (cc *ColumnController) Rename(c echo.Context) error {
 func (cc *ColumnController) Delete(c echo.Context) error {
 	var request requests.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
-		return responses.UnprocessableResponse(c, err)
+		return response.UnprocessableResponse(c, err)
 	}
 
 	authUser, _ := auth.NewAuth(c).User()
 
 	fullTableName, columnName, err := cc.parseRequest(c)
 	if err != nil {
-		return responses.BadRequestResponse(c, err.Error())
+		return response.BadRequestResponse(c, err.Error())
 	}
 
 	if _, err := cc.columnService.Delete(columnName, fullTableName, request.ProjectUUID, authUser); err != nil {
-		return responses.ErrorResponse(c, err)
+		return response.ErrorResponse(c, err)
 	}
 
-	return responses.DeletedResponse(c, nil)
+	return response.DeletedResponse(c, nil)
 }
 
 func (cc *ColumnController) parseRequest(c echo.Context) (string, string, error) {

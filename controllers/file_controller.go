@@ -1,11 +1,11 @@
 package controllers
 
 import (
+	"fluxton/internal/api/response"
 	"fluxton/pkg/auth"
 	"fluxton/requests"
 	"fluxton/requests/container_requests"
 	"fluxton/resources"
-	"fluxton/responses"
 	"fluxton/services"
 	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
@@ -47,23 +47,23 @@ func NewFileController(injector *do.Injector) (*FileController, error) {
 func (fc *FileController) List(c echo.Context) error {
 	var request requests.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
-		return responses.UnprocessableResponse(c, err)
+		return response.UnprocessableResponse(c, err)
 	}
 
 	authUser, _ := auth.NewAuth(c).User()
 
 	containerUUID, err := request.GetUUIDPathParam(c, "containerUUID", true)
 	if err != nil {
-		return responses.BadRequestResponse(c, "Invalid container UUID")
+		return response.BadRequestResponse(c, "Invalid container UUID")
 	}
 
 	paginationParams := request.ExtractPaginationParams(c)
 	files, err := fc.fileService.List(paginationParams, containerUUID, authUser)
 	if err != nil {
-		return responses.ErrorResponse(c, err)
+		return response.ErrorResponse(c, err)
 	}
 
-	return responses.SuccessResponse(c, resources.FileResourceCollection(files))
+	return response.SuccessResponse(c, resources.FileResourceCollection(files))
 }
 
 // Show retrieves details of a specific file.
@@ -88,27 +88,27 @@ func (fc *FileController) List(c echo.Context) error {
 func (fc *FileController) Show(c echo.Context) error {
 	var request requests.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
-		return responses.UnprocessableResponse(c, err)
+		return response.UnprocessableResponse(c, err)
 	}
 
 	authUser, _ := auth.NewAuth(c).User()
 
 	containerUUID, err := request.GetUUIDPathParam(c, "containerUUID", true)
 	if err != nil {
-		return responses.BadRequestResponse(c, err.Error())
+		return response.BadRequestResponse(c, err.Error())
 	}
 
 	fileUUID, err := request.GetUUIDPathParam(c, "fileUUID", true)
 	if err != nil {
-		return responses.BadRequestResponse(c, err.Error())
+		return response.BadRequestResponse(c, err.Error())
 	}
 
 	file, err := fc.fileService.GetByUUID(fileUUID, containerUUID, authUser)
 	if err != nil {
-		return responses.ErrorResponse(c, err)
+		return response.ErrorResponse(c, err)
 	}
 
-	return responses.SuccessResponse(c, resources.FileResource(&file))
+	return response.SuccessResponse(c, resources.FileResource(&file))
 }
 
 // Store creates a new file in a container
@@ -133,22 +133,22 @@ func (fc *FileController) Show(c echo.Context) error {
 func (fc *FileController) Store(c echo.Context) error {
 	var request container_requests.CreateFileRequest
 	if err := request.BindAndValidate(c); err != nil {
-		return responses.UnprocessableResponse(c, err)
+		return response.UnprocessableResponse(c, err)
 	}
 
 	authUser, _ := auth.NewAuth(c).User()
 
 	containerUUID, err := request.GetUUIDPathParam(c, "containerUUID", true)
 	if err != nil {
-		return responses.BadRequestResponse(c, err.Error())
+		return response.BadRequestResponse(c, err.Error())
 	}
 
 	file, err := fc.fileService.Create(containerUUID, &request, authUser)
 	if err != nil {
-		return responses.ErrorResponse(c, err)
+		return response.ErrorResponse(c, err)
 	}
 
-	return responses.CreatedResponse(c, resources.FileResource(&file))
+	return response.CreatedResponse(c, resources.FileResource(&file))
 }
 
 // Rename updates the name of a file
@@ -174,27 +174,27 @@ func (fc *FileController) Store(c echo.Context) error {
 func (fc *FileController) Rename(c echo.Context) error {
 	var request container_requests.RenameFileRequest
 	if err := request.BindAndValidate(c); err != nil {
-		return responses.UnprocessableResponse(c, err)
+		return response.UnprocessableResponse(c, err)
 	}
 
 	authUser, _ := auth.NewAuth(c).User()
 
 	fileUUID, err := request.GetUUIDPathParam(c, "fileUUID", true)
 	if err != nil {
-		return responses.BadRequestResponse(c, err.Error())
+		return response.BadRequestResponse(c, err.Error())
 	}
 
 	containerUUID, err := request.GetUUIDPathParam(c, "containerUUID", true)
 	if err != nil {
-		return responses.BadRequestResponse(c, err.Error())
+		return response.BadRequestResponse(c, err.Error())
 	}
 
 	updatedFile, err := fc.fileService.Rename(fileUUID, containerUUID, authUser, &request)
 	if err != nil {
-		return responses.ErrorResponse(c, err)
+		return response.ErrorResponse(c, err)
 	}
 
-	return responses.SuccessResponse(c, resources.FileResource(updatedFile))
+	return response.SuccessResponse(c, resources.FileResource(updatedFile))
 }
 
 // Delete removes a file from a container
@@ -219,24 +219,24 @@ func (fc *FileController) Rename(c echo.Context) error {
 func (fc *FileController) Delete(c echo.Context) error {
 	var request requests.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
-		return responses.UnprocessableResponse(c, err)
+		return response.UnprocessableResponse(c, err)
 	}
 
 	authUser, _ := auth.NewAuth(c).User()
 
 	containerUUID, err := request.GetUUIDPathParam(c, "containerUUID", true)
 	if err != nil {
-		return responses.BadRequestResponse(c, err.Error())
+		return response.BadRequestResponse(c, err.Error())
 	}
 
 	fileUUID, err := request.GetUUIDPathParam(c, "fileUUID", true)
 	if err != nil {
-		return responses.BadRequestResponse(c, err.Error())
+		return response.BadRequestResponse(c, err.Error())
 	}
 
 	if _, err := fc.fileService.Delete(fileUUID, containerUUID, authUser, request); err != nil {
-		return responses.ErrorResponse(c, err)
+		return response.ErrorResponse(c, err)
 	}
 
-	return responses.DeletedResponse(c, nil)
+	return response.DeletedResponse(c, nil)
 }

@@ -1,8 +1,8 @@
 package controllers
 
 import (
+	"fluxton/internal/api/response"
 	"fluxton/pkg/auth"
-	"fluxton/responses"
 	"fluxton/services"
 	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
@@ -21,10 +21,10 @@ func NewHealthController(injector *do.Injector) (*HealthController, error) {
 func (hc *HealthController) Pulse(c echo.Context) error {
 	_, err := auth.NewAuth(c).User()
 	if err != nil {
-		return responses.UnauthorizedResponse(c, err.Error())
+		return response.UnauthorizedResponse(c, err.Error())
 	}
 
 	// TODO: add logic for health check
 
-	return responses.SuccessResponse(c, nil)
+	return response.SuccessResponse(c, nil)
 }

@@ -1,11 +1,11 @@
 package controllers
 
 import (
+	"fluxton/internal/api/response"
 	"fluxton/pkg/auth"
 	"fluxton/requests"
 	"fluxton/requests/organization_requests"
 	"fluxton/resources"
-	"fluxton/responses"
 	"fluxton/services"
 	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
@@ -45,7 +45,7 @@ func NewOrganizationController(injector *do.Injector) (*OrganizationController, 
 func (oc *OrganizationController) List(c echo.Context) error {
 	var request requests.DefaultRequest
 	if err := request.BindAndValidate(c); err != nil {
-		return responses.UnprocessableResponse(c, err)
+		return response.UnprocessableResponse(c, err)
 	}
 
 	authUserId, _ := auth.NewAuth(c).Uuid()
@@ -53,10 +53,10 @@ func (oc *OrganizationController) List(c echo.Context) error {
 	paginationParams := request.ExtractPaginationParams(c)
 	organizations, err := oc.organizationService.List(paginationParams, authUserId)
 	if err != nil {
-		return responses.ErrorResponse(c, err)
+		return response.ErrorResponse(c, err)
 	}
 
-	return responses.SuccessResponse(c, resources.OrganizationResourceCollection(organizations))
+	return response.SuccessResponse(c, resources.OrganizationResourceCollection(organizations))
 }
 
 // Show details of a single organization
@@ -81,22 +81,22 @@ func (oc *OrganizationController) List(c echo.Context) error {
 func (oc *OrganizationController) Show(c echo.Context) error {
 	var request requests.DefaultRequest
 	if err := request.BindAndValidate(c); err != nil {
-		return responses.UnprocessableResponse(c, err)
+		return response.UnprocessableResponse(c, err)
 	}
 
 	authUser, _ := auth.NewAuth(c).User()
 
 	organizationUUID, err := request.GetUUIDPathParam(c, "organizationUUID", true)
 	if err != nil {
-		return responses.BadRequestResponse(c, err.Error())
+		return response.BadRequestResponse(c, err.Error())
 	}
 
 	organization, err := oc.organizationService.GetByID(organizationUUID, authUser)
 	if err != nil {
-		return responses.ErrorResponse(c, err)
+		return response.ErrorResponse(c, err)
 	}
 
-	return responses.SuccessResponse(c, resources.OrganizationResource(&organization))
+	return response.SuccessResponse(c, resources.OrganizationResource(&organization))
 }
 
 // Store creates a new organization
@@ -121,20 +121,20 @@ func (oc *OrganizationController) Show(c echo.Context) error {
 func (oc *OrganizationController) Store(c echo.Context) error {
 	var request organization_requests.CreateRequest
 	if err := request.BindAndValidate(c); err != nil {
-		return responses.UnprocessableResponse(c, err)
+		return response.UnprocessableResponse(c, err)
 	}
 
 	authUser, err := auth.NewAuth(c).User()
 	if err != nil {
-		return responses.UnauthorizedResponse(c, err.Error())
+		return response.UnauthorizedResponse(c, err.Error())
 	}
 
 	organization, err := oc.organizationService.Create(&request, authUser)
 	if err != nil {
-		return responses.ErrorResponse(c, err)
+		return response.ErrorResponse(c, err)
 	}
 
-	return responses.CreatedResponse(c, resources.OrganizationResource(&organization))
+	return response.CreatedResponse(c, resources.OrganizationResource(&organization))
 }
 
 // Update an organization
@@ -160,22 +160,22 @@ func (oc *OrganizationController) Store(c echo.Context) error {
 func (oc *OrganizationController) Update(c echo.Context) error {
 	var request organization_requests.CreateRequest
 	if err := request.BindAndValidate(c); err != nil {
-		return responses.UnprocessableResponse(c, err)
+		return response.UnprocessableResponse(c, err)
 	}
 
 	authUser, _ := auth.NewAuth(c).User()
 
 	organizationUUID, err := request.GetUUIDPathParam(c, "organizationUUID", true)
 	if err != nil {
-		return responses.BadRequestResponse(c, err.Error())
+		return response.BadRequestResponse(c, err.Error())
 	}
 
 	updatedOrganization, err := oc.organizationService.Update(organizationUUID, authUser, &request)
 	if err != nil {
-		return responses.ErrorResponse(c, err)
+		return response.ErrorResponse(c, err)
 	}
 
-	return responses.SuccessResponse(c, resources.OrganizationResource(updatedOrganization))
+	return response.SuccessResponse(c, resources.OrganizationResource(updatedOrganization))
 }
 
 // Delete an organization
@@ -198,19 +198,19 @@ func (oc *OrganizationController) Update(c echo.Context) error {
 func (oc *OrganizationController) Delete(c echo.Context) error {
 	var request requests.DefaultRequest
 	if err := request.BindAndValidate(c); err != nil {
-		return responses.UnprocessableResponse(c, err)
+		return response.UnprocessableResponse(c, err)
 	}
 
 	authUser, _ := auth.NewAuth(c).User()
 
 	organizationUUID, err := request.GetUUIDPathParam(c, "organizationUUID", true)
 	if err != nil {
-		return responses.BadRequestResponse(c, err.Error())
+		return response.BadRequestResponse(c, err.Error())
 	}
 
 	if _, err := oc.organizationService.Delete(organizationUUID, authUser); err != nil {
-		return responses.ErrorResponse(c, err)
+		return response.ErrorResponse(c, err)
 	}
 
-	return responses.DeletedResponse(c, nil)
+	return response.DeletedResponse(c, nil)
 }

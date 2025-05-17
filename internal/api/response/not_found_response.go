@@ -1,4 +1,4 @@
-package responses
+package response
 
 import (
 	"fluxton/pkg/message"
@@ -6,12 +6,12 @@ import (
 	"net/http"
 )
 
-func ForbiddenResponse(c echo.Context, error string) error {
+func NotFoundResponse(c echo.Context, error string) error {
 	response := Response{
 		Success: false,
 		Errors:  []string{message.Message(error)},
 		Content: nil,
 	}
 
-	return c.JSON(http.StatusForbidden, response)
+	return c.JSON(http.StatusNotFound, response)
 }

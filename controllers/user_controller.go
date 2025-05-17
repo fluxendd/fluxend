@@ -1,11 +1,11 @@
 package controllers
 
 import (
+	"fluxton/internal/api/response"
 	"fluxton/pkg/auth"
 	"fluxton/requests"
 	"fluxton/requests/user_requests"
 	"fluxton/resources"
-	"fluxton/responses"
 	"fluxton/services"
 	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
@@ -42,20 +42,20 @@ func NewUserController(injector *do.Injector) (*UserController, error) {
 func (uc *UserController) Show(c echo.Context) error {
 	var request requests.DefaultRequest
 	if err := request.BindAndValidate(c); err != nil {
-		return responses.UnprocessableResponse(c, err)
+		return response.UnprocessableResponse(c, err)
 	}
 
 	id, err := request.GetUUIDPathParam(c, "id", true)
 	if err != nil {
-		return responses.BadRequestResponse(c, err.Error())
+		return response.BadRequestResponse(c, err.Error())
 	}
 
 	user, err := uc.userService.GetByID(id)
 	if err != nil {
-		return responses.ErrorResponse(c, err)
+		return response.ErrorResponse(c, err)
 	}
 
-	return responses.SuccessResponse(c, resources.UserResource(&user))
+	return response.SuccessResponse(c, resources.UserResource(&user))
 }
 
 // Login authenticates a user and returns a JWT token.
@@ -78,19 +78,19 @@ func (uc *UserController) Show(c echo.Context) error {
 func (uc *UserController) Login(c echo.Context) error {
 	var request user_requests.LoginRequest
 	if err := c.Bind(&request); err != nil {
-		return responses.BadRequestResponse(c, "user.error.invalidPayload")
+		return response.BadRequestResponse(c, "user.error.invalidPayload")
 	}
 
 	if err := request.Validate(); err != nil {
-		return responses.UnprocessableResponse(c, err)
+		return response.UnprocessableResponse(c, err)
 	}
 
 	user, token, err := uc.userService.Login(&request)
 	if err != nil {
-		return responses.ErrorResponse(c, err)
+		return response.ErrorResponse(c, err)
 	}
 
-	return responses.SuccessResponse(c, map[string]interface{}{
+	return response.SuccessResponse(c, map[string]interface{}{
 		"user":  resources.UserResource(&user),
 		"token": token,
 	})
@@ -116,19 +116,19 @@ func (uc *UserController) Login(c echo.Context) error {
 func (uc *UserController) Store(c echo.Context) error {
 	var request user_requests.CreateRequest
 	if err := c.Bind(&request); err != nil {
-		return responses.BadRequestResponse(c, "user.error.invalidPayload")
+		return response.BadRequestResponse(c, "user.error.invalidPayload")
 	}
 
 	if err := request.Validate(); err != nil {
-		return responses.UnprocessableResponse(c, err)
+		return response.UnprocessableResponse(c, err)
 	}
 
 	user, token, err := uc.userService.Create(c, &request)
 	if err != nil {
-		return responses.ErrorResponse(c, err)
+		return response.ErrorResponse(c, err)
 	}
 
-	return responses.CreatedResponse(c, map[string]interface{}{
+	return response.CreatedResponse(c, map[string]interface{}{
 		"user":  resources.UserResource(&user),
 		"token": token,
 	})
@@ -157,25 +157,25 @@ func (uc *UserController) Store(c echo.Context) error {
 func (uc *UserController) Update(c echo.Context) error {
 	authUserUUID, err := auth.NewAuth(c).Uuid()
 	if err != nil {
-		return responses.UnauthorizedResponse(c, err.Error())
+		return response.UnauthorizedResponse(c, err.Error())
 	}
 
 	var request user_requests.UpdateRequest
 	userUUID, err := request.GetUUIDPathParam(c, "userUUID", true)
 	if err != nil {
-		return responses.BadRequestResponse(c, err.Error())
+		return response.BadRequestResponse(c, err.Error())
 	}
 
 	if err := c.Bind(&request); err != nil {
-		return responses.BadRequestResponse(c, "user.error.invalidPayload")
+		return response.BadRequestResponse(c, "user.error.invalidPayload")
 	}
 
 	updatedUser, err := uc.userService.Update(userUUID, authUserUUID, &request)
 	if err != nil {
-		return responses.ErrorResponse(c, err)
+		return response.ErrorResponse(c, err)
 	}
 
-	return responses.SuccessResponse(c, resources.UserResource(updatedUser))
+	return response.SuccessResponse(c, resources.UserResource(updatedUser))
 }
 
 // Logout logs out a user by invalidating the JWT token.
@@ -198,13 +198,13 @@ func (uc *UserController) Update(c echo.Context) error {
 func (uc *UserController) Logout(c echo.Context) error {
 	userUUID, err := auth.NewAuth(c).Uuid()
 	if err != nil {
-		return responses.UnauthorizedResponse(c, err.Error())
+		return response.UnauthorizedResponse(c, err.Error())
 	}
 
 	err = uc.userService.Logout(userUUID)
 	if err != nil {
-		return responses.ErrorResponse(c, err)
+		return response.ErrorResponse(c, err)
 	}
 
-	return responses.DeletedResponse(c, nil)
+	return response.DeletedResponse(c, nil)
 }

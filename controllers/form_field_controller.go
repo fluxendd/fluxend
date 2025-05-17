@@ -1,11 +1,11 @@
 package controllers
 
 import (
+	"fluxton/internal/api/response"
 	"fluxton/pkg/auth"
 	"fluxton/requests"
 	"fluxton/requests/form_requests"
 	"fluxton/resources"
-	"fluxton/responses"
 	"fluxton/services"
 	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
@@ -42,22 +42,22 @@ func NewFormFieldController(injector *do.Injector) (*FormFieldController, error)
 func (ffc *FormFieldController) List(c echo.Context) error {
 	var request requests.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
-		return responses.UnprocessableResponse(c, err)
+		return response.UnprocessableResponse(c, err)
 	}
 
 	authUser, _ := auth.NewAuth(c).User()
 
 	formUUID, err := request.GetUUIDPathParam(c, "formUUID", true)
 	if err != nil {
-		return responses.BadRequestResponse(c, err.Error())
+		return response.BadRequestResponse(c, err.Error())
 	}
 
 	formFields, err := ffc.formFieldService.List(formUUID, authUser)
 	if err != nil {
-		return responses.ErrorResponse(c, err)
+		return response.ErrorResponse(c, err)
 	}
 
-	return responses.SuccessResponse(c, resources.FormFieldResourceCollection(formFields))
+	return response.SuccessResponse(c, resources.FormFieldResourceCollection(formFields))
 }
 
 // Show retrieves details of a specific field
@@ -82,22 +82,22 @@ func (ffc *FormFieldController) List(c echo.Context) error {
 func (ffc *FormFieldController) Show(c echo.Context) error {
 	var request requests.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
-		return responses.UnprocessableResponse(c, err)
+		return response.UnprocessableResponse(c, err)
 	}
 
 	authUser, _ := auth.NewAuth(c).User()
 
 	formUUID, err := request.GetUUIDPathParam(c, "formUUID", true)
 	if err != nil {
-		return responses.BadRequestResponse(c, err.Error())
+		return response.BadRequestResponse(c, err.Error())
 	}
 
 	formField, err := ffc.formFieldService.GetByUUID(formUUID, authUser)
 	if err != nil {
-		return responses.ErrorResponse(c, err)
+		return response.ErrorResponse(c, err)
 	}
 
-	return responses.SuccessResponse(c, resources.FormFieldResource(&formField))
+	return response.SuccessResponse(c, resources.FormFieldResource(&formField))
 }
 
 // Store creates a new field for a form
@@ -123,22 +123,22 @@ func (ffc *FormFieldController) Show(c echo.Context) error {
 func (ffc *FormFieldController) Store(c echo.Context) error {
 	var request form_requests.CreateFormFieldsRequest
 	if err := request.BindAndValidate(c); err != nil {
-		return responses.UnprocessableResponse(c, err)
+		return response.UnprocessableResponse(c, err)
 	}
 
 	authUser, _ := auth.NewAuth(c).User()
 
 	formUUID, err := request.GetUUIDPathParam(c, "formUUID", true)
 	if err != nil {
-		return responses.BadRequestResponse(c, err.Error())
+		return response.BadRequestResponse(c, err.Error())
 	}
 
 	formFields, err := ffc.formFieldService.CreateMany(formUUID, &request, authUser)
 	if err != nil {
-		return responses.ErrorResponse(c, err)
+		return response.ErrorResponse(c, err)
 	}
 
-	return responses.CreatedResponse(c, resources.FormFieldResourceCollection(formFields))
+	return response.CreatedResponse(c, resources.FormFieldResourceCollection(formFields))
 }
 
 // Update updates an existing field
@@ -165,27 +165,27 @@ func (ffc *FormFieldController) Store(c echo.Context) error {
 func (ffc *FormFieldController) Update(c echo.Context) error {
 	var request form_requests.UpdateFormFieldRequest
 	if err := request.BindAndValidate(c); err != nil {
-		return responses.UnprocessableResponse(c, err)
+		return response.UnprocessableResponse(c, err)
 	}
 
 	authUser, _ := auth.NewAuth(c).User()
 
 	fieldUUID, err := request.GetUUIDPathParam(c, "fieldUUID", true)
 	if err != nil {
-		return responses.BadRequestResponse(c, err.Error())
+		return response.BadRequestResponse(c, err.Error())
 	}
 
 	formUUID, err := request.GetUUIDPathParam(c, "formUUID", true)
 	if err != nil {
-		return responses.BadRequestResponse(c, err.Error())
+		return response.BadRequestResponse(c, err.Error())
 	}
 
 	updatedFormField, err := ffc.formFieldService.Update(formUUID, fieldUUID, authUser, &request)
 	if err != nil {
-		return responses.ErrorResponse(c, err)
+		return response.ErrorResponse(c, err)
 	}
 
-	return responses.SuccessResponse(c, resources.FormFieldResource(updatedFormField))
+	return response.SuccessResponse(c, resources.FormFieldResource(updatedFormField))
 }
 
 // Delete deletes a field from a form
@@ -210,24 +210,24 @@ func (ffc *FormFieldController) Update(c echo.Context) error {
 func (ffc *FormFieldController) Delete(c echo.Context) error {
 	var request requests.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
-		return responses.UnprocessableResponse(c, err)
+		return response.UnprocessableResponse(c, err)
 	}
 
 	authUser, _ := auth.NewAuth(c).User()
 
 	fieldUUID, err := request.GetUUIDPathParam(c, "fieldUUID", true)
 	if err != nil {
-		return responses.BadRequestResponse(c, err.Error())
+		return response.BadRequestResponse(c, err.Error())
 	}
 
 	formUUID, err := request.GetUUIDPathParam(c, "formUUID", true)
 	if err != nil {
-		return responses.BadRequestResponse(c, err.Error())
+		return response.BadRequestResponse(c, err.Error())
 	}
 
 	if _, err := ffc.formFieldService.Delete(formUUID, fieldUUID, authUser); err != nil {
-		return responses.ErrorResponse(c, err)
+		return response.ErrorResponse(c, err)
 	}
 
-	return responses.DeletedResponse(c, nil)
+	return response.DeletedResponse(c, nil)
 }

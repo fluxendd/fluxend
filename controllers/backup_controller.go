@@ -1,10 +1,10 @@
 package controllers
 
 import (
+	"fluxton/internal/api/response"
 	"fluxton/pkg/auth"
 	"fluxton/requests"
 	"fluxton/resources"
-	"fluxton/responses"
 	"fluxton/services"
 	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
@@ -40,16 +40,16 @@ func NewBackupController(injector *do.Injector) (*BackupController, error) {
 func (bc *BackupController) List(c echo.Context) error {
 	var request requests.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
-		return responses.UnprocessableResponse(c, err)
+		return response.UnprocessableResponse(c, err)
 	}
 	authUser, _ := auth.NewAuth(c).User()
 
 	backups, err := bc.backupService.List(request.ProjectUUID, authUser)
 	if err != nil {
-		return responses.ErrorResponse(c, err)
+		return response.ErrorResponse(c, err)
 	}
 
-	return responses.SuccessResponse(c, resources.BackupResourceCollection(backups))
+	return response.SuccessResponse(c, resources.BackupResourceCollection(backups))
 }
 
 // Show retrieves details of a specific backup
@@ -75,22 +75,22 @@ func (bc *BackupController) List(c echo.Context) error {
 func (bc *BackupController) Show(c echo.Context) error {
 	var request requests.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
-		return responses.UnprocessableResponse(c, err)
+		return response.UnprocessableResponse(c, err)
 	}
 
 	authUser, _ := auth.NewAuth(c).User()
 
 	backupUUID, err := request.GetUUIDPathParam(c, "backupUUID", true)
 	if err != nil {
-		return responses.BadRequestResponse(c, err.Error())
+		return response.BadRequestResponse(c, err.Error())
 	}
 
 	backup, err := bc.backupService.GetByUUID(backupUUID, authUser)
 	if err != nil {
-		return responses.ErrorResponse(c, err)
+		return response.ErrorResponse(c, err)
 	}
 
-	return responses.SuccessResponse(c, resources.BackupResource(&backup))
+	return response.SuccessResponse(c, resources.BackupResource(&backup))
 }
 
 // Store creates a new backup
@@ -117,17 +117,17 @@ func (bc *BackupController) Show(c echo.Context) error {
 func (bc *BackupController) Store(c echo.Context) error {
 	var request requests.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
-		return responses.UnprocessableResponse(c, err)
+		return response.UnprocessableResponse(c, err)
 	}
 
 	authUser, _ := auth.NewAuth(c).User()
 
 	backup, err := bc.backupService.Create(&request, authUser)
 	if err != nil {
-		return responses.ErrorResponse(c, err)
+		return response.ErrorResponse(c, err)
 	}
 
-	return responses.CreatedResponse(c, resources.BackupResource(&backup))
+	return response.CreatedResponse(c, resources.BackupResource(&backup))
 }
 
 // Delete removes a backup
@@ -153,19 +153,19 @@ func (bc *BackupController) Store(c echo.Context) error {
 func (bc *BackupController) Delete(c echo.Context) error {
 	var request requests.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
-		return responses.UnprocessableResponse(c, err)
+		return response.UnprocessableResponse(c, err)
 	}
 
 	authUser, _ := auth.NewAuth(c).User()
 
 	backupUUID, err := request.GetUUIDPathParam(c, "backupUUID", true)
 	if err != nil {
-		return responses.BadRequestResponse(c, err.Error())
+		return response.BadRequestResponse(c, err.Error())
 	}
 
 	if _, err := bc.backupService.Delete(request, backupUUID, authUser); err != nil {
-		return responses.ErrorResponse(c, err)
+		return response.ErrorResponse(c, err)
 	}
 
-	return responses.DeletedResponse(c, nil)
+	return response.DeletedResponse(c, nil)
 }

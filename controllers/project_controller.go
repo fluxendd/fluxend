@@ -1,11 +1,11 @@
 package controllers
 
 import (
+	"fluxton/internal/api/response"
 	"fluxton/pkg/auth"
 	"fluxton/requests"
 	"fluxton/requests/project_requests"
 	"fluxton/resources"
-	"fluxton/responses"
 	"fluxton/services"
 	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
@@ -47,23 +47,23 @@ func NewProjectController(injector *do.Injector) (*ProjectController, error) {
 func (pc *ProjectController) List(c echo.Context) error {
 	var request requests.DefaultRequest
 	if err := request.BindAndValidate(c); err != nil {
-		return responses.UnprocessableResponse(c, err)
+		return response.UnprocessableResponse(c, err)
 	}
 
 	authUser, _ := auth.NewAuth(c).User()
 
 	organizationUUID, err := request.GetUUIDQueryParam(c, "organization_uuid", true)
 	if err != nil {
-		return responses.BadRequestResponse(c, "Invalid organization ID")
+		return response.BadRequestResponse(c, "Invalid organization ID")
 	}
 
 	paginationParams := request.ExtractPaginationParams(c)
 	projects, err := pc.projectService.List(paginationParams, organizationUUID, authUser)
 	if err != nil {
-		return responses.ErrorResponse(c, err)
+		return response.ErrorResponse(c, err)
 	}
 
-	return responses.SuccessResponse(c, resources.ProjectResourceCollection(projects))
+	return response.SuccessResponse(c, resources.ProjectResourceCollection(projects))
 }
 
 // Show details of a single project
@@ -88,22 +88,22 @@ func (pc *ProjectController) List(c echo.Context) error {
 func (pc *ProjectController) Show(c echo.Context) error {
 	var request requests.DefaultRequest
 	if err := request.BindAndValidate(c); err != nil {
-		return responses.UnprocessableResponse(c, err)
+		return response.UnprocessableResponse(c, err)
 	}
 
 	authUser, _ := auth.NewAuth(c).User()
 
 	projectUUID, err := request.GetUUIDPathParam(c, "projectUUID", true)
 	if err != nil {
-		return responses.BadRequestResponse(c, err.Error())
+		return response.BadRequestResponse(c, err.Error())
 	}
 
 	project, err := pc.projectService.GetByUUID(projectUUID, authUser)
 	if err != nil {
-		return responses.ErrorResponse(c, err)
+		return response.ErrorResponse(c, err)
 	}
 
-	return responses.SuccessResponse(c, resources.ProjectResource(&project))
+	return response.SuccessResponse(c, resources.ProjectResource(&project))
 }
 
 // Store creates a new project
@@ -129,17 +129,17 @@ func (pc *ProjectController) Show(c echo.Context) error {
 func (pc *ProjectController) Store(c echo.Context) error {
 	var request project_requests.CreateRequest
 	if err := request.BindAndValidate(c); err != nil {
-		return responses.UnprocessableResponse(c, err)
+		return response.UnprocessableResponse(c, err)
 	}
 
 	authUser, _ := auth.NewAuth(c).User()
 
 	project, err := pc.projectService.Create(&request, authUser)
 	if err != nil {
-		return responses.ErrorResponse(c, err)
+		return response.ErrorResponse(c, err)
 	}
 
-	return responses.CreatedResponse(c, resources.ProjectResource(&project))
+	return response.CreatedResponse(c, resources.ProjectResource(&project))
 }
 
 // Update a project
@@ -165,22 +165,22 @@ func (pc *ProjectController) Store(c echo.Context) error {
 func (pc *ProjectController) Update(c echo.Context) error {
 	var request project_requests.UpdateRequest
 	if err := request.BindAndValidate(c); err != nil {
-		return responses.UnprocessableResponse(c, err)
+		return response.UnprocessableResponse(c, err)
 	}
 
 	authUser, _ := auth.NewAuth(c).User()
 
 	projectUUID, err := request.GetUUIDPathParam(c, "projectUUID", true)
 	if err != nil {
-		return responses.BadRequestResponse(c, err.Error())
+		return response.BadRequestResponse(c, err.Error())
 	}
 
 	updatedOrganization, err := pc.projectService.Update(projectUUID, authUser, &request)
 	if err != nil {
-		return responses.ErrorResponse(c, err)
+		return response.ErrorResponse(c, err)
 	}
 
-	return responses.SuccessResponse(c, resources.ProjectResource(updatedOrganization))
+	return response.SuccessResponse(c, resources.ProjectResource(updatedOrganization))
 }
 
 // Delete a project
@@ -204,19 +204,19 @@ func (pc *ProjectController) Update(c echo.Context) error {
 func (pc *ProjectController) Delete(c echo.Context) error {
 	var request requests.DefaultRequest
 	if err := request.BindAndValidate(c); err != nil {
-		return responses.UnprocessableResponse(c, err)
+		return response.UnprocessableResponse(c, err)
 	}
 
 	authUser, _ := auth.NewAuth(c).User()
 
 	projectUUID, err := request.GetUUIDPathParam(c, "projectUUID", true)
 	if err != nil {
-		return responses.BadRequestResponse(c, err.Error())
+		return response.BadRequestResponse(c, err.Error())
 	}
 
 	if _, err := pc.projectService.Delete(projectUUID, authUser); err != nil {
-		return responses.ErrorResponse(c, err)
+		return response.ErrorResponse(c, err)
 	}
 
-	return responses.DeletedResponse(c, nil)
+	return response.DeletedResponse(c, nil)
 }

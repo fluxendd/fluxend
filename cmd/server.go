@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"fluxton/internal/middlewares"
+	middlewares2 "fluxton/internal/api/middlewares"
 	"fluxton/repositories"
 	"fluxton/routes"
 	"fluxton/services"
@@ -56,14 +56,14 @@ func registerRoutes(e *echo.Echo, container *do.Injector) {
 	settingService := do.MustInvoke[services.SettingService](container)
 	userRepo := do.MustInvoke[*repositories.UserRepository](container)
 
-	authMiddleware := middlewares.AuthMiddleware(userRepo)
-	allowProjectMiddleware := middlewares.AllowProjectMiddleware(settingService)
-	allowFormMiddleware := middlewares.AllowFormMiddleware(settingService)
-	allowStorageMiddleware := middlewares.AllowStorageMiddleware(settingService)
-	allowBackupMiddleware := middlewares.AllowBackupMiddleware(settingService)
+	authMiddleware := middlewares2.AuthMiddleware(userRepo)
+	allowProjectMiddleware := middlewares2.AllowProjectMiddleware(settingService)
+	allowFormMiddleware := middlewares2.AllowFormMiddleware(settingService)
+	allowStorageMiddleware := middlewares2.AllowStorageMiddleware(settingService)
+	allowBackupMiddleware := middlewares2.AllowBackupMiddleware(settingService)
 
 	requestLogRepo := do.MustInvoke[*repositories.RequestLogRepository](container)
-	requestLogMiddleware := middlewares.RequestLoggerMiddleware(requestLogRepo)
+	requestLogMiddleware := middlewares2.RequestLoggerMiddleware(requestLogRepo)
 	e.Use(requestLogMiddleware)
 
 	routes.RegisterUserRoutes(e, container, authMiddleware)

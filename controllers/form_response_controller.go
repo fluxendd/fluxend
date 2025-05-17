@@ -1,11 +1,11 @@
 package controllers
 
 import (
+	"fluxton/internal/api/response"
 	"fluxton/pkg/auth"
 	"fluxton/requests"
 	"fluxton/requests/form_requests"
 	"fluxton/resources"
-	"fluxton/responses"
 	"fluxton/services"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
@@ -44,22 +44,22 @@ func NewFormResponseController(injector *do.Injector) (*FormResponseController, 
 func (ffc *FormResponseController) List(c echo.Context) error {
 	var request requests.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
-		return responses.UnprocessableResponse(c, err)
+		return response.UnprocessableResponse(c, err)
 	}
 
 	authUser, _ := auth.NewAuth(c).User()
 
 	formUUID, err := request.GetUUIDPathParam(c, "formUUID", true)
 	if err != nil {
-		return responses.BadRequestResponse(c, err.Error())
+		return response.BadRequestResponse(c, err.Error())
 	}
 
 	formResponses, err := ffc.formResponseService.List(formUUID, authUser)
 	if err != nil {
-		return responses.ErrorResponse(c, err)
+		return response.ErrorResponse(c, err)
 	}
 
-	return responses.SuccessResponse(c, resources.FormResponseResourceCollection(formResponses))
+	return response.SuccessResponse(c, resources.FormResponseResourceCollection(formResponses))
 }
 
 // Show details of a single form response
@@ -86,22 +86,22 @@ func (ffc *FormResponseController) List(c echo.Context) error {
 func (ffc *FormResponseController) Show(c echo.Context) error {
 	var request requests.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
-		return responses.UnprocessableResponse(c, err)
+		return response.UnprocessableResponse(c, err)
 	}
 
 	authUser, _ := auth.NewAuth(c).User()
 
 	formUUID, formResponseUUID, err := ffc.parseRequest(request, c)
 	if err != nil {
-		return responses.BadRequestResponse(c, err.Error())
+		return response.BadRequestResponse(c, err.Error())
 	}
 
 	formResponse, err := ffc.formResponseService.GetByUUID(formResponseUUID, formUUID, authUser)
 	if err != nil {
-		return responses.ErrorResponse(c, err)
+		return response.ErrorResponse(c, err)
 	}
 
-	return responses.SuccessResponse(c, resources.FormResponseResource(formResponse))
+	return response.SuccessResponse(c, resources.FormResponseResource(formResponse))
 }
 
 // Store a new form response
@@ -129,22 +129,22 @@ func (ffc *FormResponseController) Show(c echo.Context) error {
 func (ffc *FormResponseController) Store(c echo.Context) error {
 	var request form_requests.CreateResponseRequest
 	if err := request.BindAndValidate(c); err != nil {
-		return responses.UnprocessableResponse(c, err)
+		return response.UnprocessableResponse(c, err)
 	}
 
 	authUser, _ := auth.NewAuth(c).User()
 
 	formUUID, err := request.GetUUIDPathParam(c, "formUUID", true)
 	if err != nil {
-		return responses.BadRequestResponse(c, err.Error())
+		return response.BadRequestResponse(c, err.Error())
 	}
 
 	formResponse, err := ffc.formResponseService.Create(formUUID, &request, authUser)
 	if err != nil {
-		return responses.ErrorResponse(c, err)
+		return response.ErrorResponse(c, err)
 	}
 
-	return responses.CreatedResponse(c, resources.FormResponseResource(&formResponse))
+	return response.CreatedResponse(c, resources.FormResponseResource(&formResponse))
 }
 
 // Delete a form response
@@ -171,21 +171,21 @@ func (ffc *FormResponseController) Store(c echo.Context) error {
 func (ffc *FormResponseController) Delete(c echo.Context) error {
 	var request requests.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
-		return responses.UnprocessableResponse(c, err)
+		return response.UnprocessableResponse(c, err)
 	}
 
 	authUser, _ := auth.NewAuth(c).User()
 
 	formUUID, formResponseUUID, err := ffc.parseRequest(request, c)
 	if err != nil {
-		return responses.BadRequestResponse(c, err.Error())
+		return response.BadRequestResponse(c, err.Error())
 	}
 
 	if err = ffc.formResponseService.Delete(formUUID, formResponseUUID, authUser); err != nil {
-		return responses.ErrorResponse(c, err)
+		return response.ErrorResponse(c, err)
 	}
 
-	return responses.DeletedResponse(c, nil)
+	return response.DeletedResponse(c, nil)
 }
 
 func (ffc *FormResponseController) parseRequest(request requests.DefaultRequestWithProjectHeader, c echo.Context) (uuid.UUID, uuid.UUID, error) {

@@ -1,10 +1,10 @@
 package controllers
 
 import (
+	"fluxton/internal/api/response"
 	"fluxton/pkg/auth"
 	"fluxton/requests"
 	"fluxton/resources"
-	"fluxton/responses"
 	"fluxton/services"
 	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
@@ -23,10 +23,10 @@ func NewSettingController(injector *do.Injector) (*SettingController, error) {
 func (sc *SettingController) List(c echo.Context) error {
 	settings, err := sc.settingService.List(c, false)
 	if err != nil {
-		return responses.ErrorResponse(c, err)
+		return response.ErrorResponse(c, err)
 	}
 
-	return responses.SuccessResponse(c, resources.SettingResourceCollection(settings))
+	return response.SuccessResponse(c, resources.SettingResourceCollection(settings))
 }
 
 func (sc *SettingController) Update(c echo.Context) error {
@@ -34,15 +34,15 @@ func (sc *SettingController) Update(c echo.Context) error {
 	authUser, _ := auth.NewAuth(c).User()
 
 	if err := request.BindAndValidate(c); err != nil {
-		return responses.UnprocessableResponse(c, err)
+		return response.UnprocessableResponse(c, err)
 	}
 
 	updatedSettings, err := sc.settingService.Update(c, authUser, &request)
 	if err != nil {
-		return responses.ErrorResponse(c, err)
+		return response.ErrorResponse(c, err)
 	}
 
-	return responses.SuccessResponse(c, resources.SettingResourceCollection(updatedSettings))
+	return response.SuccessResponse(c, resources.SettingResourceCollection(updatedSettings))
 }
 
 func (sc *SettingController) Reset(c echo.Context) error {
@@ -50,8 +50,8 @@ func (sc *SettingController) Reset(c echo.Context) error {
 
 	updatedSettings, err := sc.settingService.Reset(c, authUser)
 	if err != nil {
-		return responses.ErrorResponse(c, err)
+		return response.ErrorResponse(c, err)
 	}
 
-	return responses.SuccessResponse(c, resources.SettingResourceCollection(updatedSettings))
+	return response.SuccessResponse(c, resources.SettingResourceCollection(updatedSettings))
 }

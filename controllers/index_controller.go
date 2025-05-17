@@ -1,10 +1,10 @@
 package controllers
 
 import (
+	"fluxton/internal/api/response"
 	"fluxton/pkg/auth"
 	"fluxton/requests"
 	"fluxton/resources"
-	"fluxton/responses"
 	"fluxton/services"
 	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
@@ -41,22 +41,22 @@ func NewIndexController(injector *do.Injector) (*IndexController, error) {
 func (ic *IndexController) List(c echo.Context) error {
 	var request requests.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
-		return responses.UnprocessableResponse(c, err)
+		return response.UnprocessableResponse(c, err)
 	}
 
 	authUser, _ := auth.NewAuth(c).User()
 
 	fullTableName := c.Param("fullTableName")
 	if fullTableName == "" {
-		return responses.BadRequestResponse(c, "Table name is required")
+		return response.BadRequestResponse(c, "Table name is required")
 	}
 
 	indexes, err := ic.indexService.List(fullTableName, request.ProjectUUID, authUser)
 	if err != nil {
-		return responses.ErrorResponse(c, err)
+		return response.ErrorResponse(c, err)
 	}
 
-	return responses.SuccessResponse(c, resources.GenericResourceCollection(indexes))
+	return response.SuccessResponse(c, resources.GenericResourceCollection(indexes))
 }
 
 // Show Index
@@ -82,24 +82,24 @@ func (ic *IndexController) List(c echo.Context) error {
 func (ic *IndexController) Show(c echo.Context) error {
 	var request requests.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
-		return responses.UnprocessableResponse(c, err)
+		return response.UnprocessableResponse(c, err)
 	}
 
 	authUser, _ := auth.NewAuth(c).User()
 
 	fullTableName := c.Param("fullTableName")
 	if fullTableName == "" {
-		return responses.BadRequestResponse(c, "Table name is required")
+		return response.BadRequestResponse(c, "Table name is required")
 	}
 
 	indexName := c.Param("indexName")
 
 	index, err := ic.indexService.GetByName(indexName, fullTableName, request.ProjectUUID, authUser)
 	if err != nil {
-		return responses.ErrorResponse(c, err)
+		return response.ErrorResponse(c, err)
 	}
 
-	return responses.SuccessResponse(c, resources.GenericResource(&index))
+	return response.SuccessResponse(c, resources.GenericResource(&index))
 }
 
 // Store Index
@@ -125,22 +125,22 @@ func (ic *IndexController) Show(c echo.Context) error {
 func (ic *IndexController) Store(c echo.Context) error {
 	var request requests.IndexCreateRequest
 	if err := request.BindAndValidate(c); err != nil {
-		return responses.UnprocessableResponse(c, err)
+		return response.UnprocessableResponse(c, err)
 	}
 
 	authUser, _ := auth.NewAuth(c).User()
 
 	fullTableName := c.Param("fullTableName")
 	if fullTableName == "" {
-		return responses.BadRequestResponse(c, "Table name is required")
+		return response.BadRequestResponse(c, "Table name is required")
 	}
 
 	index, err := ic.indexService.Create(fullTableName, &request, authUser)
 	if err != nil {
-		return responses.ErrorResponse(c, err)
+		return response.ErrorResponse(c, err)
 	}
 
-	return responses.CreatedResponse(c, resources.GenericResource(index))
+	return response.CreatedResponse(c, resources.GenericResource(index))
 }
 
 // Delete Index
@@ -166,21 +166,21 @@ func (ic *IndexController) Store(c echo.Context) error {
 func (ic *IndexController) Delete(c echo.Context) error {
 	var request requests.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
-		return responses.UnprocessableResponse(c, err)
+		return response.UnprocessableResponse(c, err)
 	}
 
 	authUser, _ := auth.NewAuth(c).User()
 
 	fullTableName := c.Param("fullTableName")
 	if fullTableName == "" {
-		return responses.BadRequestResponse(c, "Table name is required")
+		return response.BadRequestResponse(c, "Table name is required")
 	}
 
 	indexName := c.Param("indexName")
 
 	if _, err := ic.indexService.Delete(indexName, fullTableName, request.ProjectUUID, authUser); err != nil {
-		return responses.ErrorResponse(c, err)
+		return response.ErrorResponse(c, err)
 	}
 
-	return responses.DeletedResponse(c, nil)
+	return response.DeletedResponse(c, nil)
 }

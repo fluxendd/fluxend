@@ -1,11 +1,11 @@
 package controllers
 
 import (
+	"fluxton/internal/api/response"
 	"fluxton/pkg/auth"
 	"fluxton/requests"
 	"fluxton/requests/form_requests"
 	"fluxton/resources"
-	"fluxton/responses"
 	"fluxton/services"
 	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
@@ -47,17 +47,17 @@ func NewFormController(injector *do.Injector) (*FormController, error) {
 func (fc *FormController) List(c echo.Context) error {
 	var request requests.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
-		return responses.UnprocessableResponse(c, err)
+		return response.UnprocessableResponse(c, err)
 	}
 	authUser, _ := auth.NewAuth(c).User()
 
 	paginationParams := request.ExtractPaginationParams(c)
 	forms, err := fc.formService.List(paginationParams, request.ProjectUUID, authUser)
 	if err != nil {
-		return responses.ErrorResponse(c, err)
+		return response.ErrorResponse(c, err)
 	}
 
-	return responses.SuccessResponse(c, resources.FormResourceCollection(forms))
+	return response.SuccessResponse(c, resources.FormResourceCollection(forms))
 }
 
 // Show retrieves details of a specific form
@@ -83,22 +83,22 @@ func (fc *FormController) List(c echo.Context) error {
 func (fc *FormController) Show(c echo.Context) error {
 	var request requests.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
-		return responses.UnprocessableResponse(c, err)
+		return response.UnprocessableResponse(c, err)
 	}
 
 	authUser, _ := auth.NewAuth(c).User()
 
 	formUUID, err := request.GetUUIDPathParam(c, "formUUID", true)
 	if err != nil {
-		return responses.BadRequestResponse(c, err.Error())
+		return response.BadRequestResponse(c, err.Error())
 	}
 
 	form, err := fc.formService.GetByUUID(formUUID, authUser)
 	if err != nil {
-		return responses.ErrorResponse(c, err)
+		return response.ErrorResponse(c, err)
 	}
 
-	return responses.SuccessResponse(c, resources.FormResource(&form))
+	return response.SuccessResponse(c, resources.FormResource(&form))
 }
 
 // Store creates a new form
@@ -125,17 +125,17 @@ func (fc *FormController) Show(c echo.Context) error {
 func (fc *FormController) Store(c echo.Context) error {
 	var request form_requests.CreateRequest
 	if err := request.BindAndValidate(c); err != nil {
-		return responses.UnprocessableResponse(c, err)
+		return response.UnprocessableResponse(c, err)
 	}
 
 	authUser, _ := auth.NewAuth(c).User()
 
 	form, err := fc.formService.Create(&request, authUser)
 	if err != nil {
-		return responses.ErrorResponse(c, err)
+		return response.ErrorResponse(c, err)
 	}
 
-	return responses.CreatedResponse(c, resources.FormResource(&form))
+	return response.CreatedResponse(c, resources.FormResource(&form))
 }
 
 // Update updates an existing form
@@ -163,22 +163,22 @@ func (fc *FormController) Store(c echo.Context) error {
 func (fc *FormController) Update(c echo.Context) error {
 	var request form_requests.CreateRequest
 	if err := request.BindAndValidate(c); err != nil {
-		return responses.UnprocessableResponse(c, err)
+		return response.UnprocessableResponse(c, err)
 	}
 
 	authUser, _ := auth.NewAuth(c).User()
 
 	formUUID, err := request.GetUUIDPathParam(c, "formUUID", true)
 	if err != nil {
-		return responses.BadRequestResponse(c, err.Error())
+		return response.BadRequestResponse(c, err.Error())
 	}
 
 	updatedForm, err := fc.formService.Update(formUUID, authUser, &request)
 	if err != nil {
-		return responses.ErrorResponse(c, err)
+		return response.ErrorResponse(c, err)
 	}
 
-	return responses.SuccessResponse(c, resources.FormResource(updatedForm))
+	return response.SuccessResponse(c, resources.FormResource(updatedForm))
 }
 
 // Delete removes a form
@@ -204,19 +204,19 @@ func (fc *FormController) Update(c echo.Context) error {
 func (fc *FormController) Delete(c echo.Context) error {
 	var request requests.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
-		return responses.UnprocessableResponse(c, err)
+		return response.UnprocessableResponse(c, err)
 	}
 
 	authUser, _ := auth.NewAuth(c).User()
 
 	formUUID, err := request.GetUUIDPathParam(c, "formUUID", true)
 	if err != nil {
-		return responses.BadRequestResponse(c, err.Error())
+		return response.BadRequestResponse(c, err.Error())
 	}
 
 	if _, err := fc.formService.Delete(formUUID, authUser); err != nil {
-		return responses.ErrorResponse(c, err)
+		return response.ErrorResponse(c, err)
 	}
 
-	return responses.DeletedResponse(c, nil)
+	return response.DeletedResponse(c, nil)
 }

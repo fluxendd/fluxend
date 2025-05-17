@@ -1,10 +1,10 @@
 package controllers
 
 import (
+	"fluxton/internal/api/response"
 	"fluxton/pkg/auth"
 	"fluxton/requests"
 	"fluxton/resources"
-	"fluxton/responses"
 	"fluxton/services"
 	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
@@ -44,22 +44,22 @@ func NewFunctionController(injector *do.Injector) (*FunctionController, error) {
 func (fc *FunctionController) List(c echo.Context) error {
 	var request requests.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
-		return responses.UnprocessableResponse(c, err)
+		return response.UnprocessableResponse(c, err)
 	}
 
 	authUser, _ := auth.NewAuth(c).User()
 
 	schema := c.Param("schema")
 	if schema == "" {
-		return responses.BadRequestResponse(c, "Schema is required")
+		return response.BadRequestResponse(c, "Schema is required")
 	}
 
 	functions, err := fc.functionService.List(schema, request.ProjectUUID, authUser)
 	if err != nil {
-		return responses.ErrorResponse(c, err)
+		return response.ErrorResponse(c, err)
 	}
 
-	return responses.SuccessResponse(c, resources.FunctionResourceCollection(functions))
+	return response.SuccessResponse(c, resources.FunctionResourceCollection(functions))
 }
 
 // Show retrieves details of a specific function
@@ -86,27 +86,27 @@ func (fc *FunctionController) List(c echo.Context) error {
 func (fc *FunctionController) Show(c echo.Context) error {
 	var request requests.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
-		return responses.UnprocessableResponse(c, err)
+		return response.UnprocessableResponse(c, err)
 	}
 
 	authUser, _ := auth.NewAuth(c).User()
 
 	schema := c.Param("schema")
 	if schema == "" {
-		return responses.BadRequestResponse(c, "Schema is required")
+		return response.BadRequestResponse(c, "Schema is required")
 	}
 
 	functionName := c.Param("functionName")
 	if functionName == "" {
-		return responses.BadRequestResponse(c, "Function name is required")
+		return response.BadRequestResponse(c, "Function name is required")
 	}
 
 	function, err := fc.functionService.GetByName(functionName, schema, request.ProjectUUID, authUser)
 	if err != nil {
-		return responses.ErrorResponse(c, err)
+		return response.ErrorResponse(c, err)
 	}
 
-	return responses.SuccessResponse(c, resources.FunctionResource(&function))
+	return response.SuccessResponse(c, resources.FunctionResource(&function))
 }
 
 // Store creates a new function
@@ -133,22 +133,22 @@ func (fc *FunctionController) Show(c echo.Context) error {
 func (fc *FunctionController) Store(c echo.Context) error {
 	var request requests.CreateFunctionRequest
 	if err := request.BindAndValidate(c); err != nil {
-		return responses.UnprocessableResponse(c, err)
+		return response.UnprocessableResponse(c, err)
 	}
 
 	authUser, _ := auth.NewAuth(c).User()
 
 	schema := c.Param("schema")
 	if schema == "" {
-		return responses.BadRequestResponse(c, "Schema is required")
+		return response.BadRequestResponse(c, "Schema is required")
 	}
 
 	function, err := fc.functionService.Create(schema, &request, authUser)
 	if err != nil {
-		return responses.ErrorResponse(c, err)
+		return response.ErrorResponse(c, err)
 	}
 
-	return responses.CreatedResponse(c, resources.FunctionResource(&function))
+	return response.CreatedResponse(c, resources.FunctionResource(&function))
 }
 
 // Delete removes a function
@@ -176,24 +176,24 @@ func (fc *FunctionController) Store(c echo.Context) error {
 func (fc *FunctionController) Delete(c echo.Context) error {
 	var request requests.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
-		return responses.UnprocessableResponse(c, err)
+		return response.UnprocessableResponse(c, err)
 	}
 
 	authUser, _ := auth.NewAuth(c).User()
 
 	schema := c.Param("schema")
 	if schema == "" {
-		return responses.BadRequestResponse(c, "Schema is required")
+		return response.BadRequestResponse(c, "Schema is required")
 	}
 
 	functionName := c.Param("functionName")
 	if functionName == "" {
-		return responses.BadRequestResponse(c, "Function name is required")
+		return response.BadRequestResponse(c, "Function name is required")
 	}
 
 	if _, err := fc.functionService.Delete(schema, functionName, request.ProjectUUID, authUser); err != nil {
-		return responses.ErrorResponse(c, err)
+		return response.ErrorResponse(c, err)
 	}
 
-	return responses.DeletedResponse(c, nil)
+	return response.DeletedResponse(c, nil)
 }

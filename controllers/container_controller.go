@@ -1,11 +1,11 @@
 package controllers
 
 import (
+	"fluxton/internal/api/response"
 	"fluxton/pkg/auth"
 	"fluxton/requests"
 	"fluxton/requests/container_requests"
 	"fluxton/resources"
-	"fluxton/responses"
 	"fluxton/services"
 	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
@@ -47,7 +47,7 @@ func NewContainerController(injector *do.Injector) (*ContainerController, error)
 func (bc *ContainerController) List(c echo.Context) error {
 	var request requests.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
-		return responses.UnprocessableResponse(c, err)
+		return response.UnprocessableResponse(c, err)
 	}
 
 	authUser, _ := auth.NewAuth(c).User()
@@ -55,10 +55,10 @@ func (bc *ContainerController) List(c echo.Context) error {
 	paginationParams := request.ExtractPaginationParams(c)
 	container, err := bc.containerService.List(paginationParams, request.ProjectUUID, authUser)
 	if err != nil {
-		return responses.ErrorResponse(c, err)
+		return response.ErrorResponse(c, err)
 	}
 
-	return responses.SuccessResponse(c, resources.ContainerResourceCollection(container))
+	return response.SuccessResponse(c, resources.ContainerResourceCollection(container))
 }
 
 // Show retrieves details of a specific container.
@@ -89,15 +89,15 @@ func (bc *ContainerController) Show(c echo.Context) error {
 
 	containerUUID, err := request.GetUUIDPathParam(c, "containerUUID", true)
 	if err != nil {
-		return responses.BadRequestResponse(c, err.Error())
+		return response.BadRequestResponse(c, err.Error())
 	}
 
 	container, err := bc.containerService.GetByUUID(containerUUID, authUser)
 	if err != nil {
-		return responses.ErrorResponse(c, err)
+		return response.ErrorResponse(c, err)
 	}
 
-	return responses.SuccessResponse(c, resources.ContainerResource(&container))
+	return response.SuccessResponse(c, resources.ContainerResource(&container))
 }
 
 // Store creates a new container
@@ -123,17 +123,17 @@ func (bc *ContainerController) Show(c echo.Context) error {
 func (bc *ContainerController) Store(c echo.Context) error {
 	var request container_requests.CreateRequest
 	if err := request.BindAndValidate(c); err != nil {
-		return responses.UnprocessableResponse(c, err)
+		return response.UnprocessableResponse(c, err)
 	}
 
 	authUser, _ := auth.NewAuth(c).User()
 
 	container, err := bc.containerService.Create(&request, authUser)
 	if err != nil {
-		return responses.ErrorResponse(c, err)
+		return response.ErrorResponse(c, err)
 	}
 
-	return responses.CreatedResponse(c, resources.ContainerResource(&container))
+	return response.CreatedResponse(c, resources.ContainerResource(&container))
 }
 
 // Update a container
@@ -161,22 +161,22 @@ func (bc *ContainerController) Store(c echo.Context) error {
 func (bc *ContainerController) Update(c echo.Context) error {
 	var request container_requests.CreateRequest
 	if err := request.BindAndValidate(c); err != nil {
-		return responses.UnprocessableResponse(c, err)
+		return response.UnprocessableResponse(c, err)
 	}
 
 	authUser, _ := auth.NewAuth(c).User()
 
 	containerUUID, err := request.GetUUIDPathParam(c, "containerUUID", true)
 	if err != nil {
-		return responses.BadRequestResponse(c, err.Error())
+		return response.BadRequestResponse(c, err.Error())
 	}
 
 	updatedContainer, err := bc.containerService.Update(containerUUID, authUser, &request)
 	if err != nil {
-		return responses.ErrorResponse(c, err)
+		return response.ErrorResponse(c, err)
 	}
 
-	return responses.SuccessResponse(c, resources.ContainerResource(updatedContainer))
+	return response.SuccessResponse(c, resources.ContainerResource(updatedContainer))
 }
 
 // Delete a container
@@ -202,19 +202,19 @@ func (bc *ContainerController) Update(c echo.Context) error {
 func (bc *ContainerController) Delete(c echo.Context) error {
 	var request requests.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
-		return responses.UnprocessableResponse(c, err)
+		return response.UnprocessableResponse(c, err)
 	}
 
 	authUser, _ := auth.NewAuth(c).User()
 
 	containerUUID, err := request.GetUUIDPathParam(c, "containerUUID", true)
 	if err != nil {
-		return responses.BadRequestResponse(c, err.Error())
+		return response.BadRequestResponse(c, err.Error())
 	}
 
 	if _, err := bc.containerService.Delete(request, containerUUID, authUser); err != nil {
-		return responses.ErrorResponse(c, err)
+		return response.ErrorResponse(c, err)
 	}
 
-	return responses.DeletedResponse(c, nil)
+	return response.DeletedResponse(c, nil)
 }

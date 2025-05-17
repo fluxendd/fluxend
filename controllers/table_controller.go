@@ -1,11 +1,11 @@
 package controllers
 
 import (
+	"fluxton/internal/api/response"
 	"fluxton/pkg/auth"
 	"fluxton/requests"
 	"fluxton/requests/table_requests"
 	"fluxton/resources"
-	"fluxton/responses"
 	"fluxton/services"
 	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
@@ -42,17 +42,17 @@ func NewTableController(injector *do.Injector) (*TableController, error) {
 func (tc *TableController) List(c echo.Context) error {
 	var request requests.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
-		return responses.UnprocessableResponse(c, err)
+		return response.UnprocessableResponse(c, err)
 	}
 
 	authUser, _ := auth.NewAuth(c).User()
 
 	tables, err := tc.tableService.List(request.ProjectUUID, authUser)
 	if err != nil {
-		return responses.ErrorResponse(c, err)
+		return response.ErrorResponse(c, err)
 	}
 
-	return responses.SuccessResponse(c, resources.TableResourceCollection(tables))
+	return response.SuccessResponse(c, resources.TableResourceCollection(tables))
 }
 
 // Show retrieves details of a specific table.
@@ -79,22 +79,22 @@ func (tc *TableController) List(c echo.Context) error {
 func (tc *TableController) Show(c echo.Context) error {
 	var request requests.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
-		return responses.UnprocessableResponse(c, err)
+		return response.UnprocessableResponse(c, err)
 	}
 
 	authUser, _ := auth.NewAuth(c).User()
 
 	fullTableName := c.Param("fullTableName")
 	if fullTableName == "" {
-		return responses.BadRequestResponse(c, "Table name is required")
+		return response.BadRequestResponse(c, "Table name is required")
 	}
 
 	table, err := tc.tableService.GetByName(fullTableName, request.ProjectUUID, authUser)
 	if err != nil {
-		return responses.ErrorResponse(c, err)
+		return response.ErrorResponse(c, err)
 	}
 
-	return responses.SuccessResponse(c, resources.TableResource(&table))
+	return response.SuccessResponse(c, resources.TableResource(&table))
 }
 
 // Store creates a new table within a project.
@@ -121,17 +121,17 @@ func (tc *TableController) Show(c echo.Context) error {
 func (tc *TableController) Store(c echo.Context) error {
 	var request table_requests.CreateRequest
 	if err := request.BindAndValidate(c); err != nil {
-		return responses.UnprocessableResponse(c, err)
+		return response.UnprocessableResponse(c, err)
 	}
 
 	authUser, _ := auth.NewAuth(c).User()
 
 	table, err := tc.tableService.Create(&request, authUser)
 	if err != nil {
-		return responses.ErrorResponse(c, err)
+		return response.ErrorResponse(c, err)
 	}
 
-	return responses.CreatedResponse(c, resources.TableResource(&table))
+	return response.CreatedResponse(c, resources.TableResource(&table))
 }
 
 // Upload creates a new table within a project using uploaded file
@@ -158,17 +158,17 @@ func (tc *TableController) Store(c echo.Context) error {
 func (tc *TableController) Upload(c echo.Context) error {
 	var request table_requests.UploadRequest
 	if err := request.BindAndValidate(c); err != nil {
-		return responses.UnprocessableResponse(c, err)
+		return response.UnprocessableResponse(c, err)
 	}
 
 	authUser, _ := auth.NewAuth(c).User()
 
 	table, err := tc.tableService.Upload(&request, authUser)
 	if err != nil {
-		return responses.ErrorResponse(c, err)
+		return response.ErrorResponse(c, err)
 	}
 
-	return responses.CreatedResponse(c, resources.TableResource(&table))
+	return response.CreatedResponse(c, resources.TableResource(&table))
 }
 
 // Duplicate creates a duplicate of an existing table.
@@ -196,22 +196,22 @@ func (tc *TableController) Upload(c echo.Context) error {
 func (tc *TableController) Duplicate(c echo.Context) error {
 	var request table_requests.RenameRequest
 	if err := request.BindAndValidate(c); err != nil {
-		return responses.UnprocessableResponse(c, err)
+		return response.UnprocessableResponse(c, err)
 	}
 
 	authUser, _ := auth.NewAuth(c).User()
 
 	fullTableName := c.Param("fullTableName")
 	if fullTableName == "" {
-		return responses.BadRequestResponse(c, "Table name is required")
+		return response.BadRequestResponse(c, "Table name is required")
 	}
 
 	duplicatedTable, err := tc.tableService.Duplicate(fullTableName, authUser, &request)
 	if err != nil {
-		return responses.ErrorResponse(c, err)
+		return response.ErrorResponse(c, err)
 	}
 
-	return responses.SuccessResponse(c, resources.TableResource(duplicatedTable))
+	return response.SuccessResponse(c, resources.TableResource(duplicatedTable))
 }
 
 // Rename updates the name of an existing table.
@@ -239,22 +239,22 @@ func (tc *TableController) Duplicate(c echo.Context) error {
 func (tc *TableController) Rename(c echo.Context) error {
 	var request table_requests.RenameRequest
 	if err := request.BindAndValidate(c); err != nil {
-		return responses.UnprocessableResponse(c, err)
+		return response.UnprocessableResponse(c, err)
 	}
 
 	authUser, _ := auth.NewAuth(c).User()
 
 	fullTableName := c.Param("fullTableName")
 	if fullTableName == "" {
-		return responses.BadRequestResponse(c, "Table name is required")
+		return response.BadRequestResponse(c, "Table name is required")
 	}
 
 	renamedTable, err := tc.tableService.Rename(fullTableName, authUser, &request)
 	if err != nil {
-		return responses.ErrorResponse(c, err)
+		return response.ErrorResponse(c, err)
 	}
 
-	return responses.SuccessResponse(c, resources.TableResource(&renamedTable))
+	return response.SuccessResponse(c, resources.TableResource(&renamedTable))
 }
 
 // Delete removes a table permanently from a project.
@@ -281,19 +281,19 @@ func (tc *TableController) Rename(c echo.Context) error {
 func (tc *TableController) Delete(c echo.Context) error {
 	var request requests.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
-		return responses.UnprocessableResponse(c, err)
+		return response.UnprocessableResponse(c, err)
 	}
 
 	authUser, _ := auth.NewAuth(c).User()
 
 	fullTableName := c.Param("fullTableName")
 	if fullTableName == "" {
-		return responses.BadRequestResponse(c, "Table name is required")
+		return response.BadRequestResponse(c, "Table name is required")
 	}
 
 	if _, err := tc.tableService.Delete(fullTableName, request.ProjectUUID, authUser); err != nil {
-		return responses.ErrorResponse(c, err)
+		return response.ErrorResponse(c, err)
 	}
 
-	return responses.DeletedResponse(c, nil)
+	return response.DeletedResponse(c, nil)
 }

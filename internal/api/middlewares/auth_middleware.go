@@ -1,10 +1,10 @@
 package middlewares
 
 import (
+	"fluxton/internal/api/response"
 	"fluxton/models"
 	"fluxton/pkg/errors"
 	"fluxton/repositories"
-	"fluxton/responses"
 	"fmt"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
@@ -20,13 +20,13 @@ func AuthMiddleware(userRepo *repositories.UserRepository) echo.MiddlewareFunc {
 		return func(c echo.Context) error {
 			authHeader := c.Request().Header.Get("Authorization")
 			if authHeader == "" {
-				return responses.UnauthorizedResponse(c, "auth.error.tokenRequired")
+				return response.UnauthorizedResponse(c, "auth.error.tokenRequired")
 			}
 
 			// Token usually comes in the format "Bearer <token>"
 			tokenString := strings.TrimPrefix(authHeader, "Bearer ")
 			if tokenString == authHeader { // If the token doesn't start with "Bearer "
-				return responses.UnauthorizedResponse(c, "auth.error.bearerInvalid")
+				return response.UnauthorizedResponse(c, "auth.error.bearerInvalid")
 			}
 
 			// Parse the token
@@ -43,22 +43,22 @@ func AuthMiddleware(userRepo *repositories.UserRepository) echo.MiddlewareFunc {
 
 			if err != nil || !token.Valid {
 				// Token is invalid or expired
-				return responses.ErrorResponse(c, errors.NewUnauthorizedError("auth.error.tokenInvalid"))
+				return response.ErrorResponse(c, errors.NewUnauthorizedError("auth.error.tokenInvalid"))
 			}
 
 			userUUID, err := uuid.Parse(claims["uuid"].(string))
 			if err != nil {
-				return responses.ErrorResponse(c, errors.NewUnauthorizedError("auth.error.tokenInvalid"))
+				return response.ErrorResponse(c, errors.NewUnauthorizedError("auth.error.tokenInvalid"))
 			}
 
 			currentJWTVersion := int(claims["version"].(float64))
 			existingJWTVersion, err := userRepo.GetJWTVersion(userUUID)
 			if err != nil {
-				return responses.ErrorResponse(c, err)
+				return response.ErrorResponse(c, err)
 			}
 
 			if currentJWTVersion != existingJWTVersion {
-				return responses.UnauthorizedResponse(c, "auth.error.tokenInvalid")
+				return response.UnauthorizedResponse(c, "auth.error.tokenInvalid")
 			}
 
 			c.Set("user", models.AuthUser{
