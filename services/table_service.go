@@ -1,6 +1,7 @@
 package services
 
 import (
+	"fluxton/internal/adapters/connection"
 	"fluxton/models"
 	"fluxton/pkg"
 	"fluxton/pkg/errors"
@@ -22,7 +23,7 @@ type TableService interface {
 }
 
 type TableServiceImpl struct {
-	connectionService ConnectionService
+	connectionService connection.ConnectionService
 	fileImportService FileImportService
 	projectPolicy     *policies.ProjectPolicy
 	databaseRepo      *repositories.DatabaseRepository
@@ -30,7 +31,7 @@ type TableServiceImpl struct {
 }
 
 func NewTableService(injector *do.Injector) (TableService, error) {
-	connectionService := do.MustInvoke[ConnectionService](injector)
+	connectionService := do.MustInvoke[connection.ConnectionService](injector)
 	policy := do.MustInvoke[*policies.ProjectPolicy](injector)
 	databaseRepo := do.MustInvoke[*repositories.DatabaseRepository](injector)
 	projectRepo := do.MustInvoke[*repositories.ProjectRepository](injector)

@@ -1,6 +1,7 @@
 package services
 
 import (
+	"fluxton/internal/adapters/postgrest"
 	"fluxton/internal/api/dto"
 	"fluxton/models"
 	"fluxton/pkg/errors"
@@ -27,14 +28,14 @@ type ProjectServiceImpl struct {
 	projectPolicy    *policies.ProjectPolicy
 	databaseRepo     *repositories.DatabaseRepository
 	projectRepo      *repositories.ProjectRepository
-	postgrestService PostgrestService
+	postgrestService postgrest.PostgrestService
 }
 
 func NewProjectService(injector *do.Injector) (ProjectService, error) {
 	policy := do.MustInvoke[*policies.ProjectPolicy](injector)
 	databaseRepo := do.MustInvoke[*repositories.DatabaseRepository](injector)
 	projectRepo := do.MustInvoke[*repositories.ProjectRepository](injector)
-	postgrestService := do.MustInvoke[PostgrestService](injector)
+	postgrestService := do.MustInvoke[postgrest.PostgrestService](injector)
 
 	return &ProjectServiceImpl{
 		projectPolicy:    policy,

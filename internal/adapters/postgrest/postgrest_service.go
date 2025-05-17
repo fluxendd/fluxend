@@ -1,4 +1,4 @@
-package services
+package postgrest
 
 import (
 	"fluxton/constants"

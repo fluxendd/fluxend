@@ -1,6 +1,7 @@
 package services
 
 import (
+	"fluxton/internal/adapters/connection"
 	"fluxton/models"
 	"fluxton/pkg/errors"
 	"fluxton/policies"
@@ -22,14 +23,14 @@ type FunctionService interface {
 }
 
 type FunctionServiceImpl struct {
-	connectService ConnectionService
+	connectService connection.ConnectionService
 	projectPolicy  *policies.ProjectPolicy
 	databaseRepo   *repositories.DatabaseRepository
 	projectRepo    *repositories.ProjectRepository
 }
 
 func NewFunctionService(injector *do.Injector) (FunctionService, error) {
-	connectionService := do.MustInvoke[ConnectionService](injector)
+	connectionService := do.MustInvoke[connection.ConnectionService](injector)
 	policy := do.MustInvoke[*policies.ProjectPolicy](injector)
 	databaseRepo := do.MustInvoke[*repositories.DatabaseRepository](injector)
 	projectRepo := do.MustInvoke[*repositories.ProjectRepository](injector)

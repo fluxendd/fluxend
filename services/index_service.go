@@ -1,6 +1,7 @@
 package services
 
 import (
+	"fluxton/internal/adapters/connection"
 	"fluxton/models"
 	"fluxton/pkg"
 	"fluxton/pkg/errors"
@@ -19,13 +20,13 @@ type IndexService interface {
 }
 
 type IndexServiceImpl struct {
-	connectionService ConnectionService
+	connectionService connection.ConnectionService
 	projectPolicy     *policies.ProjectPolicy
 	projectRepo       *repositories.ProjectRepository
 }
 
 func NewIndexService(injector *do.Injector) (IndexService, error) {
-	connectionService := do.MustInvoke[ConnectionService](injector)
+	connectionService := do.MustInvoke[connection.ConnectionService](injector)
 	policy := do.MustInvoke[*policies.ProjectPolicy](injector)
 	projectRepo := do.MustInvoke[*repositories.ProjectRepository](injector)
 

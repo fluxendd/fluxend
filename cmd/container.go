@@ -2,6 +2,8 @@ package cmd
 
 import (
 	"fluxton/controllers"
+	"fluxton/internal/adapters/connection"
+	"fluxton/internal/adapters/postgrest"
 	"fluxton/internal/database"
 	"fluxton/internal/database/factories"
 	"fluxton/policies"
@@ -45,11 +47,11 @@ func InitializeContainer() *do.Injector {
 	do.Provide(injector, services.NewUserService)
 	do.Provide(injector, services.NewSettingService)
 	do.Provide(injector, services.NewHealthService)
-	do.Provide(injector, services.NewConnectionService)
+	do.Provide(injector, connection.NewConnectionService)
 	do.Provide(injector, services.NewDatabaseStatsService)
 	do.Provide(injector, services.NewOrganizationService)
 	do.Provide(injector, services.NewProjectService)
-	do.Provide(injector, services.NewPostgrestService)
+	do.Provide(injector, postgrest.NewPostgrestService)
 	do.Provide(injector, services.NewTableService)
 	do.Provide(injector, services.NewFileImportService)
 	do.Provide(injector, services.NewColumnService)

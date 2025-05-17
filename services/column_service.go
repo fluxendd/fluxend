@@ -1,6 +1,7 @@
 package services
 
 import (
+	"fluxton/internal/adapters/connection"
 	"fluxton/models"
 	"fluxton/pkg"
 	"fluxton/pkg/errors"
@@ -20,13 +21,13 @@ type ColumnService interface {
 }
 
 type ColumnServiceImpl struct {
-	connectionService ConnectionService
+	connectionService connection.ConnectionService
 	projectPolicy     *policies.ProjectPolicy
 	projectRepo       *repositories.ProjectRepository
 }
 
 func NewColumnService(injector *do.Injector) (ColumnService, error) {
-	connectionService := do.MustInvoke[ConnectionService](injector)
+	connectionService := do.MustInvoke[connection.ConnectionService](injector)
 	policy := do.MustInvoke[*policies.ProjectPolicy](injector)
 	projectRepo := do.MustInvoke[*repositories.ProjectRepository](injector)
 
