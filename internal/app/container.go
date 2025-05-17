@@ -6,8 +6,8 @@ import (
 	"fluxton/internal/adapters/postgrest"
 	"fluxton/internal/api/handlers"
 	"fluxton/internal/database"
-	"fluxton/internal/database/factories"
 	repositories2 "fluxton/internal/database/repositories"
+	"fluxton/internal/domain/organization"
 	"fluxton/internal/domain/user"
 	"fluxton/policies"
 	"fluxton/repositories"
@@ -30,7 +30,7 @@ func InitializeContainer() *do.Injector {
 	do.Provide(injector, repositories.NewRequestLogRepository)
 	do.Provide(injector, repositories.NewDatabaseRepository)
 	do.Provide(injector, repositories.NewSettingRepository)
-	do.Provide(injector, repositories.NewOrganizationRepository)
+	do.Provide(injector, repositories2.NewOrganizationRepository)
 	do.Provide(injector, repositories.NewProjectRepository)
 	do.Provide(injector, repositories.NewFormRepository)
 	do.Provide(injector, repositories.NewFormFieldRepository)
@@ -40,10 +40,10 @@ func InitializeContainer() *do.Injector {
 	do.Provide(injector, repositories.NewBackupRepository)
 
 	// Factories
-	do.Provide(injector, factories.NewUserFactory)
+	//do.Provide(injector, factories.NewUserFactory)
 
 	// policies
-	do.Provide(injector, policies.NewOrganizationPolicy)
+	do.Provide(injector, organization.NewOrganizationPolicy)
 	do.Provide(injector, policies.NewProjectPolicy)
 
 	// Services
@@ -52,7 +52,7 @@ func InitializeContainer() *do.Injector {
 	do.Provide(injector, services.NewHealthService)
 	do.Provide(injector, connection.NewConnectionService)
 	do.Provide(injector, services.NewDatabaseStatsService)
-	do.Provide(injector, services.NewOrganizationService)
+	do.Provide(injector, organization.NewOrganizationService)
 	do.Provide(injector, services.NewProjectService)
 	do.Provide(injector, postgrest.NewPostgrestService)
 	do.Provide(injector, services.NewTableService)
@@ -73,8 +73,8 @@ func InitializeContainer() *do.Injector {
 	do.Provide(injector, handlers.NewUserHandler)
 	do.Provide(injector, controllers.NewSettingController)
 	do.Provide(injector, controllers.NewHealthController)
-	do.Provide(injector, controllers.NewOrganizationController)
-	do.Provide(injector, controllers.NewOrganizationMemberController)
+	do.Provide(injector, handlers.NewOrganizationHandler)
+	do.Provide(injector, handlers.NewOrganizationMemberHandler)
 	do.Provide(injector, controllers.NewProjectController)
 	do.Provide(injector, controllers.NewTableController)
 	do.Provide(injector, controllers.NewColumnController)

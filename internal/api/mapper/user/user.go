@@ -1,12 +1,12 @@
 package user
 
 import (
-	dtoUser "fluxton/internal/api/dto/user"
-	domainUser "fluxton/internal/domain/user"
+	userDto "fluxton/internal/api/dto/user"
+	userDomain "fluxton/internal/domain/user"
 )
 
-func ToResponse(user *domainUser.User) dtoUser.Response {
-	return dtoUser.Response{
+func ToResponse(user *userDomain.User) userDto.Response {
+	return userDto.Response{
 		Uuid:      user.Uuid,
 		Username:  user.Username,
 		Email:     user.Email,
@@ -18,8 +18,8 @@ func ToResponse(user *domainUser.User) dtoUser.Response {
 	}
 }
 
-func ToResponseCollection(users []domainUser.User) []dtoUser.Response {
-	resourceUsers := make([]dtoUser.Response, len(users))
+func ToResponseCollection(users []userDomain.User) []userDto.Response {
+	resourceUsers := make([]userDto.Response, len(users))
 	for i, currentUser := range users {
 		resourceUsers[i] = ToResponse(&currentUser)
 	}

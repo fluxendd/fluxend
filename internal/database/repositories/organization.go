@@ -4,7 +4,8 @@ import (
 	"database/sql"
 	"errors"
 	"fluxton/internal/api/dto"
-	"fluxton/models"
+	"fluxton/internal/domain/organization"
+	"fluxton/internal/domain/user"
 	"fluxton/pkg"
 	flxErrs "fluxton/pkg/errors"
 	"fmt"
@@ -17,12 +18,12 @@ type OrganizationRepository struct {
 	db *sqlx.DB
 }
 
-func NewOrganizationRepository(injector *do.Injector) (*OrganizationRepository, error) {
+func NewOrganizationRepository(injector *do.Injector) (organization.Repository, error) {
 	db := do.MustInvoke[*sqlx.DB](injector)
 	return &OrganizationRepository{db: db}, nil
 }
 
-func (r *OrganizationRepository) ListForUser(paginationParams dto.PaginationParams, authUserID uuid.UUID) ([]models.Organization, error) {
+func (r *OrganizationRepository) ListForUser(paginationParams dto.PaginationParams, authUserID uuid.UUID) ([]organization.Organization, error) {
 	offset := (paginationParams.Page - 1) * paginationParams.Limit
 
 	query := `
@@ -43,7 +44,7 @@ func (r *OrganizationRepository) ListForUser(paginationParams dto.PaginationPara
 
 	`
 
-	query = fmt.Sprintf(query, pkg.GetColumnsWithAlias[models.Organization]("organizations"))
+	query = fmt.Sprintf(query, pkg.GetColumnsWithAlias[organization.Organization]("organizations"))
 
 	params := map[string]interface{}{
 		"user_uuid": authUserID,
@@ -58,13 +59,13 @@ func (r *OrganizationRepository) ListForUser(paginationParams dto.PaginationPara
 	}
 	defer rows.Close()
 
-	var organizations []models.Organization
+	var organizations []organization.Organization
 	for rows.Next() {
-		var organization models.Organization
-		if err := rows.StructScan(&organization); err != nil {
+		var currentOrganization organization.Organization
+		if err := rows.StructScan(&currentOrganization); err != nil {
 			return nil, pkg.FormatError(err, "scan", pkg.GetMethodName())
 		}
-		organizations = append(organizations, organization)
+		organizations = append(organizations, currentOrganization)
 	}
 
 	if err := rows.Err(); err != nil {
@@ -74,7 +75,7 @@ func (r *OrganizationRepository) ListForUser(paginationParams dto.PaginationPara
 	return organizations, nil
 }
 
-func (r *OrganizationRepository) ListUsers(organizationUUID uuid.UUID) ([]models.User, error) {
+func (r *OrganizationRepository) ListUsers(organizationUUID uuid.UUID) ([]user.User, error) {
 	query := `
 		SELECT 
 			%s 
@@ -86,20 +87,20 @@ func (r *OrganizationRepository) ListUsers(organizationUUID uuid.UUID) ([]models
 			organization_members.organization_uuid = $1
 	`
 
-	query = fmt.Sprintf(query, pkg.GetColumnsWithAlias[models.User]("users"))
+	query = fmt.Sprintf(query, pkg.GetColumnsWithAlias[user.User]("users"))
 	rows, err := r.db.Queryx(query, organizationUUID)
 	if err != nil {
 		return nil, pkg.FormatError(err, "select", pkg.GetMethodName())
 	}
 	defer rows.Close()
 
-	var users []models.User
+	var users []user.User
 	for rows.Next() {
-		var user models.User
-		if err := rows.StructScan(&user); err != nil {
+		var currentUser user.User
+		if err := rows.StructScan(&currentUser); err != nil {
 			return nil, pkg.FormatError(err, "scan", pkg.GetMethodName())
 		}
-		users = append(users, user)
+		users = append(users, currentUser)
 	}
 
 	if err := rows.Err(); err != nil {
@@ -109,7 +110,7 @@ func (r *OrganizationRepository) ListUsers(organizationUUID uuid.UUID) ([]models
 	return users, nil
 }
 
-func (r *OrganizationRepository) GetUser(organizationUUID, userUUID uuid.UUID) (models.User, error) {
+func (r *OrganizationRepository) GetUser(organizationUUID, userUUID uuid.UUID) (user.User, error) {
 	query := `
 		SELECT 
 			%s 
@@ -120,19 +121,19 @@ func (r *OrganizationRepository) GetUser(organizationUUID, userUUID uuid.UUID) (
 		WHERE 
 			organization_members.organization_uuid = $1 AND organization_members.user_uuid = $2
 	`
-	query = fmt.Sprintf(query, pkg.GetColumnsWithAlias[models.User]("users"))
+	query = fmt.Sprintf(query, pkg.GetColumnsWithAlias[user.User]("users"))
 
-	var user models.User
-	err := r.db.Get(&user, query, organizationUUID, userUUID)
+	var currentUser user.User
+	err := r.db.Get(&currentUser, query, organizationUUID, userUUID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return models.User{}, flxErrs.NewNotFoundError("organization.error.userNotFound")
+			return user.User{}, flxErrs.NewNotFoundError("organization.error.userNotFound")
 		}
 
-		return models.User{}, pkg.FormatError(err, "fetch", pkg.GetMethodName())
+		return user.User{}, pkg.FormatError(err, "fetch", pkg.GetMethodName())
 	}
 
-	return user, nil
+	return currentUser, nil
 }
 
 func (r *OrganizationRepository) CreateUser(organizationUUID, userUUID uuid.UUID) error {
@@ -155,21 +156,21 @@ func (r *OrganizationRepository) DeleteUser(organizationUUID, userUUID uuid.UUID
 	return nil
 }
 
-func (r *OrganizationRepository) GetByUUID(organizationUUID uuid.UUID) (models.Organization, error) {
+func (r *OrganizationRepository) GetByUUID(organizationUUID uuid.UUID) (organization.Organization, error) {
 	query := "SELECT %s FROM fluxton.organizations WHERE uuid = $1"
-	query = fmt.Sprintf(query, pkg.GetColumns[models.Organization]())
+	query = fmt.Sprintf(query, pkg.GetColumns[organization.Organization]())
 
-	var organization models.Organization
-	err := r.db.Get(&organization, query, organizationUUID)
+	var fetchedOrganization organization.Organization
+	err := r.db.Get(&fetchedOrganization, query, organizationUUID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return models.Organization{}, flxErrs.NewNotFoundError("organization.error.notFound")
+			return organization.Organization{}, flxErrs.NewNotFoundError("organization.error.notFound")
 		}
 
-		return models.Organization{}, pkg.FormatError(err, "fetch", pkg.GetMethodName())
+		return organization.Organization{}, pkg.FormatError(err, "fetch", pkg.GetMethodName())
 	}
 
-	return organization, nil
+	return fetchedOrganization, nil
 }
 
 func (r *OrganizationRepository) ExistsByID(organizationUUID uuid.UUID) (bool, error) {
@@ -183,7 +184,7 @@ func (r *OrganizationRepository) ExistsByID(organizationUUID uuid.UUID) (bool, e
 	return exists, nil
 }
 
-func (r *OrganizationRepository) Create(organization *models.Organization, authUserID uuid.UUID) (*models.Organization, error) {
+func (r *OrganizationRepository) Create(organization *organization.Organization, authUserID uuid.UUID) (*organization.Organization, error) {
 	tx, err := r.db.Beginx()
 	if err != nil {
 		return nil, pkg.FormatError(err, "transactionBegin", pkg.GetMethodName())
@@ -220,23 +221,23 @@ func (r *OrganizationRepository) Create(organization *models.Organization, authU
 	return organization, nil
 }
 
-func (r *OrganizationRepository) Update(organization *models.Organization) (*models.Organization, error) {
+func (r *OrganizationRepository) Update(organizationInput *organization.Organization) (*organization.Organization, error) {
 	query := `
 		UPDATE fluxton.organizations 
 		SET name = :name, updated_at = :updated_at, updated_by = :updated_by 
 		WHERE uuid = :uuid`
 
-	res, err := r.db.NamedExec(query, organization)
+	res, err := r.db.NamedExec(query, organizationInput)
 	if err != nil {
-		return &models.Organization{}, pkg.FormatError(err, "update", pkg.GetMethodName())
+		return &organization.Organization{}, pkg.FormatError(err, "update", pkg.GetMethodName())
 	}
 
 	_, err = res.RowsAffected()
 	if err != nil {
-		return &models.Organization{}, pkg.FormatError(err, "affectedRows", pkg.GetMethodName())
+		return &organization.Organization{}, pkg.FormatError(err, "affectedRows", pkg.GetMethodName())
 	}
 
-	return organization, nil
+	return organizationInput, nil
 }
 
 func (r *OrganizationRepository) Delete(organizationUUID uuid.UUID) (bool, error) {

@@ -2,8 +2,8 @@ package middlewares
 
 import (
 	"fluxton/internal/api/response"
-	"fluxton/internal/database/repositories"
-	"fluxton/models"
+	"fluxton/internal/domain/auth"
+	"fluxton/internal/domain/user"
 	"fluxton/pkg/errors"
 	"fmt"
 	"github.com/golang-jwt/jwt/v5"
@@ -13,7 +13,7 @@ import (
 	"strings"
 )
 
-func AuthMiddleware(userRepo *repositories.UserRepository) echo.MiddlewareFunc {
+func AuthMiddleware(userRepo *user.Repository) echo.MiddlewareFunc {
 	// Outer function accepts the next handler
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		// Inner function executes for each request
@@ -61,7 +61,7 @@ func AuthMiddleware(userRepo *repositories.UserRepository) echo.MiddlewareFunc {
 				return response.UnauthorizedResponse(c, "auth.error.tokenInvalid")
 			}
 
-			c.Set("user", models.AuthUser{
+			c.Set("user", auth.AuthUser{
 				Uuid:   userUUID,
 				RoleID: int(claims["role_id"].(float64)),
 			})

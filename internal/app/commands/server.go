@@ -4,10 +4,12 @@ import (
 	middlewares2 "fluxton/internal/api/middlewares"
 	routes2 "fluxton/internal/api/routes"
 	"fluxton/internal/app"
-	repositories2 "fluxton/internal/database/repositories"
+	"fluxton/internal/domain/user"
 	"fluxton/repositories"
 	"fluxton/routes"
 	"fluxton/services"
+
+	//"fluxton/repositories"
 	"fmt"
 	"github.com/getsentry/sentry-go"
 	sentryecho "github.com/getsentry/sentry-go/echo"
@@ -57,7 +59,7 @@ func setupServer(container *do.Injector) *echo.Echo {
 
 func registerRoutes(e *echo.Echo, container *do.Injector) {
 	settingService := do.MustInvoke[services.SettingService](container)
-	userRepo := do.MustInvoke[*repositories2.UserRepository](container)
+	userRepo := do.MustInvoke[*user.Repository](container)
 
 	authMiddleware := middlewares2.AuthMiddleware(userRepo)
 	allowProjectMiddleware := middlewares2.AllowProjectMiddleware(settingService)
@@ -71,7 +73,7 @@ func registerRoutes(e *echo.Echo, container *do.Injector) {
 
 	routes2.RegisterUserRoutes(e, container, authMiddleware)
 	routes2.RegisterAdminRoutes(e, container, authMiddleware)
-	routes.RegisterOrganizationRoutes(e, container, authMiddleware)
+	routes2.RegisterOrganizationRoutes(e, container, authMiddleware)
 	routes.RegisterProjectRoutes(e, container, authMiddleware, allowProjectMiddleware)
 	routes.RegisterTableRoutes(e, container, authMiddleware)
 	routes.RegisterFormRoutes(e, container, authMiddleware, allowFormMiddleware)

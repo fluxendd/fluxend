@@ -1,12 +1,13 @@
-package models
+package organization
 
 import (
+	"fluxton/models"
 	"github.com/google/uuid"
 	"time"
 )
 
 type Organization struct {
-	BaseModel
+	models.BaseModel
 	Uuid      uuid.UUID `db:"uuid"`
 	Name      string    `db:"name"`
 	CreatedBy uuid.UUID `db:"created_by"`
