@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"fluxton/pkg"
+	"fluxton/pkg/auth"
 	"fluxton/requests"
 	"fluxton/requests/project_requests"
 	"fluxton/resources"
@@ -50,7 +50,7 @@ func (pc *ProjectController) List(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	authUser, _ := pkg.NewAuth(c).User()
+	authUser, _ := auth.NewAuth(c).User()
 
 	organizationUUID, err := request.GetUUIDQueryParam(c, "organization_uuid", true)
 	if err != nil {
@@ -91,7 +91,7 @@ func (pc *ProjectController) Show(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	authUser, _ := pkg.NewAuth(c).User()
+	authUser, _ := auth.NewAuth(c).User()
 
 	projectUUID, err := request.GetUUIDPathParam(c, "projectUUID", true)
 	if err != nil {
@@ -132,7 +132,7 @@ func (pc *ProjectController) Store(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	authUser, _ := pkg.NewAuth(c).User()
+	authUser, _ := auth.NewAuth(c).User()
 
 	project, err := pc.projectService.Create(&request, authUser)
 	if err != nil {
@@ -168,7 +168,7 @@ func (pc *ProjectController) Update(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	authUser, _ := pkg.NewAuth(c).User()
+	authUser, _ := auth.NewAuth(c).User()
 
 	projectUUID, err := request.GetUUIDPathParam(c, "projectUUID", true)
 	if err != nil {
@@ -207,7 +207,7 @@ func (pc *ProjectController) Delete(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	authUser, _ := pkg.NewAuth(c).User()
+	authUser, _ := auth.NewAuth(c).User()
 
 	projectUUID, err := request.GetUUIDPathParam(c, "projectUUID", true)
 	if err != nil {

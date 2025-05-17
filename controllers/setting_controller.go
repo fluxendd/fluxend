@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"fluxton/pkg"
+	"fluxton/pkg/auth"
 	"fluxton/requests"
 	"fluxton/resources"
 	"fluxton/responses"
@@ -31,7 +31,7 @@ func (sc *SettingController) List(c echo.Context) error {
 
 func (sc *SettingController) Update(c echo.Context) error {
 	var request requests.SettingUpdateRequest
-	authUser, _ := pkg.NewAuth(c).User()
+	authUser, _ := auth.NewAuth(c).User()
 
 	if err := request.BindAndValidate(c); err != nil {
 		return responses.UnprocessableResponse(c, err)
@@ -46,7 +46,7 @@ func (sc *SettingController) Update(c echo.Context) error {
 }
 
 func (sc *SettingController) Reset(c echo.Context) error {
-	authUser, _ := pkg.NewAuth(c).User()
+	authUser, _ := auth.NewAuth(c).User()
 
 	updatedSettings, err := sc.settingService.Reset(c, authUser)
 	if err != nil {

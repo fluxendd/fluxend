@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"fluxton/pkg"
+	"fluxton/pkg/auth"
 	"fluxton/requests"
 	"fluxton/requests/table_requests"
 	"fluxton/resources"
@@ -45,7 +45,7 @@ func (tc *TableController) List(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	authUser, _ := pkg.NewAuth(c).User()
+	authUser, _ := auth.NewAuth(c).User()
 
 	tables, err := tc.tableService.List(request.ProjectUUID, authUser)
 	if err != nil {
@@ -82,7 +82,7 @@ func (tc *TableController) Show(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	authUser, _ := pkg.NewAuth(c).User()
+	authUser, _ := auth.NewAuth(c).User()
 
 	fullTableName := c.Param("fullTableName")
 	if fullTableName == "" {
@@ -124,7 +124,7 @@ func (tc *TableController) Store(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	authUser, _ := pkg.NewAuth(c).User()
+	authUser, _ := auth.NewAuth(c).User()
 
 	table, err := tc.tableService.Create(&request, authUser)
 	if err != nil {
@@ -161,7 +161,7 @@ func (tc *TableController) Upload(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	authUser, _ := pkg.NewAuth(c).User()
+	authUser, _ := auth.NewAuth(c).User()
 
 	table, err := tc.tableService.Upload(&request, authUser)
 	if err != nil {
@@ -199,7 +199,7 @@ func (tc *TableController) Duplicate(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	authUser, _ := pkg.NewAuth(c).User()
+	authUser, _ := auth.NewAuth(c).User()
 
 	fullTableName := c.Param("fullTableName")
 	if fullTableName == "" {
@@ -242,7 +242,7 @@ func (tc *TableController) Rename(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	authUser, _ := pkg.NewAuth(c).User()
+	authUser, _ := auth.NewAuth(c).User()
 
 	fullTableName := c.Param("fullTableName")
 	if fullTableName == "" {
@@ -284,7 +284,7 @@ func (tc *TableController) Delete(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	authUser, _ := pkg.NewAuth(c).User()
+	authUser, _ := auth.NewAuth(c).User()
 
 	fullTableName := c.Param("fullTableName")
 	if fullTableName == "" {

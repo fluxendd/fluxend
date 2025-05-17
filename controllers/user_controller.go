@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"fluxton/pkg"
+	"fluxton/pkg/auth"
 	"fluxton/requests"
 	"fluxton/requests/user_requests"
 	"fluxton/resources"
@@ -155,7 +155,7 @@ func (uc *UserController) Store(c echo.Context) error {
 //
 // @Router /users/{userUUID} [put]
 func (uc *UserController) Update(c echo.Context) error {
-	authUserUUID, err := pkg.NewAuth(c).Uuid()
+	authUserUUID, err := auth.NewAuth(c).Uuid()
 	if err != nil {
 		return responses.UnauthorizedResponse(c, err.Error())
 	}
@@ -196,7 +196,7 @@ func (uc *UserController) Update(c echo.Context) error {
 //
 // @Router /users/logout [post]
 func (uc *UserController) Logout(c echo.Context) error {
-	userUUID, err := pkg.NewAuth(c).Uuid()
+	userUUID, err := auth.NewAuth(c).Uuid()
 	if err != nil {
 		return responses.UnauthorizedResponse(c, err.Error())
 	}

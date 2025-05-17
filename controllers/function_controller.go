@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"fluxton/pkg"
+	"fluxton/pkg/auth"
 	"fluxton/requests"
 	"fluxton/resources"
 	"fluxton/responses"
@@ -47,7 +47,7 @@ func (fc *FunctionController) List(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	authUser, _ := pkg.NewAuth(c).User()
+	authUser, _ := auth.NewAuth(c).User()
 
 	schema := c.Param("schema")
 	if schema == "" {
@@ -89,7 +89,7 @@ func (fc *FunctionController) Show(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	authUser, _ := pkg.NewAuth(c).User()
+	authUser, _ := auth.NewAuth(c).User()
 
 	schema := c.Param("schema")
 	if schema == "" {
@@ -136,7 +136,7 @@ func (fc *FunctionController) Store(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	authUser, _ := pkg.NewAuth(c).User()
+	authUser, _ := auth.NewAuth(c).User()
 
 	schema := c.Param("schema")
 	if schema == "" {
@@ -179,7 +179,7 @@ func (fc *FunctionController) Delete(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	authUser, _ := pkg.NewAuth(c).User()
+	authUser, _ := auth.NewAuth(c).User()
 
 	schema := c.Param("schema")
 	if schema == "" {

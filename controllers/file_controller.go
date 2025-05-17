@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"fluxton/pkg"
+	"fluxton/pkg/auth"
 	"fluxton/requests"
 	"fluxton/requests/container_requests"
 	"fluxton/resources"
@@ -50,7 +50,7 @@ func (fc *FileController) List(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	authUser, _ := pkg.NewAuth(c).User()
+	authUser, _ := auth.NewAuth(c).User()
 
 	containerUUID, err := request.GetUUIDPathParam(c, "containerUUID", true)
 	if err != nil {
@@ -91,7 +91,7 @@ func (fc *FileController) Show(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	authUser, _ := pkg.NewAuth(c).User()
+	authUser, _ := auth.NewAuth(c).User()
 
 	containerUUID, err := request.GetUUIDPathParam(c, "containerUUID", true)
 	if err != nil {
@@ -136,7 +136,7 @@ func (fc *FileController) Store(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	authUser, _ := pkg.NewAuth(c).User()
+	authUser, _ := auth.NewAuth(c).User()
 
 	containerUUID, err := request.GetUUIDPathParam(c, "containerUUID", true)
 	if err != nil {
@@ -177,7 +177,7 @@ func (fc *FileController) Rename(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	authUser, _ := pkg.NewAuth(c).User()
+	authUser, _ := auth.NewAuth(c).User()
 
 	fileUUID, err := request.GetUUIDPathParam(c, "fileUUID", true)
 	if err != nil {
@@ -222,7 +222,7 @@ func (fc *FileController) Delete(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	authUser, _ := pkg.NewAuth(c).User()
+	authUser, _ := auth.NewAuth(c).User()
 
 	containerUUID, err := request.GetUUIDPathParam(c, "containerUUID", true)
 	if err != nil {

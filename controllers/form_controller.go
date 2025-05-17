@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"fluxton/pkg"
+	"fluxton/pkg/auth"
 	"fluxton/requests"
 	"fluxton/requests/form_requests"
 	"fluxton/resources"
@@ -49,7 +49,7 @@ func (fc *FormController) List(c echo.Context) error {
 	if err := request.BindAndValidate(c); err != nil {
 		return responses.UnprocessableResponse(c, err)
 	}
-	authUser, _ := pkg.NewAuth(c).User()
+	authUser, _ := auth.NewAuth(c).User()
 
 	paginationParams := request.ExtractPaginationParams(c)
 	forms, err := fc.formService.List(paginationParams, request.ProjectUUID, authUser)
@@ -86,7 +86,7 @@ func (fc *FormController) Show(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	authUser, _ := pkg.NewAuth(c).User()
+	authUser, _ := auth.NewAuth(c).User()
 
 	formUUID, err := request.GetUUIDPathParam(c, "formUUID", true)
 	if err != nil {
@@ -128,7 +128,7 @@ func (fc *FormController) Store(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	authUser, _ := pkg.NewAuth(c).User()
+	authUser, _ := auth.NewAuth(c).User()
 
 	form, err := fc.formService.Create(&request, authUser)
 	if err != nil {
@@ -166,7 +166,7 @@ func (fc *FormController) Update(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	authUser, _ := pkg.NewAuth(c).User()
+	authUser, _ := auth.NewAuth(c).User()
 
 	formUUID, err := request.GetUUIDPathParam(c, "formUUID", true)
 	if err != nil {
@@ -207,7 +207,7 @@ func (fc *FormController) Delete(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	authUser, _ := pkg.NewAuth(c).User()
+	authUser, _ := auth.NewAuth(c).User()
 
 	formUUID, err := request.GetUUIDPathParam(c, "formUUID", true)
 	if err != nil {

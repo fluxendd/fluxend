@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"fluxton/errs"
-	"fluxton/pkg"
+	"fluxton/pkg/auth"
 	"fluxton/requests"
 	"fluxton/requests/column_requests"
 	"fluxton/resources"
@@ -46,7 +46,7 @@ func (cc *ColumnController) List(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	authUser, _ := pkg.NewAuth(c).User()
+	authUser, _ := auth.NewAuth(c).User()
 
 	fullTableName := c.Param("fullTableName")
 	if fullTableName == "" {
@@ -89,7 +89,7 @@ func (cc *ColumnController) Store(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	authUser, _ := pkg.NewAuth(c).User()
+	authUser, _ := auth.NewAuth(c).User()
 
 	fullTableName := c.Param("fullTableName")
 	if fullTableName == "" {
@@ -132,7 +132,7 @@ func (cc *ColumnController) Alter(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	authUser, _ := pkg.NewAuth(c).User()
+	authUser, _ := auth.NewAuth(c).User()
 
 	fullTableName := c.Param("fullTableName")
 	if fullTableName == "" {
@@ -176,7 +176,7 @@ func (cc *ColumnController) Rename(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	authUser, _ := pkg.NewAuth(c).User()
+	authUser, _ := auth.NewAuth(c).User()
 
 	fullTableName, columnName, err := cc.parseRequest(c)
 	if err != nil {
@@ -219,7 +219,7 @@ func (cc *ColumnController) Delete(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	authUser, _ := pkg.NewAuth(c).User()
+	authUser, _ := auth.NewAuth(c).User()
 
 	fullTableName, columnName, err := cc.parseRequest(c)
 	if err != nil {

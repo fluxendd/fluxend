@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"fluxton/pkg"
+	"fluxton/pkg/auth"
 	"fluxton/requests"
 	"fluxton/requests/container_requests"
 	"fluxton/resources"
@@ -50,7 +50,7 @@ func (bc *ContainerController) List(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	authUser, _ := pkg.NewAuth(c).User()
+	authUser, _ := auth.NewAuth(c).User()
 
 	paginationParams := request.ExtractPaginationParams(c)
 	container, err := bc.containerService.List(paginationParams, request.ProjectUUID, authUser)
@@ -85,7 +85,7 @@ func (bc *ContainerController) List(c echo.Context) error {
 func (bc *ContainerController) Show(c echo.Context) error {
 	var request requests.DefaultRequestWithProjectHeader
 
-	authUser, _ := pkg.NewAuth(c).User()
+	authUser, _ := auth.NewAuth(c).User()
 
 	containerUUID, err := request.GetUUIDPathParam(c, "containerUUID", true)
 	if err != nil {
@@ -126,7 +126,7 @@ func (bc *ContainerController) Store(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	authUser, _ := pkg.NewAuth(c).User()
+	authUser, _ := auth.NewAuth(c).User()
 
 	container, err := bc.containerService.Create(&request, authUser)
 	if err != nil {
@@ -164,7 +164,7 @@ func (bc *ContainerController) Update(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	authUser, _ := pkg.NewAuth(c).User()
+	authUser, _ := auth.NewAuth(c).User()
 
 	containerUUID, err := request.GetUUIDPathParam(c, "containerUUID", true)
 	if err != nil {
@@ -205,7 +205,7 @@ func (bc *ContainerController) Delete(c echo.Context) error {
 		return responses.UnprocessableResponse(c, err)
 	}
 
-	authUser, _ := pkg.NewAuth(c).User()
+	authUser, _ := auth.NewAuth(c).User()
 
 	containerUUID, err := request.GetUUIDPathParam(c, "containerUUID", true)
 	if err != nil {
