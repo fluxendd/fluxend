@@ -1,13 +1,13 @@
 package services
 
 import (
+	"fluxton/internal/adapters/storage"
 	"fluxton/internal/api/dto"
 	"fluxton/models"
 	"fluxton/pkg/errors"
 	"fluxton/policies"
 	"fluxton/repositories"
 	"fluxton/requests/container_requests"
-	"fluxton/services/storage"
 	"github.com/google/uuid"
 	"github.com/samber/do"
 	"strings"

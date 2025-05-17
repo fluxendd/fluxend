@@ -2,10 +2,10 @@ package services
 
 import (
 	"fluxton/constants"
+	storage2 "fluxton/internal/adapters/storage"
 	"fluxton/models"
 	"fluxton/pkg"
 	"fluxton/repositories"
-	"fluxton/services/storage"
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
@@ -100,7 +100,7 @@ func (s *BackupWorkflowServiceImpl) Create(ctx echo.Context, databaseName string
 func (s *BackupWorkflowServiceImpl) Delete(ctx echo.Context, databaseName string, backupUUID uuid.UUID) {
 	filePath := fmt.Sprintf("%s/%s.sql", databaseName, backupUUID)
 
-	storageService, err := storage.GetProvider(s.settingService.GetStorageDriver(ctx))
+	storageService, err := storage2.GetProvider(s.settingService.GetStorageDriver(ctx))
 	if err != nil {
 		log.Error().
 			Str("action", constants.ActionBackup).
@@ -113,7 +113,7 @@ func (s *BackupWorkflowServiceImpl) Delete(ctx echo.Context, databaseName string
 		return
 	}
 
-	err = storageService.DeleteFile(storage.FileInput{
+	err = storageService.DeleteFile(storage2.FileInput{
 		ContainerName: constants.BackupContainerName,
 		FileName:      filePath,
 	})
@@ -179,7 +179,7 @@ func (s *BackupWorkflowServiceImpl) copyBackupToAppContainer(backupFilePath stri
 }
 
 func (s *BackupWorkflowServiceImpl) ensureBackupContainerExists(ctx echo.Context) error {
-	storageService, err := storage.GetProvider(s.settingService.GetStorageDriver(ctx))
+	storageService, err := storage2.GetProvider(s.settingService.GetStorageDriver(ctx))
 	if err != nil {
 		log.Error().
 			Str("action", constants.ActionBackup).
@@ -224,7 +224,7 @@ func (s *BackupWorkflowServiceImpl) readBackupFile(backupUUID uuid.UUID) ([]byte
 func (s *BackupWorkflowServiceImpl) uploadBackup(ctx echo.Context, databaseName string, backupUUID uuid.UUID, fileBytes []byte) error {
 	filePath := fmt.Sprintf("%s/%s.sql", databaseName, backupUUID)
 
-	storageService, err := storage.GetProvider(s.settingService.GetStorageDriver(ctx))
+	storageService, err := storage2.GetProvider(s.settingService.GetStorageDriver(ctx))
 	if err != nil {
 		log.Error().
 			Str("action", constants.ActionBackup).
@@ -236,7 +236,7 @@ func (s *BackupWorkflowServiceImpl) uploadBackup(ctx echo.Context, databaseName 
 		return err
 	}
 
-	err = storageService.UploadFile(storage.UploadFileInput{
+	err = storageService.UploadFile(storage2.UploadFileInput{
 		ContainerName: constants.BackupContainerName,
 		FileName:      filePath,
 		FileBytes:     fileBytes,

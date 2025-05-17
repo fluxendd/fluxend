@@ -1,6 +1,7 @@
 package services
 
 import (
+	storage2 "fluxton/internal/adapters/storage"
 	"fluxton/internal/api/dto"
 	"fluxton/models"
 	"fluxton/pkg"
@@ -8,7 +9,6 @@ import (
 	"fluxton/policies"
 	"fluxton/repositories"
 	"fluxton/requests/container_requests"
-	"fluxton/services/storage"
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/samber/do"
@@ -129,12 +129,12 @@ func (s *FileServiceImpl) Create(containerUUID uuid.UUID, request *container_req
 		return models.File{}, err
 	}
 
-	storageService, err := storage.GetProvider(s.settingService.GetStorageDriver(request.Context))
+	storageService, err := storage2.GetProvider(s.settingService.GetStorageDriver(request.Context))
 	if err != nil {
 		return models.File{}, err
 	}
 
-	err = storageService.UploadFile(storage.UploadFileInput{
+	err = storageService.UploadFile(storage2.UploadFileInput{
 		ContainerName: container.NameKey,
 		FileName:      request.FullFileName,
 		FileBytes:     fileBytes,
@@ -181,12 +181,12 @@ func (s *FileServiceImpl) Rename(fileUUID, containerUUID uuid.UUID, authUser mod
 		return &models.File{}, err
 	}
 
-	storageService, err := storage.GetProvider(s.settingService.GetStorageDriver(request.Context))
+	storageService, err := storage2.GetProvider(s.settingService.GetStorageDriver(request.Context))
 	if err != nil {
 		return &models.File{}, err
 	}
 
-	err = storageService.RenameFile(storage.RenameFileInput{
+	err = storageService.RenameFile(storage2.RenameFileInput{
 		ContainerName: container.NameKey,
 		FileName:      file.FullFileName,
 		NewFileName:   request.FullFileName,
@@ -222,12 +222,12 @@ func (s *FileServiceImpl) Delete(fileUUID, containerUUID uuid.UUID, authUser mod
 		return false, err
 	}
 
-	storageService, err := storage.GetProvider(s.settingService.GetStorageDriver(request.Context))
+	storageService, err := storage2.GetProvider(s.settingService.GetStorageDriver(request.Context))
 	if err != nil {
 		return false, err
 	}
 
-	err = storageService.DeleteFile(storage.FileInput{
+	err = storageService.DeleteFile(storage2.FileInput{
 		ContainerName: container.NameKey,
 		FileName:      file.FullFileName,
 	})
