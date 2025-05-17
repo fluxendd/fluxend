@@ -49,7 +49,7 @@ func (bc *BackupHandler) List(c echo.Context) error {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.SuccessResponse(c, backup.BackupResourceCollection(backups))
+	return response.SuccessResponse(c, backup.ToResourceCollection(backups))
 }
 
 // Show retrieves details of a specific backup
