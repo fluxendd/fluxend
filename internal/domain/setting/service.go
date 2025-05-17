@@ -18,13 +18,13 @@ type SettingService interface {
 	Get(ctx echo.Context, name string) Setting
 	GetValue(ctx echo.Context, name string) string
 	GetBool(ctx echo.Context, name string) bool
-	Update(ctx echo.Context, authUser auth.AuthUser, request *setting.UpdateRequest) ([]Setting, error)
-	Reset(ctx echo.Context, authUser auth.AuthUser) ([]Setting, error)
+	Update(ctx echo.Context, authUser auth.User, request *setting.UpdateRequest) ([]Setting, error)
+	Reset(ctx echo.Context, authUser auth.User) ([]Setting, error)
 	GetStorageDriver(ctx echo.Context) string
 }
 
 type SettingServiceImpl struct {
-	adminPolicy *admin.AdminPolicy
+	adminPolicy *admin.Policy
 	settingRepo *Repository
 }
 
@@ -88,7 +88,7 @@ func (s *SettingServiceImpl) GetBool(ctx echo.Context, name string) bool {
 	return currentSetting.Value == "yes"
 }
 
-func (s *SettingServiceImpl) Update(ctx echo.Context, authUser auth.AuthUser, request *setting.UpdateRequest) ([]Setting, error) {
+func (s *SettingServiceImpl) Update(ctx echo.Context, authUser auth.User, request *setting.UpdateRequest) ([]Setting, error) {
 	// Authorization check
 	if !s.adminPolicy.CanUpdate(authUser) {
 		return nil, errors.NewForbiddenError("setting.error.updateForbidden")
@@ -119,7 +119,7 @@ func (s *SettingServiceImpl) Update(ctx echo.Context, authUser auth.AuthUser, re
 	return s.List(ctx, true)
 }
 
-func (s *SettingServiceImpl) Reset(ctx echo.Context, authUser auth.AuthUser) ([]Setting, error) {
+func (s *SettingServiceImpl) Reset(ctx echo.Context, authUser auth.User) ([]Setting, error) {
 	if !s.adminPolicy.CanUpdate(authUser) {
 		return []Setting{}, errors.NewForbiddenError("setting.error.resetForbidden")
 	}

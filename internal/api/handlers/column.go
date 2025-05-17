@@ -2,9 +2,9 @@ package handlers
 
 import (
 	"fluxton/internal/api/dto"
-	"fluxton/internal/api/dto/database/column"
+	columnDto "fluxton/internal/api/dto/database/column"
 	"fluxton/internal/api/response"
-	column2 "fluxton/internal/domain/database/column"
+	columnDomain "fluxton/internal/domain/database/column"
 	"fluxton/pkg/auth"
 	"fluxton/pkg/errors"
 	"github.com/labstack/echo/v4"
@@ -12,7 +12,7 @@ import (
 )
 
 type ColumnHandler struct {
-	columnService column2.ColumnService
+	columnService columnDomain.Service
 }
 
 func NewColumnHandler(injector *do.Injector) (*ColumnHandler, error) {

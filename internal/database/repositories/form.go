@@ -3,10 +3,10 @@ package repositories
 import (
 	"database/sql"
 	"errors"
-	"fluxton/errs"
+	"fluxton/internal/api/dto"
 	"fluxton/internal/domain/form"
-	"fluxton/requests"
-	"fluxton/utils"
+	"fluxton/pkg"
+	flxErrs "fluxton/pkg/errors"
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
@@ -17,13 +17,13 @@ type FormRepository struct {
 	db *sqlx.DB
 }
 
-func NewFormRepository(injector *do.Injector) (*FormRepository, error) {
+func NewFormRepository(injector *do.Injector) (form.Repository, error) {
 	db := do.MustInvoke[*sqlx.DB](injector)
 
 	return &FormRepository{db: db}, nil
 }
 
-func (r *FormRepository) ListForProject(paginationParams requests.PaginationParams, projectUUID uuid.UUID) ([]form.Form, error) {
+func (r *FormRepository) ListForProject(paginationParams dto.PaginationParams, projectUUID uuid.UUID) ([]form.Form, error) {
 	offset := (paginationParams.Page - 1) * paginationParams.Limit
 	query := `
 		SELECT 
@@ -39,7 +39,7 @@ func (r *FormRepository) ListForProject(paginationParams requests.PaginationPara
 
 	`
 
-	query = fmt.Sprintf(query, utils.GetColumns[form.Form]())
+	query = fmt.Sprintf(query, pkg.GetColumns[form.Form]())
 
 	params := map[string]interface{}{
 		"project_uuid": projectUUID,
@@ -50,21 +50,21 @@ func (r *FormRepository) ListForProject(paginationParams requests.PaginationPara
 
 	rows, err := r.db.NamedQuery(query, params)
 	if err != nil {
-		return nil, utils.FormatError(err, "select", utils.GetMethodName())
+		return nil, pkg.FormatError(err, "select", pkg.GetMethodName())
 	}
 	defer rows.Close()
 
 	var forms []form.Form
 	for rows.Next() {
-		var form form.Form
-		if err := rows.StructScan(&form); err != nil {
-			return nil, utils.FormatError(err, "scan", utils.GetMethodName())
+		var currentForm form.Form
+		if err := rows.StructScan(&currentForm); err != nil {
+			return nil, pkg.FormatError(err, "scan", pkg.GetMethodName())
 		}
-		forms = append(forms, form)
+		forms = append(forms, currentForm)
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, utils.FormatError(err, "iterate", utils.GetMethodName())
+		return nil, pkg.FormatError(err, "iterate", pkg.GetMethodName())
 	}
 
 	return forms, nil
@@ -77,10 +77,10 @@ func (r *FormRepository) GetProjectUUIDByFormUUID(formUUID uuid.UUID) (uuid.UUID
 	err := r.db.Get(&projectUUID, query, formUUID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return uuid.UUID{}, errs.NewNotFoundError("form.error.notFound")
+			return uuid.UUID{}, flxErrs.NewNotFoundError("form.error.notFound")
 		}
 
-		return uuid.UUID{}, utils.FormatError(err, "fetch", utils.GetMethodName())
+		return uuid.UUID{}, pkg.FormatError(err, "fetch", pkg.GetMethodName())
 	}
 
 	return projectUUID, nil
@@ -88,19 +88,19 @@ func (r *FormRepository) GetProjectUUIDByFormUUID(formUUID uuid.UUID) (uuid.UUID
 
 func (r *FormRepository) GetByUUID(formUUID uuid.UUID) (form.Form, error) {
 	query := "SELECT %s FROM fluxton.forms WHERE uuid = $1"
-	query = fmt.Sprintf(query, utils.GetColumns[form.Form]())
+	query = fmt.Sprintf(query, pkg.GetColumns[form.Form]())
 
-	var form form.Form
-	err := r.db.Get(&form, query, formUUID)
+	var fetchedForm form.Form
+	err := r.db.Get(&fetchedForm, query, formUUID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return form.Form{}, errs.NewNotFoundError("form.error.notFound")
+			return form.Form{}, flxErrs.NewNotFoundError("form.error.notFound")
 		}
 
-		return form.Form{}, utils.FormatError(err, "fetch", utils.GetMethodName())
+		return form.Form{}, pkg.FormatError(err, "fetch", pkg.GetMethodName())
 	}
 
-	return form, nil
+	return fetchedForm, nil
 }
 
 func (r *FormRepository) ExistsByUUID(formUUID uuid.UUID) (bool, error) {
@@ -109,7 +109,7 @@ func (r *FormRepository) ExistsByUUID(formUUID uuid.UUID) (bool, error) {
 	var exists bool
 	err := r.db.Get(&exists, query, formUUID)
 	if err != nil {
-		return false, utils.FormatError(err, "fetch", utils.GetMethodName())
+		return false, pkg.FormatError(err, "fetch", pkg.GetMethodName())
 	}
 
 	return exists, nil
@@ -121,7 +121,7 @@ func (r *FormRepository) ExistsByNameForProject(name string, projectUUID uuid.UU
 	var exists bool
 	err := r.db.Get(&exists, query, name, projectUUID)
 	if err != nil {
-		return false, utils.FormatError(err, "fetch", utils.GetMethodName())
+		return false, pkg.FormatError(err, "fetch", pkg.GetMethodName())
 	}
 
 	return exists, nil
@@ -130,7 +130,7 @@ func (r *FormRepository) ExistsByNameForProject(name string, projectUUID uuid.UU
 func (r *FormRepository) Create(form *form.Form) (*form.Form, error) {
 	tx, err := r.db.Beginx()
 	if err != nil {
-		return nil, utils.FormatError(err, "transactionBegin", utils.GetMethodName())
+		return nil, pkg.FormatError(err, "transactionBegin", pkg.GetMethodName())
 	}
 
 	query := `
@@ -151,46 +151,46 @@ func (r *FormRepository) Create(form *form.Form) (*form.Form, error) {
 		if err := tx.Rollback(); err != nil {
 			return nil, err
 		}
-		return nil, utils.FormatError(queryErr, "insert", utils.GetMethodName())
+		return nil, pkg.FormatError(queryErr, "insert", pkg.GetMethodName())
 	}
 
 	// Commit transaction
 	if err = tx.Commit(); err != nil {
-		return nil, utils.FormatError(err, "transactionCommit", utils.GetMethodName())
+		return nil, pkg.FormatError(err, "transactionCommit", pkg.GetMethodName())
 	}
 
 	return form, nil
 }
 
-func (r *FormRepository) Update(form *form.Form) (*form.Form, error) {
+func (r *FormRepository) Update(formInput *form.Form) (*form.Form, error) {
 	query := `
 		UPDATE fluxton.forms 
 		SET name = :name, description = :description, updated_at = :updated_at, updated_by = :updated_by
 		WHERE uuid = :uuid`
 
-	res, err := r.db.NamedExec(query, form)
+	res, err := r.db.NamedExec(query, formInput)
 	if err != nil {
-		return &form.Form{}, utils.FormatError(err, "update", utils.GetMethodName())
+		return &form.Form{}, pkg.FormatError(err, "update", pkg.GetMethodName())
 	}
 
 	_, err = res.RowsAffected()
 	if err != nil {
-		return &form.Form{}, utils.FormatError(err, "affectedRows", utils.GetMethodName())
+		return &form.Form{}, pkg.FormatError(err, "affectedRows", pkg.GetMethodName())
 	}
 
-	return form, nil
+	return formInput, nil
 }
 
 func (r *FormRepository) Delete(projectUUID uuid.UUID) (bool, error) {
 	query := "DELETE FROM fluxton.forms WHERE uuid = $1"
 	res, err := r.db.Exec(query, projectUUID)
 	if err != nil {
-		return false, utils.FormatError(err, "delete", utils.GetMethodName())
+		return false, pkg.FormatError(err, "delete", pkg.GetMethodName())
 	}
 
 	rowsAffected, err := res.RowsAffected()
 	if err != nil {
-		return false, utils.FormatError(err, "affectedRows", utils.GetMethodName())
+		return false, pkg.FormatError(err, "affectedRows", pkg.GetMethodName())
 	}
 
 	return rowsAffected == 1, nil

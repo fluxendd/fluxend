@@ -19,7 +19,7 @@ func NewProjectPolicy(injector *do.Injector) (*Policy, error) {
 	}, nil
 }
 
-func (s *Policy) CanCreate(organizationUUID uuid.UUID, authUser auth.AuthUser) bool {
+func (s *Policy) CanCreate(organizationUUID uuid.UUID, authUser auth.User) bool {
 	if !authUser.IsDeveloperOrMore() {
 		return false
 	}
@@ -32,7 +32,7 @@ func (s *Policy) CanCreate(organizationUUID uuid.UUID, authUser auth.AuthUser) b
 	return isOrganizationUser
 }
 
-func (s *Policy) CanAccess(organizationUUID uuid.UUID, authUser auth.AuthUser) bool {
+func (s *Policy) CanAccess(organizationUUID uuid.UUID, authUser auth.User) bool {
 	isOrganizationUser, err := s.organizationRepo.IsOrganizationMember(organizationUUID, authUser.Uuid)
 	if err != nil {
 		return false
@@ -41,7 +41,7 @@ func (s *Policy) CanAccess(organizationUUID uuid.UUID, authUser auth.AuthUser) b
 	return isOrganizationUser
 }
 
-func (s *Policy) CanUpdate(organizationUUID uuid.UUID, authUser auth.AuthUser) bool {
+func (s *Policy) CanUpdate(organizationUUID uuid.UUID, authUser auth.User) bool {
 	if !authUser.IsDeveloperOrMore() {
 		return false
 	}

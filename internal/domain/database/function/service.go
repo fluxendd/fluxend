@@ -2,10 +2,9 @@ package function
 
 import (
 	"fluxton/internal/adapters/client"
-	function2 "fluxton/internal/api/dto/database/function"
-	repositories2 "fluxton/internal/database/repositories"
+	"fluxton/internal/api/dto/database/function"
+	"fluxton/internal/domain/auth"
 	"fluxton/internal/domain/project"
-	"fluxton/models"
 	"fluxton/pkg/errors"
 	"fmt"
 	"github.com/google/uuid"
@@ -16,24 +15,24 @@ import (
 )
 
 type FunctionService interface {
-	List(schema string, projectUUID uuid.UUID, authUser models.AuthUser) ([]Function, error)
-	GetByName(name, schema string, projectUUID uuid.UUID, authUser models.AuthUser) (Function, error)
-	Create(schema string, request *function2.CreateFunctionRequest, authUser models.AuthUser) (Function, error)
-	Delete(name, schema string, projectUUID uuid.UUID, authUser models.AuthUser) (bool, error)
+	List(schema string, projectUUID uuid.UUID, authUser auth.User) ([]Function, error)
+	GetByName(name, schema string, projectUUID uuid.UUID, authUser auth.User) (Function, error)
+	Create(schema string, request *function.CreateFunctionRequest, authUser auth.User) (Function, error)
+	Delete(name, schema string, projectUUID uuid.UUID, authUser auth.User) (bool, error)
 }
 
 type FunctionServiceImpl struct {
 	connectService client.Service
 	projectPolicy  *project.Policy
 	databaseRepo   *client.Repository
-	projectRepo    *repositories2.ProjectRepository
+	projectRepo    *project.Repository
 }
 
 func NewFunctionService(injector *do.Injector) (FunctionService, error) {
 	connectionService := do.MustInvoke[client.Service](injector)
 	policy := do.MustInvoke[*project.Policy](injector)
 	databaseRepo := do.MustInvoke[*client.Repository](injector)
-	projectRepo := do.MustInvoke[*repositories2.ProjectRepository](injector)
+	projectRepo := do.MustInvoke[*project.Repository](injector)
 
 	return &FunctionServiceImpl{
 		connectService: connectionService,
@@ -43,7 +42,7 @@ func NewFunctionService(injector *do.Injector) (FunctionService, error) {
 	}, nil
 }
 
-func (s *FunctionServiceImpl) List(schema string, projectUUID uuid.UUID, authUser models.AuthUser) ([]Function, error) {
+func (s *FunctionServiceImpl) List(schema string, projectUUID uuid.UUID, authUser auth.User) ([]Function, error) {
 	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(projectUUID)
 	if err != nil {
 		return []Function{}, err
@@ -62,7 +61,7 @@ func (s *FunctionServiceImpl) List(schema string, projectUUID uuid.UUID, authUse
 	return clientFunctionRepo.List(schema)
 }
 
-func (s *FunctionServiceImpl) GetByName(name, schema string, projectUUID uuid.UUID, authUser models.AuthUser) (Function, error) {
+func (s *FunctionServiceImpl) GetByName(name, schema string, projectUUID uuid.UUID, authUser auth.User) (Function, error) {
 	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(projectUUID)
 	if err != nil {
 		return Function{}, err
@@ -81,7 +80,7 @@ func (s *FunctionServiceImpl) GetByName(name, schema string, projectUUID uuid.UU
 	return clientFunctionRepo.GetByName(schema, name)
 }
 
-func (s *FunctionServiceImpl) Create(schema string, request *function2.CreateFunctionRequest, authUser models.AuthUser) (Function, error) {
+func (s *FunctionServiceImpl) Create(schema string, request *function.CreateFunctionRequest, authUser auth.User) (Function, error) {
 	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(request.ProjectUUID)
 	if err != nil {
 		return Function{}, err
@@ -110,7 +109,7 @@ func (s *FunctionServiceImpl) Create(schema string, request *function2.CreateFun
 	return clientFunctionRepo.GetByName(schema, request.Name)
 }
 
-func (s *FunctionServiceImpl) Delete(schema, name string, projectUUID uuid.UUID, authUser models.AuthUser) (bool, error) {
+func (s *FunctionServiceImpl) Delete(schema, name string, projectUUID uuid.UUID, authUser auth.User) (bool, error) {
 	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(projectUUID)
 	if err != nil {
 		return false, err
@@ -134,7 +133,7 @@ func (s *FunctionServiceImpl) Delete(schema, name string, projectUUID uuid.UUID,
 	return true, nil
 }
 
-func (s *FunctionServiceImpl) buildDefinition(schema string, request *function2.CreateFunctionRequest) (string, error) {
+func (s *FunctionServiceImpl) buildDefinition(schema string, request *function.CreateFunctionRequest) (string, error) {
 	var params []string
 	for _, param := range request.Parameters {
 		params = append(params, fmt.Sprintf("%s %s", pq.QuoteIdentifier(param.Name), pq.QuoteIdentifier(param.Type)))

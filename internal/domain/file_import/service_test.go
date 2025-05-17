@@ -1,4 +1,4 @@
-package _import
+package file_import
 
 import (
 	"bytes"

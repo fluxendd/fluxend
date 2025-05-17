@@ -11,11 +11,11 @@ import (
 )
 
 type TableHandler struct {
-	tableService table2.TableService
+	tableService table2.Service
 }
 
 func NewTableHandler(injector *do.Injector) (*TableHandler, error) {
-	tableService := do.MustInvoke[table2.TableService](injector)
+	tableService := do.MustInvoke[table2.Service](injector)
 
 	return &TableHandler{tableService: tableService}, nil
 }

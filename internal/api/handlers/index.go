@@ -11,11 +11,11 @@ import (
 )
 
 type IndexHandler struct {
-	indexService index2.IndexService
+	indexService index2.Service
 }
 
 func NewIndexHandler(injector *do.Injector) (*IndexHandler, error) {
-	indexService := do.MustInvoke[index2.IndexService](injector)
+	indexService := do.MustInvoke[index2.Service](injector)
 
 	return &IndexHandler{indexService: indexService}, nil
 }

@@ -14,7 +14,7 @@ type FormResponseRepository struct {
 	db *sqlx.DB
 }
 
-func NewFormResponseRepository(injector *do.Injector) (*FormResponseRepository, error) {
+func NewFormResponseRepository(injector *do.Injector) (form.FieldResponseRepository, error) {
 	db := do.MustInvoke[*sqlx.DB](injector)
 
 	return &FormResponseRepository{db: db}, nil
@@ -77,7 +77,7 @@ func (r *FormResponseRepository) ListForForm(formUUID uuid.UUID) ([]form.FormRes
 		}
 
 		if row.FormFieldResponseUUID != nil {
-			formResponse.Responses = append(formResponse.Responses, form.FormFieldResponse{
+			formResponse.Responses = append(formResponse.Responses, form.FieldResponse{
 				Uuid:             *row.FormFieldResponseUUID,
 				FormResponseUuid: row.FormResponseUUID,
 				FormFieldUuid:    *row.FormFieldUUID,
@@ -155,7 +155,7 @@ func (r *FormResponseRepository) GetByUUID(formResponseUUID uuid.UUID) (*form.Fo
 		}
 
 		if row.FormFieldResponseUUID != nil {
-			formResponse.Responses = append(formResponse.Responses, form.FormFieldResponse{
+			formResponse.Responses = append(formResponse.Responses, form.FieldResponse{
 				Uuid:             *row.FormFieldResponseUUID,
 				FormResponseUuid: row.FormResponseUUID,
 				FormFieldUuid:    *row.FormFieldUUID,
@@ -179,7 +179,7 @@ func (r *FormResponseRepository) GetByUUID(formResponseUUID uuid.UUID) (*form.Fo
 
 func (r *FormResponseRepository) Create(
 	formResponse *form.FormResponse,
-	formFieldResponse *[]form.FormFieldResponse,
+	formFieldResponse *[]form.FieldResponse,
 ) (*form.FormResponse, error) {
 	tx, err := r.db.Beginx()
 	if err != nil {

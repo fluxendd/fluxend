@@ -15,17 +15,17 @@ import (
 	"time"
 )
 
-type BackupWorkflowService interface {
+type WorkflowService interface {
 	Create(ctx echo.Context, databaseName string, backupUUID uuid.UUID)
 	Delete(ctx echo.Context, databaseName string, backupUUID uuid.UUID)
 }
 
-type BackupWorkflowServiceImpl struct {
+type WorkflowServiceImpl struct {
 	settingService setting.SettingService
 	backupRepo     *repositories.BackupRepository
 }
 
-func NewBackupWorkflowService(injector *do.Injector) (BackupWorkflowService, error) {
+func NewBackupWorkflowService(injector *do.Injector) (WorkflowService, error) {
 	settingService, err := setting.NewSettingService(injector)
 	if err != nil {
 		return nil, err
@@ -33,14 +33,14 @@ func NewBackupWorkflowService(injector *do.Injector) (BackupWorkflowService, err
 
 	backupRepo := do.MustInvoke[*repositories.BackupRepository](injector)
 
-	return &BackupWorkflowServiceImpl{
+	return &WorkflowServiceImpl{
 		settingService: settingService,
 		backupRepo:     backupRepo,
 	}, nil
 }
 
 // Create pg_dump, copy file, ensure container exists, and upload to S3
-func (s *BackupWorkflowServiceImpl) Create(ctx echo.Context, databaseName string, backupUUID uuid.UUID) {
+func (s *WorkflowServiceImpl) Create(ctx echo.Context, databaseName string, backupUUID uuid.UUID) {
 	backupFilePath := fmt.Sprintf("/tmp/%s.sql", backupUUID)
 
 	// 1. Execute pg_dump
@@ -97,7 +97,7 @@ func (s *BackupWorkflowServiceImpl) Create(ctx echo.Context, databaseName string
 	}
 }
 
-func (s *BackupWorkflowServiceImpl) Delete(ctx echo.Context, databaseName string, backupUUID uuid.UUID) {
+func (s *WorkflowServiceImpl) Delete(ctx echo.Context, databaseName string, backupUUID uuid.UUID) {
 	filePath := fmt.Sprintf("%s/%s.sql", databaseName, backupUUID)
 
 	storageService, err := storage2.GetProvider(s.settingService.GetStorageDriver(ctx))
@@ -132,7 +132,7 @@ func (s *BackupWorkflowServiceImpl) Delete(ctx echo.Context, databaseName string
 	}
 }
 
-func (s *BackupWorkflowServiceImpl) executePgDump(databaseName, backupFilePath string) error {
+func (s *WorkflowServiceImpl) executePgDump(databaseName, backupFilePath string) error {
 	command := []string{
 		"docker",
 		"exec",
@@ -159,7 +159,7 @@ func (s *BackupWorkflowServiceImpl) executePgDump(databaseName, backupFilePath s
 	return err
 }
 
-func (s *BackupWorkflowServiceImpl) copyBackupToAppContainer(backupFilePath string, backupUUID uuid.UUID) error {
+func (s *WorkflowServiceImpl) copyBackupToAppContainer(backupFilePath string, backupUUID uuid.UUID) error {
 	dockerCpCommand := []string{
 		"docker",
 		"cp",
@@ -178,7 +178,7 @@ func (s *BackupWorkflowServiceImpl) copyBackupToAppContainer(backupFilePath stri
 	return err
 }
 
-func (s *BackupWorkflowServiceImpl) ensureBackupContainerExists(ctx echo.Context) error {
+func (s *WorkflowServiceImpl) ensureBackupContainerExists(ctx echo.Context) error {
 	storageService, err := storage2.GetProvider(s.settingService.GetStorageDriver(ctx))
 	if err != nil {
 		log.Error().
@@ -206,7 +206,7 @@ func (s *BackupWorkflowServiceImpl) ensureBackupContainerExists(ctx echo.Context
 	return nil
 }
 
-func (s *BackupWorkflowServiceImpl) readBackupFile(backupUUID uuid.UUID) ([]byte, error) {
+func (s *WorkflowServiceImpl) readBackupFile(backupUUID uuid.UUID) ([]byte, error) {
 	fileBytes, err := os.ReadFile(fmt.Sprintf("/tmp/%s.sql", backupUUID))
 	if err != nil {
 		log.Error().
@@ -221,7 +221,7 @@ func (s *BackupWorkflowServiceImpl) readBackupFile(backupUUID uuid.UUID) ([]byte
 	return fileBytes, err
 }
 
-func (s *BackupWorkflowServiceImpl) uploadBackup(ctx echo.Context, databaseName string, backupUUID uuid.UUID, fileBytes []byte) error {
+func (s *WorkflowServiceImpl) uploadBackup(ctx echo.Context, databaseName string, backupUUID uuid.UUID, fileBytes []byte) error {
 	filePath := fmt.Sprintf("%s/%s.sql", databaseName, backupUUID)
 
 	storageService, err := storage2.GetProvider(s.settingService.GetStorageDriver(ctx))
@@ -256,7 +256,7 @@ func (s *BackupWorkflowServiceImpl) uploadBackup(ctx echo.Context, databaseName 
 }
 
 // handleBackupFailure updates the backup status to appropriate state and logs the error
-func (s *BackupWorkflowServiceImpl) handleBackupFailure(backupUUID uuid.UUID, status, errorMessage string) {
+func (s *WorkflowServiceImpl) handleBackupFailure(backupUUID uuid.UUID, status, errorMessage string) {
 	err := s.backupRepo.UpdateStatus(backupUUID, status, errorMessage, time.Now())
 	if err != nil {
 		log.Error().

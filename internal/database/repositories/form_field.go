@@ -17,13 +17,13 @@ type FormFieldRepository struct {
 	db *sqlx.DB
 }
 
-func NewFormFieldRepository(injector *do.Injector) (*FormFieldRepository, error) {
+func NewFormFieldRepository(injector *do.Injector) (form.FieldRepository, error) {
 	db := do.MustInvoke[*sqlx.DB](injector)
 
 	return &FormFieldRepository{db: db}, nil
 }
 
-func (r *FormFieldRepository) ListForForm(formUUID uuid.UUID) ([]form.FormField, error) {
+func (r *FormFieldRepository) ListForForm(formUUID uuid.UUID) ([]form.Field, error) {
 	query := "SELECT * FROM fluxton.form_fields WHERE form_uuid = $1;"
 
 	rows, err := r.db.Queryx(query, formUUID)
@@ -32,13 +32,13 @@ func (r *FormFieldRepository) ListForForm(formUUID uuid.UUID) ([]form.FormField,
 	}
 	defer rows.Close()
 
-	var forms []form.FormField
+	var forms []form.Field
 	for rows.Next() {
-		var form form.FormField
-		if err := rows.StructScan(&form); err != nil {
+		var fetchedField form.Field
+		if err := rows.StructScan(&fetchedField); err != nil {
 			return nil, pkg.FormatError(err, "scan", pkg.GetMethodName())
 		}
-		forms = append(forms, form)
+		forms = append(forms, fetchedField)
 	}
 
 	if err := rows.Err(); err != nil {
@@ -48,21 +48,21 @@ func (r *FormFieldRepository) ListForForm(formUUID uuid.UUID) ([]form.FormField,
 	return forms, nil
 }
 
-func (r *FormFieldRepository) GetByUUID(formUUID uuid.UUID) (form.FormField, error) {
+func (r *FormFieldRepository) GetByUUID(formUUID uuid.UUID) (form.Field, error) {
 	query := "SELECT %s FROM fluxton.form_fields WHERE uuid = $1"
-	query = fmt.Sprintf(query, pkg.GetColumns[form.FormField]())
+	query = fmt.Sprintf(query, pkg.GetColumns[form.Field]())
 
-	var form form.FormField
-	err := r.db.Get(&form, query, formUUID)
+	var fetchedField form.Field
+	err := r.db.Get(&fetchedField, query, formUUID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return form.FormField{}, flxErrs.NewNotFoundError("form.error.notFound")
+			return form.Field{}, flxErrs.NewNotFoundError("form.error.notFound")
 		}
 
-		return form.FormField{}, pkg.FormatError(err, "fetch", pkg.GetMethodName())
+		return form.Field{}, pkg.FormatError(err, "fetch", pkg.GetMethodName())
 	}
 
-	return form, nil
+	return fetchedField, nil
 }
 
 func (r *FormFieldRepository) ExistsByUUID(formFieldUUID uuid.UUID) (bool, error) {
@@ -101,7 +101,7 @@ func (r *FormFieldRepository) ExistsByLabelForForm(label string, formUUID uuid.U
 	return exists, nil
 }
 
-func (r *FormFieldRepository) Create(formField *form.FormField) (*form.FormField, error) {
+func (r *FormFieldRepository) Create(formField *form.Field) (*form.Field, error) {
 	tx, err := r.db.Beginx()
 	if err != nil {
 		return nil, pkg.FormatError(err, "transactionBegin", pkg.GetMethodName())
@@ -164,8 +164,8 @@ func (r *FormFieldRepository) Create(formField *form.FormField) (*form.FormField
 	return formField, nil
 }
 
-func (r *FormFieldRepository) CreateMany(formFields []form.FormField, formUUID uuid.UUID) ([]form.FormField, error) {
-	createdFields := make([]form.FormField, 0, len(formFields))
+func (r *FormFieldRepository) CreateMany(formFields []form.Field, formUUID uuid.UUID) ([]form.Field, error) {
+	createdFields := make([]form.Field, 0, len(formFields))
 	for i, formField := range formFields {
 		formField.FormUuid = formUUID
 
@@ -180,7 +180,7 @@ func (r *FormFieldRepository) CreateMany(formFields []form.FormField, formUUID u
 	return createdFields, nil
 }
 
-func (r *FormFieldRepository) Update(formField *form.FormField) (*form.FormField, error) {
+func (r *FormFieldRepository) Update(formField *form.Field) (*form.Field, error) {
 	query := `
 		UPDATE fluxton.form_fields 
 		SET 
@@ -194,12 +194,12 @@ func (r *FormFieldRepository) Update(formField *form.FormField) (*form.FormField
 
 	res, err := r.db.NamedExec(query, formField)
 	if err != nil {
-		return &form.FormField{}, pkg.FormatError(err, "update", pkg.GetMethodName())
+		return &form.Field{}, pkg.FormatError(err, "update", pkg.GetMethodName())
 	}
 
 	_, err = res.RowsAffected()
 	if err != nil {
-		return &form.FormField{}, pkg.FormatError(err, "affectedRows", pkg.GetMethodName())
+		return &form.Field{}, pkg.FormatError(err, "affectedRows", pkg.GetMethodName())
 	}
 
 	return formField, nil

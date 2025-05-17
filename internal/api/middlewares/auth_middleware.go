@@ -61,7 +61,7 @@ func AuthMiddleware(userRepo *user.Repository) echo.MiddlewareFunc {
 				return response.UnauthorizedResponse(c, "auth.error.tokenInvalid")
 			}
 
-			c.Set("user", auth.AuthUser{
+			c.Set("user", auth.User{
 				Uuid:   userUUID,
 				RoleID: int(claims["role_id"].(float64)),
 			})

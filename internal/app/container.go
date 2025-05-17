@@ -11,9 +11,9 @@ import (
 	"fluxton/internal/domain/database/function"
 	"fluxton/internal/domain/database/index"
 	"fluxton/internal/domain/database/table"
+	"fluxton/internal/domain/file_import"
 	"fluxton/internal/domain/form"
 	"fluxton/internal/domain/health"
-	"fluxton/internal/domain/import"
 	"fluxton/internal/domain/organization"
 	"fluxton/internal/domain/project"
 	"fluxton/internal/domain/setting"
@@ -65,13 +65,13 @@ func InitializeContainer() *do.Injector {
 	do.Provide(injector, project.NewProjectService)
 	do.Provide(injector, postgrest.NewPostgrestService)
 	do.Provide(injector, table.NewTableService)
-	do.Provide(injector, _import.NewFileImportService)
+	do.Provide(injector, file_import.NewFileImportService)
 	do.Provide(injector, column.NewColumnService)
 	do.Provide(injector, index.NewIndexService)
 	do.Provide(injector, function.NewFunctionService)
 	do.Provide(injector, form.NewFormService)
 	do.Provide(injector, form.NewFormFieldValidationService)
-	do.Provide(injector, form.NewFormFieldService)
+	do.Provide(injector, form.NewFieldService)
 	do.Provide(injector, form.NewFormResponseService)
 	do.Provide(injector, container.NewContainerService)
 	do.Provide(injector, file.NewFileService)

@@ -2,27 +2,27 @@ package health
 
 import (
 	"fluxton/internal/adapters/client"
-	repositories2 "fluxton/internal/database/repositories"
 	"fluxton/internal/domain/admin"
-	"fluxton/models"
+	"fluxton/internal/domain/auth"
+	"fluxton/internal/domain/setting"
 	"fluxton/pkg/errors"
 	"github.com/samber/do"
 )
 
 type HealthService interface {
-	Pulse(authUser models.AuthUser) (Health, error)
+	Pulse(authUser auth.User) (Health, error)
 }
 
 type HealthServiceImpl struct {
-	adminPolicy  *admin.AdminPolicy
+	adminPolicy  *admin.Policy
 	databaseRepo *client.Repository
-	settingRepo  *repositories2.SettingRepository
+	settingRepo  *setting.Repository
 }
 
 func NewHealthService(injector *do.Injector) (HealthService, error) {
 	policy := admin.NewAdminPolicy()
 	databaseRepo := do.MustInvoke[*client.Repository](injector)
-	settingRepo := do.MustInvoke[*repositories2.SettingRepository](injector)
+	settingRepo := do.MustInvoke[*setting.Repository](injector)
 
 	return &HealthServiceImpl{
 		adminPolicy:  policy,
@@ -31,7 +31,7 @@ func NewHealthService(injector *do.Injector) (HealthService, error) {
 	}, nil
 }
 
-func (s *HealthServiceImpl) Pulse(authUser models.AuthUser) (Health, error) {
+func (s *HealthServiceImpl) Pulse(authUser auth.User) (Health, error) {
 	if !s.adminPolicy.CanAccess(authUser) {
 		return Health{}, errors.NewForbiddenError("setting.error.listForbidden")
 	}

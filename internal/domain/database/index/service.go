@@ -3,51 +3,50 @@ package index
 import (
 	"fluxton/internal/adapters/client"
 	"fluxton/internal/api/dto/database/index"
-	"fluxton/internal/database/repositories"
+	"fluxton/internal/domain/auth"
 	"fluxton/internal/domain/project"
-	"fluxton/models"
 	"fluxton/pkg"
 	"fluxton/pkg/errors"
 	"github.com/google/uuid"
 	"github.com/samber/do"
 )
 
-type IndexService interface {
-	List(fullTableName string, projectUUID uuid.UUID, authUser models.AuthUser) ([]string, error)
-	GetByName(indexName, fullTableName string, projectUUID uuid.UUID, authUser models.AuthUser) (string, error)
-	Create(fullTableName string, request *index.IndexCreateRequest, authUser models.AuthUser) (string, error)
-	Delete(indexName, fullTableName string, projectUUID uuid.UUID, authUser models.AuthUser) (bool, error)
+type Service interface {
+	List(fullTableName string, projectUUID uuid.UUID, authUser auth.User) ([]string, error)
+	GetByName(indexName, fullTableName string, projectUUID uuid.UUID, authUser auth.User) (string, error)
+	Create(fullTableName string, request *index.IndexCreateRequest, authUser auth.User) (string, error)
+	Delete(indexName, fullTableName string, projectUUID uuid.UUID, authUser auth.User) (bool, error)
 }
 
-type IndexServiceImpl struct {
+type ServiceImpl struct {
 	connectionService client.Service
 	projectPolicy     *project.Policy
-	projectRepo       *repositories.ProjectRepository
+	projectRepo       *project.Repository
 }
 
-func NewIndexService(injector *do.Injector) (IndexService, error) {
+func NewIndexService(injector *do.Injector) (Service, error) {
 	connectionService := do.MustInvoke[client.Service](injector)
 	policy := do.MustInvoke[*project.Policy](injector)
-	projectRepo := do.MustInvoke[*repositories.ProjectRepository](injector)
+	projectRepo := do.MustInvoke[*project.Repository](injector)
 
-	return &IndexServiceImpl{
+	return &ServiceImpl{
 		projectPolicy:     policy,
 		connectionService: connectionService,
 		projectRepo:       projectRepo,
 	}, nil
 }
 
-func (s *IndexServiceImpl) List(fullTableName string, projectUUID uuid.UUID, authUser models.AuthUser) ([]string, error) {
-	project, err := s.projectRepo.GetByUUID(projectUUID)
+func (s *ServiceImpl) List(fullTableName string, projectUUID uuid.UUID, authUser auth.User) ([]string, error) {
+	fetchedProject, err := s.projectRepo.GetByUUID(projectUUID)
 	if err != nil {
 		return nil, err
 	}
 
-	if !s.projectPolicy.CanAccess(project.OrganizationUuid, authUser) {
+	if !s.projectPolicy.CanAccess(fetchedProject.OrganizationUuid, authUser) {
 		return nil, errors.NewForbiddenError("project.error.viewForbidden")
 	}
 
-	clientIndexRepo, connection, err := s.connectionService.GetIndexRepo(project.DBName, nil)
+	clientIndexRepo, connection, err := s.connectionService.GetIndexRepo(fetchedProject.DBName, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -57,17 +56,17 @@ func (s *IndexServiceImpl) List(fullTableName string, projectUUID uuid.UUID, aut
 	return clientIndexRepo.List(tableName)
 }
 
-func (s *IndexServiceImpl) GetByName(indexName, fullTableName string, projectUUID uuid.UUID, authUser models.AuthUser) (string, error) {
-	project, err := s.projectRepo.GetByUUID(projectUUID)
+func (s *ServiceImpl) GetByName(indexName, fullTableName string, projectUUID uuid.UUID, authUser auth.User) (string, error) {
+	fetchedProject, err := s.projectRepo.GetByUUID(projectUUID)
 	if err != nil {
 		return "", err
 	}
 
-	if !s.projectPolicy.CanAccess(project.OrganizationUuid, authUser) {
+	if !s.projectPolicy.CanAccess(fetchedProject.OrganizationUuid, authUser) {
 		return "", errors.NewForbiddenError("project.error.viewForbidden")
 	}
 
-	clientIndexRepo, connection, err := s.connectionService.GetIndexRepo(project.DBName, nil)
+	clientIndexRepo, connection, err := s.connectionService.GetIndexRepo(fetchedProject.DBName, nil)
 	if err != nil {
 		return "", err
 	}
@@ -77,17 +76,17 @@ func (s *IndexServiceImpl) GetByName(indexName, fullTableName string, projectUUI
 	return clientIndexRepo.GetByName(tableName, indexName)
 }
 
-func (s *IndexServiceImpl) Create(fullTableName string, request *index.IndexCreateRequest, authUser models.AuthUser) (string, error) {
-	project, err := s.projectRepo.GetByUUID(request.ProjectUUID)
+func (s *ServiceImpl) Create(fullTableName string, request *index.IndexCreateRequest, authUser auth.User) (string, error) {
+	fetchedProject, err := s.projectRepo.GetByUUID(request.ProjectUUID)
 	if err != nil {
 		return "", err
 	}
 
-	if !s.projectPolicy.CanCreate(project.OrganizationUuid, authUser) {
+	if !s.projectPolicy.CanCreate(fetchedProject.OrganizationUuid, authUser) {
 		return "", errors.NewForbiddenError("table.error.createForbidden")
 	}
 
-	clientIndexRepo, connection, err := s.connectionService.GetIndexRepo(project.DBName, nil)
+	clientIndexRepo, connection, err := s.connectionService.GetIndexRepo(fetchedProject.DBName, nil)
 	if err != nil {
 		return "", err
 	}
@@ -112,17 +111,17 @@ func (s *IndexServiceImpl) Create(fullTableName string, request *index.IndexCrea
 	return clientIndexRepo.GetByName(tableName, request.Name)
 }
 
-func (s *IndexServiceImpl) Delete(indexName, fullTableName string, projectUUID uuid.UUID, authUser models.AuthUser) (bool, error) {
-	project, err := s.projectRepo.GetByUUID(projectUUID)
+func (s *ServiceImpl) Delete(indexName, fullTableName string, projectUUID uuid.UUID, authUser auth.User) (bool, error) {
+	fetchedProject, err := s.projectRepo.GetByUUID(projectUUID)
 	if err != nil {
 		return false, err
 	}
 
-	if !s.projectPolicy.CanUpdate(project.OrganizationUuid, authUser) {
+	if !s.projectPolicy.CanUpdate(fetchedProject.OrganizationUuid, authUser) {
 		return false, errors.NewForbiddenError("project.error.updateForbidden")
 	}
 
-	clientIndexRepo, connection, err := s.connectionService.GetIndexRepo(project.DBName, nil)
+	clientIndexRepo, connection, err := s.connectionService.GetIndexRepo(fetchedProject.DBName, nil)
 	if err != nil {
 		return false, err
 	}

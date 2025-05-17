@@ -104,7 +104,7 @@ func (s *FormResponseServiceImpl) Create(formUUID uuid.UUID, request *form2.Crea
 		FormUuid: formUUID,
 	}
 
-	var formFieldResponses []FormFieldResponse
+	var formFieldResponses []FieldResponse
 
 	for _, formField := range formFields {
 		if _, ok := request.Response[formField.Label]; !ok {
@@ -117,7 +117,7 @@ func (s *FormResponseServiceImpl) Create(formUUID uuid.UUID, request *form2.Crea
 			return FormResponse{}, validationErr
 		}
 
-		formFieldResponses = append(formFieldResponses, FormFieldResponse{
+		formFieldResponses = append(formFieldResponses, FieldResponse{
 			FormFieldUuid: formField.Uuid,
 			Value:         currentFieldValue,
 		})

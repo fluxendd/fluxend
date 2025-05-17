@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-type FormField struct {
+type Field struct {
 	shared.BaseModel
 	Uuid         uuid.UUID   `db:"uuid" json:"uuid"`
 	FormUuid     uuid.UUID   `db:"form_uuid" json:"formUuid"`
@@ -29,6 +29,6 @@ type FormField struct {
 	UpdatedAt    time.Time   `db:"updated_at" json:"updatedAt"`
 }
 
-func (ff FormField) GetTableName() string {
+func (ff Field) GetTableName() string {
 	return "fluxton.form_fields"
 }

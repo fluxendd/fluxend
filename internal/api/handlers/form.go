@@ -11,11 +11,11 @@ import (
 )
 
 type FormHandler struct {
-	formService form2.FormService
+	formService form2.Service
 }
 
 func NewFormHandler(injector *do.Injector) (*FormHandler, error) {
-	formService := do.MustInvoke[form2.FormService](injector)
+	formService := do.MustInvoke[form2.Service](injector)
 
 	return &FormHandler{formService: formService}, nil
 }

@@ -13,13 +13,13 @@ import (
 
 type Service interface {
 	List(paginationParams dto.PaginationParams, authUserId uuid.UUID) ([]Organization, error)
-	GetByID(organizationUUID uuid.UUID, authUser auth.AuthUser) (Organization, error)
-	Create(request *organization.CreateRequest, authUser auth.AuthUser) (Organization, error)
-	Update(organizationUUID uuid.UUID, authUser auth.AuthUser, request *organization.CreateRequest) (*Organization, error)
-	Delete(organizationUUID uuid.UUID, authUser auth.AuthUser) (bool, error)
-	ListUsers(organizationUUID uuid.UUID, authUser auth.AuthUser) ([]user.User, error)
-	CreateUser(request *organization.MemberCreateRequest, organizationUUID uuid.UUID, authUser auth.AuthUser) (user.User, error)
-	DeleteUser(organizationUUID, userID uuid.UUID, authUser auth.AuthUser) error
+	GetByID(organizationUUID uuid.UUID, authUser auth.User) (Organization, error)
+	Create(request *organization.CreateRequest, authUser auth.User) (Organization, error)
+	Update(organizationUUID uuid.UUID, authUser auth.User, request *organization.CreateRequest) (*Organization, error)
+	Delete(organizationUUID uuid.UUID, authUser auth.User) (bool, error)
+	ListUsers(organizationUUID uuid.UUID, authUser auth.User) ([]user.User, error)
+	CreateUser(request *organization.MemberCreateRequest, organizationUUID uuid.UUID, authUser auth.User) (user.User, error)
+	DeleteUser(organizationUUID, userID uuid.UUID, authUser auth.User) error
 }
 
 type ServiceImpl struct {
@@ -44,7 +44,7 @@ func (s *ServiceImpl) List(paginationParams dto.PaginationParams, authUserId uui
 	return s.organizationRepo.ListForUser(paginationParams, authUserId)
 }
 
-func (s *ServiceImpl) GetByID(organizationUUID uuid.UUID, authUser auth.AuthUser) (Organization, error) {
+func (s *ServiceImpl) GetByID(organizationUUID uuid.UUID, authUser auth.User) (Organization, error) {
 	organization, err := s.organizationRepo.GetByUUID(organizationUUID)
 	if err != nil {
 		return Organization{}, err
@@ -70,7 +70,7 @@ func (s *ServiceImpl) ExistsByUUID(organizationUUID uuid.UUID) error {
 	return nil
 }
 
-func (s *ServiceImpl) Create(request *organization.CreateRequest, authUser auth.AuthUser) (Organization, error) {
+func (s *ServiceImpl) Create(request *organization.CreateRequest, authUser auth.User) (Organization, error) {
 	if !s.organizationPolicy.CanCreate(authUser) {
 		return Organization{}, errors.NewForbiddenError("organization.error.createForbidden")
 	}
@@ -89,7 +89,7 @@ func (s *ServiceImpl) Create(request *organization.CreateRequest, authUser auth.
 	return organization, nil
 }
 
-func (s *ServiceImpl) Update(organizationUUID uuid.UUID, authUser auth.AuthUser, request *organization.CreateRequest) (*Organization, error) {
+func (s *ServiceImpl) Update(organizationUUID uuid.UUID, authUser auth.User, request *organization.CreateRequest) (*Organization, error) {
 	organization, err := s.organizationRepo.GetByUUID(organizationUUID)
 	if err != nil {
 		return nil, err
@@ -111,7 +111,7 @@ func (s *ServiceImpl) Update(organizationUUID uuid.UUID, authUser auth.AuthUser,
 	return s.organizationRepo.Update(&organization)
 }
 
-func (s *ServiceImpl) Delete(organizationUUID uuid.UUID, authUser auth.AuthUser) (bool, error) {
+func (s *ServiceImpl) Delete(organizationUUID uuid.UUID, authUser auth.User) (bool, error) {
 	err := s.ExistsByUUID(organizationUUID)
 	if err != nil {
 		return false, err
@@ -124,7 +124,7 @@ func (s *ServiceImpl) Delete(organizationUUID uuid.UUID, authUser auth.AuthUser)
 	return s.organizationRepo.Delete(organizationUUID)
 }
 
-func (s *ServiceImpl) ListUsers(organizationUUID uuid.UUID, authUser auth.AuthUser) ([]user.User, error) {
+func (s *ServiceImpl) ListUsers(organizationUUID uuid.UUID, authUser auth.User) ([]user.User, error) {
 	if !s.organizationPolicy.CanAccess(organizationUUID, authUser) {
 		return nil, errors.NewForbiddenError("organization.error.viewForbidden")
 	}
@@ -132,7 +132,7 @@ func (s *ServiceImpl) ListUsers(organizationUUID uuid.UUID, authUser auth.AuthUs
 	return s.organizationRepo.ListUsers(organizationUUID)
 }
 
-func (s *ServiceImpl) CreateUser(request *organization.MemberCreateRequest, organizationUUID uuid.UUID, authUser auth.AuthUser) (user.User, error) {
+func (s *ServiceImpl) CreateUser(request *organization.MemberCreateRequest, organizationUUID uuid.UUID, authUser auth.User) (user.User, error) {
 	if !s.organizationPolicy.CanCreate(authUser) {
 		return user.User{}, errors.NewForbiddenError("organization.error.createUserForbidden")
 	}
@@ -168,7 +168,7 @@ func (s *ServiceImpl) CreateUser(request *organization.MemberCreateRequest, orga
 	return s.organizationRepo.GetUser(organizationUUID, request.UserID)
 }
 
-func (s *ServiceImpl) DeleteUser(organizationUUID, userUUID uuid.UUID, authUser auth.AuthUser) error {
+func (s *ServiceImpl) DeleteUser(organizationUUID, userUUID uuid.UUID, authUser auth.User) error {
 	if !s.organizationPolicy.CanUpdate(organizationUUID, authUser) {
 		return errors.NewForbiddenError("organization.error.deleteUserForbidden")
 	}

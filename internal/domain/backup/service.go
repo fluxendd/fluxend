@@ -12,24 +12,24 @@ import (
 )
 
 type Service interface {
-	List(projectUUID uuid.UUID, authUser auth.AuthUser) ([]Backup, error)
-	GetByUUID(backupUUID uuid.UUID, authUser auth.AuthUser) (Backup, error)
-	Create(request *dto.DefaultRequestWithProjectHeader, authUser auth.AuthUser) (Backup, error)
-	Delete(request dto.DefaultRequestWithProjectHeader, backupUUID uuid.UUID, authUser auth.AuthUser) (bool, error)
+	List(projectUUID uuid.UUID, authUser auth.User) ([]Backup, error)
+	GetByUUID(backupUUID uuid.UUID, authUser auth.User) (Backup, error)
+	Create(request *dto.DefaultRequestWithProjectHeader, authUser auth.User) (Backup, error)
+	Delete(request dto.DefaultRequestWithProjectHeader, backupUUID uuid.UUID, authUser auth.User) (bool, error)
 }
 
 type BackupServiceImpl struct {
 	projectPolicy         *project.Policy
 	backupRepo            *Repository
 	projectRepo           *repositories2.ProjectRepository
-	backupWorkFlowService BackupWorkflowService
+	backupWorkFlowService WorkflowService
 }
 
 func NewBackupService(injector *do.Injector) (Service, error) {
 	policy := do.MustInvoke[*project.Policy](injector)
 	backupRepo := do.MustInvoke[*repositories2.BackupRepository](injector)
 	projectRepo := do.MustInvoke[*repositories2.ProjectRepository](injector)
-	backupWorkFlowService := do.MustInvoke[BackupWorkflowService](injector)
+	backupWorkFlowService := do.MustInvoke[WorkflowService](injector)
 
 	return &BackupServiceImpl{
 		projectPolicy:         policy,
@@ -39,7 +39,7 @@ func NewBackupService(injector *do.Injector) (Service, error) {
 	}, nil
 }
 
-func (s *BackupServiceImpl) List(projectUUID uuid.UUID, authUser auth.AuthUser) ([]Backup, error) {
+func (s *BackupServiceImpl) List(projectUUID uuid.UUID, authUser auth.User) ([]Backup, error) {
 	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(projectUUID)
 	if err != nil {
 		return []Backup{}, err
@@ -52,7 +52,7 @@ func (s *BackupServiceImpl) List(projectUUID uuid.UUID, authUser auth.AuthUser) 
 	return s.backupRepo.ListForProject(projectUUID)
 }
 
-func (s *BackupServiceImpl) GetByUUID(backupUUID uuid.UUID, authUser auth.AuthUser) (Backup, error) {
+func (s *BackupServiceImpl) GetByUUID(backupUUID uuid.UUID, authUser auth.User) (Backup, error) {
 	backup, err := s.backupRepo.GetByUUID(backupUUID)
 	if err != nil {
 		return Backup{}, err
@@ -70,13 +70,13 @@ func (s *BackupServiceImpl) GetByUUID(backupUUID uuid.UUID, authUser auth.AuthUs
 	return backup, nil
 }
 
-func (s *BackupServiceImpl) Create(request *dto.DefaultRequestWithProjectHeader, authUser auth.AuthUser) (Backup, error) {
-	project, err := s.projectRepo.GetByUUID(request.ProjectUUID)
+func (s *BackupServiceImpl) Create(request *dto.DefaultRequestWithProjectHeader, authUser auth.User) (Backup, error) {
+	fetchedProject, err := s.projectRepo.GetByUUID(request.ProjectUUID)
 	if err != nil {
 		return Backup{}, err
 	}
 
-	if !s.projectPolicy.CanCreate(project.OrganizationUuid, authUser) {
+	if !s.projectPolicy.CanCreate(fetchedProject.OrganizationUuid, authUser) {
 		return Backup{}, errors.NewForbiddenError("backup.error.createForbidden")
 	}
 
@@ -92,12 +92,12 @@ func (s *BackupServiceImpl) Create(request *dto.DefaultRequestWithProjectHeader,
 		return Backup{}, err
 	}
 
-	go s.backupWorkFlowService.Create(request.Context, project.DBName, createdBackup.Uuid)
+	go s.backupWorkFlowService.Create(request.Context, fetchedProject.DBName, createdBackup.Uuid)
 
 	return backup, nil
 }
 
-func (s *BackupServiceImpl) Delete(request dto.DefaultRequestWithProjectHeader, backupUUID uuid.UUID, authUser auth.AuthUser) (bool, error) {
+func (s *BackupServiceImpl) Delete(request dto.DefaultRequestWithProjectHeader, backupUUID uuid.UUID, authUser auth.User) (bool, error) {
 	backup, err := s.backupRepo.GetByUUID(backupUUID)
 	if err != nil {
 		return false, err

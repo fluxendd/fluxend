@@ -3,36 +3,36 @@ package form
 import (
 	form2 "fluxton/internal/api/dto/form"
 	repositories2 "fluxton/internal/database/repositories"
+	"fluxton/internal/domain/auth"
 	"fluxton/internal/domain/project"
-	"fluxton/models"
 	"fluxton/pkg/errors"
 	"github.com/google/uuid"
 	"github.com/samber/do"
 	"time"
 )
 
-type FormFieldService interface {
-	List(formUUID uuid.UUID, authUser models.AuthUser) ([]FormField, error)
-	GetByUUID(formUUID uuid.UUID, authUser models.AuthUser) (FormField, error)
-	CreateMany(formUUID uuid.UUID, request *form2.CreateFormFieldsRequest, authUser models.AuthUser) ([]FormField, error)
-	Update(formUUID, fieldUUID uuid.UUID, authUser models.AuthUser, request *form2.UpdateFormFieldRequest) (*FormField, error)
-	Delete(formUUID, fieldUUID uuid.UUID, authUser models.AuthUser) (bool, error)
+type FieldService interface {
+	List(formUUID uuid.UUID, authUser auth.User) ([]Field, error)
+	GetByUUID(formUUID uuid.UUID, authUser auth.User) (Field, error)
+	CreateMany(formUUID uuid.UUID, request *form2.CreateFormFieldsRequest, authUser auth.User) ([]Field, error)
+	Update(formUUID, fieldUUID uuid.UUID, authUser auth.User, request *form2.UpdateFormFieldRequest) (*Field, error)
+	Delete(formUUID, fieldUUID uuid.UUID, authUser auth.User) (bool, error)
 }
 
-type FormFieldServiceImpl struct {
+type FieldServiceImpl struct {
 	projectPolicy *project.Policy
 	formRepo      *repositories2.FormRepository
 	formFieldRepo *repositories2.FormFieldRepository
 	projectRepo   *repositories2.ProjectRepository
 }
 
-func NewFormFieldService(injector *do.Injector) (FormFieldService, error) {
+func NewFieldService(injector *do.Injector) (FieldService, error) {
 	policy := do.MustInvoke[*project.Policy](injector)
 	formRepo := do.MustInvoke[*repositories2.FormRepository](injector)
 	formFieldRepo := do.MustInvoke[*repositories2.FormFieldRepository](injector)
 	projectRepo := do.MustInvoke[*repositories2.ProjectRepository](injector)
 
-	return &FormFieldServiceImpl{
+	return &FieldServiceImpl{
 		projectPolicy: policy,
 		formRepo:      formRepo,
 		formFieldRepo: formFieldRepo,
@@ -40,73 +40,73 @@ func NewFormFieldService(injector *do.Injector) (FormFieldService, error) {
 	}, nil
 }
 
-func (s *FormFieldServiceImpl) List(formUUID uuid.UUID, authUser models.AuthUser) ([]FormField, error) {
+func (s *FieldServiceImpl) List(formUUID uuid.UUID, authUser auth.User) ([]Field, error) {
 	projectUUID, err := s.formRepo.GetProjectUUIDByFormUUID(formUUID)
 	if err != nil {
-		return []FormField{}, err
+		return []Field{}, err
 	}
 
 	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(projectUUID)
 	if err != nil {
-		return []FormField{}, err
+		return []Field{}, err
 	}
 
 	if !s.projectPolicy.CanAccess(organizationUUID, authUser) {
-		return []FormField{}, errors.NewForbiddenError("formField.error.listForbidden")
+		return []Field{}, errors.NewForbiddenError("formField.error.listForbidden")
 	}
 
 	return s.formFieldRepo.ListForForm(formUUID)
 }
 
-func (s *FormFieldServiceImpl) GetByUUID(fieldUUID uuid.UUID, authUser models.AuthUser) (FormField, error) {
+func (s *FieldServiceImpl) GetByUUID(fieldUUID uuid.UUID, authUser auth.User) (Field, error) {
 	formField, err := s.formFieldRepo.GetByUUID(fieldUUID)
 	if err != nil {
-		return FormField{}, err
+		return Field{}, err
 	}
 
 	projectUUID, err := s.formRepo.GetProjectUUIDByFormUUID(formField.FormUuid)
 	if err != nil {
-		return FormField{}, err
+		return Field{}, err
 	}
 
 	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(projectUUID)
 	if err != nil {
-		return FormField{}, err
+		return Field{}, err
 	}
 
 	if !s.projectPolicy.CanAccess(organizationUUID, authUser) {
-		return FormField{}, errors.NewForbiddenError("formField.error.viewForbidden")
+		return Field{}, errors.NewForbiddenError("formField.error.viewForbidden")
 	}
 
 	return formField, nil
 }
 
-func (s *FormFieldServiceImpl) CreateMany(formUUID uuid.UUID, request *form2.CreateFormFieldsRequest, authUser models.AuthUser) ([]FormField, error) {
+func (s *FieldServiceImpl) CreateMany(formUUID uuid.UUID, request *form2.CreateFormFieldsRequest, authUser auth.User) ([]Field, error) {
 	projectUUID, err := s.formRepo.GetProjectUUIDByFormUUID(formUUID)
 	if err != nil {
-		return []FormField{}, err
+		return []Field{}, err
 	}
 
 	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(projectUUID)
 	if err != nil {
-		return []FormField{}, err
+		return []Field{}, err
 	}
 
 	if !s.projectPolicy.CanCreate(organizationUUID, authUser) {
-		return []FormField{}, errors.NewForbiddenError("formField.error.createForbidden")
+		return []Field{}, errors.NewForbiddenError("formField.error.createForbidden")
 	}
 
 	err = s.validateManyForLabelDuplication(request, formUUID)
 	if err != nil {
-		return []FormField{}, err
+		return []Field{}, err
 	}
 
-	formFields := make([]FormField, len(request.Fields))
+	formFields := make([]Field, len(request.Fields))
 	for i, field := range request.Fields {
-		currentField := FormField{}
+		currentField := Field{}
 		err := currentField.PopulateModel(&currentField, field)
 		if err != nil {
-			return []FormField{}, err
+			return []Field{}, err
 		}
 
 		formFields[i] = currentField
@@ -114,30 +114,30 @@ func (s *FormFieldServiceImpl) CreateMany(formUUID uuid.UUID, request *form2.Cre
 
 	createdFields, err := s.formFieldRepo.CreateMany(formFields, formUUID)
 	if err != nil {
-		return []FormField{}, err
+		return []Field{}, err
 	}
 
 	return createdFields, nil
 }
 
-func (s *FormFieldServiceImpl) Update(formUUID, fieldUUID uuid.UUID, authUser models.AuthUser, request *form2.UpdateFormFieldRequest) (*FormField, error) {
+func (s *FieldServiceImpl) Update(formUUID, fieldUUID uuid.UUID, authUser auth.User, request *form2.UpdateFormFieldRequest) (*Field, error) {
 	projectUUID, err := s.formRepo.GetProjectUUIDByFormUUID(formUUID)
 	if err != nil {
-		return &FormField{}, err
+		return &Field{}, err
 	}
 
 	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(projectUUID)
 	if err != nil {
-		return &FormField{}, err
+		return &Field{}, err
 	}
 
 	if !s.projectPolicy.CanUpdate(organizationUUID, authUser) {
-		return &FormField{}, errors.NewForbiddenError("formField.error.updateForbidden")
+		return &Field{}, errors.NewForbiddenError("formField.error.updateForbidden")
 	}
 
 	formField, err := s.formFieldRepo.GetByUUID(fieldUUID)
 	if err != nil {
-		return &FormField{}, err
+		return &Field{}, err
 	}
 
 	err = formField.PopulateModel(&formField, request.FieldRequest)
@@ -149,13 +149,13 @@ func (s *FormFieldServiceImpl) Update(formUUID, fieldUUID uuid.UUID, authUser mo
 
 	err = s.validateOneForLabelDuplication(request.Label, formField.FormUuid)
 	if err != nil {
-		return &FormField{}, err
+		return &Field{}, err
 	}
 
 	return s.formFieldRepo.Update(&formField)
 }
 
-func (s *FormFieldServiceImpl) Delete(formUUID, fieldUUID uuid.UUID, authUser models.AuthUser) (bool, error) {
+func (s *FieldServiceImpl) Delete(formUUID, fieldUUID uuid.UUID, authUser auth.User) (bool, error) {
 	projectUUID, err := s.formRepo.GetProjectUUIDByFormUUID(formUUID)
 	if err != nil {
 		return false, err
@@ -173,7 +173,7 @@ func (s *FormFieldServiceImpl) Delete(formUUID, fieldUUID uuid.UUID, authUser mo
 	return s.formFieldRepo.Delete(fieldUUID)
 }
 
-func (s *FormFieldServiceImpl) validateManyForLabelDuplication(request *form2.CreateFormFieldsRequest, formUUID uuid.UUID) error {
+func (s *FieldServiceImpl) validateManyForLabelDuplication(request *form2.CreateFormFieldsRequest, formUUID uuid.UUID) error {
 	labels := make([]string, len(request.Fields))
 
 	for i, field := range request.Fields {
@@ -192,7 +192,7 @@ func (s *FormFieldServiceImpl) validateManyForLabelDuplication(request *form2.Cr
 	return nil
 }
 
-func (s *FormFieldServiceImpl) validateOneForLabelDuplication(label string, formUUID uuid.UUID) error {
+func (s *FieldServiceImpl) validateOneForLabelDuplication(label string, formUUID uuid.UUID) error {
 	exists, err := s.formFieldRepo.ExistsByLabelForForm(label, formUUID)
 	if err != nil {
 		return err

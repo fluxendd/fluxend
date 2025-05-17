@@ -11,11 +11,11 @@ import (
 )
 
 type FormFieldHandler struct {
-	formFieldService form2.FormFieldService
+	formFieldService form2.FieldService
 }
 
 func NewFormFieldHandler(injector *do.Injector) (*FormFieldHandler, error) {
-	formFieldService := do.MustInvoke[form2.FormFieldService](injector)
+	formFieldService := do.MustInvoke[form2.FieldService](injector)
 
 	return &FormFieldHandler{formFieldService: formFieldService}, nil
 }
@@ -32,7 +32,7 @@ func NewFormFieldHandler(injector *do.Injector) (*FormFieldHandler, error) {
 // @Param Authorization header string true "Bearer Token"
 // @Param formUUID path string true "Form UUID"
 //
-// @Success 200 {array} responses.Response{content=[]resources.FormFieldResponse} "List of fields"
+// @Success 200 {array} responses.Response{content=[]resources.FieldResponse} "List of fields"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
@@ -72,7 +72,7 @@ func (ffc *FormFieldHandler) List(c echo.Context) error {
 // @Param formUUID path string true "Form UUID"
 // @Param fieldUUID path string true "Field UUID"
 //
-// @Success 200 {object} responses.Response{content=resources.FormFieldResponse} "Field details"
+// @Success 200 {object} responses.Response{content=resources.FieldResponse} "Field details"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
@@ -112,7 +112,7 @@ func (ffc *FormFieldHandler) Show(c echo.Context) error {
 // @Param field body form_requests.CreateFormFieldsRequest true "Field details"
 // @Param formUUID path string true "Form UUID"
 //
-// @Success 201 {object} responses.Response{content=resources.FormFieldResponse} "Field created"
+// @Success 201 {object} responses.Response{content=resources.FieldResponse} "Field created"
 // @Failure 422 "Unprocessable entity"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
@@ -154,7 +154,7 @@ func (ffc *FormFieldHandler) Store(c echo.Context) error {
 // @Param formUUID path string true "Form UUID"
 // @Param fieldUUID path string true "Field UUID"
 //
-// @Success 200 {object} responses.Response{content=resources.FormFieldResponse} "Field updated"
+// @Success 200 {object} responses.Response{content=resources.FieldResponse} "Field updated"
 // @Failure 422 "Unprocessable entity"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"

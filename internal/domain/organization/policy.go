@@ -18,11 +18,11 @@ func NewOrganizationPolicy(injector *do.Injector) (*Policy, error) {
 	}, nil
 }
 
-func (s *Policy) CanCreate(authUser auth.AuthUser) bool {
+func (s *Policy) CanCreate(authUser auth.User) bool {
 	return authUser.IsAdminOrMore()
 }
 
-func (s *Policy) CanAccess(organizationUUID uuid.UUID, authUser auth.AuthUser) bool {
+func (s *Policy) CanAccess(organizationUUID uuid.UUID, authUser auth.User) bool {
 	isOrganizationUser, err := s.organizationRepo.IsOrganizationMember(organizationUUID, authUser.Uuid)
 	if err != nil {
 		return false
@@ -31,7 +31,7 @@ func (s *Policy) CanAccess(organizationUUID uuid.UUID, authUser auth.AuthUser) b
 	return isOrganizationUser
 }
 
-func (s *Policy) CanUpdate(organizationUUID uuid.UUID, authUser auth.AuthUser) bool {
+func (s *Policy) CanUpdate(organizationUUID uuid.UUID, authUser auth.User) bool {
 	if !authUser.IsAdminOrMore() {
 		return false
 	}

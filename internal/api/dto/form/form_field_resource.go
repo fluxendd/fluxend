@@ -27,7 +27,7 @@ type FormFieldResponse struct {
 	UpdatedAt    string      `json:"updatedAt"`
 }
 
-func FormFieldResource(formField *form.FormField) FormFieldResponse {
+func FormFieldResource(formField *form.Field) FormFieldResponse {
 	return FormFieldResponse{
 		Uuid:         formField.Uuid,
 		FormUuid:     formField.FormUuid,
@@ -50,7 +50,7 @@ func FormFieldResource(formField *form.FormField) FormFieldResponse {
 	}
 }
 
-func FormFieldResourceCollection(formFields []form.FormField) []FormFieldResponse {
+func FormFieldResourceCollection(formFields []form.Field) []FormFieldResponse {
 	resourceFormFields := make([]FormFieldResponse, len(formFields))
 	for i, formField := range formFields {
 		resourceFormFields[i] = FormFieldResource(&formField)

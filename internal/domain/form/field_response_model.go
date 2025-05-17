@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-type FormFieldResponse struct {
+type FieldResponse struct {
 	shared.BaseModel
 	Uuid             uuid.UUID `db:"uuid" json:"uuid"`
 	FormResponseUuid uuid.UUID `db:"form_response_uuid" json:"formResponseUuid"`
@@ -16,6 +16,6 @@ type FormFieldResponse struct {
 	UpdatedAt        time.Time `db:"updated_at" json:"updatedAt"`
 }
 
-func (u FormFieldResponse) GetTableName() string {
+func (u FieldResponse) GetTableName() string {
 	return "fluxton.form_field_responses"
 }

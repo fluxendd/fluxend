@@ -5,27 +5,27 @@ import (
 	"github.com/google/uuid"
 )
 
-type AuthUser struct {
+type User struct {
 	Uuid   uuid.UUID
 	RoleID int
 }
 
-func (au AuthUser) IsOwner() bool {
+func (au User) IsOwner() bool {
 	return au.RoleID == constants.UserRoleOwner
 }
 
-func (au AuthUser) IsSuperman() bool {
+func (au User) IsSuperman() bool {
 	return au.RoleID == constants.UserRoleSuperman
 }
 
-func (au AuthUser) IsAdminOrMore() bool {
+func (au User) IsAdminOrMore() bool {
 	return au.RoleID <= constants.UserRoleAdmin
 }
 
-func (au AuthUser) IsDeveloperOrMore() bool {
+func (au User) IsDeveloperOrMore() bool {
 	return au.RoleID <= constants.UserRoleDeveloper
 }
 
-func (au AuthUser) IsExplorerOrMore() bool {
+func (au User) IsExplorerOrMore() bool {
 	return au.RoleID <= constants.UserRoleExplorer
 }

@@ -15,12 +15,12 @@ import (
 )
 
 type Service interface {
-	List(paginationParams dto.PaginationParams, organizationUUID uuid.UUID, authUser auth.AuthUser) ([]Project, error)
-	GetByUUID(projectUUID uuid.UUID, authUser auth.AuthUser) (Project, error)
-	GetDatabaseNameByUUID(projectUUID uuid.UUID, authUser auth.AuthUser) (string, error)
-	Create(request *project.CreateRequest, authUser auth.AuthUser) (Project, error)
-	Update(projectUUID uuid.UUID, authUser auth.AuthUser, request *project.UpdateRequest) (*Project, error)
-	Delete(projectUUID uuid.UUID, authUser auth.AuthUser) (bool, error)
+	List(paginationParams dto.PaginationParams, organizationUUID uuid.UUID, authUser auth.User) ([]Project, error)
+	GetByUUID(projectUUID uuid.UUID, authUser auth.User) (Project, error)
+	GetDatabaseNameByUUID(projectUUID uuid.UUID, authUser auth.User) (string, error)
+	Create(request *project.CreateRequest, authUser auth.User) (Project, error)
+	Update(projectUUID uuid.UUID, authUser auth.User, request *project.UpdateRequest) (*Project, error)
+	Delete(projectUUID uuid.UUID, authUser auth.User) (bool, error)
 }
 
 type ServiceImpl struct {
@@ -44,7 +44,7 @@ func NewProjectService(injector *do.Injector) (Service, error) {
 	}, nil
 }
 
-func (s *ServiceImpl) List(paginationParams dto.PaginationParams, organizationUUID uuid.UUID, authUser auth.AuthUser) ([]Project, error) {
+func (s *ServiceImpl) List(paginationParams dto.PaginationParams, organizationUUID uuid.UUID, authUser auth.User) ([]Project, error) {
 	if !s.projectPolicy.CanAccess(organizationUUID, authUser) {
 		return []Project{}, errors.NewForbiddenError("project.error.listForbidden")
 	}
@@ -52,7 +52,7 @@ func (s *ServiceImpl) List(paginationParams dto.PaginationParams, organizationUU
 	return s.projectRepo.ListForUser(paginationParams, authUser.Uuid)
 }
 
-func (s *ServiceImpl) GetByUUID(projectUUID uuid.UUID, authUser auth.AuthUser) (Project, error) {
+func (s *ServiceImpl) GetByUUID(projectUUID uuid.UUID, authUser auth.User) (Project, error) {
 	project, err := s.projectRepo.GetByUUID(projectUUID)
 	if err != nil {
 		return Project{}, err
@@ -65,7 +65,7 @@ func (s *ServiceImpl) GetByUUID(projectUUID uuid.UUID, authUser auth.AuthUser) (
 	return project, nil
 }
 
-func (s *ServiceImpl) GetDatabaseNameByUUID(projectUUID uuid.UUID, authUser auth.AuthUser) (string, error) {
+func (s *ServiceImpl) GetDatabaseNameByUUID(projectUUID uuid.UUID, authUser auth.User) (string, error) {
 	project, err := s.projectRepo.GetByUUID(projectUUID)
 	if err != nil {
 		return "", err
@@ -78,7 +78,7 @@ func (s *ServiceImpl) GetDatabaseNameByUUID(projectUUID uuid.UUID, authUser auth
 	return project.DBName, nil
 }
 
-func (s *ServiceImpl) Create(request *project.CreateRequest, authUser auth.AuthUser) (Project, error) {
+func (s *ServiceImpl) Create(request *project.CreateRequest, authUser auth.User) (Project, error) {
 	if !s.projectPolicy.CanCreate(request.OrganizationUUID, authUser) {
 		return Project{}, errors.NewForbiddenError("project.error.createForbidden")
 	}
@@ -115,7 +115,7 @@ func (s *ServiceImpl) Create(request *project.CreateRequest, authUser auth.AuthU
 	return project, nil
 }
 
-func (s *ServiceImpl) Update(projectUUID uuid.UUID, authUser auth.AuthUser, request *project.UpdateRequest) (*Project, error) {
+func (s *ServiceImpl) Update(projectUUID uuid.UUID, authUser auth.User, request *project.UpdateRequest) (*Project, error) {
 	project, err := s.projectRepo.GetByUUID(projectUUID)
 	if err != nil {
 		return nil, err
@@ -141,7 +141,7 @@ func (s *ServiceImpl) Update(projectUUID uuid.UUID, authUser auth.AuthUser, requ
 	return s.projectRepo.Update(&project)
 }
 
-func (s *ServiceImpl) Delete(projectUUID uuid.UUID, authUser auth.AuthUser) (bool, error) {
+func (s *ServiceImpl) Delete(projectUUID uuid.UUID, authUser auth.User) (bool, error) {
 	project, err := s.projectRepo.GetByUUID(projectUUID)
 	if err != nil {
 		return false, err

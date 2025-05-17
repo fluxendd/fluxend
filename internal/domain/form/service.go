@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-type FormService interface {
+type Service interface {
 	List(paginationParams dto.PaginationParams, projectUUID uuid.UUID, authUser models.AuthUser) ([]Form, error)
 	GetByUUID(formUUID uuid.UUID, authUser models.AuthUser) (Form, error)
 	Create(request *form2.CreateRequest, authUser models.AuthUser) (Form, error)
@@ -26,7 +26,7 @@ type FormServiceImpl struct {
 	projectRepo   *repositories2.ProjectRepository
 }
 
-func NewFormService(injector *do.Injector) (FormService, error) {
+func NewFormService(injector *do.Injector) (Service, error) {
 	policy := do.MustInvoke[*project.Policy](injector)
 	formRepo := do.MustInvoke[*repositories2.FormRepository](injector)
 	projectRepo := do.MustInvoke[*repositories2.ProjectRepository](injector)

@@ -23,7 +23,7 @@ type DatabaseStatsService interface {
 
 type DatabaseStatsServiceImpl struct {
 	connectionService client.Service
-	adminPolicy       *admin.AdminPolicy
+	adminPolicy       *admin.Policy
 	databaseRepo      *client.Repository
 }
 

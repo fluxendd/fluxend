@@ -2,53 +2,52 @@ package column
 
 import (
 	"fluxton/internal/adapters/client"
-	column2 "fluxton/internal/api/dto/database/column"
-	"fluxton/internal/database/repositories"
+	"fluxton/internal/api/dto/database/column"
+	"fluxton/internal/domain/auth"
 	"fluxton/internal/domain/project"
-	"fluxton/models"
 	"fluxton/pkg"
 	"fluxton/pkg/errors"
 	"github.com/google/uuid"
 	"github.com/samber/do"
 )
 
-type ColumnService interface {
-	List(fullTableName string, projectUUID uuid.UUID, authUser models.AuthUser) ([]Column, error)
-	CreateMany(fullTableName string, request *column2.CreateRequest, authUser models.AuthUser) ([]Column, error)
-	AlterMany(fullTableName string, request *column2.CreateRequest, authUser models.AuthUser) ([]Column, error)
-	Rename(columnName, fullTableName string, request *column2.RenameRequest, authUser models.AuthUser) ([]Column, error)
-	Delete(columnName, fullTableName string, projectUUID uuid.UUID, authUser models.AuthUser) (bool, error)
+type Service interface {
+	List(fullTableName string, projectUUID uuid.UUID, authUser auth.User) ([]Column, error)
+	CreateMany(fullTableName string, request *column.CreateRequest, authUser auth.User) ([]Column, error)
+	AlterMany(fullTableName string, request *column.CreateRequest, authUser auth.User) ([]Column, error)
+	Rename(columnName, fullTableName string, request *column.RenameRequest, authUser auth.User) ([]Column, error)
+	Delete(columnName, fullTableName string, projectUUID uuid.UUID, authUser auth.User) (bool, error)
 }
 
-type ColumnServiceImpl struct {
+type ServiceImpl struct {
 	connectionService client.Service
 	projectPolicy     *project.Policy
-	projectRepo       *repositories.ProjectRepository
+	projectRepo       *project.Repository
 }
 
-func NewColumnService(injector *do.Injector) (ColumnService, error) {
+func NewColumnService(injector *do.Injector) (Service, error) {
 	connectionService := do.MustInvoke[client.Service](injector)
 	policy := do.MustInvoke[*project.Policy](injector)
-	projectRepo := do.MustInvoke[*repositories.ProjectRepository](injector)
+	projectRepo := do.MustInvoke[*project.Repository](injector)
 
-	return &ColumnServiceImpl{
+	return &ServiceImpl{
 		projectPolicy:     policy,
 		connectionService: connectionService,
 		projectRepo:       projectRepo,
 	}, nil
 }
 
-func (s *ColumnServiceImpl) List(fullTableName string, projectUUID uuid.UUID, authUser models.AuthUser) ([]Column, error) {
-	project, err := s.projectRepo.GetByUUID(projectUUID)
+func (s *ServiceImpl) List(fullTableName string, projectUUID uuid.UUID, authUser auth.User) ([]Column, error) {
+	fetchedProject, err := s.projectRepo.GetByUUID(projectUUID)
 	if err != nil {
 		return nil, err
 	}
 
-	if !s.projectPolicy.CanAccess(project.OrganizationUuid, authUser) {
+	if !s.projectPolicy.CanAccess(fetchedProject.OrganizationUuid, authUser) {
 		return nil, errors.NewForbiddenError("project.error.viewForbidden")
 	}
 
-	clientTableRepo, connection, err := s.connectionService.GetTableRepo(project.DBName, nil)
+	clientTableRepo, connection, err := s.connectionService.GetTableRepo(fetchedProject.DBName, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -59,7 +58,7 @@ func (s *ColumnServiceImpl) List(fullTableName string, projectUUID uuid.UUID, au
 		return nil, err
 	}
 
-	clientColumnRepo, _, err := s.connectionService.GetColumnRepo(project.DBName, connection)
+	clientColumnRepo, _, err := s.connectionService.GetColumnRepo(fetchedProject.DBName, connection)
 	if err != nil {
 		return nil, err
 	}
@@ -72,17 +71,17 @@ func (s *ColumnServiceImpl) List(fullTableName string, projectUUID uuid.UUID, au
 	return columns, nil
 }
 
-func (s *ColumnServiceImpl) CreateMany(fullTableName string, request *column2.CreateRequest, authUser models.AuthUser) ([]Column, error) {
-	project, err := s.projectRepo.GetByUUID(request.ProjectUUID)
+func (s *ServiceImpl) CreateMany(fullTableName string, request *column.CreateRequest, authUser auth.User) ([]Column, error) {
+	fetchedProject, err := s.projectRepo.GetByUUID(request.ProjectUUID)
 	if err != nil {
 		return []Column{}, err
 	}
 
-	if !s.projectPolicy.CanCreate(project.OrganizationUuid, authUser) {
+	if !s.projectPolicy.CanCreate(fetchedProject.OrganizationUuid, authUser) {
 		return []Column{}, errors.NewForbiddenError("column.error.createForbidden")
 	}
 
-	clientTableRepo, connection, err := s.connectionService.GetTableRepo(project.DBName, nil)
+	clientTableRepo, connection, err := s.connectionService.GetTableRepo(fetchedProject.DBName, nil)
 	if err != nil {
 		return []Column{}, err
 	}
@@ -93,7 +92,7 @@ func (s *ColumnServiceImpl) CreateMany(fullTableName string, request *column2.Cr
 		return []Column{}, err
 	}
 
-	clientColumnRepo, _, err := s.connectionService.GetColumnRepo(project.DBName, connection)
+	clientColumnRepo, _, err := s.connectionService.GetColumnRepo(fetchedProject.DBName, connection)
 	if err != nil {
 		return []Column{}, err
 	}
@@ -115,17 +114,17 @@ func (s *ColumnServiceImpl) CreateMany(fullTableName string, request *column2.Cr
 	return clientColumnRepo.List(table.Name)
 }
 
-func (s *ColumnServiceImpl) AlterMany(fullTableName string, request *column2.CreateRequest, authUser models.AuthUser) ([]Column, error) {
-	project, err := s.projectRepo.GetByUUID(request.ProjectUUID)
+func (s *ServiceImpl) AlterMany(fullTableName string, request *column.CreateRequest, authUser auth.User) ([]Column, error) {
+	fetchedProject, err := s.projectRepo.GetByUUID(request.ProjectUUID)
 	if err != nil {
 		return []Column{}, err
 	}
 
-	if !s.projectPolicy.CanUpdate(project.OrganizationUuid, authUser) {
+	if !s.projectPolicy.CanUpdate(fetchedProject.OrganizationUuid, authUser) {
 		return []Column{}, errors.NewForbiddenError("project.error.updateForbidden")
 	}
 
-	clientTableRepo, connection, err := s.connectionService.GetTableRepo(project.DBName, nil)
+	clientTableRepo, connection, err := s.connectionService.GetTableRepo(fetchedProject.DBName, nil)
 	if err != nil {
 		return []Column{}, err
 	}
@@ -136,7 +135,7 @@ func (s *ColumnServiceImpl) AlterMany(fullTableName string, request *column2.Cre
 		return []Column{}, err
 	}
 
-	clientColumnRepo, _, err := s.connectionService.GetColumnRepo(project.DBName, connection)
+	clientColumnRepo, _, err := s.connectionService.GetColumnRepo(fetchedProject.DBName, connection)
 	if err != nil {
 		return []Column{}, err
 	}
@@ -158,17 +157,17 @@ func (s *ColumnServiceImpl) AlterMany(fullTableName string, request *column2.Cre
 	return clientColumnRepo.List(table.Name)
 }
 
-func (s *ColumnServiceImpl) Rename(columnName string, fullTableName string, request *column2.RenameRequest, authUser models.AuthUser) ([]Column, error) {
-	project, err := s.projectRepo.GetByUUID(request.ProjectUUID)
+func (s *ServiceImpl) Rename(columnName string, fullTableName string, request *column.RenameRequest, authUser auth.User) ([]Column, error) {
+	fetchedProject, err := s.projectRepo.GetByUUID(request.ProjectUUID)
 	if err != nil {
 		return []Column{}, err
 	}
 
-	if !s.projectPolicy.CanUpdate(project.OrganizationUuid, authUser) {
+	if !s.projectPolicy.CanUpdate(fetchedProject.OrganizationUuid, authUser) {
 		return []Column{}, errors.NewForbiddenError("project.error.updateForbidden")
 	}
 
-	clientTableRepo, connection, err := s.connectionService.GetTableRepo(project.DBName, nil)
+	clientTableRepo, connection, err := s.connectionService.GetTableRepo(fetchedProject.DBName, nil)
 	if err != nil {
 		return []Column{}, err
 	}
@@ -179,7 +178,7 @@ func (s *ColumnServiceImpl) Rename(columnName string, fullTableName string, requ
 		return []Column{}, err
 	}
 
-	clientColumnRepo, _, err := s.connectionService.GetColumnRepo(project.DBName, connection)
+	clientColumnRepo, _, err := s.connectionService.GetColumnRepo(fetchedProject.DBName, connection)
 	if err != nil {
 		return []Column{}, err
 	}
@@ -201,17 +200,17 @@ func (s *ColumnServiceImpl) Rename(columnName string, fullTableName string, requ
 	return clientColumnRepo.List(table.Name)
 }
 
-func (s *ColumnServiceImpl) Delete(columnName, fullTableName string, projectUUID uuid.UUID, authUser models.AuthUser) (bool, error) {
-	project, err := s.projectRepo.GetByUUID(projectUUID)
+func (s *ServiceImpl) Delete(columnName, fullTableName string, projectUUID uuid.UUID, authUser auth.User) (bool, error) {
+	fetchedProject, err := s.projectRepo.GetByUUID(projectUUID)
 	if err != nil {
 		return false, err
 	}
 
-	if !s.projectPolicy.CanUpdate(project.OrganizationUuid, authUser) {
+	if !s.projectPolicy.CanUpdate(fetchedProject.OrganizationUuid, authUser) {
 		return false, errors.NewForbiddenError("project.error.updateForbidden")
 	}
 
-	clientColumnRepo, connection, err := s.connectionService.GetColumnRepo(project.DBName, nil)
+	clientColumnRepo, connection, err := s.connectionService.GetColumnRepo(fetchedProject.DBName, nil)
 	if err != nil {
 		return false, err
 	}
