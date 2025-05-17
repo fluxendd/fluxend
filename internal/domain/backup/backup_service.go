@@ -3,30 +3,30 @@ package backup
 import (
 	"fluxton/internal/api/dto"
 	repositories2 "fluxton/internal/database/repositories"
+	"fluxton/internal/domain/auth"
 	"fluxton/internal/domain/project"
-	"fluxton/models"
 	"fluxton/pkg/errors"
 	"github.com/google/uuid"
 	"github.com/samber/do"
 	"time"
 )
 
-type BackupService interface {
-	List(projectUUID uuid.UUID, authUser models.AuthUser) ([]Backup, error)
-	GetByUUID(backupUUID uuid.UUID, authUser models.AuthUser) (Backup, error)
-	Create(request *dto.DefaultRequestWithProjectHeader, authUser models.AuthUser) (Backup, error)
-	Delete(request dto.DefaultRequestWithProjectHeader, backupUUID uuid.UUID, authUser models.AuthUser) (bool, error)
+type Service interface {
+	List(projectUUID uuid.UUID, authUser auth.AuthUser) ([]Backup, error)
+	GetByUUID(backupUUID uuid.UUID, authUser auth.AuthUser) (Backup, error)
+	Create(request *dto.DefaultRequestWithProjectHeader, authUser auth.AuthUser) (Backup, error)
+	Delete(request dto.DefaultRequestWithProjectHeader, backupUUID uuid.UUID, authUser auth.AuthUser) (bool, error)
 }
 
 type BackupServiceImpl struct {
-	projectPolicy         *project.ProjectPolicy
-	backupRepo            *repositories2.BackupRepository
+	projectPolicy         *project.Policy
+	backupRepo            *Repository
 	projectRepo           *repositories2.ProjectRepository
 	backupWorkFlowService BackupWorkflowService
 }
 
-func NewBackupService(injector *do.Injector) (BackupService, error) {
-	policy := do.MustInvoke[*project.ProjectPolicy](injector)
+func NewBackupService(injector *do.Injector) (Service, error) {
+	policy := do.MustInvoke[*project.Policy](injector)
 	backupRepo := do.MustInvoke[*repositories2.BackupRepository](injector)
 	projectRepo := do.MustInvoke[*repositories2.ProjectRepository](injector)
 	backupWorkFlowService := do.MustInvoke[BackupWorkflowService](injector)
@@ -39,7 +39,7 @@ func NewBackupService(injector *do.Injector) (BackupService, error) {
 	}, nil
 }
 
-func (s *BackupServiceImpl) List(projectUUID uuid.UUID, authUser models.AuthUser) ([]Backup, error) {
+func (s *BackupServiceImpl) List(projectUUID uuid.UUID, authUser auth.AuthUser) ([]Backup, error) {
 	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(projectUUID)
 	if err != nil {
 		return []Backup{}, err
@@ -52,25 +52,25 @@ func (s *BackupServiceImpl) List(projectUUID uuid.UUID, authUser models.AuthUser
 	return s.backupRepo.ListForProject(projectUUID)
 }
 
-func (s *BackupServiceImpl) GetByUUID(backupUUID uuid.UUID, authUser models.AuthUser) (Backup, error) {
+func (s *BackupServiceImpl) GetByUUID(backupUUID uuid.UUID, authUser auth.AuthUser) (Backup, error) {
 	backup, err := s.backupRepo.GetByUUID(backupUUID)
 	if err != nil {
-		return backup.Backup{}, err
+		return Backup{}, err
 	}
 
 	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(backup.ProjectUuid)
 	if err != nil {
-		return backup.Backup{}, err
+		return Backup{}, err
 	}
 
 	if !s.projectPolicy.CanAccess(organizationUUID, authUser) {
-		return backup.Backup{}, errors.NewForbiddenError("backup.error.viewForbidden")
+		return Backup{}, errors.NewForbiddenError("backup.error.viewForbidden")
 	}
 
 	return backup, nil
 }
 
-func (s *BackupServiceImpl) Create(request *dto.DefaultRequestWithProjectHeader, authUser models.AuthUser) (Backup, error) {
+func (s *BackupServiceImpl) Create(request *dto.DefaultRequestWithProjectHeader, authUser auth.AuthUser) (Backup, error) {
 	project, err := s.projectRepo.GetByUUID(request.ProjectUUID)
 	if err != nil {
 		return Backup{}, err
@@ -89,7 +89,7 @@ func (s *BackupServiceImpl) Create(request *dto.DefaultRequestWithProjectHeader,
 
 	createdBackup, err := s.backupRepo.Create(&backup)
 	if err != nil {
-		return backup.Backup{}, err
+		return Backup{}, err
 	}
 
 	go s.backupWorkFlowService.Create(request.Context, project.DBName, createdBackup.Uuid)
@@ -97,7 +97,7 @@ func (s *BackupServiceImpl) Create(request *dto.DefaultRequestWithProjectHeader,
 	return backup, nil
 }
 
-func (s *BackupServiceImpl) Delete(request dto.DefaultRequestWithProjectHeader, backupUUID uuid.UUID, authUser models.AuthUser) (bool, error) {
+func (s *BackupServiceImpl) Delete(request dto.DefaultRequestWithProjectHeader, backupUUID uuid.UUID, authUser auth.AuthUser) (bool, error) {
 	backup, err := s.backupRepo.GetByUUID(backupUUID)
 	if err != nil {
 		return false, err
@@ -117,11 +117,11 @@ func (s *BackupServiceImpl) Delete(request dto.DefaultRequestWithProjectHeader, 
 		return false, errors.NewForbiddenError("backup.error.deleteForbidden")
 	}
 
-	if backup.Status == backup.BackupStatusDeleting {
+	if backup.Status == BackupStatusDeleting {
 		return false, errors.NewBadRequestError("backup.error.deleteInProgress")
 	}
 
-	err = s.backupRepo.UpdateStatus(backupUUID, backup.BackupStatusDeleting, "", time.Now())
+	err = s.backupRepo.UpdateStatus(backupUUID, BackupStatusDeleting, "", time.Now())
 	if err != nil {
 		return false, err
 	}

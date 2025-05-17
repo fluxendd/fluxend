@@ -2,20 +2,20 @@ package handlers
 
 import (
 	"fluxton/internal/api/dto"
-	"fluxton/internal/api/dto/backup"
+	backupMapper "fluxton/internal/api/mapper/backup"
 	"fluxton/internal/api/response"
-	backup2 "fluxton/internal/domain/backup"
+	backupDomain "fluxton/internal/domain/backup"
 	"fluxton/pkg/auth"
 	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
 )
 
 type BackupHandler struct {
-	backupService backup2.BackupService
+	backupService backupDomain.Service
 }
 
 func NewBackupHandler(injector *do.Injector) (*BackupHandler, error) {
-	backupService := do.MustInvoke[backup2.BackupService](injector)
+	backupService := do.MustInvoke[backupDomain.Service](injector)
 
 	return &BackupHandler{backupService: backupService}, nil
 }
@@ -32,7 +32,7 @@ func NewBackupHandler(injector *do.Injector) (*BackupHandler, error) {
 // @Param Authorization header string true "Bearer Token"
 // @Param X-Project header string true "Project UUID"
 //
-// @Success 200 {array} responses.Response{content=[]resources.BackupResponse} "List of backups"
+// @Success 200 {array} responses.Response{content=[]backupDto.Response} "List of backups"
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
 //
@@ -49,7 +49,7 @@ func (bc *BackupHandler) List(c echo.Context) error {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.SuccessResponse(c, backup.ToResourceCollection(backups))
+	return response.SuccessResponse(c, backupMapper.ToResourceCollection(backups))
 }
 
 // Show retrieves details of a specific backup
@@ -66,7 +66,7 @@ func (bc *BackupHandler) List(c echo.Context) error {
 //
 // @Param backupUUID path string true "Backup UUID"
 //
-// @Success 200 {object} responses.Response{content=resources.BackupResponse} "Backup details"
+// @Success 200 {object} responses.Response{content=backupDto.Response} "Backup details"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
@@ -90,7 +90,7 @@ func (bc *BackupHandler) Show(c echo.Context) error {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.SuccessResponse(c, backup.BackupResource(&backup))
+	return response.SuccessResponse(c, backupMapper.ToResource(&backup))
 }
 
 // Store creates a new backup
@@ -107,7 +107,7 @@ func (bc *BackupHandler) Show(c echo.Context) error {
 //
 // @Param backup body requests.DefaultRequestWithProjectHeader true "Project UUID"
 //
-// @Success 201 {object} responses.Response{content=resources.BackupResponse} "Backup created"
+// @Success 201 {object} responses.Response{content=backupDto.Response} "Backup created"
 // @Failure 422 "Unprocessable entity"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
@@ -127,7 +127,7 @@ func (bc *BackupHandler) Store(c echo.Context) error {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.CreatedResponse(c, backup.BackupResource(&backup))
+	return response.CreatedResponse(c, backupMapper.ToResource(&backup))
 }
 
 // Delete removes a backup

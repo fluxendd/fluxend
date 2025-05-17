@@ -1,11 +1,12 @@
 package project
 
 import (
+	"fluxton/internal/adapters/client"
 	"fluxton/internal/adapters/postgrest"
 	"fluxton/internal/api/dto"
 	project2 "fluxton/internal/api/dto/project"
 	repositories2 "fluxton/internal/database/repositories"
-	"fluxton/models"
+	"fluxton/internal/domain/auth"
 	"fluxton/pkg/errors"
 	"github.com/google/uuid"
 	"github.com/samber/do"
@@ -14,29 +15,29 @@ import (
 	"time"
 )
 
-type ProjectService interface {
-	List(paginationParams dto.PaginationParams, organizationUUID uuid.UUID, authUser models.AuthUser) ([]Project, error)
-	GetByUUID(projectUUID uuid.UUID, authUser models.AuthUser) (Project, error)
-	GetDatabaseNameByUUID(projectUUID uuid.UUID, authUser models.AuthUser) (string, error)
-	Create(request *project2.CreateRequest, authUser models.AuthUser) (Project, error)
-	Update(projectUUID uuid.UUID, authUser models.AuthUser, request *project2.UpdateRequest) (*Project, error)
-	Delete(projectUUID uuid.UUID, authUser models.AuthUser) (bool, error)
+type Service interface {
+	List(paginationParams dto.PaginationParams, organizationUUID uuid.UUID, authUser auth.AuthUser) ([]Project, error)
+	GetByUUID(projectUUID uuid.UUID, authUser auth.AuthUser) (Project, error)
+	GetDatabaseNameByUUID(projectUUID uuid.UUID, authUser auth.AuthUser) (string, error)
+	Create(request *project2.CreateRequest, authUser auth.AuthUser) (Project, error)
+	Update(projectUUID uuid.UUID, authUser auth.AuthUser, request *project2.UpdateRequest) (*Project, error)
+	Delete(projectUUID uuid.UUID, authUser auth.AuthUser) (bool, error)
 }
 
-type ProjectServiceImpl struct {
-	projectPolicy    *ProjectPolicy
-	databaseRepo     *repositories2.DatabaseRepository
+type ServiceImpl struct {
+	projectPolicy    *Policy
+	databaseRepo     *client.Repository
 	projectRepo      *repositories2.ProjectRepository
 	postgrestService postgrest.PostgrestService
 }
 
-func NewProjectService(injector *do.Injector) (ProjectService, error) {
-	policy := do.MustInvoke[*ProjectPolicy](injector)
-	databaseRepo := do.MustInvoke[*repositories2.DatabaseRepository](injector)
+func NewProjectService(injector *do.Injector) (Service, error) {
+	policy := do.MustInvoke[*Policy](injector)
+	databaseRepo := do.MustInvoke[*client.Repository](injector)
 	projectRepo := do.MustInvoke[*repositories2.ProjectRepository](injector)
 	postgrestService := do.MustInvoke[postgrest.PostgrestService](injector)
 
-	return &ProjectServiceImpl{
+	return &ServiceImpl{
 		projectPolicy:    policy,
 		databaseRepo:     databaseRepo,
 		projectRepo:      projectRepo,
@@ -44,7 +45,7 @@ func NewProjectService(injector *do.Injector) (ProjectService, error) {
 	}, nil
 }
 
-func (s *ProjectServiceImpl) List(paginationParams dto.PaginationParams, organizationUUID uuid.UUID, authUser models.AuthUser) ([]Project, error) {
+func (s *ServiceImpl) List(paginationParams dto.PaginationParams, organizationUUID uuid.UUID, authUser auth.AuthUser) ([]Project, error) {
 	if !s.projectPolicy.CanAccess(organizationUUID, authUser) {
 		return []Project{}, errors.NewForbiddenError("project.error.listForbidden")
 	}
@@ -52,20 +53,20 @@ func (s *ProjectServiceImpl) List(paginationParams dto.PaginationParams, organiz
 	return s.projectRepo.ListForUser(paginationParams, authUser.Uuid)
 }
 
-func (s *ProjectServiceImpl) GetByUUID(projectUUID uuid.UUID, authUser models.AuthUser) (Project, error) {
+func (s *ServiceImpl) GetByUUID(projectUUID uuid.UUID, authUser auth.AuthUser) (Project, error) {
 	project, err := s.projectRepo.GetByUUID(projectUUID)
 	if err != nil {
-		return project.Project{}, err
+		return Project{}, err
 	}
 
 	if !s.projectPolicy.CanAccess(project.OrganizationUuid, authUser) {
-		return project.Project{}, errors.NewForbiddenError("project.error.viewForbidden")
+		return Project{}, errors.NewForbiddenError("project.error.viewForbidden")
 	}
 
 	return project, nil
 }
 
-func (s *ProjectServiceImpl) GetDatabaseNameByUUID(projectUUID uuid.UUID, authUser models.AuthUser) (string, error) {
+func (s *ServiceImpl) GetDatabaseNameByUUID(projectUUID uuid.UUID, authUser auth.AuthUser) (string, error) {
 	project, err := s.projectRepo.GetByUUID(projectUUID)
 	if err != nil {
 		return "", err
@@ -78,7 +79,7 @@ func (s *ProjectServiceImpl) GetDatabaseNameByUUID(projectUUID uuid.UUID, authUs
 	return project.DBName, nil
 }
 
-func (s *ProjectServiceImpl) Create(request *project2.CreateRequest, authUser models.AuthUser) (Project, error) {
+func (s *ServiceImpl) Create(request *project2.CreateRequest, authUser auth.AuthUser) (Project, error) {
 	if !s.projectPolicy.CanCreate(request.OrganizationUUID, authUser) {
 		return Project{}, errors.NewForbiddenError("project.error.createForbidden")
 	}
@@ -99,7 +100,7 @@ func (s *ProjectServiceImpl) Create(request *project2.CreateRequest, authUser mo
 
 	_, err = s.projectRepo.Create(&project)
 	if err != nil {
-		return project.Project{}, err
+		return Project{}, err
 	}
 
 	err = s.databaseRepo.Create(project.DBName, uuid.NullUUID{UUID: authUser.Uuid, Valid: true})
@@ -107,7 +108,7 @@ func (s *ProjectServiceImpl) Create(request *project2.CreateRequest, authUser mo
 		// TODO: handle better
 		s.projectRepo.Delete(project.Uuid)
 
-		return project.Project{}, err
+		return Project{}, err
 	}
 
 	go s.postgrestService.StartContainer(project.DBName)
@@ -115,14 +116,14 @@ func (s *ProjectServiceImpl) Create(request *project2.CreateRequest, authUser mo
 	return project, nil
 }
 
-func (s *ProjectServiceImpl) Update(projectUUID uuid.UUID, authUser models.AuthUser, request *project2.UpdateRequest) (*Project, error) {
+func (s *ServiceImpl) Update(projectUUID uuid.UUID, authUser auth.AuthUser, request *project2.UpdateRequest) (*Project, error) {
 	project, err := s.projectRepo.GetByUUID(projectUUID)
 	if err != nil {
 		return nil, err
 	}
 
 	if !s.projectPolicy.CanUpdate(project.OrganizationUuid, authUser) {
-		return &project.Project{}, errors.NewForbiddenError("project.error.updateForbidden")
+		return &Project{}, errors.NewForbiddenError("project.error.updateForbidden")
 	}
 
 	err = project.PopulateModel(&project, request)
@@ -135,13 +136,13 @@ func (s *ProjectServiceImpl) Update(projectUUID uuid.UUID, authUser models.AuthU
 
 	err = s.validateNameForDuplication(request.Name, project.OrganizationUuid)
 	if err != nil {
-		return &project.Project{}, err
+		return &Project{}, err
 	}
 
 	return s.projectRepo.Update(&project)
 }
 
-func (s *ProjectServiceImpl) Delete(projectUUID uuid.UUID, authUser models.AuthUser) (bool, error) {
+func (s *ServiceImpl) Delete(projectUUID uuid.UUID, authUser auth.AuthUser) (bool, error) {
 	project, err := s.projectRepo.GetByUUID(projectUUID)
 	if err != nil {
 		return false, err
@@ -161,15 +162,15 @@ func (s *ProjectServiceImpl) Delete(projectUUID uuid.UUID, authUser models.AuthU
 	return s.projectRepo.Delete(projectUUID)
 }
 
-func (s *ProjectServiceImpl) generateDBName() string {
+func (s *ServiceImpl) generateDBName() string {
 	return "udb_" + strings.ReplaceAll(strings.ToLower(uuid.New().String()), "-", "")
 }
 
-func (s *ProjectServiceImpl) generateDBPort() int {
+func (s *ServiceImpl) generateDBPort() int {
 	return rand.Intn(65535-5000+1) + 5000
 }
 
-func (s *ProjectServiceImpl) validateNameForDuplication(name string, organizationUUID uuid.UUID) error {
+func (s *ServiceImpl) validateNameForDuplication(name string, organizationUUID uuid.UUID) error {
 	exists, err := s.projectRepo.ExistsByNameForOrganization(name, organizationUUID)
 	if err != nil {
 		return err

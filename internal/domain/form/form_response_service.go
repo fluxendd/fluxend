@@ -18,7 +18,7 @@ type FormResponseService interface {
 }
 
 type FormResponseServiceImpl struct {
-	projectPolicy              *project.ProjectPolicy
+	projectPolicy              *project.Policy
 	formFieldValidationService FormFieldValidationService
 	formRepo                   *repositories2.FormRepository
 	formFieldRepo              *repositories2.FormFieldRepository
@@ -27,7 +27,7 @@ type FormResponseServiceImpl struct {
 }
 
 func NewFormResponseService(injector *do.Injector) (FormResponseService, error) {
-	policy := do.MustInvoke[*project.ProjectPolicy](injector)
+	policy := do.MustInvoke[*project.Policy](injector)
 	formFieldValidationService := do.MustInvoke[FormFieldValidationService](injector)
 	formRepo := do.MustInvoke[*repositories2.FormRepository](injector)
 	formFieldRepo := do.MustInvoke[*repositories2.FormFieldRepository](injector)

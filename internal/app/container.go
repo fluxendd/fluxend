@@ -1,7 +1,7 @@
 package app
 
 import (
-	"fluxton/internal/adapters/connection"
+	"fluxton/internal/adapters/client"
 	"fluxton/internal/adapters/postgrest"
 	"fluxton/internal/api/handlers"
 	"fluxton/internal/database"
@@ -29,15 +29,15 @@ func InitializeContainer() *do.Injector {
 	injector := do.New()
 
 	// Database
-	database.InitDB()
+	client.InitDB()
 	do.Provide(injector, func(i *do.Injector) (*sqlx.DB, error) {
-		return database.GetDB(), nil
+		return client.GetDB(), nil
 	})
 
 	// Repositories
 	do.Provide(injector, repositories2.NewUserRepository)
 	do.Provide(injector, repositories2.NewRequestLogRepository)
-	do.Provide(injector, repositories2.NewDatabaseRepository)
+	do.Provide(injector, client.NewClientRepository)
 	do.Provide(injector, repositories2.NewSettingRepository)
 	do.Provide(injector, repositories2.NewOrganizationRepository)
 	do.Provide(injector, repositories2.NewProjectRepository)
@@ -59,7 +59,7 @@ func InitializeContainer() *do.Injector {
 	do.Provide(injector, user.NewUserService)
 	do.Provide(injector, setting.NewSettingService)
 	do.Provide(injector, health.NewHealthService)
-	do.Provide(injector, connection.NewConnectionService)
+	do.Provide(injector, client.NewClientService)
 	do.Provide(injector, stats.NewDatabaseStatsService)
 	do.Provide(injector, organization.NewOrganizationService)
 	do.Provide(injector, project.NewProjectService)

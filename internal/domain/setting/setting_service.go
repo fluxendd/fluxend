@@ -1,6 +1,7 @@
 package setting
 
 import (
+	"fluxton/internal/adapters/client"
 	setting2 "fluxton/internal/api/dto/setting"
 	repositories2 "fluxton/internal/database/repositories"
 	"fluxton/internal/domain/admin"
@@ -26,13 +27,13 @@ type SettingService interface {
 
 type SettingServiceImpl struct {
 	adminPolicy  *admin.AdminPolicy
-	databaseRepo *repositories2.DatabaseRepository
+	databaseRepo *client.Repository
 	settingRepo  *repositories2.SettingRepository
 }
 
 func NewSettingService(injector *do.Injector) (SettingService, error) {
 	policy := admin.NewAdminPolicy()
-	databaseRepo := do.MustInvoke[*repositories2.DatabaseRepository](injector)
+	databaseRepo := do.MustInvoke[*client.Repository](injector)
 	settingRepo := do.MustInvoke[*repositories2.SettingRepository](injector)
 
 	return &SettingServiceImpl{

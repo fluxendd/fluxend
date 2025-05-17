@@ -1,6 +1,7 @@
 package health
 
 import (
+	"fluxton/internal/adapters/client"
 	repositories2 "fluxton/internal/database/repositories"
 	"fluxton/internal/domain/admin"
 	"fluxton/models"
@@ -14,13 +15,13 @@ type HealthService interface {
 
 type HealthServiceImpl struct {
 	adminPolicy  *admin.AdminPolicy
-	databaseRepo *repositories2.DatabaseRepository
+	databaseRepo *client.Repository
 	settingRepo  *repositories2.SettingRepository
 }
 
 func NewHealthService(injector *do.Injector) (HealthService, error) {
 	policy := admin.NewAdminPolicy()
-	databaseRepo := do.MustInvoke[*repositories2.DatabaseRepository](injector)
+	databaseRepo := do.MustInvoke[*client.Repository](injector)
 	settingRepo := do.MustInvoke[*repositories2.SettingRepository](injector)
 
 	return &HealthServiceImpl{

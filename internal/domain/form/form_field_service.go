@@ -20,14 +20,14 @@ type FormFieldService interface {
 }
 
 type FormFieldServiceImpl struct {
-	projectPolicy *project.ProjectPolicy
+	projectPolicy *project.Policy
 	formRepo      *repositories2.FormRepository
 	formFieldRepo *repositories2.FormFieldRepository
 	projectRepo   *repositories2.ProjectRepository
 }
 
 func NewFormFieldService(injector *do.Injector) (FormFieldService, error) {
-	policy := do.MustInvoke[*project.ProjectPolicy](injector)
+	policy := do.MustInvoke[*project.Policy](injector)
 	formRepo := do.MustInvoke[*repositories2.FormRepository](injector)
 	formFieldRepo := do.MustInvoke[*repositories2.FormFieldRepository](injector)
 	projectRepo := do.MustInvoke[*repositories2.ProjectRepository](injector)

@@ -11,11 +11,11 @@ import (
 )
 
 type ProjectHandler struct {
-	projectService project2.ProjectService
+	projectService project2.Service
 }
 
 func NewProjectHandler(injector *do.Injector) (*ProjectHandler, error) {
-	projectService := do.MustInvoke[project2.ProjectService](injector)
+	projectService := do.MustInvoke[project2.Service](injector)
 
 	return &ProjectHandler{projectService: projectService}, nil
 }

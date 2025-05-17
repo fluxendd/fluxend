@@ -1,4 +1,4 @@
-package repositories
+package client
 
 import (
 	"fluxton/internal/config/constants"
@@ -15,17 +15,17 @@ import (
 
 const seedDirectory = "internal/database/seeders/client"
 
-type DatabaseRepository struct {
+type Repository struct {
 	db *sqlx.DB
 }
 
-func NewDatabaseRepository(injector *do.Injector) (*DatabaseRepository, error) {
+func NewClientRepository(injector *do.Injector) (*Repository, error) {
 	db := do.MustInvoke[*sqlx.DB](injector)
 
-	return &DatabaseRepository{db: db}, nil
+	return &Repository{db: db}, nil
 }
 
-func (r *DatabaseRepository) Create(name string, userUUID uuid.NullUUID) error {
+func (r *Repository) Create(name string, userUUID uuid.NullUUID) error {
 	_, err := r.db.Exec(fmt.Sprintf(`CREATE DATABASE "%s"`, name))
 	if err != nil {
 		log.Error().
@@ -44,7 +44,7 @@ func (r *DatabaseRepository) Create(name string, userUUID uuid.NullUUID) error {
 	return nil
 }
 
-func (r *DatabaseRepository) DropIfExists(name string) error {
+func (r *Repository) DropIfExists(name string) error {
 	_, err := r.db.Exec(fmt.Sprintf(`DROP DATABASE IF EXISTS "%s"`, name))
 	if err != nil {
 		return err
@@ -53,7 +53,7 @@ func (r *DatabaseRepository) DropIfExists(name string) error {
 	return nil
 }
 
-func (r *DatabaseRepository) Recreate(name string) error {
+func (r *Repository) Recreate(name string) error {
 	err := r.DropIfExists(name)
 	if err != nil {
 		return err
@@ -67,7 +67,7 @@ func (r *DatabaseRepository) Recreate(name string) error {
 	return nil
 }
 
-func (r *DatabaseRepository) List() ([]string, error) {
+func (r *Repository) List() ([]string, error) {
 	var databases []string
 	err := r.db.Select(&databases, "SELECT datname FROM pg_database WHERE datistemplate = false")
 	if err != nil {
@@ -77,7 +77,7 @@ func (r *DatabaseRepository) List() ([]string, error) {
 	return databases, nil
 }
 
-func (r *DatabaseRepository) Exists(name string) (bool, error) {
+func (r *Repository) Exists(name string) (bool, error) {
 	var count int
 	err := r.db.Get(&count, "SELECT COUNT(*) FROM pg_database WHERE datname = $1", name)
 	if err != nil {
@@ -88,7 +88,7 @@ func (r *DatabaseRepository) Exists(name string) (bool, error) {
 }
 
 // Connect TODO: create actual user for using here
-func (r *DatabaseRepository) Connect(name string) (*sqlx.DB, error) {
+func (r *Repository) Connect(name string) (*sqlx.DB, error) {
 	connStr := fmt.Sprintf(
 		"user=%s dbname=%s password=%s host=%s sslmode=%s port=5432",
 		os.Getenv("DATABASE_USER"),
@@ -116,7 +116,7 @@ func (r *DatabaseRepository) Connect(name string) (*sqlx.DB, error) {
 	return connection, nil
 }
 
-func (r *DatabaseRepository) importSeedFiles(databaseName string, userUUID uuid.UUID) error {
+func (r *Repository) importSeedFiles(databaseName string, userUUID uuid.UUID) error {
 	connection, err := r.Connect(databaseName)
 	if err != nil {
 		return fmt.Errorf("could not connect to database: %v", err)

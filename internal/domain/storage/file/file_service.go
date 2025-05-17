@@ -28,7 +28,7 @@ type FileService interface {
 
 type FileServiceImpl struct {
 	settingService setting.SettingService
-	projectPolicy  *project.ProjectPolicy
+	projectPolicy  *project.Policy
 	containerRepo  *repositories2.ContainerRepository
 	fileRepo       *repositories2.FileRepository
 	projectRepo    *repositories2.ProjectRepository
@@ -40,7 +40,7 @@ func NewFileService(injector *do.Injector) (FileService, error) {
 		return nil, err
 	}
 
-	policy := do.MustInvoke[*project.ProjectPolicy](injector)
+	policy := do.MustInvoke[*project.Policy](injector)
 	containerRepo := do.MustInvoke[*repositories2.ContainerRepository](injector)
 	fileRepo := do.MustInvoke[*repositories2.FileRepository](injector)
 	projectRepo := do.MustInvoke[*repositories2.ProjectRepository](injector)

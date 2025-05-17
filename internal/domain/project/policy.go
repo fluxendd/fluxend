@@ -1,24 +1,25 @@
 package project
 
 import (
-	"fluxton/models"
+	"fluxton/internal/database/repositories"
+	"fluxton/internal/domain/auth"
 	"github.com/google/uuid"
 	"github.com/samber/do"
 )
 
-type ProjectPolicy struct {
+type Policy struct {
 	organizationRepo *repositories.OrganizationRepository
 }
 
-func NewProjectPolicy(injector *do.Injector) (*ProjectPolicy, error) {
+func NewProjectPolicy(injector *do.Injector) (*Policy, error) {
 	repo := do.MustInvoke[*repositories.OrganizationRepository](injector)
 
-	return &ProjectPolicy{
+	return &Policy{
 		organizationRepo: repo,
 	}, nil
 }
 
-func (s *ProjectPolicy) CanCreate(organizationUUID uuid.UUID, authUser models.AuthUser) bool {
+func (s *Policy) CanCreate(organizationUUID uuid.UUID, authUser auth.AuthUser) bool {
 	if !authUser.IsDeveloperOrMore() {
 		return false
 	}
@@ -31,7 +32,7 @@ func (s *ProjectPolicy) CanCreate(organizationUUID uuid.UUID, authUser models.Au
 	return isOrganizationUser
 }
 
-func (s *ProjectPolicy) CanAccess(organizationUUID uuid.UUID, authUser models.AuthUser) bool {
+func (s *Policy) CanAccess(organizationUUID uuid.UUID, authUser auth.AuthUser) bool {
 	isOrganizationUser, err := s.organizationRepo.IsOrganizationMember(organizationUUID, authUser.Uuid)
 	if err != nil {
 		return false
@@ -40,7 +41,7 @@ func (s *ProjectPolicy) CanAccess(organizationUUID uuid.UUID, authUser models.Au
 	return isOrganizationUser
 }
 
-func (s *ProjectPolicy) CanUpdate(organizationUUID uuid.UUID, authUser models.AuthUser) bool {
+func (s *Policy) CanUpdate(organizationUUID uuid.UUID, authUser auth.AuthUser) bool {
 	if !authUser.IsDeveloperOrMore() {
 		return false
 	}

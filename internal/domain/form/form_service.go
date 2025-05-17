@@ -21,13 +21,13 @@ type FormService interface {
 }
 
 type FormServiceImpl struct {
-	projectPolicy *project.ProjectPolicy
+	projectPolicy *project.Policy
 	formRepo      *repositories2.FormRepository
 	projectRepo   *repositories2.ProjectRepository
 }
 
 func NewFormService(injector *do.Injector) (FormService, error) {
-	policy := do.MustInvoke[*project.ProjectPolicy](injector)
+	policy := do.MustInvoke[*project.Policy](injector)
 	formRepo := do.MustInvoke[*repositories2.FormRepository](injector)
 	projectRepo := do.MustInvoke[*repositories2.ProjectRepository](injector)
 

@@ -25,7 +25,7 @@ type ContainerService interface {
 
 type ContainerServiceImpl struct {
 	settingService setting.SettingService
-	projectPolicy  *project.ProjectPolicy
+	projectPolicy  *project.Policy
 	containerRepo  *repositories2.ContainerRepository
 	projectRepo    *repositories2.ProjectRepository
 }
@@ -36,7 +36,7 @@ func NewContainerService(injector *do.Injector) (ContainerService, error) {
 		return nil, err
 	}
 
-	policy := do.MustInvoke[*project.ProjectPolicy](injector)
+	policy := do.MustInvoke[*project.Policy](injector)
 	containerRepo := do.MustInvoke[*repositories2.ContainerRepository](injector)
 	projectRepo := do.MustInvoke[*repositories2.ProjectRepository](injector)
 

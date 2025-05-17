@@ -1,4 +1,4 @@
-package connection
+package client
 
 import (
 	repositories2 "fluxton/internal/database/repositories"
@@ -7,7 +7,7 @@ import (
 	"github.com/samber/do"
 )
 
-type ConnectionService interface {
+type Service interface {
 	ConnectByDatabaseName(name string) (*sqlx.DB, error)
 	ConnectByProjectUUID(projectUUID uuid.UUID) (*sqlx.DB, error)
 	GetDatabaseStatsRepo(databaseName string, connection *sqlx.DB) (*repositories2.DatabaseStatsRepository, *sqlx.DB, error)
@@ -18,26 +18,26 @@ type ConnectionService interface {
 	GetFunctionRepoByProjectUUID(projectUUID uuid.UUID, connection *sqlx.DB) (*repositories2.FunctionRepository, *sqlx.DB, error)
 }
 
-type ConnectionServiceImpl struct {
-	databaseRepo *repositories2.DatabaseRepository
+type ServiceImpl struct {
+	databaseRepo *Repository
 	projectRepo  *repositories2.ProjectRepository
 }
 
-func NewConnectionService(injector *do.Injector) (ConnectionService, error) {
-	databaseRepo := do.MustInvoke[*repositories2.DatabaseRepository](injector)
+func NewClientService(injector *do.Injector) (Service, error) {
+	databaseRepo := do.MustInvoke[*Repository](injector)
 	projectRepo := do.MustInvoke[*repositories2.ProjectRepository](injector)
 
-	return &ConnectionServiceImpl{
+	return &ServiceImpl{
 		databaseRepo: databaseRepo,
 		projectRepo:  projectRepo,
 	}, nil
 }
 
-func (s *ConnectionServiceImpl) ConnectByDatabaseName(name string) (*sqlx.DB, error) {
+func (s *ServiceImpl) ConnectByDatabaseName(name string) (*sqlx.DB, error) {
 	return s.databaseRepo.Connect(name)
 }
 
-func (s *ConnectionServiceImpl) ConnectByProjectUUID(projectUUID uuid.UUID) (*sqlx.DB, error) {
+func (s *ServiceImpl) ConnectByProjectUUID(projectUUID uuid.UUID) (*sqlx.DB, error) {
 	project, err := s.projectRepo.GetByUUID(projectUUID)
 	if err != nil {
 		return nil, err
@@ -46,7 +46,7 @@ func (s *ConnectionServiceImpl) ConnectByProjectUUID(projectUUID uuid.UUID) (*sq
 	return s.databaseRepo.Connect(project.DBName)
 }
 
-func (s *ConnectionServiceImpl) GetDatabaseStatsRepo(databaseName string, connection *sqlx.DB) (*repositories2.DatabaseStatsRepository, *sqlx.DB, error) {
+func (s *ServiceImpl) GetDatabaseStatsRepo(databaseName string, connection *sqlx.DB) (*repositories2.DatabaseStatsRepository, *sqlx.DB, error) {
 	clientDatabaseConnection, err := s.getOrCreateConnection(databaseName, connection)
 	if err != nil {
 		return nil, nil, err
@@ -60,7 +60,7 @@ func (s *ConnectionServiceImpl) GetDatabaseStatsRepo(databaseName string, connec
 	return clientDatabaseStatsRepo, clientDatabaseConnection, nil
 }
 
-func (s *ConnectionServiceImpl) GetTableRepo(databaseName string, connection *sqlx.DB) (*repositories2.TableRepository, *sqlx.DB, error) {
+func (s *ServiceImpl) GetTableRepo(databaseName string, connection *sqlx.DB) (*repositories2.TableRepository, *sqlx.DB, error) {
 	clientDatabaseConnection, err := s.getOrCreateConnection(databaseName, connection)
 	if err != nil {
 		return nil, nil, err
@@ -74,7 +74,7 @@ func (s *ConnectionServiceImpl) GetTableRepo(databaseName string, connection *sq
 	return clientTableRepo, clientDatabaseConnection, nil
 }
 
-func (s *ConnectionServiceImpl) GetColumnRepo(databaseName string, connection *sqlx.DB) (*repositories2.ColumnRepository, *sqlx.DB, error) {
+func (s *ServiceImpl) GetColumnRepo(databaseName string, connection *sqlx.DB) (*repositories2.ColumnRepository, *sqlx.DB, error) {
 	clientDatabaseConnection, err := s.getOrCreateConnection(databaseName, connection)
 	if err != nil {
 		return nil, nil, err
@@ -88,7 +88,7 @@ func (s *ConnectionServiceImpl) GetColumnRepo(databaseName string, connection *s
 	return clientColumnRepo, clientDatabaseConnection, nil
 }
 
-func (s *ConnectionServiceImpl) GetIndexRepo(databaseName string, connection *sqlx.DB) (*repositories2.IndexRepository, *sqlx.DB, error) {
+func (s *ServiceImpl) GetIndexRepo(databaseName string, connection *sqlx.DB) (*repositories2.IndexRepository, *sqlx.DB, error) {
 	clientDatabaseConnection, err := s.getOrCreateConnection(databaseName, connection)
 	if err != nil {
 		return nil, nil, err
@@ -102,7 +102,7 @@ func (s *ConnectionServiceImpl) GetIndexRepo(databaseName string, connection *sq
 	return clientIndexRepo, clientDatabaseConnection, nil
 }
 
-func (s *ConnectionServiceImpl) GetRowRepo(databaseName string, connection *sqlx.DB) (*repositories2.RowRepository, *sqlx.DB, error) {
+func (s *ServiceImpl) GetRowRepo(databaseName string, connection *sqlx.DB) (*repositories2.RowRepository, *sqlx.DB, error) {
 	clientDatabaseConnection, err := s.getOrCreateConnection(databaseName, connection)
 	if err != nil {
 		return nil, nil, err
@@ -116,7 +116,7 @@ func (s *ConnectionServiceImpl) GetRowRepo(databaseName string, connection *sqlx
 	return clientIndexRepo, clientDatabaseConnection, nil
 }
 
-func (s *ConnectionServiceImpl) GetFunctionRepoByProjectUUID(projectUUID uuid.UUID, connection *sqlx.DB) (*repositories2.FunctionRepository, *sqlx.DB, error) {
+func (s *ServiceImpl) GetFunctionRepoByProjectUUID(projectUUID uuid.UUID, connection *sqlx.DB) (*repositories2.FunctionRepository, *sqlx.DB, error) {
 	databaseName, err := s.projectRepo.GetDatabaseNameByUUID(projectUUID)
 	if err != nil {
 		return nil, nil, err
@@ -125,7 +125,7 @@ func (s *ConnectionServiceImpl) GetFunctionRepoByProjectUUID(projectUUID uuid.UU
 	return s.getClientFunctionRepo(databaseName, connection)
 }
 
-func (s *ConnectionServiceImpl) getClientFunctionRepo(databaseName string, connection *sqlx.DB) (*repositories2.FunctionRepository, *sqlx.DB, error) {
+func (s *ServiceImpl) getClientFunctionRepo(databaseName string, connection *sqlx.DB) (*repositories2.FunctionRepository, *sqlx.DB, error) {
 	clientDatabaseConnection, err := s.getOrCreateConnection(databaseName, connection)
 	if err != nil {
 		return nil, nil, err
@@ -139,7 +139,7 @@ func (s *ConnectionServiceImpl) getClientFunctionRepo(databaseName string, conne
 	return clientFunctionRepo, clientDatabaseConnection, nil
 }
 
-func (s *ConnectionServiceImpl) getOrCreateConnection(databaseName string, connection *sqlx.DB) (*sqlx.DB, error) {
+func (s *ServiceImpl) getOrCreateConnection(databaseName string, connection *sqlx.DB) (*sqlx.DB, error) {
 	if connection != nil {
 		return connection, nil
 	}

@@ -1,8 +1,7 @@
 package stats
 
 import (
-	"fluxton/internal/adapters/connection"
-	"fluxton/internal/database/repositories"
+	"fluxton/internal/adapters/client"
 	"fluxton/internal/domain/admin"
 	"fluxton/internal/domain/database/stat"
 	"fluxton/models"
@@ -23,15 +22,15 @@ type DatabaseStatsService interface {
 }
 
 type DatabaseStatsServiceImpl struct {
-	connectionService connection.ConnectionService
+	connectionService client.Service
 	adminPolicy       *admin.AdminPolicy
-	databaseRepo      *repositories.DatabaseRepository
+	databaseRepo      *client.Repository
 }
 
 func NewDatabaseStatsService(injector *do.Injector) (DatabaseStatsService, error) {
-	connectionService := do.MustInvoke[connection.ConnectionService](injector)
+	connectionService := do.MustInvoke[client.Service](injector)
 	policy := admin.NewAdminPolicy()
-	databaseRepo := do.MustInvoke[*repositories.DatabaseRepository](injector)
+	databaseRepo := do.MustInvoke[*client.Repository](injector)
 
 	return &DatabaseStatsServiceImpl{
 		connectionService: connectionService,
