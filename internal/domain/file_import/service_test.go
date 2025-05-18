@@ -17,11 +17,11 @@ func TestNewFileImportService(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.NotNil(t, service)
-	assert.IsType(t, &FileImportServiceImpl{}, service)
+	assert.IsType(t, &ServiceImpl{}, service)
 }
 
 func TestImportCSV_EmptyFile(t *testing.T) {
-	service := &FileImportServiceImpl{}
+	service := &ServiceImpl{}
 
 	var buf bytes.Buffer
 	writer := csv.NewWriter(&buf)
@@ -38,7 +38,7 @@ func TestImportCSV_EmptyFile(t *testing.T) {
 }
 
 func TestImportCSV_HeadersOnly(t *testing.T) {
-	service := &FileImportServiceImpl{}
+	service := &ServiceImpl{}
 
 	// Create a CSV with headers but no data
 	var buf bytes.Buffer
@@ -70,7 +70,7 @@ func TestImportCSV_HeadersOnly(t *testing.T) {
 }
 
 func TestImportCSV_CompleteData(t *testing.T) {
-	service := &FileImportServiceImpl{}
+	service := &ServiceImpl{}
 
 	// Create a CSV with headers and data
 	var buf bytes.Buffer
@@ -113,7 +113,7 @@ func TestImportCSV_CompleteData(t *testing.T) {
 }
 
 func TestDetermineColumns(t *testing.T) {
-	service := &FileImportServiceImpl{}
+	service := &ServiceImpl{}
 
 	headers := []string{"Name", "Age", "Email"}
 	dataRows := [][]string{
@@ -133,7 +133,7 @@ func TestDetermineColumns(t *testing.T) {
 }
 
 func TestImportCSV_MixedNullability(t *testing.T) {
-	service := &FileImportServiceImpl{}
+	service := &ServiceImpl{}
 
 	// Create a CSV with headers and data, including nulls
 	var buf bytes.Buffer
@@ -168,7 +168,7 @@ func TestImportCSV_MixedNullability(t *testing.T) {
 }
 
 func TestImportCSV_TypedHeaders(t *testing.T) {
-	service := &FileImportServiceImpl{}
+	service := &ServiceImpl{}
 
 	var buf bytes.Buffer
 	writer := csv.NewWriter(&buf)
@@ -199,7 +199,7 @@ func TestImportCSV_TypedHeaders(t *testing.T) {
 }
 
 func TestParseHeaderWithType(t *testing.T) {
-	service := &FileImportServiceImpl{}
+	service := &ServiceImpl{}
 
 	testCases := []struct {
 		header     string
@@ -244,7 +244,7 @@ func TestParseHeaderWithType(t *testing.T) {
 }
 
 func TestSanitizeColumnName(t *testing.T) {
-	service := &FileImportServiceImpl{}
+	service := &ServiceImpl{}
 
 	testCases := []struct {
 		input    string
@@ -289,7 +289,7 @@ func TestSanitizeColumnName(t *testing.T) {
 }
 
 func TestConvertValueToType(t *testing.T) {
-	service := &FileImportServiceImpl{}
+	service := &ServiceImpl{}
 
 	testCases := []struct {
 		name      string
@@ -424,7 +424,7 @@ func TestConvertValueToType(t *testing.T) {
 }
 
 func TestDetectColumnType(t *testing.T) {
-	service := &FileImportServiceImpl{}
+	service := &ServiceImpl{}
 
 	testCases := []struct {
 		name         string

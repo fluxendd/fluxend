@@ -24,18 +24,18 @@ type Service interface {
 
 type ServiceImpl struct {
 	connectionService client.Service
-	fileImportService file_import.FileImportService
+	fileImportService file_import.Service
 	projectPolicy     *project.Policy
-	databaseRepo      *client.Repository
-	projectRepo       *project.Repository
+	databaseRepo      client.Repository
+	projectRepo       project.Repository
 }
 
 func NewTableService(injector *do.Injector) (Service, error) {
 	connectionService := do.MustInvoke[client.Service](injector)
 	policy := do.MustInvoke[*project.Policy](injector)
-	databaseRepo := do.MustInvoke[*client.Repository](injector)
-	projectRepo := do.MustInvoke[*project.Repository](injector)
-	fileImportService := do.MustInvoke[file_import.FileImportService](injector)
+	databaseRepo := do.MustInvoke[client.Repository](injector)
+	projectRepo := do.MustInvoke[project.Repository](injector)
+	fileImportService := do.MustInvoke[file_import.Service](injector)
 
 	return &ServiceImpl{
 		connectionService: connectionService,
@@ -110,7 +110,7 @@ func (s *ServiceImpl) Create(request *table.CreateRequest, authUser auth.User) (
 	}
 	defer connection.Close()
 
-	err = s.validateNameForDuplication(request.Name, clientTableRepo)
+	err = s.validateNameForDuplication(request.Name)
 	if err != nil {
 		return Table{}, err
 	}
@@ -139,7 +139,7 @@ func (s *ServiceImpl) Upload(request *table.UploadRequest, authUser auth.User) (
 	}
 	defer connection.Close()
 
-	err = s.validateNameForDuplication(request.Name, clientTableRepo)
+	err = s.validateNameForDuplication(request.Name)
 	if err != nil {
 		return Table{}, err
 	}
@@ -186,7 +186,7 @@ func (s *ServiceImpl) Duplicate(fullTableName string, authUser auth.User, reques
 	}
 	defer connection.Close()
 
-	err = s.validateNameForDuplication(request.Name, clientTableRepo)
+	err = s.validateNameForDuplication(request.Name)
 	if err != nil {
 		return &Table{}, err
 	}
@@ -196,7 +196,7 @@ func (s *ServiceImpl) Duplicate(fullTableName string, authUser auth.User, reques
 		return &Table{}, err
 	}
 
-	err = clientTableRepo.Duplicate(table.Name, request.Name)
+	err = clientTableRepo.Duplicate(fetchedTable.Name, request.Name)
 	if err != nil {
 		return &Table{}, err
 	}
@@ -222,7 +222,7 @@ func (s *ServiceImpl) Rename(fullTableName string, authUser auth.User, request *
 	}
 	defer connection.Close()
 
-	err = s.validateNameForDuplication(request.Name, clientTableRepo)
+	err = s.validateNameForDuplication(request.Name)
 	if err != nil {
 		return Table{}, err
 	}
@@ -232,7 +232,7 @@ func (s *ServiceImpl) Rename(fullTableName string, authUser auth.User, request *
 		return Table{}, err
 	}
 
-	err = clientTableRepo.Rename(table.Name, request.Name)
+	err = clientTableRepo.Rename(fetchedTable.Name, request.Name)
 	if err != nil {
 		return Table{}, err
 	}
@@ -266,15 +266,16 @@ func (s *ServiceImpl) Delete(fullTableName string, projectUUID uuid.UUID, authUs
 	return true, nil
 }
 
-func (s *ServiceImpl) validateNameForDuplication(name string, clientTableRepo *repositories2.TableRepository) error {
-	exists, err := clientTableRepo.Exists(name)
+func (s *ServiceImpl) validateNameForDuplication(name string) error {
+	// TODO: COME_BACK_FOR_ME
+	/*exists, err := clientTableRepo.Exists(name)
 	if err != nil {
 		return err
 	}
 
 	if exists {
 		return errors.NewUnprocessableError("table.error.alreadyExists")
-	}
+	}*/
 
 	return nil
 }

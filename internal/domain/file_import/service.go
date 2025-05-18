@@ -19,18 +19,18 @@ import (
 
 type Row map[string]interface{}
 
-type FileImportService interface {
+type Service interface {
 	ImportCSV(file multipart.File) ([]column.Column, [][]string, error)
 }
 
-type FileImportServiceImpl struct {
+type ServiceImpl struct {
 }
 
-func NewFileImportService(injector *do.Injector) (FileImportService, error) {
-	return &FileImportServiceImpl{}, nil
+func NewFileImportService(injector *do.Injector) (Service, error) {
+	return &ServiceImpl{}, nil
 }
 
-func (s *FileImportServiceImpl) ImportCSV(file multipart.File) ([]column.Column, [][]string, error) {
+func (s *ServiceImpl) ImportCSV(file multipart.File) ([]column.Column, [][]string, error) {
 	// Parse CSV
 	reader := csv.NewReader(file)
 	records, err := reader.ReadAll()
@@ -63,7 +63,7 @@ func (s *FileImportServiceImpl) ImportCSV(file multipart.File) ([]column.Column,
 	return columns, dataRows, nil
 }
 
-func (s *FileImportServiceImpl) determineColumns(headers []string, dataRows [][]string) ([]column.Column, error) {
+func (s *ServiceImpl) determineColumns(headers []string, dataRows [][]string) ([]column.Column, error) {
 	columns := make([]column.Column, 0, len(headers))
 	columnNames := make(map[string]int) // Track sanitized column names for uniqueness
 
@@ -106,7 +106,7 @@ func (s *FileImportServiceImpl) determineColumns(headers []string, dataRows [][]
 	return columns, nil
 }
 
-func (s *FileImportServiceImpl) detectColumnType(rows [][]string, colIndex int) (string, bool) {
+func (s *ServiceImpl) detectColumnType(rows [][]string, colIndex int) (string, bool) {
 	if len(rows) == 0 {
 		return "text", false // Default to text if no data
 	}
@@ -298,7 +298,7 @@ func (s *FileImportServiceImpl) detectColumnType(rows [][]string, colIndex int) 
 	return "text", !nullable
 }
 
-func (s *FileImportServiceImpl) parseHeaderWithType(header string) (string, string) {
+func (s *ServiceImpl) parseHeaderWithType(header string) (string, string) {
 	r := regexp.MustCompile(`(.*?)\s*\[(.*?)\]$`)
 	matches := r.FindStringSubmatch(header)
 
@@ -309,7 +309,7 @@ func (s *FileImportServiceImpl) parseHeaderWithType(header string) (string, stri
 	return header, ""
 }
 
-func (s *FileImportServiceImpl) parseTypeHint(typeHint string) string {
+func (s *ServiceImpl) parseTypeHint(typeHint string) string {
 	typeHint = strings.TrimSpace(typeHint)
 	typeHint = strings.ToLower(typeHint)
 
@@ -351,7 +351,7 @@ func (s *FileImportServiceImpl) parseTypeHint(typeHint string) string {
 	}
 }
 
-func (s *FileImportServiceImpl) sanitizeColumnName(name string) string {
+func (s *ServiceImpl) sanitizeColumnName(name string) string {
 	// Convert to snake_case
 	var result strings.Builder
 	var prevChar rune
@@ -384,7 +384,7 @@ func (s *FileImportServiceImpl) sanitizeColumnName(name string) string {
 	return sanitizedName
 }
 
-func (s *FileImportServiceImpl) convertValueToType(value string, colType string) (interface{}, error) {
+func (s *ServiceImpl) convertValueToType(value string, colType string) (interface{}, error) {
 	// Handle different types
 	if strings.HasPrefix(colType, "varchar") || colType == "text" {
 		return value, nil
