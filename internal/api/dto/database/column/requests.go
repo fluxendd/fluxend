@@ -35,17 +35,17 @@ func (r *CreateRequest) BindAndValidate(c echo.Context) []string {
 
 	r.SetContext(c)
 
-	var errors []string
+	var requestErrors []string
 
 	for _, currentColumn := range r.Columns {
-		if err := validateColumn(currentColumn); err != nil {
-			errors = append(errors, err.Error())
+		if err := Validate(currentColumn); err != nil {
+			requestErrors = append(requestErrors, err.Error())
 
-			return errors
+			return requestErrors
 		}
 	}
 
-	return errors
+	return requestErrors
 }
 
 func (r *RenameRequest) BindAndValidate(c echo.Context) []string {
@@ -80,7 +80,7 @@ func (r *RenameRequest) BindAndValidate(c echo.Context) []string {
 	return r.ExtractValidationErrors(err)
 }
 
-func validateColumn(column column.Column) error {
+func Validate(column column.Column) error {
 	return validation.ValidateStruct(&column,
 		validation.Field(
 			&column.Name,

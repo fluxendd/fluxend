@@ -11,14 +11,14 @@ import (
 	"strings"
 )
 
-type IndexCreateRequest struct {
+type CreateRequest struct {
 	dto.BaseRequest
 	Name     string   `json:"name"`
 	Columns  []string `json:"columns"`
 	IsUnique bool     `json:"is_unique"`
 }
 
-func (r *IndexCreateRequest) BindAndValidate(c echo.Context) []string {
+func (r *CreateRequest) BindAndValidate(c echo.Context) []string {
 	if err := c.Bind(r); err != nil {
 		return []string{"Invalid request payload"}
 	}

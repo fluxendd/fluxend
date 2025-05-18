@@ -210,7 +210,7 @@ func (tc *TableHandler) Duplicate(c echo.Context) error {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.SuccessResponse(c, table.TableResource(duplicatedTable))
+	return response.SuccessResponse(c, table.ToResource(duplicatedTable))
 }
 
 // Rename updates the name of an existing table.
@@ -253,7 +253,7 @@ func (tc *TableHandler) Rename(c echo.Context) error {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.SuccessResponse(c, table.TableResource(&renamedTable))
+	return response.SuccessResponse(c, table.ToResource(&renamedTable))
 }
 
 // Delete removes a table permanently from a project.

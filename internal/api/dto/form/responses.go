@@ -1,12 +1,22 @@
 package form
 
 import (
-	"fluxton/internal/domain/form"
 	"github.com/google/uuid"
 	"github.com/guregu/null/v6"
 )
 
-type FormFieldResponse struct {
+type Response struct {
+	Uuid        uuid.UUID `json:"uuid"`
+	Name        string    `json:"name"`
+	Description string    `json:"description"`
+	ProjectUuid uuid.UUID `json:"projectUuid"`
+	CreatedBy   uuid.UUID `json:"createdB"`
+	UpdatedBy   uuid.UUID `json:"updatedBy"`
+	CreatedAt   string    `json:"createdAt"`
+	UpdatedAt   string    `json:"updatedAt"`
+}
+
+type FieldResponse struct {
 	Uuid         uuid.UUID   `json:"uuid"`
 	FormUuid     uuid.UUID   `json:"formUuid"`
 	Label        string      `json:"label"`
@@ -27,34 +37,17 @@ type FormFieldResponse struct {
 	UpdatedAt    string      `json:"updatedAt"`
 }
 
-func FormFieldResource(formField *form.Field) FormFieldResponse {
-	return FormFieldResponse{
-		Uuid:         formField.Uuid,
-		FormUuid:     formField.FormUuid,
-		Label:        formField.Label,
-		Description:  formField.Description,
-		Type:         formField.Type,
-		IsRequired:   formField.IsRequired,
-		Options:      formField.Options,
-		MinLength:    formField.MinLength,
-		MaxLength:    formField.MaxLength,
-		MinValue:     formField.MinValue,
-		MaxValue:     formField.MaxValue,
-		Pattern:      formField.Pattern,
-		DefaultValue: formField.DefaultValue,
-		StartDate:    formField.StartDate,
-		EndDate:      formField.EndDate,
-		DateFormat:   formField.DateFormat,
-		CreatedAt:    formField.CreatedAt.Format("2006-01-02 15:04:05"),
-		UpdatedAt:    formField.UpdatedAt.Format("2006-01-02 15:04:05"),
-	}
+type ResponseForAPI struct {
+	Uuid      uuid.UUID             `json:"uuid"`
+	FormUuid  uuid.UUID             `json:"formUuid"`
+	Responses []FieldResponseForAPI `json:"responses"`
 }
 
-func FormFieldResourceCollection(formFields []form.Field) []FormFieldResponse {
-	resourceFormFields := make([]FormFieldResponse, len(formFields))
-	for i, formField := range formFields {
-		resourceFormFields[i] = FormFieldResource(&formField)
-	}
-
-	return resourceFormFields
+type FieldResponseForAPI struct {
+	Uuid             uuid.UUID `json:"uuid"`
+	FormResponseUuid uuid.UUID `json:"formResponseUuid"`
+	FormFieldUuid    uuid.UUID `json:"formFieldUuid"`
+	Value            string    `json:"value"`
+	CreatedAt        string    `json:"createdAt"`
+	UpdatedAt        string    `json:"updatedAt"`
 }

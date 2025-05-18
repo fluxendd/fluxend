@@ -33,6 +33,12 @@ var allowedFieldTypes = []interface{}{
 	FieldTypeSelect,
 }
 
+type CreateRequest struct {
+	dto.BaseRequest
+	Name        string `json:"name"`
+	Description string `json:"description"`
+}
+
 type FieldRequest struct {
 	// required fields
 	Label      string `json:"label"`
@@ -61,6 +67,49 @@ type FieldRequest struct {
 type CreateFormFieldsRequest struct {
 	dto.BaseRequest
 	Fields []FieldRequest `json:"fields"`
+}
+
+type UpdateFormFieldRequest struct {
+	dto.BaseRequest
+	FieldRequest
+}
+
+type CreateResponseRequest struct {
+	dto.BaseRequest
+	Response map[string]interface{} `json:"response"`
+}
+
+func (r *CreateRequest) BindAndValidate(c echo.Context) []string {
+	if err := c.Bind(r); err != nil {
+		return []string{"Invalid request payload"}
+	}
+
+	err := r.WithProjectHeader(c)
+	if err != nil {
+		return []string{err.Error()}
+	}
+
+	r.SetContext(c)
+
+	err = validation.ValidateStruct(r,
+		validation.Field(
+			&r.Name,
+			validation.Required.Error("Name is required"),
+			validation.Length(
+				constants.MinProjectNameLength, constants.MaxProjectNameLength,
+			).Error(
+				fmt.Sprintf(
+					"Form name must be between %d and %d characters",
+					constants.MinProjectNameLength,
+					constants.MaxProjectNameLength,
+				),
+			),
+			validation.Match(
+				regexp.MustCompile(pkg.AlphanumericWithSpaceUnderScoreAndDashPattern()),
+			).Error("Form name must be alphanumeric with underscores, spaces and dashes")),
+	)
+
+	return r.ExtractValidationErrors(err)
 }
 
 // BindAndValidate binds and validates the request
@@ -121,4 +170,34 @@ func validateField(value interface{}) error {
 			).Error("Description must be between 0 and 255 characters"),
 		),
 	)
+}
+
+func (r *CreateResponseRequest) BindAndValidate(c echo.Context) []string {
+	if err := c.Bind(r); err != nil {
+		return []string{"Invalid request payload"}
+	}
+
+	err := r.WithProjectHeader(c)
+	if err != nil {
+		return []string{err.Error()}
+	}
+
+	r.SetContext(c)
+
+	return nil
+}
+
+func (r *UpdateFormFieldRequest) BindAndValidate(c echo.Context) []string {
+	if err := c.Bind(r); err != nil {
+		return []string{"Invalid request payload" + err.Error()}
+	}
+
+	err := r.WithProjectHeader(c)
+	if err != nil {
+		return []string{err.Error()}
+	}
+
+	r.SetContext(c)
+
+	return r.ExtractValidationErrors(validateField(r.FieldRequest))
 }

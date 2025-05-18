@@ -123,7 +123,7 @@ func (ic *IndexHandler) Show(c echo.Context) error {
 //
 // @Router /tables/{tableUUID}/indexes [post]
 func (ic *IndexHandler) Store(c echo.Context) error {
-	var request index.IndexCreateRequest
+	var request index.CreateRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
 	}

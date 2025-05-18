@@ -14,7 +14,7 @@ import (
 type Service interface {
 	List(fullTableName string, projectUUID uuid.UUID, authUser auth.User) ([]string, error)
 	GetByName(indexName, fullTableName string, projectUUID uuid.UUID, authUser auth.User) (string, error)
-	Create(fullTableName string, request *index.IndexCreateRequest, authUser auth.User) (string, error)
+	Create(fullTableName string, request *index.CreateRequest, authUser auth.User) (string, error)
 	Delete(indexName, fullTableName string, projectUUID uuid.UUID, authUser auth.User) (bool, error)
 }
 
@@ -76,7 +76,7 @@ func (s *ServiceImpl) GetByName(indexName, fullTableName string, projectUUID uui
 	return clientIndexRepo.GetByName(tableName, indexName)
 }
 
-func (s *ServiceImpl) Create(fullTableName string, request *index.IndexCreateRequest, authUser auth.User) (string, error) {
+func (s *ServiceImpl) Create(fullTableName string, request *index.CreateRequest, authUser auth.User) (string, error) {
 	fetchedProject, err := s.projectRepo.GetByUUID(request.ProjectUUID)
 	if err != nil {
 		return "", err
