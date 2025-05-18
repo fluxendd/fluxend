@@ -4,18 +4,18 @@ import (
 	"fluxton/internal/api/dto"
 	"fluxton/internal/api/dto/storage/container"
 	"fluxton/internal/api/response"
-	container2 "fluxton/internal/domain/storage/container"
+	containerDomain "fluxton/internal/domain/storage/container"
 	"fluxton/pkg/auth"
 	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
 )
 
 type ContainerHandler struct {
-	containerService container2.ContainerService
+	containerService containerDomain.Service
 }
 
 func NewContainerHandler(injector *do.Injector) (*ContainerHandler, error) {
-	containerService := do.MustInvoke[container2.ContainerService](injector)
+	containerService := do.MustInvoke[containerDomain.Service](injector)
 
 	return &ContainerHandler{containerService: containerService}, nil
 }

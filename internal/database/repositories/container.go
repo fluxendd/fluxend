@@ -17,7 +17,7 @@ type ContainerRepository struct {
 	db *sqlx.DB
 }
 
-func NewContainerRepository(injector *do.Injector) (*ContainerRepository, error) {
+func NewContainerRepository(injector *do.Injector) (container.Repository, error) {
 	db := do.MustInvoke[*sqlx.DB](injector)
 
 	return &ContainerRepository{db: db}, nil
@@ -56,11 +56,11 @@ func (r *ContainerRepository) ListForProject(paginationParams dto.PaginationPara
 
 	var containers []container.Container
 	for rows.Next() {
-		var container container.Container
-		if err := rows.StructScan(&container); err != nil {
+		var currentContainer container.Container
+		if err := rows.StructScan(&currentContainer); err != nil {
 			return nil, pkg.FormatError(err, "scan", pkg.GetMethodName())
 		}
-		containers = append(containers, container)
+		containers = append(containers, currentContainer)
 	}
 
 	if err := rows.Err(); err != nil {
@@ -74,8 +74,8 @@ func (r *ContainerRepository) GetByUUID(containerUUID uuid.UUID) (container.Cont
 	query := "SELECT %s FROM storage.containers WHERE uuid = $1"
 	query = fmt.Sprintf(query, pkg.GetColumns[container.Container]())
 
-	var container container.Container
-	err := r.db.Get(&container, query, containerUUID)
+	var fetchedContainer container.Container
+	err := r.db.Get(&fetchedContainer, query, containerUUID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return container.Container{}, flxErrs.NewNotFoundError("container.error.notFound")
@@ -84,7 +84,7 @@ func (r *ContainerRepository) GetByUUID(containerUUID uuid.UUID) (container.Cont
 		return container.Container{}, pkg.FormatError(err, "fetch", pkg.GetMethodName())
 	}
 
-	return container, nil
+	return fetchedContainer, nil
 }
 
 func (r *ContainerRepository) ExistsByUUID(containerUUID uuid.UUID) (bool, error) {
@@ -155,7 +155,7 @@ func (r *ContainerRepository) Create(container *container.Container) (*container
 	return container, nil
 }
 
-func (r *ContainerRepository) Update(container *container.Container) (*container.Container, error) {
+func (r *ContainerRepository) Update(containerInput *container.Container) (*container.Container, error) {
 	query := `
 		UPDATE storage.containers 
 		SET 
@@ -167,7 +167,7 @@ func (r *ContainerRepository) Update(container *container.Container) (*container
 		    updated_by = :updated_by
 		WHERE uuid = :uuid`
 
-	res, err := r.db.NamedExec(query, container)
+	res, err := r.db.NamedExec(query, containerInput)
 	if err != nil {
 		return &container.Container{}, pkg.FormatError(err, "update", pkg.GetMethodName())
 	}
@@ -177,7 +177,7 @@ func (r *ContainerRepository) Update(container *container.Container) (*container
 		return &container.Container{}, pkg.FormatError(err, "affectedRows", pkg.GetMethodName())
 	}
 
-	return container, nil
+	return containerInput, nil
 }
 
 func (r *ContainerRepository) IncrementTotalFiles(containerUUID uuid.UUID) error {
