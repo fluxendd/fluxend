@@ -3,19 +3,20 @@ package handlers
 import (
 	"fluxton/internal/api/dto"
 	"fluxton/internal/api/dto/storage/file"
+	fileMapper "fluxton/internal/api/mapper/file"
 	"fluxton/internal/api/response"
-	file2 "fluxton/internal/domain/storage/file"
+	fileDomain "fluxton/internal/domain/storage/file"
 	"fluxton/pkg/auth"
 	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
 )
 
 type FileHandler struct {
-	fileService file2.FileService
+	fileService fileDomain.Service
 }
 
 func NewFileHandler(injector *do.Injector) (*FileHandler, error) {
-	fileService := do.MustInvoke[file2.FileService](injector)
+	fileService := do.MustInvoke[fileDomain.Service](injector)
 
 	return &FileHandler{fileService: fileService}, nil
 }
@@ -62,7 +63,7 @@ func (fc *FileHandler) List(c echo.Context) error {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.SuccessResponse(c, file.FileResourceCollection(files))
+	return response.SuccessResponse(c, fileMapper.ToResourceCollection(files))
 }
 
 // Show retrieves details of a specific file.
@@ -102,12 +103,12 @@ func (fc *FileHandler) Show(c echo.Context) error {
 		return response.BadRequestResponse(c, err.Error())
 	}
 
-	file, err := fc.fileService.GetByUUID(fileUUID, containerUUID, authUser)
+	fetchedFile, err := fc.fileService.GetByUUID(fileUUID, containerUUID, authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.SuccessResponse(c, file.FileResource(&file))
+	return response.SuccessResponse(c, fileMapper.ToResource(&fetchedFile))
 }
 
 // Store creates a new file in a container
@@ -142,12 +143,12 @@ func (fc *FileHandler) Store(c echo.Context) error {
 		return response.BadRequestResponse(c, err.Error())
 	}
 
-	file, err := fc.fileService.Create(containerUUID, &request, authUser)
+	createdFile, err := fc.fileService.Create(containerUUID, &request, authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.CreatedResponse(c, file.FileResource(&file))
+	return response.CreatedResponse(c, fileMapper.ToResource(&createdFile))
 }
 
 // Rename updates the name of a file
@@ -193,7 +194,7 @@ func (fc *FileHandler) Rename(c echo.Context) error {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.SuccessResponse(c, file.FileResource(updatedFile))
+	return response.SuccessResponse(c, fileMapper.ToResource(updatedFile))
 }
 
 // Delete removes a file from a container

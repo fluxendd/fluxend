@@ -56,11 +56,11 @@ func (r *FileRepository) ListForContainer(paginationParams dto.PaginationParams,
 
 	var files []file.File
 	for rows.Next() {
-		var file file.File
-		if err := rows.StructScan(&file); err != nil {
+		var currentFile file.File
+		if err := rows.StructScan(&currentFile); err != nil {
 			return nil, pkg.FormatError(err, "scan", pkg.GetMethodName())
 		}
-		files = append(files, file)
+		files = append(files, currentFile)
 	}
 
 	if err := rows.Err(); err != nil {
@@ -74,8 +74,8 @@ func (r *FileRepository) GetByUUID(fileUUID uuid.UUID) (file.File, error) {
 	query := "SELECT %s FROM storage.files WHERE uuid = $1"
 	query = fmt.Sprintf(query, pkg.GetColumns[file.File]())
 
-	var file file.File
-	err := r.db.Get(&file, query, fileUUID)
+	var fetchedFile file.File
+	err := r.db.Get(&fetchedFile, query, fileUUID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return file.File{}, flxErrs.NewNotFoundError("file.error.notFound")
@@ -84,7 +84,7 @@ func (r *FileRepository) GetByUUID(fileUUID uuid.UUID) (file.File, error) {
 		return file.File{}, pkg.FormatError(err, "fetch", pkg.GetMethodName())
 	}
 
-	return file, nil
+	return fetchedFile, nil
 }
 
 func (r *FileRepository) ExistsByUUID(containerUUID uuid.UUID) (bool, error) {

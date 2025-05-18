@@ -3,6 +3,7 @@ package handlers
 import (
 	"fluxton/internal/api/dto"
 	"fluxton/internal/api/dto/storage/container"
+	containerMapper "fluxton/internal/api/mapper/container"
 	"fluxton/internal/api/response"
 	containerDomain "fluxton/internal/domain/storage/container"
 	"fluxton/pkg/auth"
@@ -57,7 +58,7 @@ func (bc *ContainerHandler) List(c echo.Context) error {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.SuccessResponse(c, container.ContainerResourceCollection(container))
+	return response.SuccessResponse(c, containerMapper.ToResourceCollection(container))
 }
 
 // Show retrieves details of a specific container.
@@ -96,7 +97,7 @@ func (bc *ContainerHandler) Show(c echo.Context) error {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.SuccessResponse(c, container.ContainerResource(&container))
+	return response.SuccessResponse(c, containerMapper.ToResource(&container))
 }
 
 // Store creates a new container
@@ -132,7 +133,7 @@ func (bc *ContainerHandler) Store(c echo.Context) error {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.CreatedResponse(c, container.ContainerResource(&container))
+	return response.CreatedResponse(c, containerMapper.ToResource(&container))
 }
 
 // Update a container
@@ -175,7 +176,7 @@ func (bc *ContainerHandler) Update(c echo.Context) error {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.SuccessResponse(c, container.ContainerResource(updatedContainer))
+	return response.SuccessResponse(c, containerMapper.ToResource(updatedContainer))
 }
 
 // Delete a container
