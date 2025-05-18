@@ -2,7 +2,8 @@ package handlers
 
 import (
 	"fluxton/internal/api/dto"
-	formDto "fluxton/internal/api/dto/form"
+	"fluxton/internal/api/dto/form"
+	formMapper "fluxton/internal/api/mapper/form"
 	"fluxton/internal/api/response"
 	formDomain "fluxton/internal/domain/form"
 	"fluxton/pkg/auth"
@@ -56,7 +57,7 @@ func (fc *FormHandler) List(c echo.Context) error {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.SuccessResponse(c, formDto.FormResourceCollection(forms))
+	return response.SuccessResponse(c, formMapper.ToFormResourceCollection(forms))
 }
 
 // Show retrieves details of a specific form
@@ -97,7 +98,7 @@ func (fc *FormHandler) Show(c echo.Context) error {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.SuccessResponse(c, form.FormResource(&form))
+	return response.SuccessResponse(c, formMapper.ToFormResource(&form))
 }
 
 // Store creates a new form
@@ -134,7 +135,7 @@ func (fc *FormHandler) Store(c echo.Context) error {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.CreatedResponse(c, form.FormResource(&form))
+	return response.CreatedResponse(c, formMapper.ToFormResource(&form))
 }
 
 // Update updates an existing form
@@ -177,7 +178,7 @@ func (fc *FormHandler) Update(c echo.Context) error {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.SuccessResponse(c, form.FormResource(updatedForm))
+	return response.SuccessResponse(c, formMapper.ToFormResource(updatedForm))
 }
 
 // Delete removes a form
