@@ -1,9 +1,9 @@
 package column
 
 import (
-	"fluxton/internal/adapters/client"
 	"fluxton/internal/api/dto/database/column"
 	"fluxton/internal/domain/auth"
+	"fluxton/internal/domain/database/client"
 	"fluxton/internal/domain/project"
 	"fluxton/pkg"
 	"fluxton/pkg/errors"
@@ -20,13 +20,13 @@ type Service interface {
 }
 
 type ServiceImpl struct {
-	connectionService client.Service
+	connectionService client.ConnectionService
 	projectPolicy     *project.Policy
 	projectRepo       project.Repository
 }
 
 func NewColumnService(injector *do.Injector) (Service, error) {
-	connectionService := do.MustInvoke[client.Service](injector)
+	connectionService := do.MustInvoke[client.ConnectionService](injector)
 	policy := do.MustInvoke[*project.Policy](injector)
 	projectRepo := do.MustInvoke[project.Repository](injector)
 
