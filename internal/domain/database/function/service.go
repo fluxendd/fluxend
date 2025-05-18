@@ -1,9 +1,9 @@
 package function
 
 import (
-	"fluxton/internal/adapters/client"
 	"fluxton/internal/api/dto/database/function"
 	"fluxton/internal/domain/auth"
+	"fluxton/internal/domain/database/client"
 	"fluxton/internal/domain/project"
 	"fluxton/pkg/errors"
 	"fmt"
@@ -22,16 +22,16 @@ type Service interface {
 }
 
 type ServiceImpl struct {
-	connectService client.Service
+	connectService client.ConnectionService
 	projectPolicy  *project.Policy
-	databaseRepo   client.Repository
+	databaseRepo   client.DatabaseService
 	projectRepo    project.Repository
 }
 
 func NewFunctionService(injector *do.Injector) (Service, error) {
-	connectionService := do.MustInvoke[client.Service](injector)
+	connectionService := do.MustInvoke[client.ConnectionService](injector)
 	policy := do.MustInvoke[*project.Policy](injector)
-	databaseRepo := do.MustInvoke[client.Repository](injector)
+	databaseRepo := do.MustInvoke[client.DatabaseService](injector)
 	projectRepo := do.MustInvoke[project.Repository](injector)
 
 	return &ServiceImpl{

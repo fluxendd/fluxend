@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"fluxton/internal/api/dto"
+	"fluxton/internal/config/constants"
 	"fluxton/internal/domain/user"
 	"fluxton/pkg"
 	"fluxton/pkg/auth"
@@ -125,7 +126,7 @@ func (r *UserRepository) GetByEmail(email string) (user.User, error) {
 
 func (r *UserRepository) Create(input *user.User) (*user.User, error) {
 	query := "INSERT INTO authentication.users (username, email, status, role_id, password) VALUES ($1, $2, $3, $4, $5) RETURNING uuid"
-	err := r.db.QueryRowx(query, input.Username, input.Email, user.UserStatusActive, input.RoleID, auth.HashPassword(input.Password)).Scan(&input.Uuid)
+	err := r.db.QueryRowx(query, input.Username, input.Email, constants.UserStatusActive, input.RoleID, auth.HashPassword(input.Password)).Scan(&input.Uuid)
 	if err != nil {
 		return &user.User{}, fmt.Errorf("could not create row: %v", err)
 	}
