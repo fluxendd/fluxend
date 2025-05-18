@@ -4,18 +4,33 @@ import (
 	"errors"
 	"fluxton/internal/api/dto"
 	"fluxton/internal/config/constants"
-	"fluxton/internal/domain/database/column"
 	"fluxton/pkg"
 	"fmt"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
+	"github.com/guregu/null/v6"
 	"github.com/labstack/echo/v4"
 	"regexp"
 	"strings"
 )
 
+type Column struct {
+	Name     string `json:"name"`
+	Position int    `json:"position"`
+	NotNull  bool   `json:"notNull"`
+	Type     string `json:"type"`
+	Primary  bool   `json:"primary"`
+	Unique   bool   `json:"unique"`
+	Foreign  bool   `json:"foreign"`
+	Default  string `json:"defaultValue"`
+
+	// only required when constraint is FOREIGN KEY
+	ReferenceTable  null.String `json:"referenceTable,omitempty" swaggertype:"string"`
+	ReferenceColumn null.String `json:"referenceColumn,omitempty" swaggertype:"string"`
+}
+
 type CreateRequest struct {
 	dto.BaseRequest
-	Columns []column.Column `json:"columns"`
+	Columns []Column `json:"columns"`
 }
 
 type RenameRequest struct {
@@ -80,7 +95,7 @@ func (r *RenameRequest) BindAndValidate(c echo.Context) []string {
 	return r.ExtractValidationErrors(err)
 }
 
-func Validate(column column.Column) error {
+func Validate(column Column) error {
 	return validation.ValidateStruct(&column,
 		validation.Field(
 			&column.Name,
@@ -131,7 +146,7 @@ func validateType(value interface{}) error {
 	return nil
 }
 
-func validateForeignKeyConstraints(column column.Column) validation.RuleFunc {
+func validateForeignKeyConstraints(column Column) validation.RuleFunc {
 	return func(value interface{}) error {
 		if column.Foreign {
 			if !column.ReferenceTable.Valid || !column.ReferenceColumn.Valid {
