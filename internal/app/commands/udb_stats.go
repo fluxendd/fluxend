@@ -2,9 +2,9 @@ package commands
 
 import (
 	"fluxton/internal/app"
+	"fluxton/internal/domain/auth"
 	"fluxton/internal/domain/database/stat"
 	"fluxton/internal/domain/stats"
-	"fluxton/models"
 	"fluxton/pkg"
 	"github.com/google/uuid"
 	"github.com/samber/do"
@@ -38,17 +38,17 @@ var udbStats = &cobra.Command{
 func getDatabaseStats(databaseName string) (stat.DatabaseStat, error) {
 	container := app.InitializeContainer()
 
-	authUser := models.AuthUser{
+	authUser := auth.User{
 		Uuid:   uuid.MustParse("00000000-0000-0000-0000-000000000000"),
 		RoleID: 1,
 	}
 
-	databaseStatsService := do.MustInvoke[stats.DatabaseStatsService](container)
+	databaseStatsService := do.MustInvoke[stats.Service](container)
 
-	stats, err := databaseStatsService.GetAll(databaseName, authUser)
+	pulledStats, err := databaseStatsService.GetAll(databaseName, authUser)
 	if err != nil {
 		return stat.DatabaseStat{}, err
 	}
 
-	return stats, nil
+	return pulledStats, nil
 }

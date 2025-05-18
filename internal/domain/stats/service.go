@@ -3,43 +3,43 @@ package stats
 import (
 	"fluxton/internal/adapters/client"
 	"fluxton/internal/domain/admin"
+	"fluxton/internal/domain/auth"
 	"fluxton/internal/domain/database/stat"
-	"fluxton/models"
 	"fluxton/pkg/errors"
 	"github.com/samber/do"
 	"time"
 )
 
-type DatabaseStatsService interface {
-	GetTotalDatabaseSize(databaseName string, authUser models.AuthUser) (string, error)
-	GetTotalIndexSize(databaseName string, authUser models.AuthUser) (string, error)
-	GetUnusedIndexes(databaseName string, authUser models.AuthUser) ([]stat.UnusedIndex, error)
-	GetSlowQueries(databaseName string, authUser models.AuthUser) ([]stat.SlowQuery, error)
-	GetIndexScansPerTable(databaseName string, authUser models.AuthUser) ([]stat.IndexScan, error)
-	GetSizePerTable(databaseName string, authUser models.AuthUser) ([]stat.TableSize, error)
-	GetRowCountPerTable(databaseName string, authUser models.AuthUser) ([]stat.TableRowCount, error)
-	GetAll(databaseName string, authUser models.AuthUser) (stat.DatabaseStat, error)
+type Service interface {
+	GetTotalDatabaseSize(databaseName string, authUser auth.User) (string, error)
+	GetTotalIndexSize(databaseName string, authUser auth.User) (string, error)
+	GetUnusedIndexes(databaseName string, authUser auth.User) ([]stat.UnusedIndex, error)
+	GetSlowQueries(databaseName string, authUser auth.User) ([]stat.SlowQuery, error)
+	GetIndexScansPerTable(databaseName string, authUser auth.User) ([]stat.IndexScan, error)
+	GetSizePerTable(databaseName string, authUser auth.User) ([]stat.TableSize, error)
+	GetRowCountPerTable(databaseName string, authUser auth.User) ([]stat.TableRowCount, error)
+	GetAll(databaseName string, authUser auth.User) (stat.DatabaseStat, error)
 }
 
-type DatabaseStatsServiceImpl struct {
+type ServiceImpl struct {
 	connectionService client.Service
 	adminPolicy       *admin.Policy
 	databaseRepo      *client.Repository
 }
 
-func NewDatabaseStatsService(injector *do.Injector) (DatabaseStatsService, error) {
+func NewDatabaseStatsService(injector *do.Injector) (Service, error) {
 	connectionService := do.MustInvoke[client.Service](injector)
 	policy := admin.NewAdminPolicy()
 	databaseRepo := do.MustInvoke[*client.Repository](injector)
 
-	return &DatabaseStatsServiceImpl{
+	return &ServiceImpl{
 		connectionService: connectionService,
 		adminPolicy:       policy,
 		databaseRepo:      databaseRepo,
 	}, nil
 }
 
-func (s *DatabaseStatsServiceImpl) GetTotalDatabaseSize(databaseName string, authUser models.AuthUser) (string, error) {
+func (s *ServiceImpl) GetTotalDatabaseSize(databaseName string, authUser auth.User) (string, error) {
 	if !s.adminPolicy.CanAccess(authUser) {
 		return "", errors.NewForbiddenError("database_stats.error.forbidden")
 	}
@@ -52,7 +52,7 @@ func (s *DatabaseStatsServiceImpl) GetTotalDatabaseSize(databaseName string, aut
 	return dbStatsRepo.GetTotalDatabaseSize()
 }
 
-func (s *DatabaseStatsServiceImpl) GetTotalIndexSize(databaseName string, authUser models.AuthUser) (string, error) {
+func (s *ServiceImpl) GetTotalIndexSize(databaseName string, authUser auth.User) (string, error) {
 	if !s.adminPolicy.CanAccess(authUser) {
 		return "", errors.NewForbiddenError("database_stats.error.forbidden")
 	}
@@ -65,7 +65,7 @@ func (s *DatabaseStatsServiceImpl) GetTotalIndexSize(databaseName string, authUs
 	return dbStatsRepo.GetTotalIndexSize()
 }
 
-func (s *DatabaseStatsServiceImpl) GetUnusedIndexes(databaseName string, authUser models.AuthUser) ([]stat.UnusedIndex, error) {
+func (s *ServiceImpl) GetUnusedIndexes(databaseName string, authUser auth.User) ([]stat.UnusedIndex, error) {
 	if !s.adminPolicy.CanAccess(authUser) {
 		return []stat.UnusedIndex{}, errors.NewForbiddenError("database_stats.error.forbidden")
 	}
@@ -78,7 +78,7 @@ func (s *DatabaseStatsServiceImpl) GetUnusedIndexes(databaseName string, authUse
 	return dbStatsRepo.GetUnusedIndexes()
 }
 
-func (s *DatabaseStatsServiceImpl) GetSlowQueries(databaseName string, authUser models.AuthUser) ([]stat.SlowQuery, error) {
+func (s *ServiceImpl) GetSlowQueries(databaseName string, authUser auth.User) ([]stat.SlowQuery, error) {
 	if !s.adminPolicy.CanAccess(authUser) {
 		return []stat.SlowQuery{}, errors.NewForbiddenError("database_stats.error.forbidden")
 	}
@@ -91,7 +91,7 @@ func (s *DatabaseStatsServiceImpl) GetSlowQueries(databaseName string, authUser 
 	return dbStatsRepo.GetSlowQueries()
 }
 
-func (s *DatabaseStatsServiceImpl) GetIndexScansPerTable(databaseName string, authUser models.AuthUser) ([]stat.IndexScan, error) {
+func (s *ServiceImpl) GetIndexScansPerTable(databaseName string, authUser auth.User) ([]stat.IndexScan, error) {
 	if !s.adminPolicy.CanAccess(authUser) {
 		return []stat.IndexScan{}, errors.NewForbiddenError("database_stats.error.forbidden")
 	}
@@ -104,7 +104,7 @@ func (s *DatabaseStatsServiceImpl) GetIndexScansPerTable(databaseName string, au
 	return dbStatsRepo.GetIndexScansPerTable()
 }
 
-func (s *DatabaseStatsServiceImpl) GetSizePerTable(databaseName string, authUser models.AuthUser) ([]stat.TableSize, error) {
+func (s *ServiceImpl) GetSizePerTable(databaseName string, authUser auth.User) ([]stat.TableSize, error) {
 	if !s.adminPolicy.CanAccess(authUser) {
 		return []stat.TableSize{}, errors.NewForbiddenError("database_stats.error.forbidden")
 	}
@@ -117,7 +117,7 @@ func (s *DatabaseStatsServiceImpl) GetSizePerTable(databaseName string, authUser
 	return dbStatsRepo.GetSizePerTable()
 }
 
-func (s *DatabaseStatsServiceImpl) GetRowCountPerTable(databaseName string, authUser models.AuthUser) ([]stat.TableRowCount, error) {
+func (s *ServiceImpl) GetRowCountPerTable(databaseName string, authUser auth.User) ([]stat.TableRowCount, error) {
 	if !s.adminPolicy.CanAccess(authUser) {
 		return []stat.TableRowCount{}, errors.NewForbiddenError("database_stats.error.forbidden")
 	}
@@ -130,7 +130,7 @@ func (s *DatabaseStatsServiceImpl) GetRowCountPerTable(databaseName string, auth
 	return dbStatsRepo.GetRowCountPerTable()
 }
 
-func (s *DatabaseStatsServiceImpl) GetAll(databaseName string, authUser models.AuthUser) (stat.DatabaseStat, error) {
+func (s *ServiceImpl) GetAll(databaseName string, authUser auth.User) (stat.DatabaseStat, error) {
 	if !s.adminPolicy.CanAccess(authUser) {
 		return stat.DatabaseStat{}, errors.NewForbiddenError("database_stats.error.forbidden")
 	}
