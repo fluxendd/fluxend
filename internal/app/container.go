@@ -5,6 +5,7 @@ import (
 	"fluxton/internal/adapters/postgrest"
 	"fluxton/internal/api/handlers"
 	"fluxton/internal/database"
+	"fluxton/internal/database/factories"
 	"fluxton/internal/database/repositories"
 	"fluxton/internal/domain/backup"
 	"fluxton/internal/domain/database/column"
@@ -28,73 +29,90 @@ import (
 func InitializeContainer() *do.Injector {
 	injector := do.New()
 
-	// Database
+	// --- Database ---
 	database.InitDB()
 	do.Provide(injector, func(i *do.Injector) (*sqlx.DB, error) {
 		return database.GetDB(), nil
 	})
 
-	// Repositories
-	do.Provide(injector, repositories.NewUserRepository)
+	// --- Logging ---
 	do.Provide(injector, repositories.NewRequestLogRepository)
 	do.Provide(injector, client.NewClientRepository)
+
+	// --- User ---
+	do.Provide(injector, repositories.NewUserRepository)
+	do.Provide(injector, user.NewUserService)
+	do.Provide(injector, handlers.NewUserHandler)
+	do.Provide(injector, factories.NewUserFactory)
+
+	// --- Setting ---
 	do.Provide(injector, repositories.NewSettingRepository)
+	do.Provide(injector, setting.NewSettingService)
+	do.Provide(injector, handlers.NewSettingHandler)
+
+	// --- Organization ---
+	do.Provide(injector, organization.NewOrganizationPolicy)
 	do.Provide(injector, repositories.NewOrganizationRepository)
+	do.Provide(injector, organization.NewOrganizationService)
+	do.Provide(injector, handlers.NewOrganizationHandler)
+	do.Provide(injector, handlers.NewOrganizationMemberHandler)
+
+	// --- Project ---
+	do.Provide(injector, project.NewProjectPolicy)
 	do.Provide(injector, repositories.NewProjectRepository)
+	do.Provide(injector, project.NewProjectService)
+	do.Provide(injector, handlers.NewProjectHandler)
+
+	// --- Forms ---
 	do.Provide(injector, repositories.NewFormRepository)
 	do.Provide(injector, repositories.NewFormFieldRepository)
 	do.Provide(injector, repositories.NewFormResponseRepository)
+
+	do.Provide(injector, form.NewFormService)
+	do.Provide(injector, form.NewFormFieldValidationService)
+	do.Provide(injector, form.NewFieldService)
+	do.Provide(injector, form.NewFormResponseService)
+
+	do.Provide(injector, handlers.NewFormHandler)
+	do.Provide(injector, handlers.NewFormFieldHandler)
+	do.Provide(injector, handlers.NewFormResponseHandler)
+
+	// --- Storage ---
 	do.Provide(injector, repositories.NewContainerRepository)
 	do.Provide(injector, repositories.NewFileRepository)
+
+	do.Provide(injector, container.NewContainerService)
+	do.Provide(injector, file.NewFileService)
+
+	do.Provide(injector, handlers.NewContainerHandler)
+	do.Provide(injector, handlers.NewFileHandler)
+
+	// --- Backups ---
 	do.Provide(injector, repositories.NewBackupRepository)
+	do.Provide(injector, backup.NewBackupWorkflowService)
+	do.Provide(injector, backup.NewBackupService)
+	do.Provide(injector, handlers.NewBackupHandler)
 
-	// Factories
-	//do.Provide(injector, factories.NewUserFactory)
-
-	// policies
-	do.Provide(injector, organization.NewOrganizationPolicy)
-	do.Provide(injector, project.NewProjectPolicy)
-
-	// Services
-	do.Provide(injector, user.NewUserService)
-	do.Provide(injector, setting.NewSettingService)
-	do.Provide(injector, health.NewHealthService)
+	// --- Client & Stats ---
 	do.Provide(injector, client.NewClientService)
 	do.Provide(injector, stats.NewDatabaseStatsService)
-	do.Provide(injector, organization.NewOrganizationService)
-	do.Provide(injector, project.NewProjectService)
 	do.Provide(injector, postgrest.NewPostgrestService)
+
+	// --- Tables ---
 	do.Provide(injector, table.NewTableService)
 	do.Provide(injector, file_import.NewFileImportService)
 	do.Provide(injector, column.NewColumnService)
 	do.Provide(injector, index.NewIndexService)
 	do.Provide(injector, function.NewFunctionService)
-	do.Provide(injector, form.NewFormService)
-	do.Provide(injector, form.NewFormFieldValidationService)
-	do.Provide(injector, form.NewFieldService)
-	do.Provide(injector, form.NewFormResponseService)
-	do.Provide(injector, container.NewContainerService)
-	do.Provide(injector, file.NewFileService)
-	do.Provide(injector, backup.NewBackupWorkflowService)
-	do.Provide(injector, backup.NewBackupService)
 
-	// Handlers
-	do.Provide(injector, handlers.NewUserHandler)
-	do.Provide(injector, handlers.NewSettingHandler)
-	do.Provide(injector, handlers.NewHealthHandler)
-	do.Provide(injector, handlers.NewOrganizationHandler)
-	do.Provide(injector, handlers.NewOrganizationMemberHandler)
-	do.Provide(injector, handlers.NewProjectHandler)
 	do.Provide(injector, handlers.NewTableHandler)
 	do.Provide(injector, handlers.NewColumnHandler)
 	do.Provide(injector, handlers.NewIndexHandler)
 	do.Provide(injector, handlers.NewFunctionHandler)
-	do.Provide(injector, handlers.NewFormHandler)
-	do.Provide(injector, handlers.NewFormFieldHandler)
-	do.Provide(injector, handlers.NewFormResponseHandler)
-	do.Provide(injector, handlers.NewContainerHandler)
-	do.Provide(injector, handlers.NewFileHandler)
-	do.Provide(injector, handlers.NewBackupHandler)
+
+	// --- Health ---
+	do.Provide(injector, health.NewHealthService)
+	do.Provide(injector, handlers.NewHealthHandler)
 
 	return injector
 }
