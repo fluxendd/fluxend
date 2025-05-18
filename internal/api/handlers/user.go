@@ -12,11 +12,11 @@ import (
 )
 
 type UserController struct {
-	userService userDomain.UserService
+	userService userDomain.Service
 }
 
 func NewUserHandler(injector *do.Injector) (*UserController, error) {
-	userService := do.MustInvoke[userDomain.UserService](injector)
+	userService := do.MustInvoke[userDomain.Service](injector)
 
 	return &UserController{userService: userService}, nil
 }

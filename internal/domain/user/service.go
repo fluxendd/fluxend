@@ -16,7 +16,7 @@ import (
 	"time"
 )
 
-type UserService interface {
+type Service interface {
 	Login(request *user.LoginRequest) (User, string, error)
 	List(paginationParams dto.PaginationParams) ([]User, error)
 	ExistsByUUID(id uuid.UUID) error
@@ -27,22 +27,22 @@ type UserService interface {
 	Logout(userUUID uuid.UUID) error
 }
 
-type UserServiceImpl struct {
+type ServiceImpl struct {
 	settingService setting.Service
-	userRepo       *Repository
+	userRepo       Repository
 }
 
-func NewUserService(injector *do.Injector) (UserService, error) {
+func NewUserService(injector *do.Injector) (Service, error) {
 	settingService := do.MustInvoke[setting.Service](injector)
-	repo := do.MustInvoke[*Repository](injector)
+	repo := do.MustInvoke[Repository](injector)
 
-	return &UserServiceImpl{
+	return &ServiceImpl{
 		settingService: settingService,
 		userRepo:       repo,
 	}, nil
 }
 
-func (s *UserServiceImpl) Login(request *user.LoginRequest) (User, string, error) {
+func (s *ServiceImpl) Login(request *user.LoginRequest) (User, string, error) {
 	fetchedUser, err := s.userRepo.GetByEmail(request.Email)
 	if err != nil {
 		return User{}, "", err
@@ -65,15 +65,15 @@ func (s *UserServiceImpl) Login(request *user.LoginRequest) (User, string, error
 	return fetchedUser, token, nil
 }
 
-func (s *UserServiceImpl) List(paginationParams dto.PaginationParams) ([]User, error) {
+func (s *ServiceImpl) List(paginationParams dto.PaginationParams) ([]User, error) {
 	return s.userRepo.List(paginationParams)
 }
 
-func (s *UserServiceImpl) GetByID(id uuid.UUID) (User, error) {
+func (s *ServiceImpl) GetByID(id uuid.UUID) (User, error) {
 	return s.userRepo.GetByID(id)
 }
 
-func (s *UserServiceImpl) ExistsByUUID(id uuid.UUID) error {
+func (s *ServiceImpl) ExistsByUUID(id uuid.UUID) error {
 	exists, err := s.userRepo.ExistsByID(id)
 	if err != nil {
 		return err
@@ -86,7 +86,7 @@ func (s *UserServiceImpl) ExistsByUUID(id uuid.UUID) error {
 	return nil
 }
 
-func (s *UserServiceImpl) Create(ctx echo.Context, request *user.CreateRequest) (User, string, error) {
+func (s *ServiceImpl) Create(ctx echo.Context, request *user.CreateRequest) (User, string, error) {
 	if !s.settingService.GetBool(ctx, "allowRegistrations") {
 		return User{}, "", errors.NewBadRequestError("user.error.registrationDisabled")
 	}
@@ -135,7 +135,7 @@ func (s *UserServiceImpl) Create(ctx echo.Context, request *user.CreateRequest) 
 	return userData, token, nil
 }
 
-func (s *UserServiceImpl) Update(userUUID, authUserUUID uuid.UUID, request *user.UpdateRequest) (*User, error) {
+func (s *ServiceImpl) Update(userUUID, authUserUUID uuid.UUID, request *user.UpdateRequest) (*User, error) {
 	if !policies.CanUpdateUser(userUUID, authUserUUID) {
 		return nil, errors.NewForbiddenError("user.error.updateForbidden")
 	}
@@ -154,7 +154,7 @@ func (s *UserServiceImpl) Update(userUUID, authUserUUID uuid.UUID, request *user
 	return s.userRepo.Update(userUUID, &updatedUser)
 }
 
-func (s *UserServiceImpl) Delete(userUUID uuid.UUID) (bool, error) {
+func (s *ServiceImpl) Delete(userUUID uuid.UUID) (bool, error) {
 	err := s.ExistsByUUID(userUUID)
 	if err != nil {
 		return false, err
@@ -163,7 +163,7 @@ func (s *UserServiceImpl) Delete(userUUID uuid.UUID) (bool, error) {
 	return s.userRepo.Delete(userUUID)
 }
 
-func (s *UserServiceImpl) Logout(userUUID uuid.UUID) error {
+func (s *ServiceImpl) Logout(userUUID uuid.UUID) error {
 	err := s.ExistsByUUID(userUUID)
 	if err != nil {
 		return err
@@ -174,7 +174,7 @@ func (s *UserServiceImpl) Logout(userUUID uuid.UUID) error {
 	return err
 }
 
-func (s *UserServiceImpl) generateToken(user *User, jwtVersion int) (string, error) {
+func (s *ServiceImpl) generateToken(user *User, jwtVersion int) (string, error) {
 	claims := jwt.MapClaims{
 		"version": jwtVersion,
 		"exp":     time.Now().Add(time.Hour * 24).Unix(),

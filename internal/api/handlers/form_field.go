@@ -3,19 +3,20 @@ package handlers
 import (
 	"fluxton/internal/api/dto"
 	"fluxton/internal/api/dto/form"
+	formMapper "fluxton/internal/api/mapper/form"
 	"fluxton/internal/api/response"
-	form2 "fluxton/internal/domain/form"
+	formDomain "fluxton/internal/domain/form"
 	"fluxton/pkg/auth"
 	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
 )
 
 type FormFieldHandler struct {
-	formFieldService form2.FieldService
+	formFieldService formDomain.FieldService
 }
 
 func NewFormFieldHandler(injector *do.Injector) (*FormFieldHandler, error) {
-	formFieldService := do.MustInvoke[form2.FieldService](injector)
+	formFieldService := do.MustInvoke[formDomain.FieldService](injector)
 
 	return &FormFieldHandler{formFieldService: formFieldService}, nil
 }
@@ -56,7 +57,7 @@ func (ffc *FormFieldHandler) List(c echo.Context) error {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.SuccessResponse(c, form.FormFieldResourceCollection(formFields))
+	return response.SuccessResponse(c, formMapper.ToFieldResourceCollection(formFields))
 }
 
 // Show retrieves details of a specific field
@@ -96,7 +97,7 @@ func (ffc *FormFieldHandler) Show(c echo.Context) error {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.SuccessResponse(c, form.FormFieldResource(&formField))
+	return response.SuccessResponse(c, formMapper.ToFieldResource(&formField))
 }
 
 // Store creates a new field for a form
@@ -137,7 +138,7 @@ func (ffc *FormFieldHandler) Store(c echo.Context) error {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.CreatedResponse(c, form.FormFieldResourceCollection(formFields))
+	return response.CreatedResponse(c, formMapper.ToFieldResourceCollection(formFields))
 }
 
 // Update updates an existing field
@@ -184,7 +185,7 @@ func (ffc *FormFieldHandler) Update(c echo.Context) error {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.SuccessResponse(c, form.FormFieldResource(updatedFormField))
+	return response.SuccessResponse(c, formMapper.ToFieldResource(updatedFormField))
 }
 
 // Delete deletes a field from a form
