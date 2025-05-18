@@ -3,7 +3,6 @@ package backup
 import (
 	storage2 "fluxton/internal/adapters/storage"
 	constants2 "fluxton/internal/config/constants"
-	"fluxton/internal/database/repositories"
 	"fluxton/internal/domain/setting"
 	"fluxton/pkg"
 	"fmt"
@@ -22,7 +21,7 @@ type WorkflowService interface {
 
 type WorkflowServiceImpl struct {
 	settingService setting.Service
-	backupRepo     *repositories.BackupRepository
+	backupRepo     Repository
 }
 
 func NewBackupWorkflowService(injector *do.Injector) (WorkflowService, error) {
@@ -31,7 +30,7 @@ func NewBackupWorkflowService(injector *do.Injector) (WorkflowService, error) {
 		return nil, err
 	}
 
-	backupRepo := do.MustInvoke[*repositories.BackupRepository](injector)
+	backupRepo := do.MustInvoke[Repository](injector)
 
 	return &WorkflowServiceImpl{
 		settingService: settingService,
