@@ -99,7 +99,7 @@ func (r *TableRepository) List() ([]table.Table, error) {
 }
 
 func (r *TableRepository) GetByNameInSchema(schema, name string) (table.Table, error) {
-	var table table.Table
+	var fetchedTable table.Table
 	query := `
 		SELECT
 			c.oid AS id,
@@ -114,7 +114,7 @@ func (r *TableRepository) GetByNameInSchema(schema, name string) (table.Table, e
 		LIMIT 1;
 	`
 
-	err := r.connection.Get(&table, query, schema, name)
+	err := r.connection.Get(&fetchedTable, query, schema, name)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return table.Table{}, flxErrs.NewNotFoundError("table.error.notFound")
@@ -123,7 +123,7 @@ func (r *TableRepository) GetByNameInSchema(schema, name string) (table.Table, e
 		return table.Table{}, err
 	}
 
-	return table, nil
+	return fetchedTable, nil
 }
 
 func (r *TableRepository) DropIfExists(name string) error {
