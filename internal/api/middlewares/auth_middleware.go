@@ -13,7 +13,7 @@ import (
 	"strings"
 )
 
-func AuthMiddleware(userRepo *user.Repository) echo.MiddlewareFunc {
+func AuthMiddleware(userRepo user.Repository) echo.MiddlewareFunc {
 	// Outer function accepts the next handler
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		// Inner function executes for each request

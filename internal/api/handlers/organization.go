@@ -96,7 +96,7 @@ func (oc *OrganizationHandler) Show(c echo.Context) error {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.SuccessResponse(c, organization.ToResource(&organization))
+	return response.SuccessResponse(c, organizationMapper.ToResource(&organization))
 }
 
 // Store creates a new organization
@@ -134,7 +134,7 @@ func (oc *OrganizationHandler) Store(c echo.Context) error {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.CreatedResponse(c, organization.ToResource(&organization))
+	return response.CreatedResponse(c, organizationMapper.ToResource(&organization))
 }
 
 // Update an organization

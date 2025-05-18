@@ -57,7 +57,7 @@ func setupServer(container *do.Injector) *echo.Echo {
 
 func registerRoutes(e *echo.Echo, container *do.Injector) {
 	settingService := do.MustInvoke[setting.Service](container)
-	userRepo := do.MustInvoke[*user.Repository](container)
+	userRepo := do.MustInvoke[user.Repository](container)
 
 	authMiddleware := middlewares2.AuthMiddleware(userRepo)
 	allowProjectMiddleware := middlewares2.AllowProjectMiddleware(settingService)
