@@ -24,14 +24,14 @@ type Service interface {
 
 type ServiceImpl struct {
 	organizationPolicy *Policy
-	organizationRepo   *Repository
-	userRepo           *user.Repository
+	organizationRepo   Repository
+	userRepo           user.Repository
 }
 
 func NewOrganizationService(injector *do.Injector) (Service, error) {
 	policy := do.MustInvoke[*Policy](injector)
-	organizationRepo := do.MustInvoke[*Repository](injector)
-	userRepo := do.MustInvoke[*user.Repository](injector)
+	organizationRepo := do.MustInvoke[Repository](injector)
+	userRepo := do.MustInvoke[user.Repository](injector)
 
 	return &ServiceImpl{
 		organizationPolicy: policy,
@@ -45,7 +45,7 @@ func (s *ServiceImpl) List(paginationParams dto.PaginationParams, authUserId uui
 }
 
 func (s *ServiceImpl) GetByID(organizationUUID uuid.UUID, authUser auth.User) (Organization, error) {
-	organization, err := s.organizationRepo.GetByUUID(organizationUUID)
+	fetchedOrganization, err := s.organizationRepo.GetByUUID(organizationUUID)
 	if err != nil {
 		return Organization{}, err
 	}
@@ -54,7 +54,7 @@ func (s *ServiceImpl) GetByID(organizationUUID uuid.UUID, authUser auth.User) (O
 		return Organization{}, errors.NewForbiddenError("organization.error.viewForbidden")
 	}
 
-	return organization, nil
+	return fetchedOrganization, nil
 }
 
 func (s *ServiceImpl) ExistsByUUID(organizationUUID uuid.UUID) error {
@@ -75,22 +75,22 @@ func (s *ServiceImpl) Create(request *organization.CreateRequest, authUser auth.
 		return Organization{}, errors.NewForbiddenError("organization.error.createForbidden")
 	}
 
-	organization := Organization{
+	organizationInput := Organization{
 		Name:      request.Name,
 		CreatedBy: authUser.Uuid,
 		UpdatedBy: authUser.Uuid,
 	}
 
-	_, err := s.organizationRepo.Create(&organization, authUser.Uuid)
+	_, err := s.organizationRepo.Create(&organizationInput, authUser.Uuid)
 	if err != nil {
 		return Organization{}, err
 	}
 
-	return organization, nil
+	return organizationInput, nil
 }
 
 func (s *ServiceImpl) Update(organizationUUID uuid.UUID, authUser auth.User, request *organization.CreateRequest) (*Organization, error) {
-	organization, err := s.organizationRepo.GetByUUID(organizationUUID)
+	fetchedOrganization, err := s.organizationRepo.GetByUUID(organizationUUID)
 	if err != nil {
 		return nil, err
 	}
@@ -105,10 +105,10 @@ func (s *ServiceImpl) Update(organizationUUID uuid.UUID, authUser auth.User, req
 		return nil, err
 	}*/
 
-	organization.UpdatedBy = authUser.Uuid
-	organization.UpdatedAt = time.Now()
+	fetchedOrganization.UpdatedBy = authUser.Uuid
+	fetchedOrganization.UpdatedAt = time.Now()
 
-	return s.organizationRepo.Update(&organization)
+	return s.organizationRepo.Update(&fetchedOrganization)
 }
 
 func (s *ServiceImpl) Delete(organizationUUID uuid.UUID, authUser auth.User) (bool, error) {

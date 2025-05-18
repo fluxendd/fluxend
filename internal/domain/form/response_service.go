@@ -19,19 +19,19 @@ type ResponseService interface {
 type ResponseServiceImpl struct {
 	projectPolicy              *project.Policy
 	formFieldValidationService FieldValidationService
-	formRepo                   *Repository
-	formFieldRepo              *FieldRepository
-	projectRepo                *project.Repository
-	formResponseRepo           *FieldResponseRepository
+	formRepo                   Repository
+	formFieldRepo              FieldRepository
+	projectRepo                project.Repository
+	formResponseRepo           FieldResponseRepository
 }
 
 func NewFormResponseService(injector *do.Injector) (ResponseService, error) {
 	policy := do.MustInvoke[*project.Policy](injector)
 	formFieldValidationService := do.MustInvoke[FieldValidationService](injector)
-	formRepo := do.MustInvoke[*Repository](injector)
-	formFieldRepo := do.MustInvoke[*FieldRepository](injector)
-	projectRepo := do.MustInvoke[*project.Repository](injector)
-	formResponseRepo := do.MustInvoke[*FieldResponseRepository](injector)
+	formRepo := do.MustInvoke[Repository](injector)
+	formFieldRepo := do.MustInvoke[FieldRepository](injector)
+	projectRepo := do.MustInvoke[project.Repository](injector)
+	formResponseRepo := do.MustInvoke[FieldResponseRepository](injector)
 
 	return &ResponseServiceImpl{
 		projectPolicy:              policy,

@@ -22,13 +22,13 @@ type Service interface {
 type ServiceImpl struct {
 	connectionService client.Service
 	projectPolicy     *project.Policy
-	projectRepo       *project.Repository
+	projectRepo       project.Repository
 }
 
 func NewColumnService(injector *do.Injector) (Service, error) {
 	connectionService := do.MustInvoke[client.Service](injector)
 	policy := do.MustInvoke[*project.Policy](injector)
-	projectRepo := do.MustInvoke[*project.Repository](injector)
+	projectRepo := do.MustInvoke[project.Repository](injector)
 
 	return &ServiceImpl{
 		projectPolicy:     policy,

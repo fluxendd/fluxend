@@ -20,16 +20,16 @@ type FieldService interface {
 
 type FieldServiceImpl struct {
 	projectPolicy *project.Policy
-	formRepo      *Repository
-	formFieldRepo *FieldRepository
-	projectRepo   *project.Repository
+	formRepo      Repository
+	formFieldRepo FieldRepository
+	projectRepo   project.Repository
 }
 
 func NewFieldService(injector *do.Injector) (FieldService, error) {
 	policy := do.MustInvoke[*project.Policy](injector)
-	formRepo := do.MustInvoke[*Repository](injector)
-	formFieldRepo := do.MustInvoke[*FieldRepository](injector)
-	projectRepo := do.MustInvoke[*project.Repository](injector)
+	formRepo := do.MustInvoke[Repository](injector)
+	formFieldRepo := do.MustInvoke[FieldRepository](injector)
+	projectRepo := do.MustInvoke[project.Repository](injector)
 
 	return &FieldServiceImpl{
 		projectPolicy: policy,

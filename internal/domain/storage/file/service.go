@@ -28,9 +28,9 @@ type Service interface {
 type ServiceImpl struct {
 	settingService setting.Service
 	projectPolicy  *project.Policy
-	containerRepo  *container.Repository
-	fileRepo       *Repository
-	projectRepo    *project.Repository
+	containerRepo  container.Repository
+	fileRepo       Repository
+	projectRepo    project.Repository
 }
 
 func NewFileService(injector *do.Injector) (Service, error) {
@@ -40,9 +40,9 @@ func NewFileService(injector *do.Injector) (Service, error) {
 	}
 
 	policy := do.MustInvoke[*project.Policy](injector)
-	containerRepo := do.MustInvoke[*container.Repository](injector)
-	fileRepo := do.MustInvoke[*Repository](injector)
-	projectRepo := do.MustInvoke[*project.Repository](injector)
+	containerRepo := do.MustInvoke[container.Repository](injector)
+	fileRepo := do.MustInvoke[Repository](injector)
+	projectRepo := do.MustInvoke[project.Repository](injector)
 
 	return &ServiceImpl{
 		settingService: settingService,
@@ -229,7 +229,7 @@ func (s *ServiceImpl) Delete(fileUUID, containerUUID uuid.UUID, authUser auth.Us
 	}
 
 	err = storageService.DeleteFile(storage.FileInput{
-		ContainerName: container.NameKey,
+		ContainerName: fetchedContainer.NameKey,
 		FileName:      fetchedFile.FullFileName,
 	})
 	if err != nil {

@@ -19,25 +19,25 @@ type Service interface {
 	Delete(formUUID uuid.UUID, authUser auth.User) (bool, error)
 }
 
-type FormServiceImpl struct {
+type ServiceImpl struct {
 	projectPolicy *project.Policy
-	formRepo      *Repository
-	projectRepo   *project.Repository
+	formRepo      Repository
+	projectRepo   project.Repository
 }
 
 func NewFormService(injector *do.Injector) (Service, error) {
 	policy := do.MustInvoke[*project.Policy](injector)
-	formRepo := do.MustInvoke[*Repository](injector)
-	projectRepo := do.MustInvoke[*project.Repository](injector)
+	formRepo := do.MustInvoke[Repository](injector)
+	projectRepo := do.MustInvoke[project.Repository](injector)
 
-	return &FormServiceImpl{
+	return &ServiceImpl{
 		projectPolicy: policy,
 		formRepo:      formRepo,
 		projectRepo:   projectRepo,
 	}, nil
 }
 
-func (s *FormServiceImpl) List(paginationParams dto.PaginationParams, projectUUID uuid.UUID, authUser auth.User) ([]Form, error) {
+func (s *ServiceImpl) List(paginationParams dto.PaginationParams, projectUUID uuid.UUID, authUser auth.User) ([]Form, error) {
 	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(projectUUID)
 	if err != nil {
 		return nil, err
@@ -50,13 +50,13 @@ func (s *FormServiceImpl) List(paginationParams dto.PaginationParams, projectUUI
 	return s.formRepo.ListForProject(paginationParams, projectUUID)
 }
 
-func (s *FormServiceImpl) GetByUUID(formUUID uuid.UUID, authUser auth.User) (Form, error) {
+func (s *ServiceImpl) GetByUUID(formUUID uuid.UUID, authUser auth.User) (Form, error) {
 	fetchedForm, err := s.formRepo.GetByUUID(formUUID)
 	if err != nil {
 		return Form{}, err
 	}
 
-	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(form.ProjectUuid)
+	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(fetchedForm.ProjectUuid)
 	if err != nil {
 		return Form{}, err
 	}
@@ -68,7 +68,7 @@ func (s *FormServiceImpl) GetByUUID(formUUID uuid.UUID, authUser auth.User) (For
 	return fetchedForm, nil
 }
 
-func (s *FormServiceImpl) Create(request *form.CreateRequest, authUser auth.User) (Form, error) {
+func (s *ServiceImpl) Create(request *form.CreateRequest, authUser auth.User) (Form, error) {
 	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(request.ProjectUUID)
 	if err != nil {
 		return Form{}, err
@@ -83,7 +83,7 @@ func (s *FormServiceImpl) Create(request *form.CreateRequest, authUser auth.User
 		return Form{}, err
 	}
 
-	form := Form{
+	formInput := Form{
 		ProjectUuid: request.ProjectUUID,
 		Name:        request.Name,
 		Description: request.Description,
@@ -92,21 +92,21 @@ func (s *FormServiceImpl) Create(request *form.CreateRequest, authUser auth.User
 		CreatedAt:   time.Now(),
 	}
 
-	_, err = s.formRepo.Create(&form)
+	_, err = s.formRepo.Create(&formInput)
 	if err != nil {
 		return Form{}, err
 	}
 
-	return form, nil
+	return formInput, nil
 }
 
-func (s *FormServiceImpl) Update(formUUID uuid.UUID, authUser auth.User, request *form.CreateRequest) (*Form, error) {
+func (s *ServiceImpl) Update(formUUID uuid.UUID, authUser auth.User, request *form.CreateRequest) (*Form, error) {
 	fetchedForm, err := s.formRepo.GetByUUID(formUUID)
 	if err != nil {
 		return nil, err
 	}
 
-	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(form.ProjectUuid)
+	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(fetchedForm.ProjectUuid)
 	if err != nil {
 		return &Form{}, err
 	}
@@ -131,7 +131,7 @@ func (s *FormServiceImpl) Update(formUUID uuid.UUID, authUser auth.User, request
 	return s.formRepo.Update(&fetchedForm)
 }
 
-func (s *FormServiceImpl) Delete(formUUID uuid.UUID, authUser auth.User) (bool, error) {
+func (s *ServiceImpl) Delete(formUUID uuid.UUID, authUser auth.User) (bool, error) {
 	fetchedForm, err := s.formRepo.GetByUUID(formUUID)
 	if err != nil {
 		return false, err
@@ -149,7 +149,7 @@ func (s *FormServiceImpl) Delete(formUUID uuid.UUID, authUser auth.User) (bool, 
 	return s.formRepo.Delete(formUUID)
 }
 
-func (s *FormServiceImpl) validateNameForDuplication(name string, projectUUID uuid.UUID) error {
+func (s *ServiceImpl) validateNameForDuplication(name string, projectUUID uuid.UUID) error {
 	exists, err := s.formRepo.ExistsByNameForProject(name, projectUUID)
 	if err != nil {
 		return err

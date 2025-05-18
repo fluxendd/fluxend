@@ -25,15 +25,15 @@ type Service interface {
 
 type ServiceImpl struct {
 	projectPolicy    *Policy
-	databaseRepo     *client.Repository
-	projectRepo      *Repository
+	databaseRepo     client.Repository
+	projectRepo      Repository
 	postgrestService postgrest.Service
 }
 
 func NewProjectService(injector *do.Injector) (Service, error) {
 	policy := do.MustInvoke[*Policy](injector)
-	databaseRepo := do.MustInvoke[*client.Repository](injector)
-	projectRepo := do.MustInvoke[*Repository](injector)
+	databaseRepo := do.MustInvoke[client.Repository](injector)
+	projectRepo := do.MustInvoke[Repository](injector)
 	postgrestService := do.MustInvoke[postgrest.Service](injector)
 
 	return &ServiceImpl{
@@ -53,29 +53,29 @@ func (s *ServiceImpl) List(paginationParams dto.PaginationParams, organizationUU
 }
 
 func (s *ServiceImpl) GetByUUID(projectUUID uuid.UUID, authUser auth.User) (Project, error) {
-	project, err := s.projectRepo.GetByUUID(projectUUID)
+	fetchedProject, err := s.projectRepo.GetByUUID(projectUUID)
 	if err != nil {
 		return Project{}, err
 	}
 
-	if !s.projectPolicy.CanAccess(project.OrganizationUuid, authUser) {
+	if !s.projectPolicy.CanAccess(fetchedProject.OrganizationUuid, authUser) {
 		return Project{}, errors.NewForbiddenError("project.error.viewForbidden")
 	}
 
-	return project, nil
+	return fetchedProject, nil
 }
 
 func (s *ServiceImpl) GetDatabaseNameByUUID(projectUUID uuid.UUID, authUser auth.User) (string, error) {
-	project, err := s.projectRepo.GetByUUID(projectUUID)
+	fetchedProject, err := s.projectRepo.GetByUUID(projectUUID)
 	if err != nil {
 		return "", err
 	}
 
-	if !s.projectPolicy.CanAccess(project.OrganizationUuid, authUser) {
+	if !s.projectPolicy.CanAccess(fetchedProject.OrganizationUuid, authUser) {
 		return "", errors.NewForbiddenError("project.error.viewForbidden")
 	}
 
-	return project.DBName, nil
+	return fetchedProject.DBName, nil
 }
 
 func (s *ServiceImpl) Create(request *project.CreateRequest, authUser auth.User) (Project, error) {
@@ -88,7 +88,7 @@ func (s *ServiceImpl) Create(request *project.CreateRequest, authUser auth.User)
 		return Project{}, err
 	}
 
-	project := Project{
+	projectInput := Project{
 		Name:             request.Name,
 		OrganizationUuid: request.OrganizationUUID,
 		DBName:           s.generateDBName(),
@@ -97,7 +97,7 @@ func (s *ServiceImpl) Create(request *project.CreateRequest, authUser auth.User)
 		UpdatedBy:        authUser.Uuid,
 	}
 
-	_, err = s.projectRepo.Create(&project)
+	_, err = s.projectRepo.Create(&projectInput)
 	if err != nil {
 		return Project{}, err
 	}
@@ -116,47 +116,47 @@ func (s *ServiceImpl) Create(request *project.CreateRequest, authUser auth.User)
 }
 
 func (s *ServiceImpl) Update(projectUUID uuid.UUID, authUser auth.User, request *project.UpdateRequest) (*Project, error) {
-	project, err := s.projectRepo.GetByUUID(projectUUID)
+	fetchedProject, err := s.projectRepo.GetByUUID(projectUUID)
 	if err != nil {
 		return nil, err
 	}
 
-	if !s.projectPolicy.CanUpdate(project.OrganizationUuid, authUser) {
+	if !s.projectPolicy.CanUpdate(fetchedProject.OrganizationUuid, authUser) {
 		return &Project{}, errors.NewForbiddenError("project.error.updateForbidden")
 	}
 
-	err = project.PopulateModel(&project, request)
+	err = fetchedProject.PopulateModel(&fetchedProject, request)
 	if err != nil {
 		return nil, err
 	}
 
-	project.UpdatedAt = time.Now()
-	project.UpdatedBy = authUser.Uuid
+	fetchedProject.UpdatedAt = time.Now()
+	fetchedProject.UpdatedBy = authUser.Uuid
 
-	err = s.validateNameForDuplication(request.Name, project.OrganizationUuid)
+	err = s.validateNameForDuplication(request.Name, fetchedProject.OrganizationUuid)
 	if err != nil {
 		return &Project{}, err
 	}
 
-	return s.projectRepo.Update(&project)
+	return s.projectRepo.Update(&fetchedProject)
 }
 
 func (s *ServiceImpl) Delete(projectUUID uuid.UUID, authUser auth.User) (bool, error) {
-	project, err := s.projectRepo.GetByUUID(projectUUID)
+	fetchedProject, err := s.projectRepo.GetByUUID(projectUUID)
 	if err != nil {
 		return false, err
 	}
 
-	if !s.projectPolicy.CanUpdate(project.OrganizationUuid, authUser) {
+	if !s.projectPolicy.CanUpdate(fetchedProject.OrganizationUuid, authUser) {
 		return false, errors.NewForbiddenError("project.error.updateForbidden")
 	}
 
-	err = s.databaseRepo.DropIfExists(project.DBName)
+	err = s.databaseRepo.DropIfExists(fetchedProject.DBName)
 	if err != nil {
 		return false, err
 	}
 
-	go s.postgrestService.RemoveContainer(project.DBName)
+	go s.postgrestService.RemoveContainer(fetchedProject.DBName)
 
 	return s.projectRepo.Delete(projectUUID)
 }
