@@ -137,7 +137,7 @@ func (s *FormServiceImpl) Delete(formUUID uuid.UUID, authUser auth.User) (bool, 
 		return false, err
 	}
 
-	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(form.ProjectUuid)
+	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(fetchedForm.ProjectUuid)
 	if err != nil {
 		return false, err
 	}

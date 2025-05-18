@@ -2,7 +2,8 @@ package handlers
 
 import (
 	"fluxton/internal/api/dto"
-	columnDto "fluxton/internal/api/dto/database/column"
+	"fluxton/internal/api/dto/database/column"
+	columnMapper "fluxton/internal/api/mapper/column"
 	"fluxton/internal/api/response"
 	columnDomain "fluxton/internal/domain/database/column"
 	"fluxton/pkg/auth"
@@ -16,7 +17,7 @@ type ColumnHandler struct {
 }
 
 func NewColumnHandler(injector *do.Injector) (*ColumnHandler, error) {
-	columnService := do.MustInvoke[column2.ColumnService](injector)
+	columnService := do.MustInvoke[columnDomain.Service](injector)
 
 	return &ColumnHandler{columnService: columnService}, nil
 }
@@ -57,7 +58,7 @@ func (cc *ColumnHandler) List(c echo.Context) error {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.SuccessResponse(c, column.ColumnResourceCollection(columns))
+	return response.SuccessResponse(c, columnMapper.ToResourceCollection(columns))
 }
 
 // Store adds new columns to a table.
@@ -100,7 +101,7 @@ func (cc *ColumnHandler) Store(c echo.Context) error {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.CreatedResponse(c, column.ColumnResourceCollection(columns))
+	return response.CreatedResponse(c, columnMapper.ToResourceCollection(columns))
 }
 
 // Alter modifies column types in a table.
@@ -143,7 +144,7 @@ func (cc *ColumnHandler) Alter(c echo.Context) error {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.SuccessResponse(c, column.ColumnResourceCollection(columns))
+	return response.SuccessResponse(c, columnMapper.ToResourceCollection(columns))
 }
 
 // Rename updates the name of an existing column.
@@ -187,7 +188,7 @@ func (cc *ColumnHandler) Rename(c echo.Context) error {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.SuccessResponse(c, column.ColumnResourceCollection(columns))
+	return response.SuccessResponse(c, columnMapper.ToResourceCollection(columns))
 }
 
 // Delete removes a column from a table.
