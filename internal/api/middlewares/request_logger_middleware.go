@@ -3,7 +3,6 @@ package middlewares
 import (
 	"bytes"
 	"fluxton/internal/config/constants"
-	"fluxton/internal/database/repositories"
 	"fluxton/internal/domain/logging"
 	"fluxton/pkg/auth"
 	"github.com/google/uuid"
@@ -14,7 +13,7 @@ import (
 	"time"
 )
 
-func RequestLoggerMiddleware(requestLogRepo *repositories.RequestLogRepository) echo.MiddlewareFunc {
+func RequestLoggerMiddleware(requestLogRepo logging.Repository) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			request := c.Request()

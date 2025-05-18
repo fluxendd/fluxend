@@ -12,7 +12,7 @@ type RequestLogRepository struct {
 	db *sqlx.DB
 }
 
-func NewRequestLogRepository(injector *do.Injector) (*RequestLogRepository, error) {
+func NewRequestLogRepository(injector *do.Injector) (logging.Repository, error) {
 	db := do.MustInvoke[*sqlx.DB](injector)
 
 	return &RequestLogRepository{db: db}, nil
