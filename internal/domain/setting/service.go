@@ -25,12 +25,12 @@ type Service interface {
 
 type ServiceImpl struct {
 	adminPolicy *admin.Policy
-	settingRepo *Repository
+	settingRepo Repository
 }
 
 func NewSettingService(injector *do.Injector) (Service, error) {
 	policy := admin.NewAdminPolicy()
-	settingRepo := do.MustInvoke[*Repository](injector)
+	settingRepo := do.MustInvoke[Repository](injector)
 
 	return &ServiceImpl{
 		adminPolicy: policy,

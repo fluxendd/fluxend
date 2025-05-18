@@ -2,7 +2,6 @@ package backup
 
 import (
 	"fluxton/internal/api/dto"
-	repositories2 "fluxton/internal/database/repositories"
 	"fluxton/internal/domain/auth"
 	"fluxton/internal/domain/project"
 	"fluxton/pkg/errors"
@@ -18,20 +17,20 @@ type Service interface {
 	Delete(request dto.DefaultRequestWithProjectHeader, backupUUID uuid.UUID, authUser auth.User) (bool, error)
 }
 
-type BackupServiceImpl struct {
+type ServiceImpl struct {
 	projectPolicy         *project.Policy
-	backupRepo            *Repository
-	projectRepo           *repositories2.ProjectRepository
+	backupRepo            Repository
+	projectRepo           project.Repository
 	backupWorkFlowService WorkflowService
 }
 
 func NewBackupService(injector *do.Injector) (Service, error) {
 	policy := do.MustInvoke[*project.Policy](injector)
-	backupRepo := do.MustInvoke[*repositories2.BackupRepository](injector)
-	projectRepo := do.MustInvoke[*repositories2.ProjectRepository](injector)
+	backupRepo := do.MustInvoke[Repository](injector)
+	projectRepo := do.MustInvoke[project.Repository](injector)
 	backupWorkFlowService := do.MustInvoke[WorkflowService](injector)
 
-	return &BackupServiceImpl{
+	return &ServiceImpl{
 		projectPolicy:         policy,
 		backupRepo:            backupRepo,
 		projectRepo:           projectRepo,
@@ -39,7 +38,7 @@ func NewBackupService(injector *do.Injector) (Service, error) {
 	}, nil
 }
 
-func (s *BackupServiceImpl) List(projectUUID uuid.UUID, authUser auth.User) ([]Backup, error) {
+func (s *ServiceImpl) List(projectUUID uuid.UUID, authUser auth.User) ([]Backup, error) {
 	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(projectUUID)
 	if err != nil {
 		return []Backup{}, err
@@ -52,7 +51,7 @@ func (s *BackupServiceImpl) List(projectUUID uuid.UUID, authUser auth.User) ([]B
 	return s.backupRepo.ListForProject(projectUUID)
 }
 
-func (s *BackupServiceImpl) GetByUUID(backupUUID uuid.UUID, authUser auth.User) (Backup, error) {
+func (s *ServiceImpl) GetByUUID(backupUUID uuid.UUID, authUser auth.User) (Backup, error) {
 	backup, err := s.backupRepo.GetByUUID(backupUUID)
 	if err != nil {
 		return Backup{}, err
@@ -70,7 +69,7 @@ func (s *BackupServiceImpl) GetByUUID(backupUUID uuid.UUID, authUser auth.User) 
 	return backup, nil
 }
 
-func (s *BackupServiceImpl) Create(request *dto.DefaultRequestWithProjectHeader, authUser auth.User) (Backup, error) {
+func (s *ServiceImpl) Create(request *dto.DefaultRequestWithProjectHeader, authUser auth.User) (Backup, error) {
 	fetchedProject, err := s.projectRepo.GetByUUID(request.ProjectUUID)
 	if err != nil {
 		return Backup{}, err
@@ -97,7 +96,7 @@ func (s *BackupServiceImpl) Create(request *dto.DefaultRequestWithProjectHeader,
 	return backup, nil
 }
 
-func (s *BackupServiceImpl) Delete(request dto.DefaultRequestWithProjectHeader, backupUUID uuid.UUID, authUser auth.User) (bool, error) {
+func (s *ServiceImpl) Delete(request dto.DefaultRequestWithProjectHeader, backupUUID uuid.UUID, authUser auth.User) (bool, error) {
 	backup, err := s.backupRepo.GetByUUID(backupUUID)
 	if err != nil {
 		return false, err

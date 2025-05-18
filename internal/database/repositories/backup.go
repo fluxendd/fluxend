@@ -17,7 +17,7 @@ type BackupRepository struct {
 	db *sqlx.DB
 }
 
-func NewBackupRepository(injector *do.Injector) (*BackupRepository, error) {
+func NewBackupRepository(injector *do.Injector) (backup.Repository, error) {
 	db := do.MustInvoke[*sqlx.DB](injector)
 
 	return &BackupRepository{db: db}, nil
