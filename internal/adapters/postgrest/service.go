@@ -2,7 +2,8 @@ package postgrest
 
 import (
 	"fluxton/internal/config/constants"
-	"fluxton/internal/database/repositories"
+	"fluxton/internal/domain/database/client"
+	"fluxton/internal/domain/project"
 	"fluxton/pkg"
 	"fmt"
 	"github.com/rs/zerolog/log"
@@ -25,18 +26,12 @@ type Config struct {
 	AppURL     string
 }
 
-type Service interface {
-	StartContainer(dbName string)
-	RemoveContainer(dbName string)
-	HasContainer(dbName string) bool
-}
-
 type ServiceImpl struct {
-	projectRepo *repositories.ProjectRepository
+	projectRepo project.Repository
 	config      *Config
 }
 
-func NewPostgrestService(injector *do.Injector) (Service, error) {
+func NewPostgrestService(injector *do.Injector) (client.PostgrestService, error) {
 	config := &Config{
 		DBUser:     os.Getenv("POSTGREST_DB_USER"),
 		DBPassword: os.Getenv("POSTGREST_DB_PASSWORD"),
@@ -47,7 +42,7 @@ func NewPostgrestService(injector *do.Injector) (Service, error) {
 		AppURL:     os.Getenv("APP_URL"),
 	}
 
-	projectRepo := do.MustInvoke[*repositories.ProjectRepository](injector)
+	projectRepo := do.MustInvoke[project.Repository](injector)
 
 	return &ServiceImpl{
 		projectRepo: projectRepo,

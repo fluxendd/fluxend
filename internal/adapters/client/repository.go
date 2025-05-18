@@ -19,7 +19,7 @@ type Repository struct {
 	db *sqlx.DB
 }
 
-func NewClientRepository(injector *do.Injector) (*Repository, error) {
+func NewDatabaseRepository(injector *do.Injector) (*Repository, error) {
 	db := do.MustInvoke[*sqlx.DB](injector)
 
 	return &Repository{db: db}, nil

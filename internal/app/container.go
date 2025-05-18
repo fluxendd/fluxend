@@ -37,7 +37,7 @@ func InitializeContainer() *do.Injector {
 
 	// --- Logging ---
 	do.Provide(injector, repositories.NewRequestLogRepository)
-	do.Provide(injector, client.NewClientRepository)
+	do.Provide(injector, client.NewDatabaseRepository)
 
 	// --- User ---
 	do.Provide(injector, repositories.NewUserRepository)
