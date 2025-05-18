@@ -5,7 +5,7 @@ import (
 	"fluxton/internal/adapters/postgrest"
 	"fluxton/internal/api/handlers"
 	"fluxton/internal/database"
-	repositories2 "fluxton/internal/database/repositories"
+	"fluxton/internal/database/repositories"
 	"fluxton/internal/domain/backup"
 	"fluxton/internal/domain/database/column"
 	"fluxton/internal/domain/database/function"
@@ -29,24 +29,24 @@ func InitializeContainer() *do.Injector {
 	injector := do.New()
 
 	// Database
-	client.InitDB()
+	database.InitDB()
 	do.Provide(injector, func(i *do.Injector) (*sqlx.DB, error) {
-		return client.GetDB(), nil
+		return database.GetDB(), nil
 	})
 
 	// Repositories
-	do.Provide(injector, repositories2.NewUserRepository)
-	do.Provide(injector, repositories2.NewRequestLogRepository)
+	do.Provide(injector, repositories.NewUserRepository)
+	do.Provide(injector, repositories.NewRequestLogRepository)
 	do.Provide(injector, client.NewClientRepository)
-	do.Provide(injector, repositories2.NewSettingRepository)
-	do.Provide(injector, repositories2.NewOrganizationRepository)
-	do.Provide(injector, repositories2.NewProjectRepository)
-	do.Provide(injector, repositories2.NewFormRepository)
-	do.Provide(injector, repositories2.NewFormFieldRepository)
-	do.Provide(injector, repositories2.NewFormResponseRepository)
-	do.Provide(injector, repositories2.NewContainerRepository)
-	do.Provide(injector, repositories2.NewFileRepository)
-	do.Provide(injector, repositories2.NewBackupRepository)
+	do.Provide(injector, repositories.NewSettingRepository)
+	do.Provide(injector, repositories.NewOrganizationRepository)
+	do.Provide(injector, repositories.NewProjectRepository)
+	do.Provide(injector, repositories.NewFormRepository)
+	do.Provide(injector, repositories.NewFormFieldRepository)
+	do.Provide(injector, repositories.NewFormResponseRepository)
+	do.Provide(injector, repositories.NewContainerRepository)
+	do.Provide(injector, repositories.NewFileRepository)
+	do.Provide(injector, repositories.NewBackupRepository)
 
 	// Factories
 	//do.Provide(injector, factories.NewUserFactory)

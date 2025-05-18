@@ -102,17 +102,17 @@ func (s *ServiceImpl) Create(request *project.CreateRequest, authUser auth.User)
 		return Project{}, err
 	}
 
-	err = s.databaseRepo.Create(project.DBName, uuid.NullUUID{UUID: authUser.Uuid, Valid: true})
+	err = s.databaseRepo.Create(projectInput.DBName, uuid.NullUUID{UUID: authUser.Uuid, Valid: true})
 	if err != nil {
 		// TODO: handle better
-		s.projectRepo.Delete(project.Uuid)
+		s.projectRepo.Delete(projectInput.Uuid)
 
 		return Project{}, err
 	}
 
-	go s.postgrestService.StartContainer(project.DBName)
+	go s.postgrestService.StartContainer(projectInput.DBName)
 
-	return project, nil
+	return projectInput, nil
 }
 
 func (s *ServiceImpl) Update(projectUUID uuid.UUID, authUser auth.User, request *project.UpdateRequest) (*Project, error) {
