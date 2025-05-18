@@ -6,9 +6,6 @@ import (
 	"time"
 )
 
-const UserStatusActive = "active"
-const UserStatusInactive = "inactive"
-
 type User struct {
 	Uuid      uuid.UUID `db:"uuid"`
 	Username  string    `db:"username"`
@@ -22,7 +19,7 @@ type User struct {
 }
 
 func (u User) IsActive() bool {
-	return u.Status == UserStatusActive
+	return u.Status == constants.UserStatusActive
 }
 
 func (u User) GetRoles() []int {

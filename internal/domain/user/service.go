@@ -3,10 +3,10 @@ package user
 import (
 	"fluxton/internal/api/dto"
 	"fluxton/internal/api/dto/user"
+	"fluxton/internal/config/constants"
 	"fluxton/internal/domain/setting"
 	"fluxton/pkg/auth"
 	"fluxton/pkg/errors"
-	"fluxton/policies"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
@@ -28,15 +28,18 @@ type Service interface {
 }
 
 type ServiceImpl struct {
+	policy         *Policy
 	settingService setting.Service
 	userRepo       Repository
 }
 
 func NewUserService(injector *do.Injector) (Service, error) {
+	policy := do.MustInvoke[*Policy](injector)
 	settingService := do.MustInvoke[setting.Service](injector)
 	repo := do.MustInvoke[Repository](injector)
 
 	return &ServiceImpl{
+		policy:         policy,
 		settingService: settingService,
 		userRepo:       repo,
 	}, nil
@@ -113,8 +116,8 @@ func (s *ServiceImpl) Create(ctx echo.Context, request *user.CreateRequest) (Use
 		Username: request.Username,
 		Email:    request.Email,
 		Password: request.Password,
-		Status:   UserStatusActive,
-		RoleID:   UserRoleOwner,
+		Status:   constants.UserStatusActive,
+		RoleID:   constants.UserRoleOwner,
 	}
 
 	_, err = s.userRepo.Create(&userData)
@@ -136,7 +139,7 @@ func (s *ServiceImpl) Create(ctx echo.Context, request *user.CreateRequest) (Use
 }
 
 func (s *ServiceImpl) Update(userUUID, authUserUUID uuid.UUID, request *user.UpdateRequest) (*User, error) {
-	if !policies.CanUpdateUser(userUUID, authUserUUID) {
+	if !s.policy.CanUpdateUser(userUUID, authUserUUID) {
 		return nil, errors.NewForbiddenError("user.error.updateForbidden")
 	}
 

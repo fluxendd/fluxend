@@ -6,4 +6,7 @@ const (
 	UserRoleAdmin     = 3
 	UserRoleDeveloper = 4
 	UserRoleExplorer  = 5
+
+	UserStatusActive   = "active"
+	UserStatusInactive = "inactive"
 )
