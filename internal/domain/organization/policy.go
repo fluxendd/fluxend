@@ -7,11 +7,11 @@ import (
 )
 
 type Policy struct {
-	organizationRepo *Repository
+	organizationRepo Repository
 }
 
 func NewOrganizationPolicy(injector *do.Injector) (*Policy, error) {
-	repo := do.MustInvoke[*Repository](injector)
+	repo := do.MustInvoke[Repository](injector)
 
 	return &Policy{
 		organizationRepo: repo,
