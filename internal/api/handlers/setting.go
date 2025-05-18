@@ -10,11 +10,11 @@ import (
 )
 
 type SettingHandler struct {
-	settingService setting2.SettingService
+	settingService setting2.Service
 }
 
 func NewSettingHandler(injector *do.Injector) (*SettingHandler, error) {
-	settingService := do.MustInvoke[setting2.SettingService](injector)
+	settingService := do.MustInvoke[setting2.Service](injector)
 
 	return &SettingHandler{settingService: settingService}, nil
 }

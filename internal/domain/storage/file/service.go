@@ -26,7 +26,7 @@ type Service interface {
 }
 
 type ServiceImpl struct {
-	settingService setting.SettingService
+	settingService setting.Service
 	projectPolicy  *project.Policy
 	containerRepo  *container.Repository
 	fileRepo       *Repository

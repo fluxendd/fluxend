@@ -6,7 +6,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func AllowProjectMiddleware(settingService setting.SettingService) echo.MiddlewareFunc {
+func AllowProjectMiddleware(settingService setting.Service) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			if !settingService.GetBool(c, "allowProjects") {

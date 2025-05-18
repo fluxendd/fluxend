@@ -21,7 +21,7 @@ type WorkflowService interface {
 }
 
 type WorkflowServiceImpl struct {
-	settingService setting.SettingService
+	settingService setting.Service
 	backupRepo     *repositories.BackupRepository
 }
 

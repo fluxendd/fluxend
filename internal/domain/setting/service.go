@@ -13,7 +13,7 @@ import (
 
 const settingsCacheKey = "settings"
 
-type SettingService interface {
+type Service interface {
 	List(ctx echo.Context, skipCache bool) ([]Setting, error)
 	Get(ctx echo.Context, name string) Setting
 	GetValue(ctx echo.Context, name string) string
@@ -23,22 +23,22 @@ type SettingService interface {
 	GetStorageDriver(ctx echo.Context) string
 }
 
-type SettingServiceImpl struct {
+type ServiceImpl struct {
 	adminPolicy *admin.Policy
 	settingRepo *Repository
 }
 
-func NewSettingService(injector *do.Injector) (SettingService, error) {
+func NewSettingService(injector *do.Injector) (Service, error) {
 	policy := admin.NewAdminPolicy()
 	settingRepo := do.MustInvoke[*Repository](injector)
 
-	return &SettingServiceImpl{
+	return &ServiceImpl{
 		adminPolicy: policy,
 		settingRepo: settingRepo,
 	}, nil
 }
 
-func (s *SettingServiceImpl) List(ctx echo.Context, skipCache bool) ([]Setting, error) {
+func (s *ServiceImpl) List(ctx echo.Context, skipCache bool) ([]Setting, error) {
 	if !skipCache && ctx.Get(settingsCacheKey) != nil {
 		settings := ctx.Get(settingsCacheKey).([]Setting)
 
@@ -55,7 +55,7 @@ func (s *SettingServiceImpl) List(ctx echo.Context, skipCache bool) ([]Setting, 
 	return settings, nil
 }
 
-func (s *SettingServiceImpl) Get(ctx echo.Context, name string) Setting {
+func (s *ServiceImpl) Get(ctx echo.Context, name string) Setting {
 	settings, err := s.List(ctx, false)
 	if err != nil {
 		log.Error().
@@ -76,19 +76,19 @@ func (s *SettingServiceImpl) Get(ctx echo.Context, name string) Setting {
 	return Setting{}
 }
 
-func (s *SettingServiceImpl) GetValue(ctx echo.Context, name string) string {
+func (s *ServiceImpl) GetValue(ctx echo.Context, name string) string {
 	currentSetting := s.Get(ctx, name)
 
 	return currentSetting.Value
 }
 
-func (s *SettingServiceImpl) GetBool(ctx echo.Context, name string) bool {
+func (s *ServiceImpl) GetBool(ctx echo.Context, name string) bool {
 	currentSetting := s.Get(ctx, name)
 
 	return currentSetting.Value == "yes"
 }
 
-func (s *SettingServiceImpl) Update(ctx echo.Context, authUser auth.User, request *setting.UpdateRequest) ([]Setting, error) {
+func (s *ServiceImpl) Update(ctx echo.Context, authUser auth.User, request *setting.UpdateRequest) ([]Setting, error) {
 	// Authorization check
 	if !s.adminPolicy.CanUpdate(authUser) {
 		return nil, errors.NewForbiddenError("setting.error.updateForbidden")
@@ -119,7 +119,7 @@ func (s *SettingServiceImpl) Update(ctx echo.Context, authUser auth.User, reques
 	return s.List(ctx, true)
 }
 
-func (s *SettingServiceImpl) Reset(ctx echo.Context, authUser auth.User) ([]Setting, error) {
+func (s *ServiceImpl) Reset(ctx echo.Context, authUser auth.User) ([]Setting, error) {
 	if !s.adminPolicy.CanUpdate(authUser) {
 		return []Setting{}, errors.NewForbiddenError("setting.error.resetForbidden")
 	}
@@ -142,6 +142,6 @@ func (s *SettingServiceImpl) Reset(ctx echo.Context, authUser auth.User) ([]Sett
 	return s.List(ctx, true)
 }
 
-func (s *SettingServiceImpl) GetStorageDriver(ctx echo.Context) string {
+func (s *ServiceImpl) GetStorageDriver(ctx echo.Context) string {
 	return s.GetValue(ctx, "storageDriver")
 }

@@ -14,7 +14,7 @@ import (
 type MailgunServiceImpl struct {
 	client         *mailgun.MailgunImpl
 	domain         string
-	settingService setting.SettingService
+	settingService setting.Service
 }
 
 func NewMailgunService(ctx echo.Context, injector *do.Injector) (EmailInterface, error) {

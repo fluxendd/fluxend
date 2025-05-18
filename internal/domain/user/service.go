@@ -28,12 +28,12 @@ type UserService interface {
 }
 
 type UserServiceImpl struct {
-	settingService setting.SettingService
+	settingService setting.Service
 	userRepo       *Repository
 }
 
 func NewUserService(injector *do.Injector) (UserService, error) {
-	settingService := do.MustInvoke[setting.SettingService](injector)
+	settingService := do.MustInvoke[setting.Service](injector)
 	repo := do.MustInvoke[*Repository](injector)
 
 	return &UserServiceImpl{

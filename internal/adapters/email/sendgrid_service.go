@@ -11,7 +11,7 @@ import (
 
 type SendGridServiceImpl struct {
 	client         *sendgrid.Client
-	settingService setting.SettingService
+	settingService setting.Service
 }
 
 func NewSendGridService(ctx echo.Context, injector *do.Injector) (EmailInterface, error) {

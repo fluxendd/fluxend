@@ -9,11 +9,11 @@ import (
 )
 
 type HealthHandler struct {
-	settingService setting.SettingService
+	settingService setting.Service
 }
 
 func NewHealthHandler(injector *do.Injector) (*HealthHandler, error) {
-	settingService := do.MustInvoke[setting.SettingService](injector)
+	settingService := do.MustInvoke[setting.Service](injector)
 
 	return &HealthHandler{settingService: settingService}, nil
 }

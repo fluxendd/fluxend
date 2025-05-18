@@ -15,7 +15,7 @@ import (
 
 type SESServiceImpl struct {
 	client         *ses.Client
-	settingService setting.SettingService
+	settingService setting.Service
 }
 
 func NewSESService(ctx echo.Context, injector *do.Injector) (EmailInterface, error) {
