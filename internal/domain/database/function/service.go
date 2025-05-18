@@ -14,27 +14,27 @@ import (
 	"github.com/samber/do"
 )
 
-type FunctionService interface {
+type Service interface {
 	List(schema string, projectUUID uuid.UUID, authUser auth.User) ([]Function, error)
 	GetByName(name, schema string, projectUUID uuid.UUID, authUser auth.User) (Function, error)
 	Create(schema string, request *function.CreateFunctionRequest, authUser auth.User) (Function, error)
 	Delete(name, schema string, projectUUID uuid.UUID, authUser auth.User) (bool, error)
 }
 
-type FunctionServiceImpl struct {
+type ServiceImpl struct {
 	connectService client.Service
 	projectPolicy  *project.Policy
-	databaseRepo   *client.Repository
-	projectRepo    *project.Repository
+	databaseRepo   client.Repository
+	projectRepo    project.Repository
 }
 
-func NewFunctionService(injector *do.Injector) (FunctionService, error) {
+func NewFunctionService(injector *do.Injector) (Service, error) {
 	connectionService := do.MustInvoke[client.Service](injector)
 	policy := do.MustInvoke[*project.Policy](injector)
-	databaseRepo := do.MustInvoke[*client.Repository](injector)
-	projectRepo := do.MustInvoke[*project.Repository](injector)
+	databaseRepo := do.MustInvoke[client.Repository](injector)
+	projectRepo := do.MustInvoke[project.Repository](injector)
 
-	return &FunctionServiceImpl{
+	return &ServiceImpl{
 		connectService: connectionService,
 		projectPolicy:  policy,
 		databaseRepo:   databaseRepo,
@@ -42,7 +42,7 @@ func NewFunctionService(injector *do.Injector) (FunctionService, error) {
 	}, nil
 }
 
-func (s *FunctionServiceImpl) List(schema string, projectUUID uuid.UUID, authUser auth.User) ([]Function, error) {
+func (s *ServiceImpl) List(schema string, projectUUID uuid.UUID, authUser auth.User) ([]Function, error) {
 	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(projectUUID)
 	if err != nil {
 		return []Function{}, err
@@ -61,7 +61,7 @@ func (s *FunctionServiceImpl) List(schema string, projectUUID uuid.UUID, authUse
 	return clientFunctionRepo.List(schema)
 }
 
-func (s *FunctionServiceImpl) GetByName(name, schema string, projectUUID uuid.UUID, authUser auth.User) (Function, error) {
+func (s *ServiceImpl) GetByName(name, schema string, projectUUID uuid.UUID, authUser auth.User) (Function, error) {
 	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(projectUUID)
 	if err != nil {
 		return Function{}, err
@@ -80,7 +80,7 @@ func (s *FunctionServiceImpl) GetByName(name, schema string, projectUUID uuid.UU
 	return clientFunctionRepo.GetByName(schema, name)
 }
 
-func (s *FunctionServiceImpl) Create(schema string, request *function.CreateFunctionRequest, authUser auth.User) (Function, error) {
+func (s *ServiceImpl) Create(schema string, request *function.CreateFunctionRequest, authUser auth.User) (Function, error) {
 	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(request.ProjectUUID)
 	if err != nil {
 		return Function{}, err
@@ -109,7 +109,7 @@ func (s *FunctionServiceImpl) Create(schema string, request *function.CreateFunc
 	return clientFunctionRepo.GetByName(schema, request.Name)
 }
 
-func (s *FunctionServiceImpl) Delete(schema, name string, projectUUID uuid.UUID, authUser auth.User) (bool, error) {
+func (s *ServiceImpl) Delete(schema, name string, projectUUID uuid.UUID, authUser auth.User) (bool, error) {
 	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(projectUUID)
 	if err != nil {
 		return false, err
@@ -133,7 +133,7 @@ func (s *FunctionServiceImpl) Delete(schema, name string, projectUUID uuid.UUID,
 	return true, nil
 }
 
-func (s *FunctionServiceImpl) buildDefinition(schema string, request *function.CreateFunctionRequest) (string, error) {
+func (s *ServiceImpl) buildDefinition(schema string, request *function.CreateFunctionRequest) (string, error) {
 	var params []string
 	for _, param := range request.Parameters {
 		params = append(params, fmt.Sprintf("%s %s", pq.QuoteIdentifier(param.Name), pq.QuoteIdentifier(param.Type)))

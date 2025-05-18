@@ -3,19 +3,20 @@ package handlers
 import (
 	"fluxton/internal/api/dto"
 	"fluxton/internal/api/dto/project"
+	projectMapper "fluxton/internal/api/mapper/project"
 	"fluxton/internal/api/response"
-	project2 "fluxton/internal/domain/project"
+	projectDomain "fluxton/internal/domain/project"
 	"fluxton/pkg/auth"
 	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
 )
 
 type ProjectHandler struct {
-	projectService project2.Service
+	projectService projectDomain.Service
 }
 
 func NewProjectHandler(injector *do.Injector) (*ProjectHandler, error) {
-	projectService := do.MustInvoke[project2.Service](injector)
+	projectService := do.MustInvoke[projectDomain.Service](injector)
 
 	return &ProjectHandler{projectService: projectService}, nil
 }
@@ -62,7 +63,7 @@ func (pc *ProjectHandler) List(c echo.Context) error {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.SuccessResponse(c, project.ProjectResourceCollection(projects))
+	return response.SuccessResponse(c, projectMapper.ToResourceCollection(projects))
 }
 
 // Show details of a single project
@@ -97,12 +98,12 @@ func (pc *ProjectHandler) Show(c echo.Context) error {
 		return response.BadRequestResponse(c, err.Error())
 	}
 
-	project, err := pc.projectService.GetByUUID(projectUUID, authUser)
+	fetchedProject, err := pc.projectService.GetByUUID(projectUUID, authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.SuccessResponse(c, project.ProjectResource(&project))
+	return response.SuccessResponse(c, projectMapper.ToResource(&fetchedProject))
 }
 
 // Store creates a new project
@@ -133,12 +134,12 @@ func (pc *ProjectHandler) Store(c echo.Context) error {
 
 	authUser, _ := auth.NewAuth(c).User()
 
-	project, err := pc.projectService.Create(&request, authUser)
+	updatedProject, err := pc.projectService.Create(&request, authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.CreatedResponse(c, project.ProjectResource(&project))
+	return response.CreatedResponse(c, projectMapper.ToResource(&updatedProject))
 }
 
 // Update a project
@@ -179,7 +180,7 @@ func (pc *ProjectHandler) Update(c echo.Context) error {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.SuccessResponse(c, project.ProjectResource(updatedOrganization))
+	return response.SuccessResponse(c, projectMapper.ToResource(updatedOrganization))
 }
 
 // Delete a project

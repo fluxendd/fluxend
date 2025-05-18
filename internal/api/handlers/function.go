@@ -3,19 +3,20 @@ package handlers
 import (
 	"fluxton/internal/api/dto"
 	"fluxton/internal/api/dto/database/function"
+	functionMapper "fluxton/internal/api/mapper/function"
 	"fluxton/internal/api/response"
-	function2 "fluxton/internal/domain/database/function"
+	functionDomain "fluxton/internal/domain/database/function"
 	"fluxton/pkg/auth"
 	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
 )
 
 type FunctionHandler struct {
-	functionService function2.FunctionService
+	functionService functionDomain.Service
 }
 
 func NewFunctionHandler(injector *do.Injector) (*FunctionHandler, error) {
-	functionService := do.MustInvoke[function2.FunctionService](injector)
+	functionService := do.MustInvoke[functionDomain.Service](injector)
 
 	return &FunctionHandler{functionService: functionService}, nil
 }
@@ -59,7 +60,7 @@ func (fc *FunctionHandler) List(c echo.Context) error {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.SuccessResponse(c, function.FunctionResourceCollection(functions))
+	return response.SuccessResponse(c, functionMapper.ToResourceCollection(functions))
 }
 
 // Show retrieves details of a specific function
@@ -101,12 +102,12 @@ func (fc *FunctionHandler) Show(c echo.Context) error {
 		return response.BadRequestResponse(c, "Function name is required")
 	}
 
-	function, err := fc.functionService.GetByName(functionName, schema, request.ProjectUUID, authUser)
+	fetchedFunction, err := fc.functionService.GetByName(functionName, schema, request.ProjectUUID, authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.SuccessResponse(c, function.FunctionResource(&function))
+	return response.SuccessResponse(c, functionMapper.ToResource(&fetchedFunction))
 }
 
 // Store creates a new function
@@ -143,12 +144,12 @@ func (fc *FunctionHandler) Store(c echo.Context) error {
 		return response.BadRequestResponse(c, "Schema is required")
 	}
 
-	function, err := fc.functionService.Create(schema, &request, authUser)
+	createdFunction, err := fc.functionService.Create(schema, &request, authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.CreatedResponse(c, function.FunctionResource(&function))
+	return response.CreatedResponse(c, functionMapper.ToResource(&createdFunction))
 }
 
 // Delete removes a function

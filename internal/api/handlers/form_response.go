@@ -3,8 +3,9 @@ package handlers
 import (
 	"fluxton/internal/api/dto"
 	"fluxton/internal/api/dto/form"
+	formMapper "fluxton/internal/api/mapper/form"
 	"fluxton/internal/api/response"
-	form2 "fluxton/internal/domain/form"
+	formDomain "fluxton/internal/domain/form"
 	"fluxton/pkg/auth"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
@@ -12,11 +13,11 @@ import (
 )
 
 type FormResponseHandler struct {
-	formResponseService form2.ResponseService
+	formResponseService formDomain.ResponseService
 }
 
 func NewFormResponseHandler(injector *do.Injector) (*FormResponseHandler, error) {
-	formResponseService := do.MustInvoke[form2.ResponseService](injector)
+	formResponseService := do.MustInvoke[formDomain.ResponseService](injector)
 
 	return &FormResponseHandler{formResponseService: formResponseService}, nil
 }
@@ -58,7 +59,7 @@ func (ffc *FormResponseHandler) List(c echo.Context) error {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.SuccessResponse(c, form.FormResponseResourceCollection(formResponses))
+	return response.SuccessResponse(c, formMapper.ToResponseResourceCollection(formResponses))
 }
 
 // Show details of a single form response
@@ -100,7 +101,7 @@ func (ffc *FormResponseHandler) Show(c echo.Context) error {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.SuccessResponse(c, form.FormResponseResource(formResponse))
+	return response.SuccessResponse(c, formMapper.ToResponseResource(formResponse))
 }
 
 // Store a new form response
@@ -143,7 +144,7 @@ func (ffc *FormResponseHandler) Store(c echo.Context) error {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.CreatedResponse(c, form.FormResponseResource(&formResponse))
+	return response.CreatedResponse(c, formMapper.ToResponseResource(&formResponse))
 }
 
 // Delete a form response
