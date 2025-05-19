@@ -28,7 +28,7 @@ type RenameTableRequest struct {
 type UploadTableRequest struct {
 	dto.BaseRequest
 	Name string                `form:"name"`
-	File *multipart.FileHeader `form:"file"` // use FileHeader, not string
+	File *multipart.FileHeader `form:"file"`
 }
 
 func (r *UploadTableRequest) BindAndValidate(c echo.Context) []string {

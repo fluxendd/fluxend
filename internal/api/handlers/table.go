@@ -3,20 +3,20 @@ package handlers
 import (
 	"fluxton/internal/api/dto"
 	"fluxton/internal/api/dto/database"
-	"fluxton/internal/api/dto/database/table"
+	databaseMapper "fluxton/internal/api/mapper/database"
 	"fluxton/internal/api/response"
-	table2 "fluxton/internal/domain/database"
+	databaseDomain "fluxton/internal/domain/database"
 	"fluxton/pkg/auth"
 	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
 )
 
 type TableHandler struct {
-	tableService table2.IndexService
+	tableService databaseDomain.TableService
 }
 
 func NewTableHandler(injector *do.Injector) (*TableHandler, error) {
-	tableService := do.MustInvoke[table2.IndexService](injector)
+	tableService := do.MustInvoke[databaseDomain.TableService](injector)
 
 	return &TableHandler{tableService: tableService}, nil
 }
@@ -52,7 +52,7 @@ func (tc *TableHandler) List(c echo.Context) error {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.SuccessResponse(c, table.TableResourceCollection(tables))
+	return response.SuccessResponse(c, databaseMapper.ToTableResourceCollection(tables))
 }
 
 // Show retrieves details of a specific table.
@@ -94,7 +94,7 @@ func (tc *TableHandler) Show(c echo.Context) error {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.SuccessResponse(c, table.TableResource(&table))
+	return response.SuccessResponse(c, databaseMapper.ToTableResource(&table))
 }
 
 // Store creates a new table within a project.
@@ -119,19 +119,19 @@ func (tc *TableHandler) Show(c echo.Context) error {
 //
 // @Router /tables [post]
 func (tc *TableHandler) Store(c echo.Context) error {
-	var request database.CreateRequest
+	var request database.CreateTableRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
 	}
 
 	authUser, _ := auth.NewAuth(c).User()
 
-	table, err := tc.tableService.Create(&request, authUser)
+	table, err := tc.tableService.Create(database.ToCreateTableInput(request), authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.CreatedResponse(c, table.TableResource(&table))
+	return response.CreatedResponse(c, databaseMapper.ToTableResource(&table))
 }
 
 // Upload creates a new table within a project using uploaded file
@@ -156,19 +156,19 @@ func (tc *TableHandler) Store(c echo.Context) error {
 //
 // @Router /tables/upload [post]
 func (tc *TableHandler) Upload(c echo.Context) error {
-	var request database.UploadRequest
+	var request database.UploadTableRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
 	}
 
 	authUser, _ := auth.NewAuth(c).User()
 
-	table, err := tc.tableService.Upload(&request, authUser)
+	table, err := tc.tableService.Upload(database.ToUploadTableInput(request), authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.CreatedResponse(c, table.TableResource(&table))
+	return response.CreatedResponse(c, databaseMapper.ToTableResource(&table))
 }
 
 // Duplicate creates a duplicate of an existing table.
@@ -194,7 +194,7 @@ func (tc *TableHandler) Upload(c echo.Context) error {
 //
 // @Router /tables/{tableUUID}/duplicate [put]
 func (tc *TableHandler) Duplicate(c echo.Context) error {
-	var request database.RenameRequest
+	var request database.RenameTableRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
 	}
@@ -206,12 +206,12 @@ func (tc *TableHandler) Duplicate(c echo.Context) error {
 		return response.BadRequestResponse(c, "Table name is required")
 	}
 
-	duplicatedTable, err := tc.tableService.Duplicate(fullTableName, authUser, &request)
+	duplicatedTable, err := tc.tableService.Duplicate(fullTableName, authUser, database.ToRenameTableInput(request))
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.SuccessResponse(c, table.ToResource(duplicatedTable))
+	return response.SuccessResponse(c, databaseMapper.ToTableResource(duplicatedTable))
 }
 
 // Rename updates the name of an existing table.
@@ -237,7 +237,7 @@ func (tc *TableHandler) Duplicate(c echo.Context) error {
 //
 // @Router /tables/{tableUUID}/rename [put]
 func (tc *TableHandler) Rename(c echo.Context) error {
-	var request database.RenameRequest
+	var request database.RenameTableRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
 	}
@@ -249,12 +249,12 @@ func (tc *TableHandler) Rename(c echo.Context) error {
 		return response.BadRequestResponse(c, "Table name is required")
 	}
 
-	renamedTable, err := tc.tableService.Rename(fullTableName, authUser, &request)
+	renamedTable, err := tc.tableService.Rename(fullTableName, authUser, database.ToRenameTableInput(request))
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.SuccessResponse(c, table.ToResource(&renamedTable))
+	return response.SuccessResponse(c, databaseMapper.ToTableResource(&renamedTable))
 }
 
 // Delete removes a table permanently from a project.

@@ -26,3 +26,26 @@ func ToRenameColumnInput(request RenameColumnRequest) database.RenameColumnInput
 		Name:        request.Name,
 	}
 }
+
+func ToCreateTableInput(request CreateTableRequest) database.CreateTableInput {
+	return database.CreateTableInput{
+		ProjectUUID: request.ProjectUUID,
+		Name:        request.Name,
+		Columns:     request.Columns,
+	}
+}
+
+func ToRenameTableInput(request RenameTableRequest) database.RenameTableInput {
+	return database.RenameTableInput{
+		ProjectUUID: request.ProjectUUID,
+		Name:        request.Name,
+	}
+}
+
+func ToUploadTableInput(request UploadTableRequest) database.UploadTableInput {
+	return database.UploadTableInput{
+		ProjectUUID: request.ProjectUUID,
+		Name:        request.Name,
+		File:        request.File,
+	}
+}
