@@ -2,24 +2,25 @@ package client
 
 import (
 	"fluxton/internal/database/repositories"
+	"fluxton/internal/domain/database/client"
 	"github.com/jmoiron/sqlx"
 	"github.com/samber/do"
 )
 
 type Service interface {
 	ConnectByDatabaseName(name string) (*sqlx.DB, error)
-	GetDatabaseStatsRepo(databaseName string, connection *sqlx.DB) (*repositories.DatabaseStatsRepository, *sqlx.DB, error)
-	GetTableRepo(databaseName string, connection *sqlx.DB) (*repositories.TableRepository, *sqlx.DB, error)
-	GetColumnRepo(databaseName string, connection *sqlx.DB) (*repositories.ColumnRepository, *sqlx.DB, error)
-	GetIndexRepo(databaseName string, connection *sqlx.DB) (*repositories.IndexRepository, *sqlx.DB, error)
-	GetRowRepo(databaseName string, connection *sqlx.DB) (*repositories.RowRepository, *sqlx.DB, error)
+	GetDatabaseStatsRepo(databaseName string, connection *sqlx.DB) (interface{}, *sqlx.DB, error)
+	GetTableRepo(databaseName string, connection *sqlx.DB) (interface{}, *sqlx.DB, error)
+	GetColumnRepo(databaseName string, connection *sqlx.DB) (interface{}, *sqlx.DB, error)
+	GetIndexRepo(databaseName string, connection *sqlx.DB) (interface{}, *sqlx.DB, error)
+	GetRowRepo(databaseName string, connection *sqlx.DB) (interface{}, *sqlx.DB, error)
 }
 
 type ServiceImpl struct {
 	databaseRepo *Repository
 }
 
-func NewClientService(injector *do.Injector) (Service, error) {
+func NewClientService(injector *do.Injector) (client.ConnectionService, error) {
 	databaseRepo := do.MustInvoke[*Repository](injector)
 
 	return &ServiceImpl{
@@ -31,7 +32,7 @@ func (s *ServiceImpl) ConnectByDatabaseName(name string) (*sqlx.DB, error) {
 	return s.databaseRepo.Connect(name)
 }
 
-func (s *ServiceImpl) GetDatabaseStatsRepo(databaseName string, connection *sqlx.DB) (*repositories.DatabaseStatsRepository, *sqlx.DB, error) {
+func (s *ServiceImpl) GetDatabaseStatsRepo(databaseName string, connection *sqlx.DB) (interface{}, *sqlx.DB, error) {
 	clientDatabaseConnection, err := s.getOrCreateConnection(databaseName, connection)
 	if err != nil {
 		return nil, nil, err
@@ -45,7 +46,7 @@ func (s *ServiceImpl) GetDatabaseStatsRepo(databaseName string, connection *sqlx
 	return clientDatabaseStatsRepo, clientDatabaseConnection, nil
 }
 
-func (s *ServiceImpl) GetTableRepo(databaseName string, connection *sqlx.DB) (*repositories.TableRepository, *sqlx.DB, error) {
+func (s *ServiceImpl) GetTableRepo(databaseName string, connection *sqlx.DB) (interface{}, *sqlx.DB, error) {
 	clientDatabaseConnection, err := s.getOrCreateConnection(databaseName, connection)
 	if err != nil {
 		return nil, nil, err
@@ -59,7 +60,7 @@ func (s *ServiceImpl) GetTableRepo(databaseName string, connection *sqlx.DB) (*r
 	return clientTableRepo, clientDatabaseConnection, nil
 }
 
-func (s *ServiceImpl) GetColumnRepo(databaseName string, connection *sqlx.DB) (*repositories.ColumnRepository, *sqlx.DB, error) {
+func (s *ServiceImpl) GetColumnRepo(databaseName string, connection *sqlx.DB) (interface{}, *sqlx.DB, error) {
 	clientDatabaseConnection, err := s.getOrCreateConnection(databaseName, connection)
 	if err != nil {
 		return nil, nil, err
@@ -73,7 +74,7 @@ func (s *ServiceImpl) GetColumnRepo(databaseName string, connection *sqlx.DB) (*
 	return clientColumnRepo, clientDatabaseConnection, nil
 }
 
-func (s *ServiceImpl) GetIndexRepo(databaseName string, connection *sqlx.DB) (*repositories.IndexRepository, *sqlx.DB, error) {
+func (s *ServiceImpl) GetIndexRepo(databaseName string, connection *sqlx.DB) (interface{}, *sqlx.DB, error) {
 	clientDatabaseConnection, err := s.getOrCreateConnection(databaseName, connection)
 	if err != nil {
 		return nil, nil, err
@@ -87,7 +88,7 @@ func (s *ServiceImpl) GetIndexRepo(databaseName string, connection *sqlx.DB) (*r
 	return clientIndexRepo, clientDatabaseConnection, nil
 }
 
-func (s *ServiceImpl) GetRowRepo(databaseName string, connection *sqlx.DB) (*repositories.RowRepository, *sqlx.DB, error) {
+func (s *ServiceImpl) GetRowRepo(databaseName string, connection *sqlx.DB) (interface{}, *sqlx.DB, error) {
 	clientDatabaseConnection, err := s.getOrCreateConnection(databaseName, connection)
 	if err != nil {
 		return nil, nil, err
@@ -101,7 +102,7 @@ func (s *ServiceImpl) GetRowRepo(databaseName string, connection *sqlx.DB) (*rep
 	return clientIndexRepo, clientDatabaseConnection, nil
 }
 
-func (s *ServiceImpl) getClientFunctionRepo(databaseName string, connection *sqlx.DB) (*repositories.FunctionRepository, *sqlx.DB, error) {
+func (s *ServiceImpl) getClientFunctionRepo(databaseName string, connection *sqlx.DB) (interface{}, *sqlx.DB, error) {
 	clientDatabaseConnection, err := s.getOrCreateConnection(databaseName, connection)
 	if err != nil {
 		return nil, nil, err

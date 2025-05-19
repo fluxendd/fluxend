@@ -1,13 +1,14 @@
 package table
 
 import (
+	"errors"
 	"fluxton/internal/api/dto/database/table"
 	"fluxton/internal/domain/auth"
 	"fluxton/internal/domain/database/client"
 	"fluxton/internal/domain/file_import"
 	"fluxton/internal/domain/project"
 	"fluxton/pkg"
-	"fluxton/pkg/errors"
+	flxErrors "fluxton/pkg/errors"
 	"github.com/google/uuid"
 	"github.com/samber/do"
 )
@@ -53,14 +54,19 @@ func (s *ServiceImpl) List(projectUUID uuid.UUID, authUser auth.User) ([]Table, 
 	}
 
 	if !s.projectPolicy.CanAccess(fetchedProject.OrganizationUuid, authUser) {
-		return []Table{}, errors.NewForbiddenError("project.error.listForbidden")
+		return []Table{}, flxErrors.NewForbiddenError("project.error.listForbidden")
 	}
 
-	clientTableRepo, connection, err := s.connectionService.GetTableRepo(fetchedProject.DBName, nil)
+	fetchedRepo, connection, err := s.connectionService.GetTableRepo(fetchedProject.DBName, nil)
 	if err != nil {
 		return []Table{}, err
 	}
 	defer connection.Close()
+
+	clientTableRepo, ok := fetchedRepo.(Repository)
+	if !ok {
+		return []Table{}, errors.New("clientTableRepo is not of type *repositories.TableRepository")
+	}
 
 	tables, err := clientTableRepo.List()
 	if err != nil {
@@ -77,7 +83,7 @@ func (s *ServiceImpl) GetByName(fullTableName string, projectUUID uuid.UUID, aut
 	}
 
 	if !s.projectPolicy.CanAccess(fetchedProject.OrganizationUuid, authUser) {
-		return Table{}, errors.NewForbiddenError("project.error.viewForbidden")
+		return Table{}, flxErrors.NewForbiddenError("project.error.viewForbidden")
 	}
 
 	clientTableRepo, connection, err := s.connectionService.GetTableRepo(fetchedProject.DBName, nil)
@@ -101,7 +107,7 @@ func (s *ServiceImpl) Create(request *table.CreateRequest, authUser auth.User) (
 	}
 
 	if !s.projectPolicy.CanCreate(fetchedProject.OrganizationUuid, authUser) {
-		return Table{}, errors.NewForbiddenError("table.error.createForbidden")
+		return Table{}, flxErrors.NewForbiddenError("table.error.createForbidden")
 	}
 
 	clientTableRepo, connection, err := s.connectionService.GetTableRepo(fetchedProject.DBName, nil)
@@ -130,7 +136,7 @@ func (s *ServiceImpl) Upload(request *table.UploadRequest, authUser auth.User) (
 	}
 
 	if !s.projectPolicy.CanCreate(fetchedProject.OrganizationUuid, authUser) {
-		return Table{}, errors.NewForbiddenError("table.error.createForbidden")
+		return Table{}, flxErrors.NewForbiddenError("table.error.createForbidden")
 	}
 
 	clientTableRepo, connection, err := s.connectionService.GetTableRepo(fetchedProject.DBName, nil)
@@ -177,7 +183,7 @@ func (s *ServiceImpl) Duplicate(fullTableName string, authUser auth.User, reques
 	}
 
 	if !s.projectPolicy.CanUpdate(fetchedProject.OrganizationUuid, authUser) {
-		return &Table{}, errors.NewForbiddenError("project.error.updateForbidden")
+		return &Table{}, flxErrors.NewForbiddenError("project.error.updateForbidden")
 	}
 
 	clientTableRepo, connection, err := s.connectionService.GetTableRepo(fetchedProject.DBName, nil)
@@ -213,7 +219,7 @@ func (s *ServiceImpl) Rename(fullTableName string, authUser auth.User, request *
 	}
 
 	if !s.projectPolicy.CanUpdate(fetchedProject.OrganizationUuid, authUser) {
-		return Table{}, errors.NewForbiddenError("project.error.updateForbidden")
+		return Table{}, flxErrors.NewForbiddenError("project.error.updateForbidden")
 	}
 
 	clientTableRepo, connection, err := s.connectionService.GetTableRepo(fetchedProject.DBName, nil)
@@ -249,7 +255,7 @@ func (s *ServiceImpl) Delete(fullTableName string, projectUUID uuid.UUID, authUs
 	}
 
 	if !s.projectPolicy.CanUpdate(fetchedProject.OrganizationUuid, authUser) {
-		return false, errors.NewForbiddenError("project.error.updateForbidden")
+		return false, flxErrors.NewForbiddenError("project.error.updateForbidden")
 	}
 
 	clientTableRepo, connection, err := s.connectionService.GetTableRepo(fetchedProject.DBName, nil)
