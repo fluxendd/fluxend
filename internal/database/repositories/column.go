@@ -1,7 +1,7 @@
 package repositories
 
 import (
-	"fluxton/internal/domain/database/column"
+	"fluxton/internal/domain/database"
 	"fmt"
 	"github.com/jmoiron/sqlx"
 	"github.com/lib/pq"
@@ -15,8 +15,8 @@ func NewColumnRepository(connection *sqlx.DB) (*ColumnRepository, error) {
 	return &ColumnRepository{connection: connection}, nil
 }
 
-func (r *ColumnRepository) List(tableName string) ([]column.Column, error) {
-	var columns []column.Column
+func (r *ColumnRepository) List(tableName string) ([]database.Column, error) {
+	var columns []database.Column
 	query := `
 		SELECT 
 			a.attname AS name,
@@ -67,7 +67,7 @@ func (r *ColumnRepository) Has(tableName, columnName string) (bool, error) {
 	return count > 0, nil
 }
 
-func (r *ColumnRepository) HasAny(tableName string, columns []column.Column) (bool, error) {
+func (r *ColumnRepository) HasAny(tableName string, columns []database.Column) (bool, error) {
 	var count int
 	columnNames := r.mapColumnsToNames(columns)
 	query := `
@@ -85,7 +85,7 @@ func (r *ColumnRepository) HasAny(tableName string, columns []column.Column) (bo
 	return count > 0, nil
 }
 
-func (r *ColumnRepository) HasAll(tableName string, columns []column.Column) (bool, error) {
+func (r *ColumnRepository) HasAll(tableName string, columns []database.Column) (bool, error) {
 	var count int
 	columnNames := r.mapColumnsToNames(columns)
 	query := `
@@ -103,7 +103,7 @@ func (r *ColumnRepository) HasAll(tableName string, columns []column.Column) (bo
 	return count == len(columns), nil
 }
 
-func (r *ColumnRepository) CreateOne(tableName string, column column.Column) error {
+func (r *ColumnRepository) CreateOne(tableName string, column database.Column) error {
 	def := r.BuildColumnDefinition(column)
 	addColumnQuery := fmt.Sprintf("ALTER TABLE %s ADD COLUMN %s;", tableName, def)
 
@@ -120,7 +120,7 @@ func (r *ColumnRepository) CreateOne(tableName string, column column.Column) err
 	return nil
 }
 
-func (r *ColumnRepository) CreateMany(tableName string, fields []column.Column) error {
+func (r *ColumnRepository) CreateMany(tableName string, fields []database.Column) error {
 	for _, field := range fields {
 		err := r.CreateOne(tableName, field)
 		if err != nil {
@@ -131,7 +131,7 @@ func (r *ColumnRepository) CreateMany(tableName string, fields []column.Column) 
 	return nil
 }
 
-func (r *ColumnRepository) AlterOne(tableName string, columns []column.Column) error {
+func (r *ColumnRepository) AlterOne(tableName string, columns []database.Column) error {
 	for _, column := range columns {
 		query := fmt.Sprintf(
 			"ALTER TABLE %s ALTER COLUMN %s TYPE %s",
@@ -148,9 +148,9 @@ func (r *ColumnRepository) AlterOne(tableName string, columns []column.Column) e
 	return nil
 }
 
-func (r *ColumnRepository) AlterMany(tableName string, fields []column.Column) error {
+func (r *ColumnRepository) AlterMany(tableName string, fields []database.Column) error {
 	for _, field := range fields {
-		err := r.AlterOne(tableName, []column.Column{field})
+		err := r.AlterOne(tableName, []database.Column{field})
 		if err != nil {
 			return err
 		}
@@ -184,7 +184,7 @@ func (r *ColumnRepository) Drop(tableName, columnName string) error {
 	return nil
 }
 
-func (r *ColumnRepository) mapColumnsToNames(columns []column.Column) []string {
+func (r *ColumnRepository) mapColumnsToNames(columns []database.Column) []string {
 	columnNames := make([]string, len(columns))
 	for i, column := range columns {
 		columnNames[i] = column.Name
@@ -193,7 +193,7 @@ func (r *ColumnRepository) mapColumnsToNames(columns []column.Column) []string {
 	return columnNames
 }
 
-func (r *ColumnRepository) BuildColumnDefinition(column column.Column) string {
+func (r *ColumnRepository) BuildColumnDefinition(column database.Column) string {
 	def := fmt.Sprintf("%s %s", pq.QuoteIdentifier(column.Name), column.Type)
 
 	if column.Primary {
@@ -215,7 +215,7 @@ func (r *ColumnRepository) BuildColumnDefinition(column column.Column) string {
 	return def
 }
 
-func (r *ColumnRepository) BuildForeignKeyConstraint(tableName string, column column.Column) (string, bool) {
+func (r *ColumnRepository) BuildForeignKeyConstraint(tableName string, column database.Column) (string, bool) {
 	if !column.Foreign || !column.ReferenceTable.Valid || !column.ReferenceColumn.Valid {
 		return "", false
 	}

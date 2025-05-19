@@ -5,7 +5,7 @@ import (
 	"fluxton/internal/api/dto/database/function"
 	functionMapper "fluxton/internal/api/mapper/function"
 	"fluxton/internal/api/response"
-	functionDomain "fluxton/internal/domain/database/function"
+	functionDomain "fluxton/internal/domain/database"
 	"fluxton/pkg/auth"
 	"github.com/labstack/echo/v4"
 	"github.com/samber/do"

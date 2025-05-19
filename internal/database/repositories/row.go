@@ -1,8 +1,7 @@
 package repositories
 
 import (
-	"fluxton/internal/domain/database/column"
-	"fluxton/internal/domain/database/row"
+	"fluxton/internal/domain/database"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -10,11 +9,11 @@ type RowRepository struct {
 	connection *sqlx.DB
 }
 
-func NewRowRepository(connection *sqlx.DB) (row.Repository, error) {
+func NewRowRepository(connection *sqlx.DB) (database.Repository, error) {
 	return &RowRepository{connection: connection}, nil
 }
 
-func (r *RowRepository) CreateMany(tableName string, columns []column.Column, values [][]string) error {
+func (r *RowRepository) CreateMany(tableName string, columns []database.Column, values [][]string) error {
 	query := "INSERT INTO " + tableName + " ("
 
 	for i, currentColumn := range columns {

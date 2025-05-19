@@ -3,7 +3,7 @@ package commands
 import (
 	"fluxton/internal/app"
 	"fluxton/internal/domain/auth"
-	"fluxton/internal/domain/database/stat"
+	"fluxton/internal/domain/database"
 	"fluxton/internal/domain/stats"
 	"fluxton/pkg"
 	"github.com/google/uuid"
@@ -35,7 +35,7 @@ var udbStats = &cobra.Command{
 	},
 }
 
-func getDatabaseStats(databaseName string) (stat.DatabaseStat, error) {
+func getDatabaseStats(databaseName string) (database.DatabaseStat, error) {
 	container := app.InitializeContainer()
 
 	authUser := auth.User{
@@ -47,7 +47,7 @@ func getDatabaseStats(databaseName string) (stat.DatabaseStat, error) {
 
 	pulledStats, err := databaseStatsService.GetAll(databaseName, authUser)
 	if err != nil {
-		return stat.DatabaseStat{}, err
+		return database.DatabaseStat{}, err
 	}
 
 	return pulledStats, nil

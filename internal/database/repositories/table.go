@@ -3,8 +3,7 @@ package repositories
 import (
 	"database/sql"
 	"errors"
-	"fluxton/internal/domain/database/column"
-	"fluxton/internal/domain/database/table"
+	"fluxton/internal/domain/database"
 	flxErrs "fluxton/pkg/errors"
 	"fmt"
 	"github.com/jmoiron/sqlx"
@@ -17,7 +16,7 @@ type TableRepository struct {
 	columnRepository *ColumnRepository
 }
 
-func NewTableRepository(connection *sqlx.DB) (table.Repository, error) {
+func NewTableRepository(connection *sqlx.DB) (database.Repository, error) {
 	columnRepository, err := NewColumnRepository(connection)
 	if err != nil {
 		return nil, err
@@ -39,7 +38,7 @@ func (r *TableRepository) Exists(name string) (bool, error) {
 	return count > 0, nil
 }
 
-func (r *TableRepository) Create(name string, columns []column.Column) error {
+func (r *TableRepository) Create(name string, columns []database.Column) error {
 	var defs []string
 	var foreignConstraints []string
 
@@ -75,8 +74,8 @@ func (r *TableRepository) Duplicate(existingTable string, newTable string) error
 	return nil
 }
 
-func (r *TableRepository) List() ([]table.Table, error) {
-	var tables []table.Table
+func (r *TableRepository) List() ([]database.Table, error) {
+	var tables []database.Table
 	query := `
 		SELECT
 			c.oid AS id,
@@ -92,14 +91,14 @@ func (r *TableRepository) List() ([]table.Table, error) {
 	`
 	err := r.connection.Select(&tables, query)
 	if err != nil {
-		return []table.Table{}, err
+		return []database.Table{}, err
 	}
 
 	return tables, nil
 }
 
-func (r *TableRepository) GetByNameInSchema(schema, name string) (table.Table, error) {
-	var fetchedTable table.Table
+func (r *TableRepository) GetByNameInSchema(schema, name string) (database.Table, error) {
+	var fetchedTable database.Table
 	query := `
 		SELECT
 			c.oid AS id,
@@ -117,10 +116,10 @@ func (r *TableRepository) GetByNameInSchema(schema, name string) (table.Table, e
 	err := r.connection.Get(&fetchedTable, query, schema, name)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return table.Table{}, flxErrs.NewNotFoundError("table.error.notFound")
+			return database.Table{}, flxErrs.NewNotFoundError("table.error.notFound")
 		}
 
-		return table.Table{}, err
+		return database.Table{}, err
 	}
 
 	return fetchedTable, nil

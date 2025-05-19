@@ -1,4 +1,4 @@
-package function
+package database
 
 type Repository interface {
 }

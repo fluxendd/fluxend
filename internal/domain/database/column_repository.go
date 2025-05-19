@@ -1,4 +1,4 @@
-package column
+package database
 
 type Repository interface {
 }

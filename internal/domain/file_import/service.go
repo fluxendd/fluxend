@@ -4,7 +4,7 @@ import (
 	"encoding/csv"
 	"encoding/json"
 	"errors"
-	"fluxton/internal/domain/database/column"
+	"fluxton/internal/domain/database"
 	"fmt"
 	"math"
 	"mime/multipart"
@@ -20,7 +20,7 @@ import (
 type Row map[string]interface{}
 
 type Service interface {
-	ImportCSV(file multipart.File) ([]column.Column, [][]string, error)
+	ImportCSV(file multipart.File) ([]database.Column, [][]string, error)
 }
 
 type ServiceImpl struct {
@@ -30,7 +30,7 @@ func NewFileImportService(injector *do.Injector) (Service, error) {
 	return &ServiceImpl{}, nil
 }
 
-func (s *ServiceImpl) ImportCSV(file multipart.File) ([]column.Column, [][]string, error) {
+func (s *ServiceImpl) ImportCSV(file multipart.File) ([]database.Column, [][]string, error) {
 	// Parse CSV
 	reader := csv.NewReader(file)
 	records, err := reader.ReadAll()
@@ -63,8 +63,8 @@ func (s *ServiceImpl) ImportCSV(file multipart.File) ([]column.Column, [][]strin
 	return columns, dataRows, nil
 }
 
-func (s *ServiceImpl) determineColumns(headers []string, dataRows [][]string) ([]column.Column, error) {
-	columns := make([]column.Column, 0, len(headers))
+func (s *ServiceImpl) determineColumns(headers []string, dataRows [][]string) ([]database.Column, error) {
+	columns := make([]database.Column, 0, len(headers))
 	columnNames := make(map[string]int) // Track sanitized column names for uniqueness
 
 	for i, header := range headers {
@@ -91,7 +91,7 @@ func (s *ServiceImpl) determineColumns(headers []string, dataRows [][]string) ([
 			colType, notNull = s.detectColumnType(dataRows, i)
 		}
 
-		columns = append(columns, column.Column{
+		columns = append(columns, database.Column{
 			Name:     name,
 			Position: i,
 			NotNull:  notNull,

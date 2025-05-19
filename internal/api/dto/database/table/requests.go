@@ -4,7 +4,7 @@ import (
 	"fluxton/internal/api/dto"
 	columnDto "fluxton/internal/api/dto/database/column"
 	"fluxton/internal/config/constants"
-	columnDomain "fluxton/internal/domain/database/column"
+	columnDomain "fluxton/internal/domain/database"
 	"strings"
 
 	"fluxton/pkg"

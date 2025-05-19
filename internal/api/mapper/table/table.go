@@ -2,7 +2,7 @@ package table
 
 import (
 	tableDto "fluxton/internal/api/dto/database/table"
-	tableDomain "fluxton/internal/domain/database/table"
+	tableDomain "fluxton/internal/domain/database"
 )
 
 func ToResource(table *tableDomain.Table) tableDto.Response {

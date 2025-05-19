@@ -1,12 +1,8 @@
-package table
-
-import (
-	"fluxton/internal/domain/database/column"
-)
+package database
 
 type Repository interface {
 	Exists(name string) (bool, error)
-	Create(name string, columns []column.Column) error
+	Create(name string, columns []Column) error
 	Duplicate(existingTable string, newTable string) error
 	List() ([]Table, error)
 	GetByNameInSchema(schema, name string) (Table, error)

@@ -1,7 +1,7 @@
 package repositories
 
 import (
-	"fluxton/internal/domain/database/function"
+	"fluxton/internal/domain/database"
 	"fmt"
 	"github.com/jmoiron/sqlx"
 	"github.com/lib/pq"
@@ -15,8 +15,8 @@ func NewFunctionRepository(connection *sqlx.DB) (*FunctionRepository, error) {
 	return &FunctionRepository{connection: connection}, nil
 }
 
-func (r *FunctionRepository) List(schema string) ([]function.Function, error) {
-	var functions []function.Function
+func (r *FunctionRepository) List(schema string) ([]database.Function, error) {
+	var functions []database.Function
 	query := `
 		SELECT routine_name, routine_type, data_type, type_udt_name, routine_definition, external_language, sql_data_access
 		FROM information_schema.routines 
@@ -35,8 +35,8 @@ func (r *FunctionRepository) Create(functionSQL string) error {
 	return err
 }
 
-func (r *FunctionRepository) GetByName(schema, functionName string) (function.Function, error) {
-	var function function.Function
+func (r *FunctionRepository) GetByName(schema, functionName string) (database.Function, error) {
+	var function database.Function
 	query := `
 		SELECT 
 			r.routine_name, 

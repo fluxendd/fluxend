@@ -1,4 +1,4 @@
-package function
+package database
 
 import (
 	"fluxton/internal/api/dto/database/function"

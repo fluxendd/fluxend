@@ -4,7 +4,7 @@ import (
 	"fluxton/internal/api/dto"
 	"fluxton/internal/api/dto/database/table"
 	"fluxton/internal/api/response"
-	table2 "fluxton/internal/domain/database/table"
+	table2 "fluxton/internal/domain/database"
 	"fluxton/pkg/auth"
 	"github.com/labstack/echo/v4"
 	"github.com/samber/do"

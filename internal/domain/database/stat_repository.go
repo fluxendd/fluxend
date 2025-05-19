@@ -1,4 +1,4 @@
-package stat
+package database
 
 type Repository interface {
 	GetTotalDatabaseSize() (string, error)

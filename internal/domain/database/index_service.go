@@ -1,4 +1,4 @@
-package index
+package database
 
 import (
 	"fluxton/internal/api/dto/database/index"

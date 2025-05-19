@@ -1,11 +1,10 @@
-package table
+package database
 
 import (
 	"errors"
 	"fluxton/internal/api/dto/database/table"
 	"fluxton/internal/domain/auth"
 	"fluxton/internal/domain/database/client"
-	"fluxton/internal/domain/database/row"
 	"fluxton/internal/domain/file_import"
 	"fluxton/internal/domain/project"
 	"fluxton/pkg"
@@ -289,13 +288,13 @@ func (s *ServiceImpl) getClientTableRepo(dbName string) (Repository, *sqlx.DB, e
 	return clientRepo, connection, nil
 }
 
-func (s *ServiceImpl) getClientRowRepo(dbName string, connection *sqlx.DB) (row.Repository, error) {
+func (s *ServiceImpl) getClientRowRepo(dbName string, connection *sqlx.DB) (Repository, error) {
 	repo, _, err := s.connectionService.GetRowRepo(dbName, connection)
 	if err != nil {
 		return nil, err
 	}
 
-	clientRepo, ok := repo.(row.Repository)
+	clientRepo, ok := repo.(Repository)
 	if !ok {
 		return nil, errors.New("clientRowRepo is not of type *repositories.RowRepository")
 	}

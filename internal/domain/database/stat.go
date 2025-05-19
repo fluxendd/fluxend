@@ -1,4 +1,4 @@
-package stat
+package database
 
 import (
 	"time"

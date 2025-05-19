@@ -2,7 +2,7 @@ package function
 
 import (
 	functionDto "fluxton/internal/api/dto/database/function"
-	functionDomain "fluxton/internal/domain/database/function"
+	functionDomain "fluxton/internal/domain/database"
 )
 
 func ToResource(function *functionDomain.Function) functionDto.Response {

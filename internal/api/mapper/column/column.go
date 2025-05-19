@@ -2,7 +2,7 @@ package column
 
 import (
 	columnDto "fluxton/internal/api/dto/database/column"
-	columnDomain "fluxton/internal/domain/database/column"
+	columnDomain "fluxton/internal/domain/database"
 )
 
 func ToResource(column *columnDomain.Column) columnDto.Response {

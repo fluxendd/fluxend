@@ -1,4 +1,4 @@
-package column
+package database
 
 import (
 	"fluxton/internal/api/dto/database/column"

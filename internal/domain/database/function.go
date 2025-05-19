@@ -1,4 +1,4 @@
-package function
+package database
 
 type Function struct {
 	Name          string `db:"routine_name" json:"name"`

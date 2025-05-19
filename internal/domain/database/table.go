@@ -1,4 +1,4 @@
-package table
+package database
 
 import (
 	"fluxton/internal/domain/shared"

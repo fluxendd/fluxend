@@ -5,7 +5,7 @@ import (
 	"fluxton/internal/api/dto/database/column"
 	columnMapper "fluxton/internal/api/mapper/column"
 	"fluxton/internal/api/response"
-	columnDomain "fluxton/internal/domain/database/column"
+	columnDomain "fluxton/internal/domain/database"
 	"fluxton/pkg/auth"
 	"fluxton/pkg/errors"
 	"github.com/labstack/echo/v4"
