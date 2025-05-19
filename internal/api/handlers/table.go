@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"fluxton/internal/api/dto"
+	"fluxton/internal/api/dto/database"
 	"fluxton/internal/api/dto/database/table"
 	"fluxton/internal/api/response"
 	table2 "fluxton/internal/domain/database"
@@ -118,7 +119,7 @@ func (tc *TableHandler) Show(c echo.Context) error {
 //
 // @Router /tables [post]
 func (tc *TableHandler) Store(c echo.Context) error {
-	var request table.CreateRequest
+	var request database.CreateRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
 	}
@@ -155,7 +156,7 @@ func (tc *TableHandler) Store(c echo.Context) error {
 //
 // @Router /tables/upload [post]
 func (tc *TableHandler) Upload(c echo.Context) error {
-	var request table.UploadRequest
+	var request database.UploadRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
 	}
@@ -193,7 +194,7 @@ func (tc *TableHandler) Upload(c echo.Context) error {
 //
 // @Router /tables/{tableUUID}/duplicate [put]
 func (tc *TableHandler) Duplicate(c echo.Context) error {
-	var request table.RenameRequest
+	var request database.RenameRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
 	}
@@ -236,7 +237,7 @@ func (tc *TableHandler) Duplicate(c echo.Context) error {
 //
 // @Router /tables/{tableUUID}/rename [put]
 func (tc *TableHandler) Rename(c echo.Context) error {
-	var request table.RenameRequest
+	var request database.RenameRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
 	}

@@ -1,6 +1,6 @@
-package table
+package database
 
-type Response struct {
+type TableResponse struct {
 	Id            int    `json:"id"`
 	Name          string `json:"name"`
 	Schema        string `json:"schema"`

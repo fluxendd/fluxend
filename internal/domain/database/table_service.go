@@ -2,10 +2,11 @@ package database
 
 import (
 	"errors"
-	"fluxton/internal/api/dto/database/table"
+	"fluxton/internal/api/dto/database"
 	"fluxton/internal/domain/auth"
 	"fluxton/internal/domain/file_import"
 	"fluxton/internal/domain/project"
+	"fluxton/internal/domain/shared"
 	"fluxton/pkg"
 	flxErrors "fluxton/pkg/errors"
 	"github.com/google/uuid"
@@ -16,10 +17,10 @@ import (
 type TableService interface {
 	List(projectUUID uuid.UUID, authUser auth.User) ([]Table, error)
 	GetByName(fullTableName string, projectUUID uuid.UUID, authUser auth.User) (Table, error)
-	Create(request *table.CreateRequest, authUser auth.User) (Table, error)
-	Upload(request *table.UploadRequest, authUser auth.User) (Table, error)
-	Duplicate(fullTableName string, authUser auth.User, request *table.RenameRequest) (*Table, error)
-	Rename(fullTableName string, authUser auth.User, request *table.RenameRequest) (Table, error)
+	Create(request *database.CreateRequest, authUser auth.User) (Table, error)
+	Upload(request *database.UploadRequest, authUser auth.User) (Table, error)
+	Duplicate(fullTableName string, authUser auth.User, request *database.RenameRequest) (*Table, error)
+	Rename(fullTableName string, authUser auth.User, request *database.RenameRequest) (Table, error)
 	Delete(fullTableName string, projectUUID uuid.UUID, authUser auth.User) (bool, error)
 }
 
@@ -27,14 +28,14 @@ type TableServiceImpl struct {
 	connectionService ConnectionService
 	fileImportService file_import.Service
 	projectPolicy     *project.Policy
-	databaseRepo      DatabaseService
+	databaseRepo      shared.DatabaseService
 	projectRepo       project.Repository
 }
 
 func NewTableService(injector *do.Injector) (TableService, error) {
 	connectionService := do.MustInvoke[ConnectionService](injector)
 	policy := do.MustInvoke[*project.Policy](injector)
-	databaseRepo := do.MustInvoke[DatabaseService](injector)
+	databaseRepo := do.MustInvoke[shared.DatabaseService](injector)
 	projectRepo := do.MustInvoke[project.Repository](injector)
 	fileImportService := do.MustInvoke[file_import.Service](injector)
 
@@ -95,7 +96,7 @@ func (s *TableServiceImpl) GetByName(fullTableName string, projectUUID uuid.UUID
 	return fetchedTable, nil
 }
 
-func (s *TableServiceImpl) Create(request *table.CreateRequest, authUser auth.User) (Table, error) {
+func (s *TableServiceImpl) Create(request *database.CreateRequest, authUser auth.User) (Table, error) {
 	fetchedProject, err := s.projectRepo.GetByUUID(request.ProjectUUID)
 	if err != nil {
 		return Table{}, err
@@ -124,7 +125,7 @@ func (s *TableServiceImpl) Create(request *table.CreateRequest, authUser auth.Us
 	return clientTableRepo.GetByNameInSchema(pkg.ParseTableName(request.Name))
 }
 
-func (s *TableServiceImpl) Upload(request *table.UploadRequest, authUser auth.User) (Table, error) {
+func (s *TableServiceImpl) Upload(request *database.UploadRequest, authUser auth.User) (Table, error) {
 	fetchedProject, err := s.projectRepo.GetByUUID(request.ProjectUUID)
 	if err != nil {
 		return Table{}, err
@@ -175,7 +176,7 @@ func (s *TableServiceImpl) Upload(request *table.UploadRequest, authUser auth.Us
 	return clientTableRepo.GetByNameInSchema(pkg.ParseTableName(request.Name))
 }
 
-func (s *TableServiceImpl) Duplicate(fullTableName string, authUser auth.User, request *table.RenameRequest) (*Table, error) {
+func (s *TableServiceImpl) Duplicate(fullTableName string, authUser auth.User, request *database.RenameRequest) (*Table, error) {
 	fetchedProject, err := s.projectRepo.GetByUUID(request.ProjectUUID)
 	if err != nil {
 		return &Table{}, err
@@ -211,7 +212,7 @@ func (s *TableServiceImpl) Duplicate(fullTableName string, authUser auth.User, r
 	return &fetchedTable, nil
 }
 
-func (s *TableServiceImpl) Rename(fullTableName string, authUser auth.User, request *table.RenameRequest) (Table, error) {
+func (s *TableServiceImpl) Rename(fullTableName string, authUser auth.User, request *database.RenameRequest) (Table, error) {
 	fetchedProject, err := s.projectRepo.GetByUUID(request.ProjectUUID)
 	if err != nil {
 		return Table{}, err

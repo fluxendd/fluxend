@@ -2,8 +2,8 @@ package handlers
 
 import (
 	"fluxton/internal/api/dto"
-	"fluxton/internal/api/dto/database/column"
-	columnMapper "fluxton/internal/api/mapper/column"
+	"fluxton/internal/api/dto/database"
+	columnMapper "fluxton/internal/api/mapper/database"
 	"fluxton/internal/api/response"
 	columnDomain "fluxton/internal/domain/database"
 	"fluxton/pkg/auth"
@@ -84,7 +84,7 @@ func (cc *ColumnHandler) List(c echo.Context) error {
 //
 // @Router /tables/{fullTableName}/columns [post]
 func (cc *ColumnHandler) Store(c echo.Context) error {
-	var request column.CreateRequest
+	var request database.CreateRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
 	}
@@ -127,7 +127,7 @@ func (cc *ColumnHandler) Store(c echo.Context) error {
 //
 // @Router /tables/{fullTableName}/columns [put]
 func (cc *ColumnHandler) Alter(c echo.Context) error {
-	var request column.CreateRequest
+	var request database.CreateRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
 	}
@@ -171,7 +171,7 @@ func (cc *ColumnHandler) Alter(c echo.Context) error {
 //
 // @Router /tables/{fullTableName}/columns/{columnName} [put]
 func (cc *ColumnHandler) Rename(c echo.Context) error {
-	var request column.RenameRequest
+	var request database.RenameRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
 	}

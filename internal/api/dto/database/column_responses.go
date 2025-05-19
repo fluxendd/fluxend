@@ -1,10 +1,10 @@
-package column
+package database
 
 import (
 	"github.com/guregu/null/v6"
 )
 
-type Response struct {
+type ColumnResponse struct {
 	Name            string      `json:"name"`
 	Position        int         `json:"position"`
 	NotNull         bool        `json:"notNull"`

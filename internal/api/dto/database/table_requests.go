@@ -1,8 +1,7 @@
-package table
+package database
 
 import (
 	"fluxton/internal/api/dto"
-	columnDto "fluxton/internal/api/dto/database/column"
 	"fluxton/internal/config/constants"
 	columnDomain "fluxton/internal/domain/database"
 	"strings"
@@ -15,24 +14,24 @@ import (
 	"regexp"
 )
 
-type CreateRequest struct {
+type CreateTableRequest struct {
 	dto.BaseRequest
 	Name    string                `json:"name"`
 	Columns []columnDomain.Column `json:"columns"`
 }
 
-type RenameRequest struct {
+type RenameTableRequest struct {
 	dto.BaseRequest
 	Name string `json:"name"`
 }
 
-type UploadRequest struct {
+type UploadTableRequest struct {
 	dto.BaseRequest
 	Name string                `form:"name"`
 	File *multipart.FileHeader `form:"file"` // use FileHeader, not string
 }
 
-func (r *UploadRequest) BindAndValidate(c echo.Context) []string {
+func (r *UploadTableRequest) BindAndValidate(c echo.Context) []string {
 	file, err := c.FormFile("file")
 	if err != nil {
 		return []string{"File is required"}
@@ -56,7 +55,7 @@ func (r *UploadRequest) BindAndValidate(c echo.Context) []string {
 	return errors
 }
 
-func (r *UploadRequest) validate() error {
+func (r *UploadTableRequest) validate() error {
 	return validation.ValidateStruct(r,
 		validation.Field(
 			&r.Name,
@@ -82,7 +81,7 @@ func (r *UploadRequest) validate() error {
 	)
 }
 
-func (r *RenameRequest) BindAndValidate(c echo.Context) []string {
+func (r *RenameTableRequest) BindAndValidate(c echo.Context) []string {
 	if err := c.Bind(r); err != nil {
 		return []string{"Invalid request payload"}
 	}
@@ -116,7 +115,7 @@ func (r *RenameRequest) BindAndValidate(c echo.Context) []string {
 	return r.ExtractValidationErrors(err)
 }
 
-func (r *CreateRequest) BindAndValidate(c echo.Context) []string {
+func (r *CreateTableRequest) BindAndValidate(c echo.Context) []string {
 	if err := c.Bind(r); err != nil {
 		return []string{"Invalid request payload"}
 	}
@@ -137,7 +136,7 @@ func (r *CreateRequest) BindAndValidate(c echo.Context) []string {
 	}
 
 	for _, currentColumn := range r.Columns {
-		if err := columnDto.Validate(currentColumn); err != nil {
+		if err := Validate(currentColumn); err != nil {
 			errors = append(errors, err.Error())
 
 			return errors
@@ -147,7 +146,7 @@ func (r *CreateRequest) BindAndValidate(c echo.Context) []string {
 	return errors
 }
 
-func (r *CreateRequest) validate() error {
+func (r *CreateTableRequest) validate() error {
 	return validation.ValidateStruct(r,
 		validation.Field(
 			&r.Name,

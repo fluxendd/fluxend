@@ -3,8 +3,8 @@ package health
 import (
 	"fluxton/internal/domain/admin"
 	"fluxton/internal/domain/auth"
-	"fluxton/internal/domain/database"
 	"fluxton/internal/domain/setting"
+	"fluxton/internal/domain/shared"
 	"fluxton/pkg/errors"
 	"github.com/samber/do"
 )
@@ -15,13 +15,13 @@ type Service interface {
 
 type ServiceImpl struct {
 	adminPolicy  *admin.Policy
-	databaseRepo *database.DatabaseService
+	databaseRepo *shared.DatabaseService
 	settingRepo  *setting.Repository
 }
 
 func NewHealthService(injector *do.Injector) (Service, error) {
 	policy := admin.NewAdminPolicy()
-	databaseRepo := do.MustInvoke[*database.DatabaseService](injector)
+	databaseRepo := do.MustInvoke[*shared.DatabaseService](injector)
 	settingRepo := do.MustInvoke[*setting.Repository](injector)
 
 	return &ServiceImpl{

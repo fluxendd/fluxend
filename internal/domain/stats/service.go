@@ -4,6 +4,7 @@ import (
 	"fluxton/internal/domain/admin"
 	"fluxton/internal/domain/auth"
 	"fluxton/internal/domain/database"
+	"fluxton/internal/domain/shared"
 	"fluxton/pkg/errors"
 	"github.com/samber/do"
 	"time"
@@ -17,19 +18,19 @@ type Service interface {
 	GetIndexScansPerTable(databaseName string, authUser auth.User) ([]database.IndexScan, error)
 	GetSizePerTable(databaseName string, authUser auth.User) ([]database.TableSize, error)
 	GetRowCountPerTable(databaseName string, authUser auth.User) ([]database.TableRowCount, error)
-	GetAll(databaseName string, authUser auth.User) (database.DatabaseStat, error)
+	GetAll(databaseName string, authUser auth.User) (database.Stat, error)
 }
 
 type ServiceImpl struct {
 	connectionService database.ConnectionService
 	adminPolicy       *admin.Policy
-	databaseRepo      *database.DatabaseService
+	databaseRepo      *shared.DatabaseService
 }
 
 func NewDatabaseStatsService(injector *do.Injector) (Service, error) {
 	connectionService := do.MustInvoke[database.ConnectionService](injector)
 	policy := admin.NewAdminPolicy()
-	databaseRepo := do.MustInvoke[*database.DatabaseService](injector)
+	databaseRepo := do.MustInvoke[*shared.DatabaseService](injector)
 
 	return &ServiceImpl{
 		connectionService: connectionService,
@@ -129,37 +130,37 @@ func (s *ServiceImpl) GetRowCountPerTable(databaseName string, authUser auth.Use
 	return dbStatsRepo.GetRowCountPerTable()
 }
 
-func (s *ServiceImpl) GetAll(databaseName string, authUser auth.User) (database.DatabaseStat, error) {
+func (s *ServiceImpl) GetAll(databaseName string, authUser auth.User) (database.Stat, error) {
 	if !s.adminPolicy.CanAccess(authUser) {
-		return database.DatabaseStat{}, errors.NewForbiddenError("database_stats.error.forbidden")
+		return database.Stat{}, errors.NewForbiddenError("database_stats.error.forbidden")
 	}
 
 	totalDatabaseSize, err := s.GetTotalDatabaseSize(databaseName, authUser)
 	if err != nil {
-		return database.DatabaseStat{}, err
+		return database.Stat{}, err
 	}
 
 	totalIndexSize, err := s.GetTotalIndexSize(databaseName, authUser)
 	if err != nil {
-		return database.DatabaseStat{}, err
+		return database.Stat{}, err
 	}
 
 	unusedIndexes, err := s.GetUnusedIndexes(databaseName, authUser)
 	if err != nil {
-		return database.DatabaseStat{}, err
+		return database.Stat{}, err
 	}
 
 	tableCounts, err := s.GetRowCountPerTable(databaseName, authUser)
 	if err != nil {
-		return database.DatabaseStat{}, err
+		return database.Stat{}, err
 	}
 
 	tableSizes, err := s.GetSizePerTable(databaseName, authUser)
 	if err != nil {
-		return database.DatabaseStat{}, err
+		return database.Stat{}, err
 	}
 
-	return database.DatabaseStat{
+	return database.Stat{
 		DatabaseName: databaseName,
 		TotalSize:    totalDatabaseSize,
 		IndexSize:    totalIndexSize,

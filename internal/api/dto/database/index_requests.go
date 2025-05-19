@@ -1,4 +1,4 @@
-package index
+package database
 
 import (
 	"fluxton/internal/api/dto"
@@ -11,14 +11,14 @@ import (
 	"strings"
 )
 
-type CreateRequest struct {
+type CreateIndexRequest struct {
 	dto.BaseRequest
 	Name     string   `json:"name"`
 	Columns  []string `json:"columns"`
 	IsUnique bool     `json:"is_unique"`
 }
 
-func (r *CreateRequest) BindAndValidate(c echo.Context) []string {
+func (r *CreateIndexRequest) BindAndValidate(c echo.Context) []string {
 	if err := c.Bind(r); err != nil {
 		return []string{"Invalid request payload"}
 	}

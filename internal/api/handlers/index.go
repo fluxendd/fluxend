@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"fluxton/internal/api/dto"
-	"fluxton/internal/api/dto/database/index"
+	"fluxton/internal/api/dto/database"
 	"fluxton/internal/api/response"
 	index2 "fluxton/internal/domain/database"
 	"fluxton/pkg/auth"
@@ -123,7 +123,7 @@ func (ic *IndexHandler) Show(c echo.Context) error {
 //
 // @Router /tables/{tableUUID}/indexes [post]
 func (ic *IndexHandler) Store(c echo.Context) error {
-	var request index.CreateRequest
+	var request database.CreateRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
 	}

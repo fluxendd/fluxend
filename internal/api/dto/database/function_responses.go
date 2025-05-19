@@ -1,6 +1,6 @@
-package function
+package database
 
-type Response struct {
+type FunctionResponse struct {
 	Name       string `json:"name"`
 	Type       string `json:"type"`
 	DataType   string `json:"dataType"`

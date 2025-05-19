@@ -4,7 +4,7 @@ import (
 	"time"
 )
 
-type DatabaseStat struct {
+type Stat struct {
 	Id           int             `db:"id" json:"id"`
 	DatabaseName string          `db:"database_name" json:"databaseName"`
 	TotalSize    string          `db:"total_size" json:"totalSize"`

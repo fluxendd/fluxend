@@ -1,4 +1,4 @@
-package column
+package database
 
 import (
 	"errors"
@@ -28,17 +28,17 @@ type Column struct {
 	ReferenceColumn null.String `json:"referenceColumn,omitempty" swaggertype:"string"`
 }
 
-type CreateRequest struct {
+type CreateColumnRequest struct {
 	dto.BaseRequest
 	Columns []Column `json:"columns"`
 }
 
-type RenameRequest struct {
+type RenameColumnRequest struct {
 	dto.BaseRequest
 	Name string `json:"name"`
 }
 
-func (r *CreateRequest) BindAndValidate(c echo.Context) []string {
+func (r *CreateColumnRequest) BindAndValidate(c echo.Context) []string {
 	if err := c.Bind(r); err != nil {
 		return []string{"Invalid request payload: " + err.Error()}
 	}
@@ -63,7 +63,7 @@ func (r *CreateRequest) BindAndValidate(c echo.Context) []string {
 	return requestErrors
 }
 
-func (r *RenameRequest) BindAndValidate(c echo.Context) []string {
+func (r *RenameColumnRequest) BindAndValidate(c echo.Context) []string {
 	if err := c.Bind(r); err != nil {
 		return []string{"Invalid request payload"}
 	}

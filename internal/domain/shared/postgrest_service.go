@@ -1,4 +1,4 @@
-package database
+package shared
 
 type PostgrestService interface {
 	StartContainer(dbName string)

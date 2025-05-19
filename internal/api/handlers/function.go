@@ -2,8 +2,8 @@ package handlers
 
 import (
 	"fluxton/internal/api/dto"
-	"fluxton/internal/api/dto/database/function"
-	functionMapper "fluxton/internal/api/mapper/function"
+	"fluxton/internal/api/dto/database"
+	functionMapper "fluxton/internal/api/mapper/database"
 	"fluxton/internal/api/response"
 	functionDomain "fluxton/internal/domain/database"
 	"fluxton/pkg/auth"
@@ -132,7 +132,7 @@ func (fc *FunctionHandler) Show(c echo.Context) error {
 //
 // @Router /functions/{schema} [post]
 func (fc *FunctionHandler) Store(c echo.Context) error {
-	var request function.CreateFunctionRequest
+	var request database.CreateFunctionRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
 	}

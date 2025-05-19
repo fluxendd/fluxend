@@ -1,4 +1,4 @@
-package database
+package shared
 
 import (
 	"github.com/google/uuid"

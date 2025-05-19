@@ -35,7 +35,7 @@ var udbStats = &cobra.Command{
 	},
 }
 
-func getDatabaseStats(databaseName string) (database.DatabaseStat, error) {
+func getDatabaseStats(databaseName string) (database.Stat, error) {
 	container := app.InitializeContainer()
 
 	authUser := auth.User{
@@ -47,7 +47,7 @@ func getDatabaseStats(databaseName string) (database.DatabaseStat, error) {
 
 	pulledStats, err := databaseStatsService.GetAll(databaseName, authUser)
 	if err != nil {
-		return database.DatabaseStat{}, err
+		return database.Stat{}, err
 	}
 
 	return pulledStats, nil

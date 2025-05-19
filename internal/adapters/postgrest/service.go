@@ -2,8 +2,8 @@ package postgrest
 
 import (
 	"fluxton/internal/config/constants"
-	"fluxton/internal/domain/database"
 	"fluxton/internal/domain/project"
+	"fluxton/internal/domain/shared"
 	"fluxton/pkg"
 	"fmt"
 	"github.com/rs/zerolog/log"
@@ -31,7 +31,7 @@ type ServiceImpl struct {
 	config      *Config
 }
 
-func NewPostgrestService(injector *do.Injector) (database.PostgrestService, error) {
+func NewPostgrestService(injector *do.Injector) (shared.PostgrestService, error) {
 	config := &Config{
 		DBUser:     os.Getenv("POSTGREST_DB_USER"),
 		DBPassword: os.Getenv("POSTGREST_DB_PASSWORD"),
