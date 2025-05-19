@@ -13,7 +13,7 @@ import (
 type IndexService interface {
 	List(fullTableName string, projectUUID uuid.UUID, authUser auth.User) ([]string, error)
 	GetByName(indexName, fullTableName string, projectUUID uuid.UUID, authUser auth.User) (string, error)
-	Create(fullTableName string, request *database.CreateRequest, authUser auth.User) (string, error)
+	Create(fullTableName string, request *database.CreateIndexRequest, authUser auth.User) (string, error)
 	Delete(indexName, fullTableName string, projectUUID uuid.UUID, authUser auth.User) (bool, error)
 }
 
@@ -75,7 +75,7 @@ func (s *IndexServiceImpl) GetByName(indexName, fullTableName string, projectUUI
 	return clientIndexRepo.GetByName(tableName, indexName)
 }
 
-func (s *IndexServiceImpl) Create(fullTableName string, request *database.CreateRequest, authUser auth.User) (string, error) {
+func (s *IndexServiceImpl) Create(fullTableName string, request *database.CreateIndexRequest, authUser auth.User) (string, error) {
 	fetchedProject, err := s.projectRepo.GetByUUID(request.ProjectUUID)
 	if err != nil {
 		return "", err

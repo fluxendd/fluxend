@@ -72,7 +72,7 @@ func (r *UploadTableRequest) validate() error {
 					constants.MaxTableNameLength,
 				),
 			),
-			validation.By(validateName),
+			validation.By(validateTableName),
 		),
 		validation.Field(
 			&r.File,
@@ -108,7 +108,7 @@ func (r *RenameTableRequest) BindAndValidate(c echo.Context) []string {
 					constants.MaxTableNameLength,
 				),
 			),
-			validation.By(validateName),
+			validation.By(validateTableName),
 		),
 	)
 
@@ -163,7 +163,7 @@ func (r *CreateTableRequest) validate() error {
 					constants.MaxTableNameLength,
 				),
 			),
-			validation.By(validateName),
+			validation.By(validateTableName),
 		),
 		validation.Field(
 			&r.Columns,
@@ -172,7 +172,7 @@ func (r *CreateTableRequest) validate() error {
 	)
 }
 
-func validateName(value interface{}) error {
+func validateTableName(value interface{}) error {
 	name := value.(string)
 
 	if dto.IsReservedTableName(strings.ToLower(name)) {

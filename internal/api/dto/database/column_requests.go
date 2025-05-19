@@ -4,33 +4,18 @@ import (
 	"errors"
 	"fluxton/internal/api/dto"
 	"fluxton/internal/config/constants"
+	columnDomain "fluxton/internal/domain/database"
 	"fluxton/pkg"
 	"fmt"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
-	"github.com/guregu/null/v6"
 	"github.com/labstack/echo/v4"
 	"regexp"
 	"strings"
 )
 
-type Column struct {
-	Name     string `json:"name"`
-	Position int    `json:"position"`
-	NotNull  bool   `json:"notNull"`
-	Type     string `json:"type"`
-	Primary  bool   `json:"primary"`
-	Unique   bool   `json:"unique"`
-	Foreign  bool   `json:"foreign"`
-	Default  string `json:"defaultValue"`
-
-	// only required when constraint is FOREIGN KEY
-	ReferenceTable  null.String `json:"referenceTable,omitempty" swaggertype:"string"`
-	ReferenceColumn null.String `json:"referenceColumn,omitempty" swaggertype:"string"`
-}
-
 type CreateColumnRequest struct {
 	dto.BaseRequest
-	Columns []Column `json:"columns"`
+	Columns []columnDomain.Column `json:"columns"`
 }
 
 type RenameColumnRequest struct {
@@ -88,14 +73,14 @@ func (r *RenameColumnRequest) BindAndValidate(c echo.Context) []string {
 					constants.MaxColumnNameLength,
 				),
 			),
-			validation.By(validateName),
+			validation.By(validateColumnName),
 		),
 	)
 
 	return r.ExtractValidationErrors(err)
 }
 
-func Validate(column Column) error {
+func Validate(column columnDomain.Column) error {
 	return validation.ValidateStruct(&column,
 		validation.Field(
 			&column.Name,
@@ -112,7 +97,7 @@ func Validate(column Column) error {
 			validation.Match(
 				regexp.MustCompile(pkg.AlphanumericWithUnderscoreAndDashPattern()),
 			).Error("Column name must be alphanumeric and start with a letter"),
-			validation.By(validateName),
+			validation.By(validateColumnName),
 		),
 		validation.Field(
 			&column.Type,
@@ -126,7 +111,7 @@ func Validate(column Column) error {
 	)
 }
 
-func validateName(value interface{}) error {
+func validateColumnName(value interface{}) error {
 	name := value.(string)
 
 	if dto.IsReservedColumnName(strings.ToLower(name)) {
@@ -146,7 +131,7 @@ func validateType(value interface{}) error {
 	return nil
 }
 
-func validateForeignKeyConstraints(column Column) validation.RuleFunc {
+func validateForeignKeyConstraints(column columnDomain.Column) validation.RuleFunc {
 	return func(value interface{}) error {
 		if column.Foreign {
 			if !column.ReferenceTable.Valid || !column.ReferenceColumn.Valid {
