@@ -2,20 +2,20 @@ package handlers
 
 import (
 	"fluxton/internal/api/dto"
-	"fluxton/internal/api/dto/database"
+	databaseDto "fluxton/internal/api/dto/database"
 	"fluxton/internal/api/response"
-	index2 "fluxton/internal/domain/database"
+	databaseDomain "fluxton/internal/domain/database"
 	"fluxton/pkg/auth"
 	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
 )
 
 type IndexHandler struct {
-	indexService index2.IndexService
+	indexService databaseDomain.IndexService
 }
 
 func NewIndexHandler(injector *do.Injector) (*IndexHandler, error) {
-	indexService := do.MustInvoke[index2.IndexService](injector)
+	indexService := do.MustInvoke[databaseDomain.IndexService](injector)
 
 	return &IndexHandler{indexService: indexService}, nil
 }
@@ -123,7 +123,7 @@ func (ic *IndexHandler) Show(c echo.Context) error {
 //
 // @Router /tables/{tableUUID}/indexes [post]
 func (ic *IndexHandler) Store(c echo.Context) error {
-	var request database.CreateRequest
+	var request databaseDto.CreateIndexRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
 	}
@@ -135,7 +135,7 @@ func (ic *IndexHandler) Store(c echo.Context) error {
 		return response.BadRequestResponse(c, "Table name is required")
 	}
 
-	index, err := ic.indexService.Create(fullTableName, &request, authUser)
+	index, err := ic.indexService.Create(fullTableName, databaseDto.ToCreateIndexInput(request), authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
