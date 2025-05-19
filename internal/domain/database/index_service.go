@@ -6,6 +6,7 @@ import (
 	"fluxton/pkg"
 	"fluxton/pkg/errors"
 	"github.com/google/uuid"
+	"github.com/jmoiron/sqlx"
 	"github.com/samber/do"
 )
 
@@ -44,7 +45,7 @@ func (s *IndexServiceImpl) List(fullTableName string, projectUUID uuid.UUID, aut
 		return nil, errors.NewForbiddenError("project.error.viewForbidden")
 	}
 
-	clientIndexRepo, connection, err := s.connectionService.GetIndexRepo(fetchedProject.DBName, nil)
+	clientIndexRepo, connection, err := s.getClientIndexRepo(fetchedProject.DBName)
 	if err != nil {
 		return nil, err
 	}
@@ -64,7 +65,7 @@ func (s *IndexServiceImpl) GetByName(indexName, fullTableName string, projectUUI
 		return "", errors.NewForbiddenError("project.error.viewForbidden")
 	}
 
-	clientIndexRepo, connection, err := s.connectionService.GetIndexRepo(fetchedProject.DBName, nil)
+	clientIndexRepo, connection, err := s.getClientIndexRepo(fetchedProject.DBName)
 	if err != nil {
 		return "", err
 	}
@@ -84,7 +85,7 @@ func (s *IndexServiceImpl) Create(fullTableName string, request CreateIndexInput
 		return "", errors.NewForbiddenError("table.error.createForbidden")
 	}
 
-	clientIndexRepo, connection, err := s.connectionService.GetIndexRepo(fetchedProject.DBName, nil)
+	clientIndexRepo, connection, err := s.getClientIndexRepo(fetchedProject.DBName)
 	if err != nil {
 		return "", err
 	}
@@ -119,7 +120,7 @@ func (s *IndexServiceImpl) Delete(indexName, fullTableName string, projectUUID u
 		return false, errors.NewForbiddenError("project.error.updateForbidden")
 	}
 
-	clientIndexRepo, connection, err := s.connectionService.GetIndexRepo(fetchedProject.DBName, nil)
+	clientIndexRepo, connection, err := s.getClientIndexRepo(fetchedProject.DBName)
 	if err != nil {
 		return false, err
 	}
@@ -136,4 +137,20 @@ func (s *IndexServiceImpl) Delete(indexName, fullTableName string, projectUUID u
 	}
 
 	return clientIndexRepo.DropIfExists(indexName)
+}
+
+func (s *IndexServiceImpl) getClientIndexRepo(dbName string) (IndexRepository, *sqlx.DB, error) {
+	repo, connection, err := s.connectionService.GetIndexRepo(dbName, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	clientRepo, ok := repo.(IndexRepository)
+	if !ok {
+		connection.Close()
+
+		return nil, nil, errors.NewUnprocessableError("clientIndexRepo is invalid")
+	}
+
+	return clientRepo, connection, nil
 }
