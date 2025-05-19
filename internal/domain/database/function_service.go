@@ -7,6 +7,7 @@ import (
 	"fluxton/pkg/errors"
 	"fmt"
 	"github.com/google/uuid"
+	"github.com/jmoiron/sqlx"
 	"github.com/lib/pq"
 	"strings"
 
@@ -21,10 +22,10 @@ type FunctionService interface {
 }
 
 type FunctionServiceImpl struct {
-	connectService ConnectionService
-	projectPolicy  *project.Policy
-	databaseRepo   shared.DatabaseService
-	projectRepo    project.Repository
+	connectionService ConnectionService
+	projectPolicy     *project.Policy
+	databaseRepo      shared.DatabaseService
+	projectRepo       project.Repository
 }
 
 func NewFunctionService(injector *do.Injector) (FunctionService, error) {
@@ -34,14 +35,19 @@ func NewFunctionService(injector *do.Injector) (FunctionService, error) {
 	projectRepo := do.MustInvoke[project.Repository](injector)
 
 	return &FunctionServiceImpl{
-		connectService: connectionService,
-		projectPolicy:  policy,
-		databaseRepo:   databaseRepo,
-		projectRepo:    projectRepo,
+		connectionService: connectionService,
+		projectPolicy:     policy,
+		databaseRepo:      databaseRepo,
+		projectRepo:       projectRepo,
 	}, nil
 }
 
 func (s *FunctionServiceImpl) List(schema string, projectUUID uuid.UUID, authUser auth.User) ([]Function, error) {
+	dbName, err := s.projectRepo.GetDatabaseNameByUUID(projectUUID)
+	if err != nil {
+		return []Function{}, err
+	}
+
 	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(projectUUID)
 	if err != nil {
 		return []Function{}, err
@@ -51,7 +57,7 @@ func (s *FunctionServiceImpl) List(schema string, projectUUID uuid.UUID, authUse
 		return []Function{}, errors.NewForbiddenError("function.error.listForbidden")
 	}
 
-	clientFunctionRepo, connection, err := s.connectService.GetFunctionRepoByProjectUUID(projectUUID, nil)
+	clientFunctionRepo, connection, err := s.getClientFunctionRepo(dbName)
 	if err != nil {
 		return []Function{}, err
 	}
@@ -61,6 +67,11 @@ func (s *FunctionServiceImpl) List(schema string, projectUUID uuid.UUID, authUse
 }
 
 func (s *FunctionServiceImpl) GetByName(name, schema string, projectUUID uuid.UUID, authUser auth.User) (Function, error) {
+	dbName, err := s.projectRepo.GetDatabaseNameByUUID(projectUUID)
+	if err != nil {
+		return Function{}, err
+	}
+
 	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(projectUUID)
 	if err != nil {
 		return Function{}, err
@@ -70,7 +81,7 @@ func (s *FunctionServiceImpl) GetByName(name, schema string, projectUUID uuid.UU
 		return Function{}, errors.NewForbiddenError("function.error.listForbidden")
 	}
 
-	clientFunctionRepo, connection, err := s.connectService.GetFunctionRepoByProjectUUID(projectUUID, nil)
+	clientFunctionRepo, connection, err := s.getClientFunctionRepo(dbName)
 	if err != nil {
 		return Function{}, err
 	}
@@ -80,6 +91,11 @@ func (s *FunctionServiceImpl) GetByName(name, schema string, projectUUID uuid.UU
 }
 
 func (s *FunctionServiceImpl) Create(schema string, request CreateFunctionInput, authUser auth.User) (Function, error) {
+	dbName, err := s.projectRepo.GetDatabaseNameByUUID(request.ProjectUUID)
+	if err != nil {
+		return Function{}, err
+	}
+
 	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(request.ProjectUUID)
 	if err != nil {
 		return Function{}, err
@@ -89,7 +105,7 @@ func (s *FunctionServiceImpl) Create(schema string, request CreateFunctionInput,
 		return Function{}, errors.NewForbiddenError("function.error.listForbidden")
 	}
 
-	clientFunctionRepo, connection, err := s.connectService.GetFunctionRepoByProjectUUID(request.ProjectUUID, nil)
+	clientFunctionRepo, connection, err := s.getClientFunctionRepo(dbName)
 	if err != nil {
 		return Function{}, err
 	}
@@ -109,6 +125,11 @@ func (s *FunctionServiceImpl) Create(schema string, request CreateFunctionInput,
 }
 
 func (s *FunctionServiceImpl) Delete(schema, name string, projectUUID uuid.UUID, authUser auth.User) (bool, error) {
+	dbName, err := s.projectRepo.GetDatabaseNameByUUID(projectUUID)
+	if err != nil {
+		return false, err
+	}
+
 	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(projectUUID)
 	if err != nil {
 		return false, err
@@ -118,7 +139,7 @@ func (s *FunctionServiceImpl) Delete(schema, name string, projectUUID uuid.UUID,
 		return false, errors.NewForbiddenError("function.error.listForbidden")
 	}
 
-	clientFunctionRepo, connection, err := s.connectService.GetFunctionRepoByProjectUUID(projectUUID, nil)
+	clientFunctionRepo, connection, err := s.getClientFunctionRepo(dbName)
 	if err != nil {
 		return false, err
 	}
@@ -150,4 +171,20 @@ func (s *FunctionServiceImpl) buildDefinition(schema string, request CreateFunct
 	)
 
 	return strings.ReplaceAll(sql, ";;", ";"), nil
+}
+
+func (s *FunctionServiceImpl) getClientFunctionRepo(dbName string) (FunctionRepository, *sqlx.DB, error) {
+	repo, connection, err := s.connectionService.GetFunctionRepo(dbName, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	clientRepo, ok := repo.(FunctionRepository)
+	if !ok {
+		connection.Close()
+
+		return nil, nil, errors.NewUnprocessableError("clientFunctionRepo is invalid")
+	}
+
+	return clientRepo, connection, nil
 }
