@@ -9,7 +9,7 @@ type DatabaseStatsRepository struct {
 	connection *sqlx.DB
 }
 
-func NewDatabaseStatsRepository(connection *sqlx.DB) (database.Repository, error) {
+func NewDatabaseStatsRepository(connection *sqlx.DB) (database.StatRepository, error) {
 	return &DatabaseStatsRepository{connection: connection}, nil
 }
 

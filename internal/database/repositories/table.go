@@ -16,7 +16,7 @@ type TableRepository struct {
 	columnRepository *ColumnRepository
 }
 
-func NewTableRepository(connection *sqlx.DB) (database.Repository, error) {
+func NewTableRepository(connection *sqlx.DB) (database.TableRepository, error) {
 	columnRepository, err := NewColumnRepository(connection)
 	if err != nil {
 		return nil, err

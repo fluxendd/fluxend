@@ -9,7 +9,7 @@ type RowRepository struct {
 	connection *sqlx.DB
 }
 
-func NewRowRepository(connection *sqlx.DB) (database.Repository, error) {
+func NewRowRepository(connection *sqlx.DB) (database.RowRepository, error) {
 	return &RowRepository{connection: connection}, nil
 }
 

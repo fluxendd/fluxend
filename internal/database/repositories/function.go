@@ -53,7 +53,7 @@ func (r *FunctionRepository) GetByName(schema, functionName string) (database.Fu
 
 	err := r.connection.Get(&function, query, schema, functionName)
 	if err != nil {
-		return function.Function{}, err
+		return database.Function{}, err
 	}
 	return function, nil
 }
