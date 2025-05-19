@@ -3,7 +3,6 @@ package database
 import (
 	"errors"
 	"fluxton/internal/domain/auth"
-	"fluxton/internal/domain/file_import"
 	"fluxton/internal/domain/project"
 	"fluxton/internal/domain/shared"
 	"fluxton/pkg"
@@ -25,7 +24,7 @@ type TableService interface {
 
 type TableServiceImpl struct {
 	connectionService ConnectionService
-	fileImportService file_import.Service
+	fileImportService FileImportService
 	projectPolicy     *project.Policy
 	databaseRepo      shared.DatabaseService
 	projectRepo       project.Repository
@@ -36,7 +35,7 @@ func NewTableService(injector *do.Injector) (TableService, error) {
 	policy := do.MustInvoke[*project.Policy](injector)
 	databaseRepo := do.MustInvoke[shared.DatabaseService](injector)
 	projectRepo := do.MustInvoke[project.Repository](injector)
-	fileImportService := do.MustInvoke[file_import.Service](injector)
+	fileImportService := do.MustInvoke[FileImportService](injector)
 
 	return &TableServiceImpl{
 		connectionService: connectionService,

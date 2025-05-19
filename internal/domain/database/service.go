@@ -1,10 +1,9 @@
-package file_import
+package database
 
 import (
 	"encoding/csv"
 	"encoding/json"
 	"errors"
-	"fluxton/internal/domain/database"
 	"fmt"
 	"math"
 	"mime/multipart"
@@ -19,18 +18,18 @@ import (
 
 type Row map[string]interface{}
 
-type Service interface {
-	ImportCSV(file multipart.File) ([]database.Column, [][]string, error)
+type FileImportService interface {
+	ImportCSV(file multipart.File) ([]Column, [][]string, error)
 }
 
-type ServiceImpl struct {
+type FileImportServiceImpl struct {
 }
 
-func NewFileImportService(injector *do.Injector) (Service, error) {
-	return &ServiceImpl{}, nil
+func NewFileImportService(injector *do.Injector) (FileImportService, error) {
+	return &FileImportServiceImpl{}, nil
 }
 
-func (s *ServiceImpl) ImportCSV(file multipart.File) ([]database.Column, [][]string, error) {
+func (s *FileImportServiceImpl) ImportCSV(file multipart.File) ([]Column, [][]string, error) {
 	// Parse CSV
 	reader := csv.NewReader(file)
 	records, err := reader.ReadAll()
@@ -63,8 +62,8 @@ func (s *ServiceImpl) ImportCSV(file multipart.File) ([]database.Column, [][]str
 	return columns, dataRows, nil
 }
 
-func (s *ServiceImpl) determineColumns(headers []string, dataRows [][]string) ([]database.Column, error) {
-	columns := make([]database.Column, 0, len(headers))
+func (s *FileImportServiceImpl) determineColumns(headers []string, dataRows [][]string) ([]Column, error) {
+	columns := make([]Column, 0, len(headers))
 	columnNames := make(map[string]int) // Track sanitized column names for uniqueness
 
 	for i, header := range headers {
@@ -91,7 +90,7 @@ func (s *ServiceImpl) determineColumns(headers []string, dataRows [][]string) ([
 			colType, notNull = s.detectColumnType(dataRows, i)
 		}
 
-		columns = append(columns, database.Column{
+		columns = append(columns, Column{
 			Name:     name,
 			Position: i,
 			NotNull:  notNull,
@@ -106,7 +105,7 @@ func (s *ServiceImpl) determineColumns(headers []string, dataRows [][]string) ([
 	return columns, nil
 }
 
-func (s *ServiceImpl) detectColumnType(rows [][]string, colIndex int) (string, bool) {
+func (s *FileImportServiceImpl) detectColumnType(rows [][]string, colIndex int) (string, bool) {
 	if len(rows) == 0 {
 		return "text", false // Default to text if no data
 	}
@@ -298,7 +297,7 @@ func (s *ServiceImpl) detectColumnType(rows [][]string, colIndex int) (string, b
 	return "text", !nullable
 }
 
-func (s *ServiceImpl) parseHeaderWithType(header string) (string, string) {
+func (s *FileImportServiceImpl) parseHeaderWithType(header string) (string, string) {
 	r := regexp.MustCompile(`(.*?)\s*\[(.*?)\]$`)
 	matches := r.FindStringSubmatch(header)
 
@@ -309,7 +308,7 @@ func (s *ServiceImpl) parseHeaderWithType(header string) (string, string) {
 	return header, ""
 }
 
-func (s *ServiceImpl) parseTypeHint(typeHint string) string {
+func (s *FileImportServiceImpl) parseTypeHint(typeHint string) string {
 	typeHint = strings.TrimSpace(typeHint)
 	typeHint = strings.ToLower(typeHint)
 
@@ -351,7 +350,7 @@ func (s *ServiceImpl) parseTypeHint(typeHint string) string {
 	}
 }
 
-func (s *ServiceImpl) sanitizeColumnName(name string) string {
+func (s *FileImportServiceImpl) sanitizeColumnName(name string) string {
 	// Convert to snake_case
 	var result strings.Builder
 	var prevChar rune
@@ -384,7 +383,7 @@ func (s *ServiceImpl) sanitizeColumnName(name string) string {
 	return sanitizedName
 }
 
-func (s *ServiceImpl) convertValueToType(value string, colType string) (interface{}, error) {
+func (s *FileImportServiceImpl) convertValueToType(value string, colType string) (interface{}, error) {
 	// Handle different types
 	if strings.HasPrefix(colType, "varchar") || colType == "text" {
 		return value, nil

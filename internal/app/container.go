@@ -9,7 +9,6 @@ import (
 	"fluxton/internal/database/repositories"
 	"fluxton/internal/domain/backup"
 	database2 "fluxton/internal/domain/database"
-	"fluxton/internal/domain/file_import"
 	"fluxton/internal/domain/form"
 	"fluxton/internal/domain/health"
 	"fluxton/internal/domain/organization"
@@ -97,7 +96,7 @@ func InitializeContainer() *do.Injector {
 
 	// --- Tables ---
 	do.Provide(injector, database2.NewTableService)
-	do.Provide(injector, file_import.NewFileImportService)
+	do.Provide(injector, database2.NewFileImportService)
 	do.Provide(injector, database2.NewColumnService)
 	do.Provide(injector, database2.NewIndexService)
 	do.Provide(injector, database2.NewFunctionService)
