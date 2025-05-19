@@ -1,7 +1,6 @@
 package database
 
 import (
-	"fluxton/internal/api/dto/database"
 	"fluxton/internal/domain/auth"
 	"fluxton/internal/domain/project"
 	"fluxton/internal/domain/shared"
@@ -17,7 +16,7 @@ import (
 type FunctionService interface {
 	List(schema string, projectUUID uuid.UUID, authUser auth.User) ([]Function, error)
 	GetByName(name, schema string, projectUUID uuid.UUID, authUser auth.User) (Function, error)
-	Create(schema string, request *database.CreateFunctionRequest, authUser auth.User) (Function, error)
+	Create(schema string, request CreateFunctionInput, authUser auth.User) (Function, error)
 	Delete(name, schema string, projectUUID uuid.UUID, authUser auth.User) (bool, error)
 }
 
@@ -80,7 +79,7 @@ func (s *FunctionServiceImpl) GetByName(name, schema string, projectUUID uuid.UU
 	return clientFunctionRepo.GetByName(schema, name)
 }
 
-func (s *FunctionServiceImpl) Create(schema string, request *database.CreateFunctionRequest, authUser auth.User) (Function, error) {
+func (s *FunctionServiceImpl) Create(schema string, request CreateFunctionInput, authUser auth.User) (Function, error) {
 	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(request.ProjectUUID)
 	if err != nil {
 		return Function{}, err
@@ -133,7 +132,7 @@ func (s *FunctionServiceImpl) Delete(schema, name string, projectUUID uuid.UUID,
 	return true, nil
 }
 
-func (s *FunctionServiceImpl) buildDefinition(schema string, request *database.CreateFunctionRequest) (string, error) {
+func (s *FunctionServiceImpl) buildDefinition(schema string, request CreateFunctionInput) (string, error) {
 	var params []string
 	for _, param := range request.Parameters {
 		params = append(params, fmt.Sprintf("%s %s", pq.QuoteIdentifier(param.Name), pq.QuoteIdentifier(param.Type)))

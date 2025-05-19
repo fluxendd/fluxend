@@ -49,3 +49,22 @@ func ToUploadTableInput(request UploadTableRequest) database.UploadTableInput {
 		File:        request.File,
 	}
 }
+
+func ToCreateFunctionInput(request CreateFunctionRequest) database.CreateFunctionInput {
+	parameters := make([]database.FunctionParameter, len(request.Parameters))
+	for i, param := range request.Parameters {
+		parameters[i] = database.FunctionParameter{
+			Name: param.Name,
+			Type: param.Type,
+		}
+	}
+
+	return database.CreateFunctionInput{
+		ProjectUUID: request.ProjectUUID,
+		Parameters:  parameters,
+		Name:        request.Name,
+		Definition:  request.Definition,
+		Language:    request.Language,
+		ReturnType:  request.ReturnType,
+	}
+}

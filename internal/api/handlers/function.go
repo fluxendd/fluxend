@@ -3,7 +3,7 @@ package handlers
 import (
 	"fluxton/internal/api/dto"
 	"fluxton/internal/api/dto/database"
-	functionMapper "fluxton/internal/api/mapper/database"
+	databaseMapper "fluxton/internal/api/mapper/database"
 	"fluxton/internal/api/response"
 	functionDomain "fluxton/internal/domain/database"
 	"fluxton/pkg/auth"
@@ -12,11 +12,11 @@ import (
 )
 
 type FunctionHandler struct {
-	functionService functionDomain.IndexService
+	functionService functionDomain.FunctionService
 }
 
 func NewFunctionHandler(injector *do.Injector) (*FunctionHandler, error) {
-	functionService := do.MustInvoke[functionDomain.IndexService](injector)
+	functionService := do.MustInvoke[functionDomain.FunctionService](injector)
 
 	return &FunctionHandler{functionService: functionService}, nil
 }
@@ -60,7 +60,7 @@ func (fc *FunctionHandler) List(c echo.Context) error {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.SuccessResponse(c, functionMapper.ToResourceCollection(functions))
+	return response.SuccessResponse(c, databaseMapper.ToFunctionResourceCollection(functions))
 }
 
 // Show retrieves details of a specific function
@@ -107,7 +107,7 @@ func (fc *FunctionHandler) Show(c echo.Context) error {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.SuccessResponse(c, functionMapper.ToResource(&fetchedFunction))
+	return response.SuccessResponse(c, databaseMapper.ToFunctionResource(&fetchedFunction))
 }
 
 // Store creates a new function
@@ -144,12 +144,12 @@ func (fc *FunctionHandler) Store(c echo.Context) error {
 		return response.BadRequestResponse(c, "Schema is required")
 	}
 
-	createdFunction, err := fc.functionService.Create(schema, &request, authUser)
+	createdFunction, err := fc.functionService.Create(schema, database.ToCreateFunctionInput(request), authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.CreatedResponse(c, functionMapper.ToResource(&createdFunction))
+	return response.CreatedResponse(c, databaseMapper.ToFunctionResource(&createdFunction))
 }
 
 // Delete removes a function
