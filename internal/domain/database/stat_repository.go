@@ -1,6 +1,6 @@
 package database
 
-type Repository interface {
+type StatRepository interface {
 	GetTotalDatabaseSize() (string, error)
 	GetTotalIndexSize() (string, error)
 	GetUnusedIndexes() ([]UnusedIndex, error)

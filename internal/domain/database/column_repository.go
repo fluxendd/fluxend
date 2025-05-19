@@ -1,4 +1,4 @@
 package database
 
-type Repository interface {
+type ColumnRepository interface {
 }

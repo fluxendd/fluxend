@@ -1,5 +1,5 @@
 package database
 
-type Repository interface {
+type RowRepository interface {
 	CreateMany(tableName string, columns []Column, values [][]string) error
 }

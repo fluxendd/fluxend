@@ -1,6 +1,6 @@
 package database
 
-type Repository interface {
+type TableRepository interface {
 	Exists(name string) (bool, error)
 	Create(name string, columns []Column) error
 	Duplicate(existingTable string, newTable string) error
