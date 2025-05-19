@@ -17,7 +17,7 @@ type TableRepository struct {
 	columnRepository *ColumnRepository
 }
 
-func NewTableRepository(connection *sqlx.DB) (*TableRepository, error) {
+func NewTableRepository(connection *sqlx.DB) (table.Repository, error) {
 	columnRepository, err := NewColumnRepository(connection)
 	if err != nil {
 		return nil, err
@@ -43,10 +43,10 @@ func (r *TableRepository) Create(name string, columns []column.Column) error {
 	var defs []string
 	var foreignConstraints []string
 
-	for _, column := range columns {
-		defs = append(defs, r.columnRepository.BuildColumnDefinition(column))
+	for _, currentColumn := range columns {
+		defs = append(defs, r.columnRepository.BuildColumnDefinition(currentColumn))
 
-		if fkQuery, ok := r.columnRepository.BuildForeignKeyConstraint(name, column); ok {
+		if fkQuery, ok := r.columnRepository.BuildForeignKeyConstraint(name, currentColumn); ok {
 			foreignConstraints = append(foreignConstraints, fkQuery)
 		}
 	}

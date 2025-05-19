@@ -5,6 +5,7 @@ import (
 	"fluxton/internal/api/dto/database/table"
 	"fluxton/internal/domain/auth"
 	"fluxton/internal/domain/database/client"
+	"fluxton/internal/domain/database/row"
 	"fluxton/internal/domain/file_import"
 	"fluxton/internal/domain/project"
 	"fluxton/pkg"
@@ -86,11 +87,16 @@ func (s *ServiceImpl) GetByName(fullTableName string, projectUUID uuid.UUID, aut
 		return Table{}, flxErrors.NewForbiddenError("project.error.viewForbidden")
 	}
 
-	clientTableRepo, connection, err := s.connectionService.GetTableRepo(fetchedProject.DBName, nil)
+	fetchedRepo, connection, err := s.connectionService.GetTableRepo(fetchedProject.DBName, nil)
 	if err != nil {
 		return Table{}, err
 	}
 	defer connection.Close()
+
+	clientTableRepo, ok := fetchedRepo.(Repository)
+	if !ok {
+		return Table{}, errors.New("clientTableRepo is not of type *repositories.TableRepository")
+	}
 
 	fetchedTable, err := clientTableRepo.GetByNameInSchema(pkg.ParseTableName(fullTableName))
 	if err != nil {
@@ -110,11 +116,16 @@ func (s *ServiceImpl) Create(request *table.CreateRequest, authUser auth.User) (
 		return Table{}, flxErrors.NewForbiddenError("table.error.createForbidden")
 	}
 
-	clientTableRepo, connection, err := s.connectionService.GetTableRepo(fetchedProject.DBName, nil)
+	fetchedRepo, connection, err := s.connectionService.GetTableRepo(fetchedProject.DBName, nil)
 	if err != nil {
 		return Table{}, err
 	}
 	defer connection.Close()
+
+	clientTableRepo, ok := fetchedRepo.(Repository)
+	if !ok {
+		return Table{}, errors.New("clientTableRepo is not of type *repositories.TableRepository")
+	}
 
 	err = s.validateNameForDuplication(request.Name)
 	if err != nil {
@@ -139,18 +150,31 @@ func (s *ServiceImpl) Upload(request *table.UploadRequest, authUser auth.User) (
 		return Table{}, flxErrors.NewForbiddenError("table.error.createForbidden")
 	}
 
-	clientTableRepo, connection, err := s.connectionService.GetTableRepo(fetchedProject.DBName, nil)
+	fetchedTableRepo, connection, err := s.connectionService.GetTableRepo(fetchedProject.DBName, nil)
 	if err != nil {
 		return Table{}, err
 	}
 	defer connection.Close()
+
+	clientTableRepo, ok := fetchedTableRepo.(Repository)
+	if !ok {
+		return Table{}, errors.New("clientTableRepo is not of type *repositories.TableRepository")
+	}
 
 	err = s.validateNameForDuplication(request.Name)
 	if err != nil {
 		return Table{}, err
 	}
 
-	clientRowRepo, _, err := s.connectionService.GetRowRepo(fetchedProject.DBName, connection)
+	fetchedRowRepo, _, err := s.connectionService.GetRowRepo(fetchedProject.DBName, connection)
+	if err != nil {
+		return Table{}, err
+	}
+
+	clientRowRepo, ok := fetchedRowRepo.(row.Repository)
+	if !ok {
+		return Table{}, errors.New("clientTableRepo is not of type *repositories.TableRepository")
+	}
 
 	file, err := request.File.Open()
 	if err != nil {
@@ -186,11 +210,16 @@ func (s *ServiceImpl) Duplicate(fullTableName string, authUser auth.User, reques
 		return &Table{}, flxErrors.NewForbiddenError("project.error.updateForbidden")
 	}
 
-	clientTableRepo, connection, err := s.connectionService.GetTableRepo(fetchedProject.DBName, nil)
+	fetchedRepo, connection, err := s.connectionService.GetTableRepo(fetchedProject.DBName, nil)
 	if err != nil {
 		return &Table{}, err
 	}
 	defer connection.Close()
+
+	clientTableRepo, ok := fetchedRepo.(Repository)
+	if !ok {
+		return &Table{}, errors.New("clientTableRepo is not of type *repositories.TableRepository")
+	}
 
 	err = s.validateNameForDuplication(request.Name)
 	if err != nil {
@@ -222,11 +251,16 @@ func (s *ServiceImpl) Rename(fullTableName string, authUser auth.User, request *
 		return Table{}, flxErrors.NewForbiddenError("project.error.updateForbidden")
 	}
 
-	clientTableRepo, connection, err := s.connectionService.GetTableRepo(fetchedProject.DBName, nil)
+	fetchedRepo, connection, err := s.connectionService.GetTableRepo(fetchedProject.DBName, nil)
 	if err != nil {
 		return Table{}, err
 	}
 	defer connection.Close()
+
+	clientTableRepo, ok := fetchedRepo.(Repository)
+	if !ok {
+		return Table{}, errors.New("clientTableRepo is not of type *repositories.TableRepository")
+	}
 
 	err = s.validateNameForDuplication(request.Name)
 	if err != nil {
@@ -258,11 +292,16 @@ func (s *ServiceImpl) Delete(fullTableName string, projectUUID uuid.UUID, authUs
 		return false, flxErrors.NewForbiddenError("project.error.updateForbidden")
 	}
 
-	clientTableRepo, connection, err := s.connectionService.GetTableRepo(fetchedProject.DBName, nil)
+	fetchedRepo, connection, err := s.connectionService.GetTableRepo(fetchedProject.DBName, nil)
 	if err != nil {
 		return false, err
 	}
 	defer connection.Close()
+
+	clientTableRepo, ok := fetchedRepo.(Repository)
+	if !ok {
+		return false, errors.New("clientTableRepo is not of type *repositories.TableRepository")
+	}
 
 	err = clientTableRepo.DropIfExists(fullTableName)
 	if err != nil {
