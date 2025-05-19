@@ -14,7 +14,7 @@ import (
 	"github.com/samber/do"
 )
 
-type Service interface {
+type TableService interface {
 	List(projectUUID uuid.UUID, authUser auth.User) ([]Table, error)
 	GetByName(fullTableName string, projectUUID uuid.UUID, authUser auth.User) (Table, error)
 	Create(request *table.CreateRequest, authUser auth.User) (Table, error)
@@ -24,7 +24,7 @@ type Service interface {
 	Delete(fullTableName string, projectUUID uuid.UUID, authUser auth.User) (bool, error)
 }
 
-type ServiceImpl struct {
+type TableServiceImpl struct {
 	connectionService client.ConnectionService
 	fileImportService file_import.Service
 	projectPolicy     *project.Policy
@@ -32,14 +32,14 @@ type ServiceImpl struct {
 	projectRepo       project.Repository
 }
 
-func NewTableService(injector *do.Injector) (Service, error) {
+func NewTableService(injector *do.Injector) (TableService, error) {
 	connectionService := do.MustInvoke[client.ConnectionService](injector)
 	policy := do.MustInvoke[*project.Policy](injector)
 	databaseRepo := do.MustInvoke[client.DatabaseService](injector)
 	projectRepo := do.MustInvoke[project.Repository](injector)
 	fileImportService := do.MustInvoke[file_import.Service](injector)
 
-	return &ServiceImpl{
+	return &TableServiceImpl{
 		connectionService: connectionService,
 		fileImportService: fileImportService,
 		projectPolicy:     policy,
@@ -48,7 +48,7 @@ func NewTableService(injector *do.Injector) (Service, error) {
 	}, nil
 }
 
-func (s *ServiceImpl) List(projectUUID uuid.UUID, authUser auth.User) ([]Table, error) {
+func (s *TableServiceImpl) List(projectUUID uuid.UUID, authUser auth.User) ([]Table, error) {
 	fetchedProject, err := s.projectRepo.GetByUUID(projectUUID)
 	if err != nil {
 		return []Table{}, err
@@ -72,7 +72,7 @@ func (s *ServiceImpl) List(projectUUID uuid.UUID, authUser auth.User) ([]Table, 
 	return tables, nil
 }
 
-func (s *ServiceImpl) GetByName(fullTableName string, projectUUID uuid.UUID, authUser auth.User) (Table, error) {
+func (s *TableServiceImpl) GetByName(fullTableName string, projectUUID uuid.UUID, authUser auth.User) (Table, error) {
 	fetchedProject, err := s.projectRepo.GetByUUID(projectUUID)
 	if err != nil {
 		return Table{}, err
@@ -96,7 +96,7 @@ func (s *ServiceImpl) GetByName(fullTableName string, projectUUID uuid.UUID, aut
 	return fetchedTable, nil
 }
 
-func (s *ServiceImpl) Create(request *table.CreateRequest, authUser auth.User) (Table, error) {
+func (s *TableServiceImpl) Create(request *table.CreateRequest, authUser auth.User) (Table, error) {
 	fetchedProject, err := s.projectRepo.GetByUUID(request.ProjectUUID)
 	if err != nil {
 		return Table{}, err
@@ -125,7 +125,7 @@ func (s *ServiceImpl) Create(request *table.CreateRequest, authUser auth.User) (
 	return clientTableRepo.GetByNameInSchema(pkg.ParseTableName(request.Name))
 }
 
-func (s *ServiceImpl) Upload(request *table.UploadRequest, authUser auth.User) (Table, error) {
+func (s *TableServiceImpl) Upload(request *table.UploadRequest, authUser auth.User) (Table, error) {
 	fetchedProject, err := s.projectRepo.GetByUUID(request.ProjectUUID)
 	if err != nil {
 		return Table{}, err
@@ -176,7 +176,7 @@ func (s *ServiceImpl) Upload(request *table.UploadRequest, authUser auth.User) (
 	return clientTableRepo.GetByNameInSchema(pkg.ParseTableName(request.Name))
 }
 
-func (s *ServiceImpl) Duplicate(fullTableName string, authUser auth.User, request *table.RenameRequest) (*Table, error) {
+func (s *TableServiceImpl) Duplicate(fullTableName string, authUser auth.User, request *table.RenameRequest) (*Table, error) {
 	fetchedProject, err := s.projectRepo.GetByUUID(request.ProjectUUID)
 	if err != nil {
 		return &Table{}, err
@@ -212,7 +212,7 @@ func (s *ServiceImpl) Duplicate(fullTableName string, authUser auth.User, reques
 	return &fetchedTable, nil
 }
 
-func (s *ServiceImpl) Rename(fullTableName string, authUser auth.User, request *table.RenameRequest) (Table, error) {
+func (s *TableServiceImpl) Rename(fullTableName string, authUser auth.User, request *table.RenameRequest) (Table, error) {
 	fetchedProject, err := s.projectRepo.GetByUUID(request.ProjectUUID)
 	if err != nil {
 		return Table{}, err
@@ -248,7 +248,7 @@ func (s *ServiceImpl) Rename(fullTableName string, authUser auth.User, request *
 	return fetchedTable, nil
 }
 
-func (s *ServiceImpl) Delete(fullTableName string, projectUUID uuid.UUID, authUser auth.User) (bool, error) {
+func (s *TableServiceImpl) Delete(fullTableName string, projectUUID uuid.UUID, authUser auth.User) (bool, error) {
 	fetchedProject, err := s.projectRepo.GetByUUID(projectUUID)
 	if err != nil {
 		return false, err
@@ -272,7 +272,7 @@ func (s *ServiceImpl) Delete(fullTableName string, projectUUID uuid.UUID, authUs
 	return true, nil
 }
 
-func (s *ServiceImpl) getClientTableRepo(dbName string) (Repository, *sqlx.DB, error) {
+func (s *TableServiceImpl) getClientTableRepo(dbName string) (Repository, *sqlx.DB, error) {
 	repo, connection, err := s.connectionService.GetTableRepo(dbName, nil)
 	if err != nil {
 		return nil, nil, err
@@ -288,7 +288,7 @@ func (s *ServiceImpl) getClientTableRepo(dbName string) (Repository, *sqlx.DB, e
 	return clientRepo, connection, nil
 }
 
-func (s *ServiceImpl) getClientRowRepo(dbName string, connection *sqlx.DB) (Repository, error) {
+func (s *TableServiceImpl) getClientRowRepo(dbName string, connection *sqlx.DB) (Repository, error) {
 	repo, _, err := s.connectionService.GetRowRepo(dbName, connection)
 	if err != nil {
 		return nil, err
@@ -302,7 +302,7 @@ func (s *ServiceImpl) getClientRowRepo(dbName string, connection *sqlx.DB) (Repo
 	return clientRepo, nil
 }
 
-func (s *ServiceImpl) validateNameForDuplication(name string, clientTableRepo Repository) error {
+func (s *TableServiceImpl) validateNameForDuplication(name string, clientTableRepo Repository) error {
 	exists, err := clientTableRepo.Exists(name)
 	if err != nil {
 		return err

@@ -11,32 +11,32 @@ import (
 	"github.com/samber/do"
 )
 
-type Service interface {
+type IndexService interface {
 	List(fullTableName string, projectUUID uuid.UUID, authUser auth.User) ([]string, error)
 	GetByName(indexName, fullTableName string, projectUUID uuid.UUID, authUser auth.User) (string, error)
 	Create(fullTableName string, request *index.CreateRequest, authUser auth.User) (string, error)
 	Delete(indexName, fullTableName string, projectUUID uuid.UUID, authUser auth.User) (bool, error)
 }
 
-type ServiceImpl struct {
+type IndexServiceImpl struct {
 	connectionService client.ConnectionService
 	projectPolicy     *project.Policy
 	projectRepo       project.Repository
 }
 
-func NewIndexService(injector *do.Injector) (Service, error) {
+func NewIndexService(injector *do.Injector) (IndexService, error) {
 	connectionService := do.MustInvoke[client.ConnectionService](injector)
 	policy := do.MustInvoke[*project.Policy](injector)
 	projectRepo := do.MustInvoke[project.Repository](injector)
 
-	return &ServiceImpl{
+	return &IndexServiceImpl{
 		projectPolicy:     policy,
 		connectionService: connectionService,
 		projectRepo:       projectRepo,
 	}, nil
 }
 
-func (s *ServiceImpl) List(fullTableName string, projectUUID uuid.UUID, authUser auth.User) ([]string, error) {
+func (s *IndexServiceImpl) List(fullTableName string, projectUUID uuid.UUID, authUser auth.User) ([]string, error) {
 	fetchedProject, err := s.projectRepo.GetByUUID(projectUUID)
 	if err != nil {
 		return nil, err
@@ -56,7 +56,7 @@ func (s *ServiceImpl) List(fullTableName string, projectUUID uuid.UUID, authUser
 	return clientIndexRepo.List(tableName)
 }
 
-func (s *ServiceImpl) GetByName(indexName, fullTableName string, projectUUID uuid.UUID, authUser auth.User) (string, error) {
+func (s *IndexServiceImpl) GetByName(indexName, fullTableName string, projectUUID uuid.UUID, authUser auth.User) (string, error) {
 	fetchedProject, err := s.projectRepo.GetByUUID(projectUUID)
 	if err != nil {
 		return "", err
@@ -76,7 +76,7 @@ func (s *ServiceImpl) GetByName(indexName, fullTableName string, projectUUID uui
 	return clientIndexRepo.GetByName(tableName, indexName)
 }
 
-func (s *ServiceImpl) Create(fullTableName string, request *index.CreateRequest, authUser auth.User) (string, error) {
+func (s *IndexServiceImpl) Create(fullTableName string, request *index.CreateRequest, authUser auth.User) (string, error) {
 	fetchedProject, err := s.projectRepo.GetByUUID(request.ProjectUUID)
 	if err != nil {
 		return "", err
@@ -111,7 +111,7 @@ func (s *ServiceImpl) Create(fullTableName string, request *index.CreateRequest,
 	return clientIndexRepo.GetByName(tableName, request.Name)
 }
 
-func (s *ServiceImpl) Delete(indexName, fullTableName string, projectUUID uuid.UUID, authUser auth.User) (bool, error) {
+func (s *IndexServiceImpl) Delete(indexName, fullTableName string, projectUUID uuid.UUID, authUser auth.User) (bool, error) {
 	fetchedProject, err := s.projectRepo.GetByUUID(projectUUID)
 	if err != nil {
 		return false, err

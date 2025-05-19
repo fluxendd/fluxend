@@ -13,11 +13,11 @@ import (
 )
 
 type ColumnHandler struct {
-	columnService columnDomain.Service
+	columnService columnDomain.IndexService
 }
 
 func NewColumnHandler(injector *do.Injector) (*ColumnHandler, error) {
-	columnService := do.MustInvoke[columnDomain.Service](injector)
+	columnService := do.MustInvoke[columnDomain.IndexService](injector)
 
 	return &ColumnHandler{columnService: columnService}, nil
 }

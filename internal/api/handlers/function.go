@@ -12,11 +12,11 @@ import (
 )
 
 type FunctionHandler struct {
-	functionService functionDomain.Service
+	functionService functionDomain.IndexService
 }
 
 func NewFunctionHandler(injector *do.Injector) (*FunctionHandler, error) {
-	functionService := do.MustInvoke[functionDomain.Service](injector)
+	functionService := do.MustInvoke[functionDomain.IndexService](injector)
 
 	return &FunctionHandler{functionService: functionService}, nil
 }

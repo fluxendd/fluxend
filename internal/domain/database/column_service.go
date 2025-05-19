@@ -11,7 +11,7 @@ import (
 	"github.com/samber/do"
 )
 
-type Service interface {
+type ColumnService interface {
 	List(fullTableName string, projectUUID uuid.UUID, authUser auth.User) ([]Column, error)
 	CreateMany(fullTableName string, request *column.CreateRequest, authUser auth.User) ([]Column, error)
 	AlterMany(fullTableName string, request *column.CreateRequest, authUser auth.User) ([]Column, error)
@@ -19,25 +19,25 @@ type Service interface {
 	Delete(columnName, fullTableName string, projectUUID uuid.UUID, authUser auth.User) (bool, error)
 }
 
-type ServiceImpl struct {
+type ColumnServiceImpl struct {
 	connectionService client.ConnectionService
 	projectPolicy     *project.Policy
 	projectRepo       project.Repository
 }
 
-func NewColumnService(injector *do.Injector) (Service, error) {
+func NewColumnService(injector *do.Injector) (ColumnService, error) {
 	connectionService := do.MustInvoke[client.ConnectionService](injector)
 	policy := do.MustInvoke[*project.Policy](injector)
 	projectRepo := do.MustInvoke[project.Repository](injector)
 
-	return &ServiceImpl{
+	return &ColumnServiceImpl{
 		projectPolicy:     policy,
 		connectionService: connectionService,
 		projectRepo:       projectRepo,
 	}, nil
 }
 
-func (s *ServiceImpl) List(fullTableName string, projectUUID uuid.UUID, authUser auth.User) ([]Column, error) {
+func (s *ColumnServiceImpl) List(fullTableName string, projectUUID uuid.UUID, authUser auth.User) ([]Column, error) {
 	fetchedProject, err := s.projectRepo.GetByUUID(projectUUID)
 	if err != nil {
 		return nil, err
@@ -71,7 +71,7 @@ func (s *ServiceImpl) List(fullTableName string, projectUUID uuid.UUID, authUser
 	return columns, nil
 }
 
-func (s *ServiceImpl) CreateMany(fullTableName string, request *column.CreateRequest, authUser auth.User) ([]Column, error) {
+func (s *ColumnServiceImpl) CreateMany(fullTableName string, request *column.CreateRequest, authUser auth.User) ([]Column, error) {
 	fetchedProject, err := s.projectRepo.GetByUUID(request.ProjectUUID)
 	if err != nil {
 		return []Column{}, err
@@ -114,7 +114,7 @@ func (s *ServiceImpl) CreateMany(fullTableName string, request *column.CreateReq
 	return clientColumnRepo.List(table.Name)
 }
 
-func (s *ServiceImpl) AlterMany(fullTableName string, request *column.CreateRequest, authUser auth.User) ([]Column, error) {
+func (s *ColumnServiceImpl) AlterMany(fullTableName string, request *column.CreateRequest, authUser auth.User) ([]Column, error) {
 	fetchedProject, err := s.projectRepo.GetByUUID(request.ProjectUUID)
 	if err != nil {
 		return []Column{}, err
@@ -157,7 +157,7 @@ func (s *ServiceImpl) AlterMany(fullTableName string, request *column.CreateRequ
 	return clientColumnRepo.List(table.Name)
 }
 
-func (s *ServiceImpl) Rename(columnName string, fullTableName string, request *column.RenameRequest, authUser auth.User) ([]Column, error) {
+func (s *ColumnServiceImpl) Rename(columnName string, fullTableName string, request *column.RenameRequest, authUser auth.User) ([]Column, error) {
 	fetchedProject, err := s.projectRepo.GetByUUID(request.ProjectUUID)
 	if err != nil {
 		return []Column{}, err
@@ -200,7 +200,7 @@ func (s *ServiceImpl) Rename(columnName string, fullTableName string, request *c
 	return clientColumnRepo.List(table.Name)
 }
 
-func (s *ServiceImpl) Delete(columnName, fullTableName string, projectUUID uuid.UUID, authUser auth.User) (bool, error) {
+func (s *ColumnServiceImpl) Delete(columnName, fullTableName string, projectUUID uuid.UUID, authUser auth.User) (bool, error) {
 	fetchedProject, err := s.projectRepo.GetByUUID(projectUUID)
 	if err != nil {
 		return false, err
