@@ -4,7 +4,6 @@ import (
 	"fluxton/internal/domain/admin"
 	"fluxton/internal/domain/auth"
 	"fluxton/internal/domain/database"
-	"fluxton/internal/domain/database/client"
 	"fluxton/pkg/errors"
 	"github.com/samber/do"
 	"time"
@@ -22,15 +21,15 @@ type Service interface {
 }
 
 type ServiceImpl struct {
-	connectionService client.ConnectionService
+	connectionService database.ConnectionService
 	adminPolicy       *admin.Policy
-	databaseRepo      *client.DatabaseService
+	databaseRepo      *database.DatabaseService
 }
 
 func NewDatabaseStatsService(injector *do.Injector) (Service, error) {
-	connectionService := do.MustInvoke[client.ConnectionService](injector)
+	connectionService := do.MustInvoke[database.ConnectionService](injector)
 	policy := admin.NewAdminPolicy()
-	databaseRepo := do.MustInvoke[*client.DatabaseService](injector)
+	databaseRepo := do.MustInvoke[*database.DatabaseService](injector)
 
 	return &ServiceImpl{
 		connectionService: connectionService,

@@ -1,4 +1,4 @@
-package client
+package database
 
 import (
 	"github.com/google/uuid"

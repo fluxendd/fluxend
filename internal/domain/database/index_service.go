@@ -3,7 +3,6 @@ package database
 import (
 	"fluxton/internal/api/dto/database/index"
 	"fluxton/internal/domain/auth"
-	"fluxton/internal/domain/database/client"
 	"fluxton/internal/domain/project"
 	"fluxton/pkg"
 	"fluxton/pkg/errors"
@@ -19,13 +18,13 @@ type IndexService interface {
 }
 
 type IndexServiceImpl struct {
-	connectionService client.ConnectionService
+	connectionService ConnectionService
 	projectPolicy     *project.Policy
 	projectRepo       project.Repository
 }
 
 func NewIndexService(injector *do.Injector) (IndexService, error) {
-	connectionService := do.MustInvoke[client.ConnectionService](injector)
+	connectionService := do.MustInvoke[ConnectionService](injector)
 	policy := do.MustInvoke[*project.Policy](injector)
 	projectRepo := do.MustInvoke[project.Repository](injector)
 

@@ -1,4 +1,4 @@
-package client
+package database
 
 type PostgrestService interface {
 	StartContainer(dbName string)

@@ -2,7 +2,7 @@ package postgrest
 
 import (
 	"fluxton/internal/config/constants"
-	"fluxton/internal/domain/database/client"
+	"fluxton/internal/domain/database"
 	"fluxton/internal/domain/project"
 	"fluxton/pkg"
 	"fmt"
@@ -31,7 +31,7 @@ type ServiceImpl struct {
 	config      *Config
 }
 
-func NewPostgrestService(injector *do.Injector) (client.PostgrestService, error) {
+func NewPostgrestService(injector *do.Injector) (database.PostgrestService, error) {
 	config := &Config{
 		DBUser:     os.Getenv("POSTGREST_DB_USER"),
 		DBPassword: os.Getenv("POSTGREST_DB_PASSWORD"),

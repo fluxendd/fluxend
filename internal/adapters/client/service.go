@@ -2,7 +2,7 @@ package client
 
 import (
 	"fluxton/internal/database/repositories"
-	"fluxton/internal/domain/database/client"
+	"fluxton/internal/domain/database"
 	"github.com/jmoiron/sqlx"
 	"github.com/samber/do"
 )
@@ -20,7 +20,7 @@ type ServiceImpl struct {
 	databaseRepo *Repository
 }
 
-func NewClientService(injector *do.Injector) (client.ConnectionService, error) {
+func NewClientService(injector *do.Injector) (database.ConnectionService, error) {
 	databaseRepo := do.MustInvoke[*Repository](injector)
 
 	return &ServiceImpl{
