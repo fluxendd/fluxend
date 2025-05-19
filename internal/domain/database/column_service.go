@@ -6,6 +6,7 @@ import (
 	"fluxton/pkg"
 	"fluxton/pkg/errors"
 	"github.com/google/uuid"
+	"github.com/jmoiron/sqlx"
 	"github.com/samber/do"
 )
 
@@ -45,7 +46,7 @@ func (s *ColumnServiceImpl) List(fullTableName string, projectUUID uuid.UUID, au
 		return nil, errors.NewForbiddenError("project.error.viewForbidden")
 	}
 
-	clientTableRepo, connection, err := s.connectionService.GetTableRepo(fetchedProject.DBName, nil)
+	clientTableRepo, connection, err := s.getClientTableRepo(fetchedProject.DBName)
 	if err != nil {
 		return nil, err
 	}
@@ -56,9 +57,9 @@ func (s *ColumnServiceImpl) List(fullTableName string, projectUUID uuid.UUID, au
 		return nil, err
 	}
 
-	clientColumnRepo, _, err := s.connectionService.GetColumnRepo(fetchedProject.DBName, connection)
+	clientColumnRepo, _, err := s.getClientColumnRepo(fetchedProject.DBName, connection)
 	if err != nil {
-		return nil, err
+		return []Column{}, err
 	}
 
 	columns, err := clientColumnRepo.List(table.Name)
@@ -79,9 +80,9 @@ func (s *ColumnServiceImpl) CreateMany(fullTableName string, request CreateColum
 		return []Column{}, errors.NewForbiddenError("column.error.createForbidden")
 	}
 
-	clientTableRepo, connection, err := s.connectionService.GetTableRepo(fetchedProject.DBName, nil)
+	clientTableRepo, connection, err := s.getClientTableRepo(fetchedProject.DBName)
 	if err != nil {
-		return []Column{}, err
+		return nil, err
 	}
 	defer connection.Close()
 
@@ -90,7 +91,7 @@ func (s *ColumnServiceImpl) CreateMany(fullTableName string, request CreateColum
 		return []Column{}, err
 	}
 
-	clientColumnRepo, _, err := s.connectionService.GetColumnRepo(fetchedProject.DBName, connection)
+	clientColumnRepo, _, err := s.getClientColumnRepo(fetchedProject.DBName, connection)
 	if err != nil {
 		return []Column{}, err
 	}
@@ -122,9 +123,9 @@ func (s *ColumnServiceImpl) AlterMany(fullTableName string, request CreateColumn
 		return []Column{}, errors.NewForbiddenError("project.error.updateForbidden")
 	}
 
-	clientTableRepo, connection, err := s.connectionService.GetTableRepo(fetchedProject.DBName, nil)
+	clientTableRepo, connection, err := s.getClientTableRepo(fetchedProject.DBName)
 	if err != nil {
-		return []Column{}, err
+		return nil, err
 	}
 	defer connection.Close()
 
@@ -133,7 +134,7 @@ func (s *ColumnServiceImpl) AlterMany(fullTableName string, request CreateColumn
 		return []Column{}, err
 	}
 
-	clientColumnRepo, _, err := s.connectionService.GetColumnRepo(fetchedProject.DBName, connection)
+	clientColumnRepo, _, err := s.getClientColumnRepo(fetchedProject.DBName, connection)
 	if err != nil {
 		return []Column{}, err
 	}
@@ -165,9 +166,9 @@ func (s *ColumnServiceImpl) Rename(columnName string, fullTableName string, requ
 		return []Column{}, errors.NewForbiddenError("project.error.updateForbidden")
 	}
 
-	clientTableRepo, connection, err := s.connectionService.GetTableRepo(fetchedProject.DBName, nil)
+	clientTableRepo, connection, err := s.getClientTableRepo(fetchedProject.DBName)
 	if err != nil {
-		return []Column{}, err
+		return nil, err
 	}
 	defer connection.Close()
 
@@ -176,7 +177,7 @@ func (s *ColumnServiceImpl) Rename(columnName string, fullTableName string, requ
 		return []Column{}, err
 	}
 
-	clientColumnRepo, _, err := s.connectionService.GetColumnRepo(fetchedProject.DBName, connection)
+	clientColumnRepo, _, err := s.getClientColumnRepo(fetchedProject.DBName, connection)
 	if err != nil {
 		return []Column{}, err
 	}
@@ -207,8 +208,7 @@ func (s *ColumnServiceImpl) Delete(columnName, fullTableName string, projectUUID
 	if !s.projectPolicy.CanUpdate(fetchedProject.OrganizationUuid, authUser) {
 		return false, errors.NewForbiddenError("project.error.updateForbidden")
 	}
-
-	clientColumnRepo, connection, err := s.connectionService.GetColumnRepo(fetchedProject.DBName, nil)
+	clientColumnRepo, connection, err := s.getClientColumnRepo(fetchedProject.DBName, nil)
 	if err != nil {
 		return false, err
 	}
@@ -230,4 +230,36 @@ func (s *ColumnServiceImpl) Delete(columnName, fullTableName string, projectUUID
 	}
 
 	return true, err
+}
+
+func (s *ColumnServiceImpl) getClientTableRepo(dbName string) (TableRepository, *sqlx.DB, error) {
+	repo, connection, err := s.connectionService.GetTableRepo(dbName, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	clientRepo, ok := repo.(TableRepository)
+	if !ok {
+		connection.Close()
+
+		return nil, nil, errors.NewUnprocessableError("clientTableRepo is invalid")
+	}
+
+	return clientRepo, connection, nil
+}
+
+func (s *ColumnServiceImpl) getClientColumnRepo(dbName string, connection *sqlx.DB) (ColumnRepository, *sqlx.DB, error) {
+	repo, connection, err := s.connectionService.GetColumnRepo(dbName, connection)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	clientRepo, ok := repo.(ColumnRepository)
+	if !ok {
+		connection.Close()
+
+		return nil, nil, errors.NewUnprocessableError("clientTableRepo is invalid")
+	}
+
+	return clientRepo, connection, nil
 }
