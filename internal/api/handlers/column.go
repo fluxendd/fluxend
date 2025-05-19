@@ -3,9 +3,9 @@ package handlers
 import (
 	"fluxton/internal/api/dto"
 	"fluxton/internal/api/dto/database"
-	columnMapper "fluxton/internal/api/mapper/database"
+	databaseMapper "fluxton/internal/api/mapper/database"
 	"fluxton/internal/api/response"
-	columnDomain "fluxton/internal/domain/database"
+	databaseDomain "fluxton/internal/domain/database"
 	"fluxton/pkg/auth"
 	"fluxton/pkg/errors"
 	"github.com/labstack/echo/v4"
@@ -13,11 +13,11 @@ import (
 )
 
 type ColumnHandler struct {
-	columnService columnDomain.IndexService
+	columnService databaseDomain.ColumnService
 }
 
 func NewColumnHandler(injector *do.Injector) (*ColumnHandler, error) {
-	columnService := do.MustInvoke[columnDomain.IndexService](injector)
+	columnService := do.MustInvoke[databaseDomain.ColumnService](injector)
 
 	return &ColumnHandler{columnService: columnService}, nil
 }
@@ -58,7 +58,7 @@ func (cc *ColumnHandler) List(c echo.Context) error {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.SuccessResponse(c, columnMapper.ToResourceCollection(columns))
+	return response.SuccessResponse(c, databaseMapper.ToColumnResourceCollection(columns))
 }
 
 // Store adds new columns to a table.
@@ -84,7 +84,7 @@ func (cc *ColumnHandler) List(c echo.Context) error {
 //
 // @Router /tables/{fullTableName}/columns [post]
 func (cc *ColumnHandler) Store(c echo.Context) error {
-	var request database.CreateRequest
+	var request database.CreateColumnRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
 	}
@@ -96,12 +96,12 @@ func (cc *ColumnHandler) Store(c echo.Context) error {
 		return response.BadRequestResponse(c, "Table name is required")
 	}
 
-	columns, err := cc.columnService.CreateMany(fullTableName, &request, authUser)
+	columns, err := cc.columnService.CreateMany(fullTableName, database.ToCreateColumnInput(request), authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.CreatedResponse(c, columnMapper.ToResourceCollection(columns))
+	return response.CreatedResponse(c, databaseMapper.ToColumnResourceCollection(columns))
 }
 
 // Alter modifies column types in a table.
@@ -127,7 +127,7 @@ func (cc *ColumnHandler) Store(c echo.Context) error {
 //
 // @Router /tables/{fullTableName}/columns [put]
 func (cc *ColumnHandler) Alter(c echo.Context) error {
-	var request database.CreateRequest
+	var request database.CreateColumnRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
 	}
@@ -139,12 +139,12 @@ func (cc *ColumnHandler) Alter(c echo.Context) error {
 		return response.BadRequestResponse(c, "Table name is required")
 	}
 
-	columns, err := cc.columnService.AlterMany(fullTableName, &request, authUser)
+	columns, err := cc.columnService.AlterMany(fullTableName, database.ToCreateColumnInput(request), authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.SuccessResponse(c, columnMapper.ToResourceCollection(columns))
+	return response.SuccessResponse(c, databaseMapper.ToColumnResourceCollection(columns))
 }
 
 // Rename updates the name of an existing column.
@@ -171,7 +171,7 @@ func (cc *ColumnHandler) Alter(c echo.Context) error {
 //
 // @Router /tables/{fullTableName}/columns/{columnName} [put]
 func (cc *ColumnHandler) Rename(c echo.Context) error {
-	var request database.RenameRequest
+	var request database.RenameColumnRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
 	}
@@ -183,12 +183,12 @@ func (cc *ColumnHandler) Rename(c echo.Context) error {
 		return response.BadRequestResponse(c, err.Error())
 	}
 
-	columns, err := cc.columnService.Rename(columnName, fullTableName, &request, authUser)
+	columns, err := cc.columnService.Rename(columnName, fullTableName, database.ToRenameColumnInput(request), authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.SuccessResponse(c, columnMapper.ToResourceCollection(columns))
+	return response.SuccessResponse(c, databaseMapper.ToColumnResourceCollection(columns))
 }
 
 // Delete removes a column from a table.

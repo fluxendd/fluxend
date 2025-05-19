@@ -1,7 +1,6 @@
 package database
 
 import (
-	"fluxton/internal/api/dto/database"
 	"fluxton/internal/domain/auth"
 	"fluxton/internal/domain/project"
 	"fluxton/pkg"
@@ -12,9 +11,9 @@ import (
 
 type ColumnService interface {
 	List(fullTableName string, projectUUID uuid.UUID, authUser auth.User) ([]Column, error)
-	CreateMany(fullTableName string, request *database.CreateRequest, authUser auth.User) ([]Column, error)
-	AlterMany(fullTableName string, request *database.CreateRequest, authUser auth.User) ([]Column, error)
-	Rename(columnName, fullTableName string, request *database.RenameRequest, authUser auth.User) ([]Column, error)
+	CreateMany(fullTableName string, request CreateColumnInput, authUser auth.User) ([]Column, error)
+	AlterMany(fullTableName string, request CreateColumnInput, authUser auth.User) ([]Column, error)
+	Rename(columnName, fullTableName string, request RenameColumnInput, authUser auth.User) ([]Column, error)
 	Delete(columnName, fullTableName string, projectUUID uuid.UUID, authUser auth.User) (bool, error)
 }
 
@@ -70,7 +69,7 @@ func (s *ColumnServiceImpl) List(fullTableName string, projectUUID uuid.UUID, au
 	return columns, nil
 }
 
-func (s *ColumnServiceImpl) CreateMany(fullTableName string, request *database.CreateRequest, authUser auth.User) ([]Column, error) {
+func (s *ColumnServiceImpl) CreateMany(fullTableName string, request CreateColumnInput, authUser auth.User) ([]Column, error) {
 	fetchedProject, err := s.projectRepo.GetByUUID(request.ProjectUUID)
 	if err != nil {
 		return []Column{}, err
@@ -113,7 +112,7 @@ func (s *ColumnServiceImpl) CreateMany(fullTableName string, request *database.C
 	return clientColumnRepo.List(table.Name)
 }
 
-func (s *ColumnServiceImpl) AlterMany(fullTableName string, request *database.CreateRequest, authUser auth.User) ([]Column, error) {
+func (s *ColumnServiceImpl) AlterMany(fullTableName string, request CreateColumnInput, authUser auth.User) ([]Column, error) {
 	fetchedProject, err := s.projectRepo.GetByUUID(request.ProjectUUID)
 	if err != nil {
 		return []Column{}, err
@@ -156,7 +155,7 @@ func (s *ColumnServiceImpl) AlterMany(fullTableName string, request *database.Cr
 	return clientColumnRepo.List(table.Name)
 }
 
-func (s *ColumnServiceImpl) Rename(columnName string, fullTableName string, request *database.RenameRequest, authUser auth.User) ([]Column, error) {
+func (s *ColumnServiceImpl) Rename(columnName string, fullTableName string, request RenameColumnInput, authUser auth.User) ([]Column, error) {
 	fetchedProject, err := s.projectRepo.GetByUUID(request.ProjectUUID)
 	if err != nil {
 		return []Column{}, err
