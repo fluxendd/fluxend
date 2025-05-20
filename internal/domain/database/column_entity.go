@@ -6,7 +6,7 @@ import (
 )
 
 type Column struct {
-	shared.BaseModel
+	shared.BaseEntity
 	Name     string `db:"name" json:"name"`
 	Position int    `db:"position" json:"position"`
 	NotNull  bool   `db:"not_null" json:"notNull"`

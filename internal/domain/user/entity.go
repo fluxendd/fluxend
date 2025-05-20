@@ -8,7 +8,7 @@ import (
 )
 
 type User struct {
-	shared.BaseModel
+	shared.BaseEntity
 	Uuid      uuid.UUID `db:"uuid"`
 	Username  string    `db:"username"`
 	Email     string    `db:"email"`
@@ -18,22 +18,6 @@ type User struct {
 	Password  string    `db:"password"`
 	CreatedAt time.Time `db:"created_at"`
 	UpdatedAt time.Time `db:"updated_at"`
-}
-
-type CreateUserInput struct {
-	Username string `json:"username"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
-	Bio      string `json:"bio"`
-}
-
-type LoginUserInput struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
-}
-
-type UpdateUserInput struct {
-	Bio string `json:"bio"`
 }
 
 func (u User) IsActive() bool {

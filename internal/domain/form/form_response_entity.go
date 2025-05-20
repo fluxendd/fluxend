@@ -7,7 +7,7 @@ import (
 )
 
 type FormResponse struct {
-	shared.BaseModel
+	shared.BaseEntity
 	Uuid      uuid.UUID       `db:"uuid" json:"uuid"`
 	FormUuid  uuid.UUID       `db:"form_uuid" json:"formUuid"`
 	CreatedAt time.Time       `db:"created_at" json:"createdAt"`

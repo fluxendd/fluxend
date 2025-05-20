@@ -6,7 +6,7 @@ import (
 )
 
 type Setting struct {
-	shared.BaseModel
+	shared.BaseEntity
 	ID           int       `db:"id"`
 	Name         string    `db:"name"`
 	Value        string    `db:"value"`

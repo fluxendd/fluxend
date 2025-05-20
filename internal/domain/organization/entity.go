@@ -7,7 +7,7 @@ import (
 )
 
 type Organization struct {
-	shared.BaseModel
+	shared.BaseEntity
 	Uuid      uuid.UUID `db:"uuid"`
 	Name      string    `db:"name"`
 	CreatedBy uuid.UUID `db:"created_by"`

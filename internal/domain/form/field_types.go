@@ -1,10 +1,8 @@
 package form
 
 import (
-	"fluxton/internal/domain/shared"
 	"github.com/google/uuid"
 	"github.com/guregu/null/v6"
-	"time"
 )
 
 type FieldInput struct {

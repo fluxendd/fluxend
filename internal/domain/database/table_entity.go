@@ -5,7 +5,7 @@ import (
 )
 
 type Table struct {
-	shared.BaseModel
+	shared.BaseEntity
 	Id            int    `db:"id"`
 	Name          string `db:"name"`
 	Schema        string `db:"schema"`

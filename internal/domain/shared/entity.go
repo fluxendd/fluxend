@@ -5,11 +5,11 @@ import (
 	"reflect"
 )
 
-type BaseModel struct {
+type BaseEntity struct {
 }
 
 // PopulateModel populates the fields of a model from another struct or a pointer to a struct with matching field names.
-func (b *BaseModel) PopulateModel(model interface{}, data interface{}) error {
+func (b *BaseEntity) PopulateModel(model interface{}, data interface{}) error {
 	// Ensure model is a pointer to a struct
 	modelValue := reflect.ValueOf(model)
 	if modelValue.Kind() != reflect.Ptr || modelValue.Elem().Kind() != reflect.Struct {
