@@ -1,10 +1,10 @@
 package commands
 
 import (
-	"fluxton/internal/adapters/postgrest"
 	"fluxton/internal/api/dto"
 	"fluxton/internal/app"
 	"fluxton/internal/database/repositories"
+	"fluxton/internal/domain/shared"
 	"fmt"
 	"github.com/samber/do"
 	"github.com/spf13/cobra"
@@ -23,7 +23,7 @@ func restartPostgrestInstances() error {
 
 	// Inject dependencies
 	projectRepository := do.MustInvoke[*repositories.ProjectRepository](container)
-	postgrestService := do.MustInvoke[postgrest.Service](container)
+	postgrestService := do.MustInvoke[shared.PostgrestService](container)
 
 	projects, err := projectRepository.List(dto.PaginationParams{Page: 1, Limit: 1000})
 	if err != nil {
