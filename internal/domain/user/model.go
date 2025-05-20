@@ -18,6 +18,22 @@ type User struct {
 	UpdatedAt time.Time `db:"updated_at"`
 }
 
+type CreateUserInput struct {
+	Username string `json:"username"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
+	Bio      string `json:"bio"`
+}
+
+type LoginUserInput struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
+type UpdateUserInput struct {
+	Bio string `json:"bio"`
+}
+
 func (u User) IsActive() bool {
 	return u.Status == constants.UserStatusActive
 }

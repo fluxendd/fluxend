@@ -1,7 +1,6 @@
 package user
 
 import (
-	"fluxton/internal/api/dto/user"
 	"fluxton/internal/config/constants"
 	"fluxton/internal/domain/setting"
 	"fluxton/internal/domain/shared"
@@ -17,12 +16,12 @@ import (
 )
 
 type Service interface {
-	Login(request *user.LoginRequest) (User, string, error)
+	Login(request *LoginUserInput) (User, string, error)
 	List(paginationParams shared.PaginationParams) ([]User, error)
 	ExistsByUUID(id uuid.UUID) error
 	GetByID(id uuid.UUID) (User, error)
-	Create(ctx echo.Context, request *user.CreateRequest) (User, string, error)
-	Update(userUUID, authUserUUID uuid.UUID, request *user.UpdateRequest) (*User, error)
+	Create(ctx echo.Context, request *CreateUserInput) (User, string, error)
+	Update(userUUID, authUserUUID uuid.UUID, request *UpdateUserInput) (*User, error)
 	Delete(userUUID uuid.UUID) (bool, error)
 	Logout(userUUID uuid.UUID) error
 }
@@ -45,7 +44,7 @@ func NewUserService(injector *do.Injector) (Service, error) {
 	}, nil
 }
 
-func (s *ServiceImpl) Login(request *user.LoginRequest) (User, string, error) {
+func (s *ServiceImpl) Login(request *LoginUserInput) (User, string, error) {
 	fetchedUser, err := s.userRepo.GetByEmail(request.Email)
 	if err != nil {
 		return User{}, "", err
@@ -89,7 +88,7 @@ func (s *ServiceImpl) ExistsByUUID(id uuid.UUID) error {
 	return nil
 }
 
-func (s *ServiceImpl) Create(ctx echo.Context, request *user.CreateRequest) (User, string, error) {
+func (s *ServiceImpl) Create(ctx echo.Context, request *CreateUserInput) (User, string, error) {
 	if !s.settingService.GetBool(ctx, "allowRegistrations") {
 		return User{}, "", errors.NewBadRequestError("user.error.registrationDisabled")
 	}
@@ -138,7 +137,7 @@ func (s *ServiceImpl) Create(ctx echo.Context, request *user.CreateRequest) (Use
 	return userData, token, nil
 }
 
-func (s *ServiceImpl) Update(userUUID, authUserUUID uuid.UUID, request *user.UpdateRequest) (*User, error) {
+func (s *ServiceImpl) Update(userUUID, authUserUUID uuid.UUID, request *UpdateUserInput) (*User, error) {
 	if !s.policy.CanUpdateUser(userUUID, authUserUUID) {
 		return nil, errors.NewForbiddenError("user.error.updateForbidden")
 	}

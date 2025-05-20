@@ -85,7 +85,7 @@ func (uc *UserHandler) Login(c echo.Context) error {
 		return response.UnprocessableResponse(c, err)
 	}
 
-	user, token, err := uc.userService.Login(&request)
+	user, token, err := uc.userService.Login(userDto.ToLoginUserInput(&request))
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
@@ -123,7 +123,7 @@ func (uc *UserHandler) Store(c echo.Context) error {
 		return response.UnprocessableResponse(c, err)
 	}
 
-	user, token, err := uc.userService.Create(c, &request)
+	user, token, err := uc.userService.Create(c, userDto.ToCreateUserInput(&request))
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
@@ -170,7 +170,7 @@ func (uc *UserHandler) Update(c echo.Context) error {
 		return response.BadRequestResponse(c, "user.error.invalidPayload")
 	}
 
-	updatedUser, err := uc.userService.Update(userUUID, authUserUUID, &request)
+	updatedUser, err := uc.userService.Update(userUUID, authUserUUID, userDto.ToUpdateUserInput(&request))
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
