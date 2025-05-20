@@ -2,7 +2,6 @@ package seeders
 
 import (
 	"fluxton/internal/config/constants"
-	"fluxton/internal/database/repositories"
 	"fluxton/internal/domain/setting"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -13,7 +12,7 @@ import (
 func SeedSettings(container *do.Injector) {
 	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
 
-	settingsService := do.MustInvoke[*repositories.SettingRepository](container)
+	settingsService := do.MustInvoke[setting.Repository](container)
 
 	settings := []setting.Setting{
 		// General settings

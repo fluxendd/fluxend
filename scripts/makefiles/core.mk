@@ -1,22 +1,22 @@
 # These are core command also available in binary CLI
 
 server: ## Run the project in development mode
-	@go run cmd/fluxton/main.go server
+	@go run cmd/main.go server
 
 routes.list: ## Show all the available routes
-	@go run main.go routes
+	@go run cmd/main.go routes
 
 seed: ## Seed the database
-	@go run main.go seed
+	@go run cmd/main.go seed
 
 about: ## Show the project information
-	@go run main.go about
+	@go run cmd/main.go about
 
 optimize: ## Optimize the project
-	@go run main.go optimize
+	@go run cmd/main.go optimize
 
 udb.stats: ## Show the database stats
-	@go run main.go udb.stats
+	@go run cmd/main.go udb.stats
 
 udb.restart: ## Restart the database
-	@go run main.go udb.restart
+	@go run cmd/main.go udb.restart
