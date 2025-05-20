@@ -16,10 +16,6 @@ type FieldResponse struct {
 	UpdatedAt        time.Time `db:"updated_at" json:"updatedAt"`
 }
 
-type CreateResponseInput struct {
-	Response map[string]interface{}
-}
-
 func (u FieldResponse) GetTableName() string {
 	return "fluxton.form_field_responses"
 }
