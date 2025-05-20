@@ -7,6 +7,7 @@ import (
 	"fluxton/internal/domain/auth"
 	"fluxton/internal/domain/project"
 	"fluxton/internal/domain/setting"
+	"fluxton/internal/domain/shared"
 	"fluxton/pkg/errors"
 	"github.com/google/uuid"
 	"github.com/samber/do"
@@ -15,7 +16,7 @@ import (
 )
 
 type Service interface {
-	List(paginationParams dto.PaginationParams, projectUUID uuid.UUID, authUser auth.User) ([]Container, error)
+	List(paginationParams shared.PaginationParams, projectUUID uuid.UUID, authUser auth.User) ([]Container, error)
 	GetByUUID(containerUUID uuid.UUID, authUser auth.User) (Container, error)
 	Create(request *container.CreateRequest, authUser auth.User) (Container, error)
 	Update(containerUUID uuid.UUID, authUser auth.User, request *container.CreateRequest) (*Container, error)
@@ -47,7 +48,7 @@ func NewContainerService(injector *do.Injector) (Service, error) {
 	}, nil
 }
 
-func (s *ServiceImpl) List(paginationParams dto.PaginationParams, projectUUID uuid.UUID, authUser auth.User) ([]Container, error) {
+func (s *ServiceImpl) List(paginationParams shared.PaginationParams, projectUUID uuid.UUID, authUser auth.User) ([]Container, error) {
 	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(projectUUID)
 	if err != nil {
 		return []Container{}, err

@@ -1,12 +1,12 @@
 package container
 
 import (
-	"fluxton/internal/api/dto"
+	"fluxton/internal/domain/shared"
 	"github.com/google/uuid"
 )
 
 type Repository interface {
-	ListForProject(paginationParams dto.PaginationParams, projectUUID uuid.UUID) ([]Container, error)
+	ListForProject(paginationParams shared.PaginationParams, projectUUID uuid.UUID) ([]Container, error)
 	GetByUUID(containerUUID uuid.UUID) (Container, error)
 	ExistsByUUID(containerUUID uuid.UUID) (bool, error)
 	ExistsByNameForProject(name string, projectUUID uuid.UUID) (bool, error)

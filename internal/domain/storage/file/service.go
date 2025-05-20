@@ -7,6 +7,7 @@ import (
 	"fluxton/internal/domain/auth"
 	"fluxton/internal/domain/project"
 	"fluxton/internal/domain/setting"
+	"fluxton/internal/domain/shared"
 	"fluxton/internal/domain/storage/container"
 	"fluxton/pkg"
 	"fluxton/pkg/errors"
@@ -18,7 +19,7 @@ import (
 )
 
 type Service interface {
-	List(paginationParams dto.PaginationParams, containerUUID uuid.UUID, authUser auth.User) ([]File, error)
+	List(paginationParams shared.PaginationParams, containerUUID uuid.UUID, authUser auth.User) ([]File, error)
 	GetByUUID(fileUUID, containerUUID uuid.UUID, authUser auth.User) (File, error)
 	Create(containerUUID uuid.UUID, request *file.CreateFileRequest, authUser auth.User) (File, error)
 	Rename(fileUUID, containerUUID uuid.UUID, authUser auth.User, request *file.RenameFileRequest) (*File, error)
@@ -53,7 +54,7 @@ func NewFileService(injector *do.Injector) (Service, error) {
 	}, nil
 }
 
-func (s *ServiceImpl) List(paginationParams dto.PaginationParams, containerUUID uuid.UUID, authUser auth.User) ([]File, error) {
+func (s *ServiceImpl) List(paginationParams shared.PaginationParams, containerUUID uuid.UUID, authUser auth.User) ([]File, error) {
 	fetchedContainer, err := s.containerRepo.GetByUUID(containerUUID)
 	if err != nil {
 		return []File{}, err

@@ -1,9 +1,9 @@
 package organization
 
 import (
-	"fluxton/internal/api/dto"
 	"fluxton/internal/api/dto/organization"
 	"fluxton/internal/domain/auth"
+	"fluxton/internal/domain/shared"
 	"fluxton/internal/domain/user"
 	"fluxton/pkg/errors"
 	"github.com/google/uuid"
@@ -12,7 +12,7 @@ import (
 )
 
 type Service interface {
-	List(paginationParams dto.PaginationParams, authUserId uuid.UUID) ([]Organization, error)
+	List(paginationParams shared.PaginationParams, authUserId uuid.UUID) ([]Organization, error)
 	GetByID(organizationUUID uuid.UUID, authUser auth.User) (Organization, error)
 	Create(request *organization.CreateRequest, authUser auth.User) (Organization, error)
 	Update(organizationUUID uuid.UUID, authUser auth.User, request *organization.CreateRequest) (*Organization, error)
@@ -40,7 +40,7 @@ func NewOrganizationService(injector *do.Injector) (Service, error) {
 	}, nil
 }
 
-func (s *ServiceImpl) List(paginationParams dto.PaginationParams, authUserId uuid.UUID) ([]Organization, error) {
+func (s *ServiceImpl) List(paginationParams shared.PaginationParams, authUserId uuid.UUID) ([]Organization, error) {
 	return s.organizationRepo.ListForUser(paginationParams, authUserId)
 }
 

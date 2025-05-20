@@ -1,8 +1,8 @@
 package repositories
 
 import (
-	"fluxton/internal/api/dto"
 	"fluxton/internal/domain/logging"
+	"fluxton/internal/domain/shared"
 	"fluxton/pkg"
 	"github.com/jmoiron/sqlx"
 	"github.com/samber/do"
@@ -18,7 +18,7 @@ func NewRequestLogRepository(injector *do.Injector) (logging.Repository, error) 
 	return &RequestLogRepository{db: db}, nil
 }
 
-func (r *RequestLogRepository) List(paginationParams dto.PaginationParams) ([]logging.RequestLog, error) {
+func (r *RequestLogRepository) List(paginationParams shared.PaginationParams) ([]logging.RequestLog, error) {
 	offset := (paginationParams.Page - 1) * paginationParams.Limit
 	query := `SELECT * FROM fluxton.api_logs ORDER BY :sort DESC LIMIT :limit OFFSET :offset;`
 

@@ -1,13 +1,13 @@
 package project
 
 import (
-	"fluxton/internal/api/dto"
+	"fluxton/internal/domain/shared"
 	"github.com/google/uuid"
 )
 
 type Repository interface {
-	ListForUser(paginationParams dto.PaginationParams, authUserId uuid.UUID) ([]Project, error)
-	List(paginationParams dto.PaginationParams) ([]Project, error)
+	ListForUser(paginationParams shared.PaginationParams, authUserId uuid.UUID) ([]Project, error)
+	List(paginationParams shared.PaginationParams) ([]Project, error)
 	GetByUUID(projectUUID uuid.UUID) (Project, error)
 	GetDatabaseNameByUUID(projectUUID uuid.UUID) (string, error)
 	GetUUIDByDatabaseName(dbName string) (uuid.UUID, error)

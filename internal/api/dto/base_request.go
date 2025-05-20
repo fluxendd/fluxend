@@ -3,6 +3,7 @@ package dto
 import (
 	"errors"
 	"fluxton/internal/config/constants"
+	"fluxton/internal/domain/shared"
 	"fmt"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/google/uuid"
@@ -52,13 +53,6 @@ type BaseRequest struct {
 	Context     echo.Context
 }
 
-type PaginationParams struct {
-	Page  int
-	Limit int
-	Sort  string
-	Order string
-}
-
 func (r *BaseRequest) SetContext(c echo.Context) {
 	r.Context = c
 }
@@ -89,7 +83,7 @@ func (r *BaseRequest) ExtractValidationErrors(err error) []string {
 	return errs
 }
 
-func (r *BaseRequest) ExtractPaginationParams(c echo.Context) PaginationParams {
+func (r *BaseRequest) ExtractPaginationParams(c echo.Context) shared.PaginationParams {
 	defaultPage := 1
 	defaultLimit := 10
 	defaultSort := "id"
@@ -116,7 +110,7 @@ func (r *BaseRequest) ExtractPaginationParams(c echo.Context) PaginationParams {
 		order = defaultOrder
 	}
 
-	return PaginationParams{
+	return shared.PaginationParams{
 		Page:  page,
 		Limit: limit,
 		Sort:  sort,

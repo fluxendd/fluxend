@@ -44,7 +44,7 @@ func NewContainerHandler(injector *do.Injector) (*ContainerHandler, error) {
 // @Failure 500 "Internal server error"
 //
 // @Router /storage [get]
-func (bc *ContainerHandler) List(c echo.Context) error {
+func (ch *ContainerHandler) List(c echo.Context) error {
 	var request dto.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
@@ -53,12 +53,12 @@ func (bc *ContainerHandler) List(c echo.Context) error {
 	authUser, _ := auth.NewAuth(c).User()
 
 	paginationParams := request.ExtractPaginationParams(c)
-	container, err := bc.containerService.List(paginationParams, request.ProjectUUID, authUser)
+	containers, err := ch.containerService.List(paginationParams, request.ProjectUUID, authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.SuccessResponse(c, containerMapper.ToResourceCollection(container))
+	return response.SuccessResponse(c, containerMapper.ToResourceCollection(containers))
 }
 
 // Show retrieves details of a specific container.
@@ -82,7 +82,7 @@ func (bc *ContainerHandler) List(c echo.Context) error {
 // @Failure 500 "Internal server error"
 //
 // @Router /storage/containers/{containerUUID} [get]
-func (bc *ContainerHandler) Show(c echo.Context) error {
+func (ch *ContainerHandler) Show(c echo.Context) error {
 	var request dto.DefaultRequestWithProjectHeader
 
 	authUser, _ := auth.NewAuth(c).User()
@@ -92,12 +92,12 @@ func (bc *ContainerHandler) Show(c echo.Context) error {
 		return response.BadRequestResponse(c, err.Error())
 	}
 
-	container, err := bc.containerService.GetByUUID(containerUUID, authUser)
+	fetchedContainer, err := ch.containerService.GetByUUID(containerUUID, authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.SuccessResponse(c, containerMapper.ToResource(&container))
+	return response.SuccessResponse(c, containerMapper.ToResource(&fetchedContainer))
 }
 
 // Store creates a new container
@@ -120,7 +120,7 @@ func (bc *ContainerHandler) Show(c echo.Context) error {
 // @Failure 500 "Internal server error"
 //
 // @Router /storage [post]
-func (bc *ContainerHandler) Store(c echo.Context) error {
+func (ch *ContainerHandler) Store(c echo.Context) error {
 	var request container.CreateRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
@@ -128,12 +128,12 @@ func (bc *ContainerHandler) Store(c echo.Context) error {
 
 	authUser, _ := auth.NewAuth(c).User()
 
-	container, err := bc.containerService.Create(&request, authUser)
+	fetchedContainer, err := ch.containerService.Create(&request, authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.CreatedResponse(c, containerMapper.ToResource(&container))
+	return response.CreatedResponse(c, containerMapper.ToResource(&fetchedContainer))
 }
 
 // Update a container
@@ -158,7 +158,7 @@ func (bc *ContainerHandler) Store(c echo.Context) error {
 // @Failure 500 "Internal server error"
 //
 // @Router /storage/containers/{containerUUID} [put]
-func (bc *ContainerHandler) Update(c echo.Context) error {
+func (ch *ContainerHandler) Update(c echo.Context) error {
 	var request container.CreateRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
@@ -171,7 +171,7 @@ func (bc *ContainerHandler) Update(c echo.Context) error {
 		return response.BadRequestResponse(c, err.Error())
 	}
 
-	updatedContainer, err := bc.containerService.Update(containerUUID, authUser, &request)
+	updatedContainer, err := ch.containerService.Update(containerUUID, authUser, &request)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
@@ -199,7 +199,7 @@ func (bc *ContainerHandler) Update(c echo.Context) error {
 // @Failure 500 "Internal server error"
 //
 // @Router /storage/containers/{containerUUID} [delete]
-func (bc *ContainerHandler) Delete(c echo.Context) error {
+func (ch *ContainerHandler) Delete(c echo.Context) error {
 	var request dto.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
@@ -212,7 +212,7 @@ func (bc *ContainerHandler) Delete(c echo.Context) error {
 		return response.BadRequestResponse(c, err.Error())
 	}
 
-	if _, err := bc.containerService.Delete(request, containerUUID, authUser); err != nil {
+	if _, err := ch.containerService.Delete(request, containerUUID, authUser); err != nil {
 		return response.ErrorResponse(c, err)
 	}
 

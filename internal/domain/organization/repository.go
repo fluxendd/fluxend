@@ -1,13 +1,13 @@
 package organization
 
 import (
-	"fluxton/internal/api/dto"
+	"fluxton/internal/domain/shared"
 	"fluxton/internal/domain/user"
 	"github.com/google/uuid"
 )
 
 type Repository interface {
-	ListForUser(paginationParams dto.PaginationParams, authUserID uuid.UUID) ([]Organization, error)
+	ListForUser(paginationParams shared.PaginationParams, authUserID uuid.UUID) ([]Organization, error)
 	ListUsers(organizationUUID uuid.UUID) ([]user.User, error)
 	GetUser(organizationUUID, userUUID uuid.UUID) (user.User, error)
 	CreateUser(organizationUUID, userUUID uuid.UUID) error

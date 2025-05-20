@@ -1,12 +1,12 @@
 package user
 
 import (
-	"fluxton/internal/api/dto"
+	"fluxton/internal/domain/shared"
 	"github.com/google/uuid"
 )
 
 type Repository interface {
-	List(paginationParams dto.PaginationParams) ([]User, error)
+	List(paginationParams shared.PaginationParams) ([]User, error)
 	GetByID(userUUID uuid.UUID) (User, error)
 	ExistsByID(userUUID uuid.UUID) (bool, error)
 	ExistsByEmail(email string) (bool, error)

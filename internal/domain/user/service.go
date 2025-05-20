@@ -1,10 +1,10 @@
 package user
 
 import (
-	"fluxton/internal/api/dto"
 	"fluxton/internal/api/dto/user"
 	"fluxton/internal/config/constants"
 	"fluxton/internal/domain/setting"
+	"fluxton/internal/domain/shared"
 	"fluxton/pkg/auth"
 	"fluxton/pkg/errors"
 	"github.com/golang-jwt/jwt/v5"
@@ -18,7 +18,7 @@ import (
 
 type Service interface {
 	Login(request *user.LoginRequest) (User, string, error)
-	List(paginationParams dto.PaginationParams) ([]User, error)
+	List(paginationParams shared.PaginationParams) ([]User, error)
 	ExistsByUUID(id uuid.UUID) error
 	GetByID(id uuid.UUID) (User, error)
 	Create(ctx echo.Context, request *user.CreateRequest) (User, string, error)
@@ -68,7 +68,7 @@ func (s *ServiceImpl) Login(request *user.LoginRequest) (User, string, error) {
 	return fetchedUser, token, nil
 }
 
-func (s *ServiceImpl) List(paginationParams dto.PaginationParams) ([]User, error) {
+func (s *ServiceImpl) List(paginationParams shared.PaginationParams) ([]User, error) {
 	return s.userRepo.List(paginationParams)
 }
 

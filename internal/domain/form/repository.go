@@ -1,12 +1,12 @@
 package form
 
 import (
-	"fluxton/internal/api/dto"
+	"fluxton/internal/domain/shared"
 	"github.com/google/uuid"
 )
 
 type Repository interface {
-	ListForProject(paginationParams dto.PaginationParams, projectUUID uuid.UUID) ([]Form, error)
+	ListForProject(paginationParams shared.PaginationParams, projectUUID uuid.UUID) ([]Form, error)
 	GetProjectUUIDByFormUUID(formUUID uuid.UUID) (uuid.UUID, error)
 	GetByUUID(formUUID uuid.UUID) (Form, error)
 	ExistsByUUID(formUUID uuid.UUID) (bool, error)

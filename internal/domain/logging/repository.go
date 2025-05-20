@@ -1,10 +1,10 @@
 package logging
 
 import (
-	"fluxton/internal/api/dto"
+	"fluxton/internal/domain/shared"
 )
 
 type Repository interface {
-	List(paginationParams dto.PaginationParams) ([]RequestLog, error)
+	List(paginationParams shared.PaginationParams) ([]RequestLog, error)
 	Create(requestLog *RequestLog) (*RequestLog, error)
 }

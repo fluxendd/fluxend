@@ -1,7 +1,6 @@
 package commands
 
 import (
-	"fluxton/internal/api/dto"
 	"fluxton/internal/app"
 	"fluxton/internal/database/repositories"
 	"fluxton/internal/domain/shared"
@@ -25,7 +24,7 @@ func restartPostgrestInstances() error {
 	projectRepository := do.MustInvoke[*repositories.ProjectRepository](container)
 	postgrestService := do.MustInvoke[shared.PostgrestService](container)
 
-	projects, err := projectRepository.List(dto.PaginationParams{Page: 1, Limit: 1000})
+	projects, err := projectRepository.List(shared.PaginationParams{Page: 1, Limit: 1000})
 	if err != nil {
 		return fmt.Errorf("error fetching projects: %w", err)
 	}

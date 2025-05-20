@@ -3,8 +3,8 @@ package repositories
 import (
 	"database/sql"
 	"errors"
-	"fluxton/internal/api/dto"
 	"fluxton/internal/config/constants"
+	"fluxton/internal/domain/shared"
 	"fluxton/internal/domain/user"
 	"fluxton/pkg"
 	"fluxton/pkg/auth"
@@ -25,7 +25,7 @@ func NewUserRepository(injector *do.Injector) (user.Repository, error) {
 	return &UserRepository{db: db}, nil
 }
 
-func (r *UserRepository) List(paginationParams dto.PaginationParams) ([]user.User, error) {
+func (r *UserRepository) List(paginationParams shared.PaginationParams) ([]user.User, error) {
 	offset := (paginationParams.Page - 1) * paginationParams.Limit
 
 	query := fmt.Sprintf(

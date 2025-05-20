@@ -3,8 +3,8 @@ package repositories
 import (
 	"database/sql"
 	"errors"
-	"fluxton/internal/api/dto"
 	"fluxton/internal/domain/project"
+	"fluxton/internal/domain/shared"
 	"fluxton/pkg"
 	flxErrs "fluxton/pkg/errors"
 	"fmt"
@@ -23,7 +23,7 @@ func NewProjectRepository(injector *do.Injector) (project.Repository, error) {
 	return &ProjectRepository{db: db}, nil
 }
 
-func (r *ProjectRepository) ListForUser(paginationParams dto.PaginationParams, authUserId uuid.UUID) ([]project.Project, error) {
+func (r *ProjectRepository) ListForUser(paginationParams shared.PaginationParams, authUserId uuid.UUID) ([]project.Project, error) {
 	offset := (paginationParams.Page - 1) * paginationParams.Limit
 	query := `
 		SELECT 
@@ -74,7 +74,7 @@ func (r *ProjectRepository) ListForUser(paginationParams dto.PaginationParams, a
 	return projects, nil
 }
 
-func (r *ProjectRepository) List(paginationParams dto.PaginationParams) ([]project.Project, error) {
+func (r *ProjectRepository) List(paginationParams shared.PaginationParams) ([]project.Project, error) {
 	offset := (paginationParams.Page - 1) * paginationParams.Limit
 	query := `SELECT %s FROM fluxton.projects ORDER BY :sort DESC LIMIT :limit OFFSET :offset;`
 

@@ -1,7 +1,6 @@
 package project
 
 import (
-	"fluxton/internal/api/dto"
 	"fluxton/internal/api/dto/project"
 	"fluxton/internal/domain/auth"
 	"fluxton/internal/domain/shared"
@@ -14,7 +13,7 @@ import (
 )
 
 type Service interface {
-	List(paginationParams dto.PaginationParams, organizationUUID uuid.UUID, authUser auth.User) ([]Project, error)
+	List(paginationParams shared.PaginationParams, organizationUUID uuid.UUID, authUser auth.User) ([]Project, error)
 	GetByUUID(projectUUID uuid.UUID, authUser auth.User) (Project, error)
 	GetDatabaseNameByUUID(projectUUID uuid.UUID, authUser auth.User) (string, error)
 	Create(request *project.CreateRequest, authUser auth.User) (Project, error)
@@ -43,7 +42,7 @@ func NewProjectService(injector *do.Injector) (Service, error) {
 	}, nil
 }
 
-func (s *ServiceImpl) List(paginationParams dto.PaginationParams, organizationUUID uuid.UUID, authUser auth.User) ([]Project, error) {
+func (s *ServiceImpl) List(paginationParams shared.PaginationParams, organizationUUID uuid.UUID, authUser auth.User) ([]Project, error) {
 	if !s.projectPolicy.CanAccess(organizationUUID, authUser) {
 		return []Project{}, errors.NewForbiddenError("project.error.listForbidden")
 	}

@@ -1,10 +1,10 @@
 package form
 
 import (
-	"fluxton/internal/api/dto"
 	"fluxton/internal/api/dto/form"
 	"fluxton/internal/domain/auth"
 	"fluxton/internal/domain/project"
+	"fluxton/internal/domain/shared"
 	"fluxton/pkg/errors"
 	"github.com/google/uuid"
 	"github.com/samber/do"
@@ -12,7 +12,7 @@ import (
 )
 
 type Service interface {
-	List(paginationParams dto.PaginationParams, projectUUID uuid.UUID, authUser auth.User) ([]Form, error)
+	List(paginationParams shared.PaginationParams, projectUUID uuid.UUID, authUser auth.User) ([]Form, error)
 	GetByUUID(formUUID uuid.UUID, authUser auth.User) (Form, error)
 	Create(request *form.CreateRequest, authUser auth.User) (Form, error)
 	Update(formUUID uuid.UUID, authUser auth.User, request *form.CreateRequest) (*Form, error)
@@ -37,7 +37,7 @@ func NewFormService(injector *do.Injector) (Service, error) {
 	}, nil
 }
 
-func (s *ServiceImpl) List(paginationParams dto.PaginationParams, projectUUID uuid.UUID, authUser auth.User) ([]Form, error) {
+func (s *ServiceImpl) List(paginationParams shared.PaginationParams, projectUUID uuid.UUID, authUser auth.User) ([]Form, error) {
 	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(projectUUID)
 	if err != nil {
 		return nil, err
