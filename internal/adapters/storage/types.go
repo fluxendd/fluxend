@@ -33,15 +33,3 @@ type RenameFileInput struct {
 	FileName      string
 	NewFileName   string
 }
-
-type StorageInterface interface {
-	ListContainers(input ListContainersInput) ([]string, string, error)
-	CreateContainer(name string) (string, error)
-	ContainerExists(name string) bool
-	ShowContainer(name string) (*ContainerMetadata, error)
-	DeleteContainer(name string) error
-	UploadFile(input UploadFileInput) error
-	RenameFile(input RenameFileInput) error
-	DownloadFile(input FileInput) ([]byte, error)
-	DeleteFile(input FileInput) error
-}
