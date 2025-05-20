@@ -22,7 +22,7 @@ type S3ServiceImpl struct {
 	client *s3.Client
 }
 
-func NewS3Service(ctx echo.Context, injector *do.Injector) (Provider, error) {
+func NewS3Provider(ctx echo.Context, injector *do.Injector) (Provider, error) {
 	accessKey := os.Getenv("AWS_ACCESS_KEY_ID")
 	secretKey := os.Getenv("AWS_SECRET_ACCESS_KEY")
 	region := os.Getenv("AWS_REGION")

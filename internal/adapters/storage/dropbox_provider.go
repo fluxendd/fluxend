@@ -59,7 +59,7 @@ type ListFolderResult struct {
 	HasMore bool   `json:"has_more"`
 }
 
-func NewDropboxService(ctx echo.Context, injector *do.Injector) (Provider, error) {
+func NewDropboxProvider(ctx echo.Context, injector *do.Injector) (Provider, error) {
 	// TODO: go with refreshable tokens instead
 	accessToken := os.Getenv("DROPBOX_ACCESS_TOKEN")
 	if accessToken == "" {

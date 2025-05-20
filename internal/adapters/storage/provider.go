@@ -31,11 +31,11 @@ func NewFactory(injector *do.Injector) (*Factory, error) {
 func (f *Factory) CreateProvider(ctx echo.Context, providerType string) (Provider, error) {
 	switch providerType {
 	case constants.StorageDriverDropbox:
-		return NewDropboxService(ctx, f.injector)
+		return NewDropboxProvider(ctx, f.injector)
 	case constants.StorageDriverS3:
-		return NewS3Service(ctx, f.injector)
+		return NewS3Provider(ctx, f.injector)
 	case constants.StorageDriverBackBlaze:
-		return NewBackblazeService(ctx, f.injector)
+		return NewBackblazeProvider(ctx, f.injector)
 	default:
 		return nil, fmt.Errorf("unsupported email provider: %s", providerType)
 	}
