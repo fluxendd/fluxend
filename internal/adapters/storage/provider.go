@@ -23,8 +23,8 @@ type Factory struct {
 	injector *do.Injector
 }
 
-func NewFactory(injector *do.Injector) *Factory {
-	return &Factory{injector: injector}
+func NewFactory(injector *do.Injector) (*Factory, error) {
+	return &Factory{injector: injector}, nil
 }
 
 // TODO: use injector and context

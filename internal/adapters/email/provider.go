@@ -15,8 +15,8 @@ type Factory struct {
 	injector *do.Injector
 }
 
-func NewFactory(injector *do.Injector) *Factory {
-	return &Factory{injector: injector}
+func NewFactory(injector *do.Injector) (*Factory, error) {
+	return &Factory{injector: injector}, nil
 }
 
 func (f *Factory) CreateProvider(ctx echo.Context, providerType string) (Provider, error) {

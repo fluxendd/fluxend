@@ -2,7 +2,9 @@ package app
 
 import (
 	"fluxton/internal/adapters/client"
+	"fluxton/internal/adapters/email"
 	"fluxton/internal/adapters/postgrest"
+	"fluxton/internal/adapters/storage"
 	"fluxton/internal/api/handlers"
 	"fluxton/internal/database"
 	"fluxton/internal/database/factories"
@@ -110,6 +112,9 @@ func InitializeContainer() *do.Injector {
 	// --- Health ---
 	do.Provide(injector, health.NewHealthService)
 	do.Provide(injector, handlers.NewHealthHandler)
+
+	do.Provide(injector, storage.NewFactory)
+	do.Provide(injector, email.NewFactory)
 
 	return injector
 }

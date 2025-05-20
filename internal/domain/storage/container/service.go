@@ -27,6 +27,7 @@ type ServiceImpl struct {
 	projectPolicy  *project.Policy
 	containerRepo  Repository
 	projectRepo    project.Repository
+	storageFactory storage.Factory
 }
 
 func NewContainerService(injector *do.Injector) (Service, error) {
@@ -38,12 +39,14 @@ func NewContainerService(injector *do.Injector) (Service, error) {
 	policy := do.MustInvoke[*project.Policy](injector)
 	containerRepo := do.MustInvoke[Repository](injector)
 	projectRepo := do.MustInvoke[project.Repository](injector)
+	storageFactory := do.MustInvoke[storage.Factory](injector)
 
 	return &ServiceImpl{
 		settingService: settingService,
 		projectPolicy:  policy,
 		containerRepo:  containerRepo,
 		projectRepo:    projectRepo,
+		storageFactory: storageFactory,
 	}, nil
 }
 
@@ -107,7 +110,7 @@ func (s *ServiceImpl) Create(request *CreateContainerInput, authUser auth.User) 
 		UpdatedBy:   authUser.Uuid,
 	}
 
-	storageService, err := storage.GetProvider(storageDriver)
+	storageService, err := s.storageFactory.CreateProvider(request.Context, s.settingService.GetStorageDriver(request.Context))
 	if err != nil {
 		return Container{}, err
 	}
@@ -177,7 +180,7 @@ func (s *ServiceImpl) Delete(context echo.Context, containerUUID uuid.UUID, auth
 		return false, errors.NewForbiddenError("container.error.deleteForbidden")
 	}
 
-	storageService, err := storage.GetProvider(s.settingService.GetStorageDriver(context))
+	storageService, err := s.storageFactory.CreateProvider(context, s.settingService.GetStorageDriver(context))
 	if err != nil {
 		return false, err
 	}

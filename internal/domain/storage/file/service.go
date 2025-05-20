@@ -31,6 +31,7 @@ type ServiceImpl struct {
 	containerRepo  container.Repository
 	fileRepo       Repository
 	projectRepo    project.Repository
+	storageFactory storage.Factory
 }
 
 func NewFileService(injector *do.Injector) (Service, error) {
@@ -43,6 +44,7 @@ func NewFileService(injector *do.Injector) (Service, error) {
 	containerRepo := do.MustInvoke[container.Repository](injector)
 	fileRepo := do.MustInvoke[Repository](injector)
 	projectRepo := do.MustInvoke[project.Repository](injector)
+	storageFactory := do.MustInvoke[storage.Factory](injector)
 
 	return &ServiceImpl{
 		settingService: settingService,
@@ -50,6 +52,7 @@ func NewFileService(injector *do.Injector) (Service, error) {
 		containerRepo:  containerRepo,
 		fileRepo:       fileRepo,
 		projectRepo:    projectRepo,
+		storageFactory: storageFactory,
 	}, nil
 }
 
@@ -130,7 +133,7 @@ func (s *ServiceImpl) Create(containerUUID uuid.UUID, request *CreateFileInput, 
 		return File{}, err
 	}
 
-	storageService, err := storage.GetProvider(s.settingService.GetStorageDriver(request.Context))
+	storageService, err := s.storageFactory.CreateProvider(request.Context, s.settingService.GetStorageDriver(request.Context))
 	if err != nil {
 		return File{}, err
 	}
@@ -182,7 +185,7 @@ func (s *ServiceImpl) Rename(fileUUID, containerUUID uuid.UUID, authUser auth.Us
 		return &File{}, err
 	}
 
-	storageService, err := storage.GetProvider(s.settingService.GetStorageDriver(request.Context))
+	storageService, err := s.storageFactory.CreateProvider(request.Context, s.settingService.GetStorageDriver(request.Context))
 	if err != nil {
 		return &File{}, err
 	}
@@ -223,7 +226,7 @@ func (s *ServiceImpl) Delete(fileUUID, containerUUID uuid.UUID, authUser auth.Us
 		return false, err
 	}
 
-	storageService, err := storage.GetProvider(s.settingService.GetStorageDriver(context))
+	storageService, err := s.storageFactory.CreateProvider(context, s.settingService.GetStorageDriver(context))
 	if err != nil {
 		return false, err
 	}

@@ -22,6 +22,7 @@ type WorkflowService interface {
 type WorkflowServiceImpl struct {
 	settingService setting.Service
 	backupRepo     Repository
+	storageFactory storage.Factory
 }
 
 func NewBackupWorkflowService(injector *do.Injector) (WorkflowService, error) {
@@ -31,10 +32,12 @@ func NewBackupWorkflowService(injector *do.Injector) (WorkflowService, error) {
 	}
 
 	backupRepo := do.MustInvoke[Repository](injector)
+	storageFactory := do.MustInvoke[storage.Factory](injector)
 
 	return &WorkflowServiceImpl{
 		settingService: settingService,
 		backupRepo:     backupRepo,
+		storageFactory: storageFactory,
 	}, nil
 }
 
@@ -99,7 +102,7 @@ func (s *WorkflowServiceImpl) Create(ctx echo.Context, databaseName string, back
 func (s *WorkflowServiceImpl) Delete(ctx echo.Context, databaseName string, backupUUID uuid.UUID) {
 	filePath := fmt.Sprintf("%s/%s.sql", databaseName, backupUUID)
 
-	storageService, err := storage.GetProvider(s.settingService.GetStorageDriver(ctx))
+	storageService, err := s.storageFactory.CreateProvider(ctx, s.settingService.GetStorageDriver(ctx))
 	if err != nil {
 		log.Error().
 			Str("action", constants.ActionBackup).
@@ -178,7 +181,7 @@ func (s *WorkflowServiceImpl) copyBackupToAppContainer(backupFilePath string, ba
 }
 
 func (s *WorkflowServiceImpl) ensureBackupContainerExists(ctx echo.Context) error {
-	storageService, err := storage.GetProvider(s.settingService.GetStorageDriver(ctx))
+	storageService, err := s.storageFactory.CreateProvider(ctx, s.settingService.GetStorageDriver(ctx))
 	if err != nil {
 		log.Error().
 			Str("action", constants.ActionBackup).
@@ -223,7 +226,7 @@ func (s *WorkflowServiceImpl) readBackupFile(backupUUID uuid.UUID) ([]byte, erro
 func (s *WorkflowServiceImpl) uploadBackup(ctx echo.Context, databaseName string, backupUUID uuid.UUID, fileBytes []byte) error {
 	filePath := fmt.Sprintf("%s/%s.sql", databaseName, backupUUID)
 
-	storageService, err := storage.GetProvider(s.settingService.GetStorageDriver(ctx))
+	storageService, err := s.storageFactory.CreateProvider(ctx, s.settingService.GetStorageDriver(ctx))
 	if err != nil {
 		log.Error().
 			Str("action", constants.ActionBackup).
