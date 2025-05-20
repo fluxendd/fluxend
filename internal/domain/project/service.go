@@ -1,7 +1,6 @@
 package project
 
 import (
-	"fluxton/internal/api/dto/project"
 	"fluxton/internal/domain/auth"
 	"fluxton/internal/domain/shared"
 	"fluxton/pkg/errors"
@@ -16,8 +15,8 @@ type Service interface {
 	List(paginationParams shared.PaginationParams, organizationUUID uuid.UUID, authUser auth.User) ([]Project, error)
 	GetByUUID(projectUUID uuid.UUID, authUser auth.User) (Project, error)
 	GetDatabaseNameByUUID(projectUUID uuid.UUID, authUser auth.User) (string, error)
-	Create(request *project.CreateRequest, authUser auth.User) (Project, error)
-	Update(projectUUID uuid.UUID, authUser auth.User, request *project.UpdateRequest) (*Project, error)
+	Create(request *CreateProjectInput, authUser auth.User) (Project, error)
+	Update(projectUUID uuid.UUID, authUser auth.User, request *UpdateProjectInput) (*Project, error)
 	Delete(projectUUID uuid.UUID, authUser auth.User) (bool, error)
 }
 
@@ -76,7 +75,7 @@ func (s *ServiceImpl) GetDatabaseNameByUUID(projectUUID uuid.UUID, authUser auth
 	return fetchedProject.DBName, nil
 }
 
-func (s *ServiceImpl) Create(request *project.CreateRequest, authUser auth.User) (Project, error) {
+func (s *ServiceImpl) Create(request *CreateProjectInput, authUser auth.User) (Project, error) {
 	if !s.projectPolicy.CanCreate(request.OrganizationUUID, authUser) {
 		return Project{}, errors.NewForbiddenError("project.error.createForbidden")
 	}
@@ -113,7 +112,7 @@ func (s *ServiceImpl) Create(request *project.CreateRequest, authUser auth.User)
 	return projectInput, nil
 }
 
-func (s *ServiceImpl) Update(projectUUID uuid.UUID, authUser auth.User, request *project.UpdateRequest) (*Project, error) {
+func (s *ServiceImpl) Update(projectUUID uuid.UUID, authUser auth.User, request *UpdateProjectInput) (*Project, error) {
 	fetchedProject, err := s.projectRepo.GetByUUID(projectUUID)
 	if err != nil {
 		return nil, err

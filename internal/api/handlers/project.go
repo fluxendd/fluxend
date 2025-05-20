@@ -134,7 +134,7 @@ func (pc *ProjectHandler) Store(c echo.Context) error {
 
 	authUser, _ := auth.NewAuth(c).User()
 
-	updatedProject, err := pc.projectService.Create(&request, authUser)
+	updatedProject, err := pc.projectService.Create(project.ToCreateProjectInput(&request), authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
@@ -175,7 +175,7 @@ func (pc *ProjectHandler) Update(c echo.Context) error {
 		return response.BadRequestResponse(c, err.Error())
 	}
 
-	updatedOrganization, err := pc.projectService.Update(projectUUID, authUser, &request)
+	updatedOrganization, err := pc.projectService.Update(projectUUID, authUser, project.ToUpdateProjectInput(&request))
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
