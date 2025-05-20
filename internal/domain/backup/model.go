@@ -6,19 +6,6 @@ import (
 	"time"
 )
 
-const (
-	BackupStatusCreating       = "creating"
-	BackupStatusCreated        = "created"
-	BackupStatusCreatingFailed = "creating_failed"
-
-	BackupStatusDeleting       = "deleting"
-	BackupStatusDeletingFailed = "deleting_failed"
-
-	BackupStatusRestoring       = "restoring"
-	BackupStatusRestored        = "restored"
-	BackupStatusRestoringFailed = "restoring_failed"
-)
-
 type Backup struct {
 	shared.BaseModel
 	Uuid        uuid.UUID  `db:"uuid" json:"uuid"`

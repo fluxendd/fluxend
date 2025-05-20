@@ -2,6 +2,7 @@ package backup
 
 import (
 	"fluxton/internal/api/dto"
+	"fluxton/internal/config/constants"
 	"fluxton/internal/domain/auth"
 	"fluxton/internal/domain/project"
 	"fluxton/pkg/errors"
@@ -81,7 +82,7 @@ func (s *ServiceImpl) Create(request *dto.DefaultRequestWithProjectHeader, authU
 
 	backup := Backup{
 		ProjectUuid: request.ProjectUUID,
-		Status:      BackupStatusCreating,
+		Status:      constants.BackupStatusCreating,
 		Error:       "",
 		StartedAt:   time.Now(),
 	}
@@ -116,11 +117,11 @@ func (s *ServiceImpl) Delete(request dto.DefaultRequestWithProjectHeader, backup
 		return false, errors.NewForbiddenError("backup.error.deleteForbidden")
 	}
 
-	if backup.Status == BackupStatusDeleting {
+	if backup.Status == constants.BackupStatusDeleting {
 		return false, errors.NewBadRequestError("backup.error.deleteInProgress")
 	}
 
-	err = s.backupRepo.UpdateStatus(backupUUID, BackupStatusDeleting, "", time.Now())
+	err = s.backupRepo.UpdateStatus(backupUUID, constants.BackupStatusDeleting, "", time.Now())
 	if err != nil {
 		return false, err
 	}
