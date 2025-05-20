@@ -1,8 +1,8 @@
 package seeders
 
 import (
+	"fluxton/internal/config/constants"
 	"fluxton/internal/database/factories"
-	"fluxton/models"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/samber/do"
@@ -15,7 +15,7 @@ func SeedUsers(container *do.Injector) {
 
 	_, err := userFactory.Create(
 		userFactory.WithUsername("superman"),
-		userFactory.WithRole(models.UserRoleSuperman),
+		userFactory.WithRole(constants.UserRoleSuperman),
 		userFactory.WithEmail("superman@fluxton.com"),
 	)
 	if err != nil {

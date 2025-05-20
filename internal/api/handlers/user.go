@@ -11,14 +11,14 @@ import (
 	"github.com/samber/do"
 )
 
-type UserController struct {
+type UserHandler struct {
 	userService userDomain.Service
 }
 
-func NewUserHandler(injector *do.Injector) (*UserController, error) {
+func NewUserHandler(injector *do.Injector) (*UserHandler, error) {
 	userService := do.MustInvoke[userDomain.Service](injector)
 
-	return &UserController{userService: userService}, nil
+	return &UserHandler{userService: userService}, nil
 }
 
 // Show retrieves details of a specific user.
@@ -39,7 +39,7 @@ func NewUserHandler(injector *do.Injector) (*UserController, error) {
 // @Failure 500 "Internal server error"
 //
 // @Router /users/{userUUID} [get]
-func (uc *UserController) Show(c echo.Context) error {
+func (uc *UserHandler) Show(c echo.Context) error {
 	var request dto.DefaultRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
@@ -75,7 +75,7 @@ func (uc *UserController) Show(c echo.Context) error {
 // @Failure 500 "Internal server error"
 //
 // @Router /users/login [post]
-func (uc *UserController) Login(c echo.Context) error {
+func (uc *UserHandler) Login(c echo.Context) error {
 	var request userDto.LoginRequest
 	if err := c.Bind(&request); err != nil {
 		return response.BadRequestResponse(c, "user.error.invalidPayload")
@@ -113,7 +113,7 @@ func (uc *UserController) Login(c echo.Context) error {
 // @Failure 500 "Internal server error"
 //
 // @Router /users [post]
-func (uc *UserController) Store(c echo.Context) error {
+func (uc *UserHandler) Store(c echo.Context) error {
 	var request userDto.CreateRequest
 	if err := c.Bind(&request); err != nil {
 		return response.BadRequestResponse(c, "user.error.invalidPayload")
@@ -154,7 +154,7 @@ func (uc *UserController) Store(c echo.Context) error {
 // @Failure 500 "Internal server error"
 //
 // @Router /users/{userUUID} [put]
-func (uc *UserController) Update(c echo.Context) error {
+func (uc *UserHandler) Update(c echo.Context) error {
 	authUserUUID, err := auth.NewAuth(c).Uuid()
 	if err != nil {
 		return response.UnauthorizedResponse(c, err.Error())
@@ -195,7 +195,7 @@ func (uc *UserController) Update(c echo.Context) error {
 // @Failure 500 "Internal server error"
 //
 // @Router /users/logout [post]
-func (uc *UserController) Logout(c echo.Context) error {
+func (uc *UserHandler) Logout(c echo.Context) error {
 	userUUID, err := auth.NewAuth(c).Uuid()
 	if err != nil {
 		return response.UnauthorizedResponse(c, err.Error())

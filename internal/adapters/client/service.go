@@ -117,20 +117,6 @@ func (s *ServiceImpl) GetRowRepo(databaseName string, connection *sqlx.DB) (inte
 	return clientIndexRepo, clientDatabaseConnection, nil
 }
 
-func (s *ServiceImpl) getClientFunctionRepo(databaseName string, connection *sqlx.DB) (interface{}, *sqlx.DB, error) {
-	clientDatabaseConnection, err := s.getOrCreateConnection(databaseName, connection)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	clientFunctionRepo, err := repositories.NewFunctionRepository(clientDatabaseConnection)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	return clientFunctionRepo, clientDatabaseConnection, nil
-}
-
 func (s *ServiceImpl) getOrCreateConnection(databaseName string, connection *sqlx.DB) (*sqlx.DB, error) {
 	if connection != nil {
 		return connection, nil
