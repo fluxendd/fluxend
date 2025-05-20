@@ -1,7 +1,6 @@
 package organization
 
 import (
-	"fluxton/internal/api/dto/organization"
 	"fluxton/internal/domain/auth"
 	"fluxton/internal/domain/shared"
 	"fluxton/internal/domain/user"
@@ -14,11 +13,11 @@ import (
 type Service interface {
 	List(paginationParams shared.PaginationParams, authUserId uuid.UUID) ([]Organization, error)
 	GetByID(organizationUUID uuid.UUID, authUser auth.User) (Organization, error)
-	Create(request *organization.CreateRequest, authUser auth.User) (Organization, error)
-	Update(organizationUUID uuid.UUID, authUser auth.User, request *organization.CreateRequest) (*Organization, error)
+	Create(name string, authUser auth.User) (Organization, error)
+	Update(name string, organizationUUID uuid.UUID, authUser auth.User) (*Organization, error)
 	Delete(organizationUUID uuid.UUID, authUser auth.User) (bool, error)
 	ListUsers(organizationUUID uuid.UUID, authUser auth.User) ([]user.User, error)
-	CreateUser(request *organization.MemberCreateRequest, organizationUUID uuid.UUID, authUser auth.User) (user.User, error)
+	CreateUser(userUUID uuid.UUID, organizationUUID uuid.UUID, authUser auth.User) (user.User, error)
 	DeleteUser(organizationUUID, userID uuid.UUID, authUser auth.User) error
 }
 
@@ -70,13 +69,13 @@ func (s *ServiceImpl) ExistsByUUID(organizationUUID uuid.UUID) error {
 	return nil
 }
 
-func (s *ServiceImpl) Create(request *organization.CreateRequest, authUser auth.User) (Organization, error) {
+func (s *ServiceImpl) Create(name string, authUser auth.User) (Organization, error) {
 	if !s.organizationPolicy.CanCreate(authUser) {
 		return Organization{}, errors.NewForbiddenError("organization.error.createForbidden")
 	}
 
 	organizationInput := Organization{
-		Name:      request.Name,
+		Name:      name,
 		CreatedBy: authUser.Uuid,
 		UpdatedBy: authUser.Uuid,
 	}
@@ -89,7 +88,7 @@ func (s *ServiceImpl) Create(request *organization.CreateRequest, authUser auth.
 	return organizationInput, nil
 }
 
-func (s *ServiceImpl) Update(organizationUUID uuid.UUID, authUser auth.User, request *organization.CreateRequest) (*Organization, error) {
+func (s *ServiceImpl) Update(name string, organizationUUID uuid.UUID, authUser auth.User) (*Organization, error) {
 	fetchedOrganization, err := s.organizationRepo.GetByUUID(organizationUUID)
 	if err != nil {
 		return nil, err
@@ -99,12 +98,7 @@ func (s *ServiceImpl) Update(organizationUUID uuid.UUID, authUser auth.User, req
 		return &Organization{}, errors.NewForbiddenError("organization.error.updateForbidden")
 	}
 
-	// TODO: COME_BACK_FOR_ME
-	/*err = organization.PopulateModel(&organization, request)
-	if err != nil {
-		return nil, err
-	}*/
-
+	fetchedOrganization.Name = name
 	fetchedOrganization.UpdatedBy = authUser.Uuid
 	fetchedOrganization.UpdatedAt = time.Now()
 
@@ -132,7 +126,7 @@ func (s *ServiceImpl) ListUsers(organizationUUID uuid.UUID, authUser auth.User) 
 	return s.organizationRepo.ListUsers(organizationUUID)
 }
 
-func (s *ServiceImpl) CreateUser(request *organization.MemberCreateRequest, organizationUUID uuid.UUID, authUser auth.User) (user.User, error) {
+func (s *ServiceImpl) CreateUser(userUUID uuid.UUID, organizationUUID uuid.UUID, authUser auth.User) (user.User, error) {
 	if !s.organizationPolicy.CanCreate(authUser) {
 		return user.User{}, errors.NewForbiddenError("organization.error.createUserForbidden")
 	}
@@ -142,7 +136,7 @@ func (s *ServiceImpl) CreateUser(request *organization.MemberCreateRequest, orga
 		return user.User{}, err
 	}
 
-	exists, err := s.userRepo.ExistsByID(request.UserID)
+	exists, err := s.userRepo.ExistsByID(userUUID)
 	if err != nil {
 		return user.User{}, err
 	}
@@ -151,7 +145,7 @@ func (s *ServiceImpl) CreateUser(request *organization.MemberCreateRequest, orga
 		return user.User{}, errors.NewNotFoundError("user.error.notFound")
 	}
 
-	userExists, err := s.organizationRepo.IsOrganizationMember(organizationUUID, request.UserID)
+	userExists, err := s.organizationRepo.IsOrganizationMember(organizationUUID, userUUID)
 	if err != nil {
 		return user.User{}, err
 	}
@@ -160,12 +154,12 @@ func (s *ServiceImpl) CreateUser(request *organization.MemberCreateRequest, orga
 		return user.User{}, errors.NewUnprocessableError("organization.error.userAlreadyExists")
 	}
 
-	err = s.organizationRepo.CreateUser(organizationUUID, request.UserID)
+	err = s.organizationRepo.CreateUser(organizationUUID, userUUID)
 	if err != nil {
 		return user.User{}, err
 	}
 
-	return s.organizationRepo.GetUser(organizationUUID, request.UserID)
+	return s.organizationRepo.GetUser(organizationUUID, userUUID)
 }
 
 func (s *ServiceImpl) DeleteUser(organizationUUID, userUUID uuid.UUID, authUser auth.User) error {

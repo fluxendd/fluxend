@@ -94,7 +94,7 @@ func (ouc *OrganizationMemberHandler) Store(c echo.Context) error {
 		return response.BadRequestResponse(c, err.Error())
 	}
 
-	organizationUser, err := ouc.organizationService.CreateUser(&request, organizationUUID, authUser)
+	organizationUser, err := ouc.organizationService.CreateUser(request.UserID, organizationUUID, authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}

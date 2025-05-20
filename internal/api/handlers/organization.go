@@ -129,7 +129,7 @@ func (oc *OrganizationHandler) Store(c echo.Context) error {
 		return response.UnauthorizedResponse(c, err.Error())
 	}
 
-	organization, err := oc.organizationService.Create(&request, authUser)
+	organization, err := oc.organizationService.Create(request.Name, authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
@@ -170,7 +170,7 @@ func (oc *OrganizationHandler) Update(c echo.Context) error {
 		return response.BadRequestResponse(c, err.Error())
 	}
 
-	updatedOrganization, err := oc.organizationService.Update(organizationUUID, authUser, &request)
+	updatedOrganization, err := oc.organizationService.Update(request.Name, organizationUUID, authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
