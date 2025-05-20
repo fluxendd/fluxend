@@ -1,12 +1,12 @@
 package backup
 
 import (
-	"fluxton/internal/api/dto"
 	"fluxton/internal/config/constants"
 	"fluxton/internal/domain/auth"
 	"fluxton/internal/domain/project"
 	"fluxton/pkg/errors"
 	"github.com/google/uuid"
+	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
 	"time"
 )
@@ -14,8 +14,8 @@ import (
 type Service interface {
 	List(projectUUID uuid.UUID, authUser auth.User) ([]Backup, error)
 	GetByUUID(backupUUID uuid.UUID, authUser auth.User) (Backup, error)
-	Create(request *dto.DefaultRequestWithProjectHeader, authUser auth.User) (Backup, error)
-	Delete(request dto.DefaultRequestWithProjectHeader, backupUUID uuid.UUID, authUser auth.User) (bool, error)
+	Create(projectUUID uuid.UUID, context echo.Context, authUser auth.User) (Backup, error)
+	Delete(context echo.Context, backupUUID uuid.UUID, authUser auth.User) (bool, error)
 }
 
 type ServiceImpl struct {
@@ -70,8 +70,8 @@ func (s *ServiceImpl) GetByUUID(backupUUID uuid.UUID, authUser auth.User) (Backu
 	return backup, nil
 }
 
-func (s *ServiceImpl) Create(request *dto.DefaultRequestWithProjectHeader, authUser auth.User) (Backup, error) {
-	fetchedProject, err := s.projectRepo.GetByUUID(request.ProjectUUID)
+func (s *ServiceImpl) Create(projectUUID uuid.UUID, context echo.Context, authUser auth.User) (Backup, error) {
+	fetchedProject, err := s.projectRepo.GetByUUID(projectUUID)
 	if err != nil {
 		return Backup{}, err
 	}
@@ -81,7 +81,7 @@ func (s *ServiceImpl) Create(request *dto.DefaultRequestWithProjectHeader, authU
 	}
 
 	backup := Backup{
-		ProjectUuid: request.ProjectUUID,
+		ProjectUuid: projectUUID,
 		Status:      constants.BackupStatusCreating,
 		Error:       "",
 		StartedAt:   time.Now(),
@@ -92,12 +92,12 @@ func (s *ServiceImpl) Create(request *dto.DefaultRequestWithProjectHeader, authU
 		return Backup{}, err
 	}
 
-	go s.backupWorkFlowService.Create(request.Context, fetchedProject.DBName, createdBackup.Uuid)
+	go s.backupWorkFlowService.Create(context, fetchedProject.DBName, createdBackup.Uuid)
 
 	return backup, nil
 }
 
-func (s *ServiceImpl) Delete(request dto.DefaultRequestWithProjectHeader, backupUUID uuid.UUID, authUser auth.User) (bool, error) {
+func (s *ServiceImpl) Delete(context echo.Context, backupUUID uuid.UUID, authUser auth.User) (bool, error) {
 	backup, err := s.backupRepo.GetByUUID(backupUUID)
 	if err != nil {
 		return false, err
@@ -126,7 +126,7 @@ func (s *ServiceImpl) Delete(request dto.DefaultRequestWithProjectHeader, backup
 		return false, err
 	}
 
-	go s.backupWorkFlowService.Delete(request.Context, databaseName, backupUUID)
+	go s.backupWorkFlowService.Delete(context, databaseName, backupUUID)
 
 	return true, nil
 }
