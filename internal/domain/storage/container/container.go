@@ -3,6 +3,7 @@ package container
 import (
 	"fluxton/internal/domain/shared"
 	"github.com/google/uuid"
+	"github.com/labstack/echo/v4"
 	"time"
 )
 
@@ -22,6 +23,15 @@ type Container struct {
 	UpdatedBy   uuid.UUID `db:"updated_by" json:"updatedBy"`
 	CreatedAt   time.Time `db:"created_at" json:"createdAt"`
 	UpdatedAt   time.Time `db:"updated_at" json:"updatedAt"`
+}
+
+type CreateContainerInput struct {
+	Context     echo.Context
+	ProjectUUID uuid.UUID `db:"project_uuid" json:"projectUUID"`
+	Name        string    `json:"name"`
+	Description string    `json:"description"`
+	IsPublic    bool      `json:"is_public"`
+	MaxFileSize int       `json:"max_file_size"`
 }
 
 func (u Container) GetTableName() string {

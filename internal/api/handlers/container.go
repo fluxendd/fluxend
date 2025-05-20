@@ -128,7 +128,7 @@ func (ch *ContainerHandler) Store(c echo.Context) error {
 
 	authUser, _ := auth.NewAuth(c).User()
 
-	fetchedContainer, err := ch.containerService.Create(&request, authUser)
+	fetchedContainer, err := ch.containerService.Create(container.ToCreateContainerInput(&request), authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
@@ -171,7 +171,7 @@ func (ch *ContainerHandler) Update(c echo.Context) error {
 		return response.BadRequestResponse(c, err.Error())
 	}
 
-	updatedContainer, err := ch.containerService.Update(containerUUID, authUser, &request)
+	updatedContainer, err := ch.containerService.Update(containerUUID, authUser, container.ToCreateContainerInput(&request))
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
@@ -212,7 +212,7 @@ func (ch *ContainerHandler) Delete(c echo.Context) error {
 		return response.BadRequestResponse(c, err.Error())
 	}
 
-	if _, err := ch.containerService.Delete(request, containerUUID, authUser); err != nil {
+	if _, err := ch.containerService.Delete(request.Context, containerUUID, authUser); err != nil {
 		return response.ErrorResponse(c, err)
 	}
 

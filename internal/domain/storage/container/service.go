@@ -2,14 +2,13 @@ package container
 
 import (
 	"fluxton/internal/adapters/storage"
-	"fluxton/internal/api/dto"
-	"fluxton/internal/api/dto/storage/container"
 	"fluxton/internal/domain/auth"
 	"fluxton/internal/domain/project"
 	"fluxton/internal/domain/setting"
 	"fluxton/internal/domain/shared"
 	"fluxton/pkg/errors"
 	"github.com/google/uuid"
+	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
 	"strings"
 	"time"
@@ -18,9 +17,9 @@ import (
 type Service interface {
 	List(paginationParams shared.PaginationParams, projectUUID uuid.UUID, authUser auth.User) ([]Container, error)
 	GetByUUID(containerUUID uuid.UUID, authUser auth.User) (Container, error)
-	Create(request *container.CreateRequest, authUser auth.User) (Container, error)
-	Update(containerUUID uuid.UUID, authUser auth.User, request *container.CreateRequest) (*Container, error)
-	Delete(request dto.DefaultRequestWithProjectHeader, containerUUID uuid.UUID, authUser auth.User) (bool, error)
+	Create(request *CreateContainerInput, authUser auth.User) (Container, error)
+	Update(containerUUID uuid.UUID, authUser auth.User, request *CreateContainerInput) (*Container, error)
+	Delete(context echo.Context, containerUUID uuid.UUID, authUser auth.User) (bool, error)
 }
 
 type ServiceImpl struct {
@@ -79,7 +78,7 @@ func (s *ServiceImpl) GetByUUID(containerUUID uuid.UUID, authUser auth.User) (Co
 	return fetchedContainer, nil
 }
 
-func (s *ServiceImpl) Create(request *container.CreateRequest, authUser auth.User) (Container, error) {
+func (s *ServiceImpl) Create(request *CreateContainerInput, authUser auth.User) (Container, error) {
 	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(request.ProjectUUID)
 	if err != nil {
 		return Container{}, err
@@ -128,7 +127,7 @@ func (s *ServiceImpl) Create(request *container.CreateRequest, authUser auth.Use
 	return containerInput, nil
 }
 
-func (s *ServiceImpl) Update(containerUUID uuid.UUID, authUser auth.User, request *container.CreateRequest) (*Container, error) {
+func (s *ServiceImpl) Update(containerUUID uuid.UUID, authUser auth.User, request *CreateContainerInput) (*Container, error) {
 	fetchedContainer, err := s.containerRepo.GetByUUID(containerUUID)
 	if err != nil {
 		return nil, err
@@ -143,10 +142,10 @@ func (s *ServiceImpl) Update(containerUUID uuid.UUID, authUser auth.User, reques
 		return &Container{}, errors.NewForbiddenError("container.error.updateForbidden")
 	}
 
-	/*err = container.PopulateModel(&fetchedContainer, request)
+	err = fetchedContainer.PopulateModel(&fetchedContainer, request)
 	if err != nil {
 		return nil, err
-	}*/
+	}
 
 	fetchedContainer.UpdatedAt = time.Now()
 	fetchedContainer.UpdatedBy = authUser.Uuid
@@ -159,7 +158,7 @@ func (s *ServiceImpl) Update(containerUUID uuid.UUID, authUser auth.User, reques
 	return s.containerRepo.Update(&fetchedContainer)
 }
 
-func (s *ServiceImpl) Delete(request dto.DefaultRequestWithProjectHeader, containerUUID uuid.UUID, authUser auth.User) (bool, error) {
+func (s *ServiceImpl) Delete(context echo.Context, containerUUID uuid.UUID, authUser auth.User) (bool, error) {
 	fetchedContainer, err := s.containerRepo.GetByUUID(containerUUID)
 	if err != nil {
 		return false, err
@@ -178,7 +177,7 @@ func (s *ServiceImpl) Delete(request dto.DefaultRequestWithProjectHeader, contai
 		return false, errors.NewForbiddenError("container.error.deleteForbidden")
 	}
 
-	storageService, err := storage.GetProvider(s.settingService.GetStorageDriver(request.Context))
+	storageService, err := storage.GetProvider(s.settingService.GetStorageDriver(context))
 	if err != nil {
 		return false, err
 	}
