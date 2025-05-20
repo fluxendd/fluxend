@@ -8,7 +8,7 @@ import (
 	"github.com/samber/do"
 )
 
-type ResponseService interface {
+type FieldResponseService interface {
 	List(formUUID uuid.UUID, authUser auth.User) ([]FormResponse, error)
 	GetByUUID(formResponseUUID, formUUID uuid.UUID, authUser auth.User) (*FormResponse, error)
 	Create(formUUID uuid.UUID, request *CreateResponseInput, authUser auth.User) (FormResponse, error)
@@ -24,7 +24,7 @@ type ResponseServiceImpl struct {
 	formResponseRepo           FieldResponseRepository
 }
 
-func NewFormResponseService(injector *do.Injector) (ResponseService, error) {
+func NewFormResponseService(injector *do.Injector) (FieldResponseService, error) {
 	policy := do.MustInvoke[*project.Policy](injector)
 	formFieldValidationService := do.MustInvoke[FieldValidationService](injector)
 	formRepo := do.MustInvoke[Repository](injector)
