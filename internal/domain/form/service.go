@@ -115,10 +115,10 @@ func (s *ServiceImpl) Update(formUUID uuid.UUID, authUser auth.User, request *fo
 		return &Form{}, errors.NewForbiddenError("form.error.updateForbidden")
 	}
 
-	/*err = form.PopulateModel(&fetchedForm, request)
+	err = fetchedForm.PopulateModel(&fetchedForm, request)
 	if err != nil {
 		return nil, err
-	}*/
+	}
 
 	fetchedForm.UpdatedAt = time.Now()
 	fetchedForm.UpdatedBy = authUser.Uuid

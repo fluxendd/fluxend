@@ -142,18 +142,17 @@ func (s *ServiceImpl) Update(userUUID, authUserUUID uuid.UUID, request *UpdateUs
 		return nil, errors.NewForbiddenError("user.error.updateForbidden")
 	}
 
-	updatedUser, err := s.userRepo.GetByID(userUUID)
+	fetchedUser, err := s.userRepo.GetByID(userUUID)
 	if err != nil {
 		return nil, err
 	}
 
-	// TODO: COME_BACK_FOR_ME
-	/*err = user.PopulateModel(&user, request)
+	err = fetchedUser.PopulateModel(&fetchedUser, request)
 	if err != nil {
 		return nil, err
-	}*/
+	}
 
-	return s.userRepo.Update(userUUID, &updatedUser)
+	return s.userRepo.Update(userUUID, &fetchedUser)
 }
 
 func (s *ServiceImpl) Delete(userUUID uuid.UUID) (bool, error) {

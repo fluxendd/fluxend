@@ -2,11 +2,13 @@ package user
 
 import (
 	"fluxton/internal/config/constants"
+	"fluxton/internal/domain/shared"
 	"github.com/google/uuid"
 	"time"
 )
 
 type User struct {
+	shared.BaseModel
 	Uuid      uuid.UUID `db:"uuid"`
 	Username  string    `db:"username"`
 	Email     string    `db:"email"`
