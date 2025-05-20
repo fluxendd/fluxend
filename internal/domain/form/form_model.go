@@ -18,6 +18,12 @@ type Form struct {
 	UpdatedAt   time.Time `db:"updated_at" json:"updatedAt"`
 }
 
+type CreateFormInput struct {
+	ProjectUUID uuid.UUID `json:"projectUuid"`
+	Name        string    `json:"name"`
+	Description string    `json:"description"`
+}
+
 func (u Form) GetTableName() string {
 	return "fluxton.forms"
 }

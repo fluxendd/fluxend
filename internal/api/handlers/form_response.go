@@ -139,7 +139,7 @@ func (ffc *FormResponseHandler) Store(c echo.Context) error {
 		return response.BadRequestResponse(c, err.Error())
 	}
 
-	formResponse, err := ffc.formResponseService.Create(formUUID, &request, authUser)
+	formResponse, err := ffc.formResponseService.Create(formUUID, form.ToCreateFormResponseInput(&request), authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}

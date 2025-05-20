@@ -93,12 +93,12 @@ func (fc *FormHandler) Show(c echo.Context) error {
 		return response.BadRequestResponse(c, err.Error())
 	}
 
-	form, err := fc.formService.GetByUUID(formUUID, authUser)
+	fetchedForm, err := fc.formService.GetByUUID(formUUID, authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.SuccessResponse(c, formMapper.ToFormResource(&form))
+	return response.SuccessResponse(c, formMapper.ToFormResource(&fetchedForm))
 }
 
 // Store creates a new form
@@ -130,12 +130,12 @@ func (fc *FormHandler) Store(c echo.Context) error {
 
 	authUser, _ := auth.NewAuth(c).User()
 
-	form, err := fc.formService.Create(&request, authUser)
+	createdForm, err := fc.formService.Create(form.ToCreateFormInput(&request), authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.CreatedResponse(c, formMapper.ToFormResource(&form))
+	return response.CreatedResponse(c, formMapper.ToFormResource(&createdForm))
 }
 
 // Update updates an existing form
@@ -173,7 +173,7 @@ func (fc *FormHandler) Update(c echo.Context) error {
 		return response.BadRequestResponse(c, err.Error())
 	}
 
-	updatedForm, err := fc.formService.Update(formUUID, authUser, &request)
+	updatedForm, err := fc.formService.Update(formUUID, authUser, form.ToCreateFormInput(&request))
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}

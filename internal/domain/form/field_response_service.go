@@ -1,7 +1,6 @@
 package form
 
 import (
-	"fluxton/internal/api/dto/form"
 	"fluxton/internal/domain/auth"
 	"fluxton/internal/domain/project"
 	"fluxton/pkg/errors"
@@ -12,7 +11,7 @@ import (
 type ResponseService interface {
 	List(formUUID uuid.UUID, authUser auth.User) ([]FormResponse, error)
 	GetByUUID(formResponseUUID, formUUID uuid.UUID, authUser auth.User) (*FormResponse, error)
-	Create(formUUID uuid.UUID, request *form.CreateResponseRequest, authUser auth.User) (FormResponse, error)
+	Create(formUUID uuid.UUID, request *CreateResponseInput, authUser auth.User) (FormResponse, error)
 	Delete(formUUID, formResponseUUID uuid.UUID, authUser auth.User) error
 }
 
@@ -79,7 +78,7 @@ func (s *ResponseServiceImpl) GetByUUID(formResponseUUID, formUUID uuid.UUID, au
 	return s.formResponseRepo.GetByUUID(formResponseUUID)
 }
 
-func (s *ResponseServiceImpl) Create(formUUID uuid.UUID, request *form.CreateResponseRequest, authUser auth.User) (FormResponse, error) {
+func (s *ResponseServiceImpl) Create(formUUID uuid.UUID, request *CreateResponseInput, authUser auth.User) (FormResponse, error) {
 	projectUUID, err := s.formRepo.GetProjectUUIDByFormUUID(formUUID)
 	if err != nil {
 		return FormResponse{}, err

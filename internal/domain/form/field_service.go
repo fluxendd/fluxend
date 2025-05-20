@@ -1,7 +1,6 @@
 package form
 
 import (
-	"fluxton/internal/api/dto/form"
 	"fluxton/internal/domain/auth"
 	"fluxton/internal/domain/project"
 	"fluxton/pkg/errors"
@@ -13,8 +12,8 @@ import (
 type FieldService interface {
 	List(formUUID uuid.UUID, authUser auth.User) ([]Field, error)
 	GetByUUID(formUUID uuid.UUID, authUser auth.User) (Field, error)
-	CreateMany(formUUID uuid.UUID, request *form.CreateFormFieldsRequest, authUser auth.User) ([]Field, error)
-	Update(formUUID, fieldUUID uuid.UUID, authUser auth.User, request *form.UpdateFormFieldRequest) (*Field, error)
+	CreateMany(formUUID uuid.UUID, request *CreateFormFieldsInput, authUser auth.User) ([]Field, error)
+	Update(formUUID, fieldUUID uuid.UUID, authUser auth.User, request *UpdateFormFieldsInput) (*Field, error)
 	Delete(formUUID, fieldUUID uuid.UUID, authUser auth.User) (bool, error)
 }
 
@@ -80,7 +79,7 @@ func (s *FieldServiceImpl) GetByUUID(fieldUUID uuid.UUID, authUser auth.User) (F
 	return formField, nil
 }
 
-func (s *FieldServiceImpl) CreateMany(formUUID uuid.UUID, request *form.CreateFormFieldsRequest, authUser auth.User) ([]Field, error) {
+func (s *FieldServiceImpl) CreateMany(formUUID uuid.UUID, request *CreateFormFieldsInput, authUser auth.User) ([]Field, error) {
 	projectUUID, err := s.formRepo.GetProjectUUIDByFormUUID(formUUID)
 	if err != nil {
 		return []Field{}, err
@@ -119,7 +118,7 @@ func (s *FieldServiceImpl) CreateMany(formUUID uuid.UUID, request *form.CreateFo
 	return createdFields, nil
 }
 
-func (s *FieldServiceImpl) Update(formUUID, fieldUUID uuid.UUID, authUser auth.User, request *form.UpdateFormFieldRequest) (*Field, error) {
+func (s *FieldServiceImpl) Update(formUUID, fieldUUID uuid.UUID, authUser auth.User, request *UpdateFormFieldsInput) (*Field, error) {
 	projectUUID, err := s.formRepo.GetProjectUUIDByFormUUID(formUUID)
 	if err != nil {
 		return &Field{}, err
@@ -139,7 +138,7 @@ func (s *FieldServiceImpl) Update(formUUID, fieldUUID uuid.UUID, authUser auth.U
 		return &Field{}, err
 	}
 
-	err = formField.PopulateModel(&formField, request.FieldRequest)
+	err = formField.PopulateModel(&formField, request.FieldInput)
 	if err != nil {
 		return nil, err
 	}
@@ -172,7 +171,7 @@ func (s *FieldServiceImpl) Delete(formUUID, fieldUUID uuid.UUID, authUser auth.U
 	return s.formFieldRepo.Delete(fieldUUID)
 }
 
-func (s *FieldServiceImpl) validateManyForLabelDuplication(request *form.CreateFormFieldsRequest, formUUID uuid.UUID) error {
+func (s *FieldServiceImpl) validateManyForLabelDuplication(request *CreateFormFieldsInput, formUUID uuid.UUID) error {
 	labels := make([]string, len(request.Fields))
 
 	for i, field := range request.Fields {

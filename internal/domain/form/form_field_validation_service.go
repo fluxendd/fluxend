@@ -2,7 +2,7 @@ package form
 
 import (
 	"encoding/json"
-	form2 "fluxton/internal/api/dto/form"
+	"fluxton/internal/config/constants"
 	"fluxton/pkg"
 	"fluxton/pkg/errors"
 	"github.com/samber/do"
@@ -31,17 +31,17 @@ func (s *FieldValidationServiceImpl) Validate(value string, formField Field) err
 	}
 
 	switch formField.Type {
-	case form2.FieldTypeNumber:
+	case constants.FieldTypeNumber:
 		validationErr = s.validateNumber(value, formField)
-	case form2.FieldTypeText:
-	case form2.FieldTypeTextarea:
+	case constants.FieldTypeText:
+	case constants.FieldTypeTextarea:
 		validationErr = s.validateString(value, formField)
-	case form2.FieldTypeEmail:
+	case constants.FieldTypeEmail:
 		validationErr = s.validateEmail(value, formField)
-	case form2.FieldTypeCheckbox:
+	case constants.FieldTypeCheckbox:
 		validationErr = s.validateCheckbox(value, formField)
-	case form2.FieldTypeRadio:
-	case form2.FieldTypeSelect:
+	case constants.FieldTypeRadio:
+	case constants.FieldTypeSelect:
 		validationErr = s.validateSelect(value, formField)
 	}
 

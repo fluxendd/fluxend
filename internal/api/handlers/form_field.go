@@ -133,7 +133,7 @@ func (ffc *FormFieldHandler) Store(c echo.Context) error {
 		return response.BadRequestResponse(c, err.Error())
 	}
 
-	formFields, err := ffc.formFieldService.CreateMany(formUUID, &request, authUser)
+	formFields, err := ffc.formFieldService.CreateMany(formUUID, form.ToCreateFormFieldInput(&request), authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
@@ -180,7 +180,7 @@ func (ffc *FormFieldHandler) Update(c echo.Context) error {
 		return response.BadRequestResponse(c, err.Error())
 	}
 
-	updatedFormField, err := ffc.formFieldService.Update(formUUID, fieldUUID, authUser, &request)
+	updatedFormField, err := ffc.formFieldService.Update(formUUID, fieldUUID, authUser, form.ToUpdateFormFieldInput(&request))
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}

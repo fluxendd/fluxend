@@ -1,7 +1,6 @@
 package form
 
 import (
-	"fluxton/internal/api/dto/form"
 	"fluxton/internal/domain/auth"
 	"fluxton/internal/domain/project"
 	"fluxton/internal/domain/shared"
@@ -14,8 +13,8 @@ import (
 type Service interface {
 	List(paginationParams shared.PaginationParams, projectUUID uuid.UUID, authUser auth.User) ([]Form, error)
 	GetByUUID(formUUID uuid.UUID, authUser auth.User) (Form, error)
-	Create(request *form.CreateRequest, authUser auth.User) (Form, error)
-	Update(formUUID uuid.UUID, authUser auth.User, request *form.CreateRequest) (*Form, error)
+	Create(request *CreateFormInput, authUser auth.User) (Form, error)
+	Update(formUUID uuid.UUID, authUser auth.User, request *CreateFormInput) (*Form, error)
 	Delete(formUUID uuid.UUID, authUser auth.User) (bool, error)
 }
 
@@ -68,7 +67,7 @@ func (s *ServiceImpl) GetByUUID(formUUID uuid.UUID, authUser auth.User) (Form, e
 	return fetchedForm, nil
 }
 
-func (s *ServiceImpl) Create(request *form.CreateRequest, authUser auth.User) (Form, error) {
+func (s *ServiceImpl) Create(request *CreateFormInput, authUser auth.User) (Form, error) {
 	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(request.ProjectUUID)
 	if err != nil {
 		return Form{}, err
@@ -100,7 +99,7 @@ func (s *ServiceImpl) Create(request *form.CreateRequest, authUser auth.User) (F
 	return formInput, nil
 }
 
-func (s *ServiceImpl) Update(formUUID uuid.UUID, authUser auth.User, request *form.CreateRequest) (*Form, error) {
+func (s *ServiceImpl) Update(formUUID uuid.UUID, authUser auth.User, request *CreateFormInput) (*Form, error) {
 	fetchedForm, err := s.formRepo.GetByUUID(formUUID)
 	if err != nil {
 		return nil, err
