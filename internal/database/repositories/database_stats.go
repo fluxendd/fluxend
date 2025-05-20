@@ -1,7 +1,7 @@
 package repositories
 
 import (
-	"fluxton/internal/domain/database"
+	"fluxton/internal/domain/stats"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -9,7 +9,7 @@ type DatabaseStatsRepository struct {
 	connection *sqlx.DB
 }
 
-func NewDatabaseStatsRepository(connection *sqlx.DB) (database.StatRepository, error) {
+func NewDatabaseStatsRepository(connection *sqlx.DB) (stats.StatRepository, error) {
 	return &DatabaseStatsRepository{connection: connection}, nil
 }
 
@@ -33,8 +33,8 @@ func (r *DatabaseStatsRepository) GetTotalIndexSize() (string, error) {
 	return totalSize, nil
 }
 
-func (r *DatabaseStatsRepository) GetUnusedIndexes() ([]database.UnusedIndex, error) {
-	var unusedIndexes []database.UnusedIndex
+func (r *DatabaseStatsRepository) GetUnusedIndexes() ([]stats.UnusedIndex, error) {
+	var unusedIndexes []stats.UnusedIndex
 	err := r.connection.Select(&unusedIndexes, `
 		SELECT 
 			relname AS table_name, 
@@ -52,8 +52,8 @@ func (r *DatabaseStatsRepository) GetUnusedIndexes() ([]database.UnusedIndex, er
 	return unusedIndexes, nil
 }
 
-func (r *DatabaseStatsRepository) GetSlowQueries() ([]database.SlowQuery, error) {
-	var slowQueries []database.SlowQuery
+func (r *DatabaseStatsRepository) GetSlowQueries() ([]stats.SlowQuery, error) {
+	var slowQueries []stats.SlowQuery
 	err := r.connection.Select(&slowQueries, `
 		SELECT query, calls, total_time, mean_time
 		FROM pg_stat_statements
@@ -67,8 +67,8 @@ func (r *DatabaseStatsRepository) GetSlowQueries() ([]database.SlowQuery, error)
 	return slowQueries, nil
 }
 
-func (r *DatabaseStatsRepository) GetIndexScansPerTable() ([]database.IndexScan, error) {
-	var indexScans []database.IndexScan
+func (r *DatabaseStatsRepository) GetIndexScansPerTable() ([]stats.IndexScan, error) {
+	var indexScans []stats.IndexScan
 	err := r.connection.Select(&indexScans, `
 		SELECT relname AS table_name, idx_scan AS index_scans
 		FROM pg_stat_user_tables
@@ -81,8 +81,8 @@ func (r *DatabaseStatsRepository) GetIndexScansPerTable() ([]database.IndexScan,
 	return indexScans, nil
 }
 
-func (r *DatabaseStatsRepository) GetSizePerTable() ([]database.TableSize, error) {
-	var tableSizes []database.TableSize
+func (r *DatabaseStatsRepository) GetSizePerTable() ([]stats.TableSize, error) {
+	var tableSizes []stats.TableSize
 	err := r.connection.Select(&tableSizes, `
 		SELECT 
 			relname AS table_name, 
@@ -97,8 +97,8 @@ func (r *DatabaseStatsRepository) GetSizePerTable() ([]database.TableSize, error
 	return tableSizes, nil
 }
 
-func (r *DatabaseStatsRepository) GetRowCountPerTable() ([]database.TableRowCount, error) {
-	var rowCounts []database.TableRowCount
+func (r *DatabaseStatsRepository) GetRowCountPerTable() ([]stats.TableRowCount, error) {
+	var rowCounts []stats.TableRowCount
 	err := r.connection.Select(&rowCounts, `
 		SELECT 
 			relname AS table_name, 
