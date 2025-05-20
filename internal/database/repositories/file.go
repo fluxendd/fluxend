@@ -17,7 +17,7 @@ type FileRepository struct {
 	db *sqlx.DB
 }
 
-func NewFileRepository(injector *do.Injector) (*FileRepository, error) {
+func NewFileRepository(injector *do.Injector) (file.Repository, error) {
 	db := do.MustInvoke[*sqlx.DB](injector)
 
 	return &FileRepository{db: db}, nil

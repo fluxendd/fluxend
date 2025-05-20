@@ -3,26 +3,17 @@ package client
 import (
 	"fluxton/internal/database/repositories"
 	"fluxton/internal/domain/database"
+	"fluxton/internal/domain/shared"
 	"github.com/jmoiron/sqlx"
 	"github.com/samber/do"
 )
 
-type Service interface {
-	ConnectByDatabaseName(name string) (*sqlx.DB, error)
-	GetDatabaseStatsRepo(databaseName string, connection *sqlx.DB) (interface{}, *sqlx.DB, error)
-	GetTableRepo(databaseName string, connection *sqlx.DB) (interface{}, *sqlx.DB, error)
-	GetFunctionRepo(databaseName string, connection *sqlx.DB) (interface{}, *sqlx.DB, error)
-	GetColumnRepo(databaseName string, connection *sqlx.DB) (interface{}, *sqlx.DB, error)
-	GetIndexRepo(databaseName string, connection *sqlx.DB) (interface{}, *sqlx.DB, error)
-	GetRowRepo(databaseName string, connection *sqlx.DB) (interface{}, *sqlx.DB, error)
-}
-
 type ServiceImpl struct {
-	databaseRepo *Repository
+	databaseRepo shared.DatabaseService
 }
 
 func NewClientService(injector *do.Injector) (database.ConnectionService, error) {
-	databaseRepo := do.MustInvoke[*Repository](injector)
+	databaseRepo := do.MustInvoke[shared.DatabaseService](injector)
 
 	return &ServiceImpl{
 		databaseRepo: databaseRepo,
