@@ -22,7 +22,7 @@ type WorkflowService interface {
 type WorkflowServiceImpl struct {
 	settingService setting.Service
 	backupRepo     Repository
-	storageFactory storage.Factory
+	storageFactory *storage.Factory
 }
 
 func NewBackupWorkflowService(injector *do.Injector) (WorkflowService, error) {
@@ -32,7 +32,7 @@ func NewBackupWorkflowService(injector *do.Injector) (WorkflowService, error) {
 	}
 
 	backupRepo := do.MustInvoke[Repository](injector)
-	storageFactory := do.MustInvoke[storage.Factory](injector)
+	storageFactory := do.MustInvoke[*storage.Factory](injector)
 
 	return &WorkflowServiceImpl{
 		settingService: settingService,
