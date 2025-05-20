@@ -2,7 +2,6 @@ package database
 
 import (
 	"fluxton/internal/domain/shared"
-	"github.com/google/uuid"
 	"github.com/guregu/null/v6"
 )
 
@@ -20,14 +19,4 @@ type Column struct {
 	// only required when constraint is FOREIGN KEY
 	ReferenceTable  null.String `db:"reference_table" json:"referenceTable,omitempty" swaggertype:"string"`
 	ReferenceColumn null.String `db:"reference_column" json:"referenceColumn,omitempty" swaggertype:"string"`
-}
-
-type CreateColumnInput struct {
-	ProjectUUID uuid.UUID `json:"projectUUID,omitempty"`
-	Columns     []Column  `json:"columns"`
-}
-
-type RenameColumnInput struct {
-	ProjectUUID uuid.UUID `json:"projectUUID,omitempty"`
-	Name        string    `json:"name"`
 }
