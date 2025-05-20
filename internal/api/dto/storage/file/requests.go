@@ -9,18 +9,18 @@ import (
 	"mime/multipart"
 )
 
-type CreateFileRequest struct {
+type CreateRequest struct {
 	dto.BaseRequest
 	FullFileName string                `json:"-" form:"full_file_name"`
 	File         *multipart.FileHeader `json:"-" form:"file"`
 }
 
-type RenameFileRequest struct {
+type RenameRequest struct {
 	dto.BaseRequest
 	FullFileName string `json:"full_file_name"`
 }
 
-func (r *CreateFileRequest) BindAndValidate(c echo.Context) []string {
+func (r *CreateRequest) BindAndValidate(c echo.Context) []string {
 	if err := c.Bind(r); err != nil {
 		return []string{"Invalid request payload"}
 	}
@@ -54,7 +54,7 @@ func (r *CreateFileRequest) BindAndValidate(c echo.Context) []string {
 	return r.ExtractValidationErrors(err)
 }
 
-func (r *RenameFileRequest) BindAndValidate(c echo.Context) []string {
+func (r *RenameRequest) BindAndValidate(c echo.Context) []string {
 	if err := c.Bind(r); err != nil {
 		return []string{"Invalid request payload"}
 	}

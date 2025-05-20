@@ -2,8 +2,6 @@ package file
 
 import (
 	"fluxton/internal/adapters/storage"
-	"fluxton/internal/api/dto"
-	"fluxton/internal/api/dto/storage/file"
 	"fluxton/internal/domain/auth"
 	"fluxton/internal/domain/project"
 	"fluxton/internal/domain/setting"
@@ -13,6 +11,7 @@ import (
 	"fluxton/pkg/errors"
 	"fmt"
 	"github.com/google/uuid"
+	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
 	"io"
 	"time"
@@ -21,9 +20,9 @@ import (
 type Service interface {
 	List(paginationParams shared.PaginationParams, containerUUID uuid.UUID, authUser auth.User) ([]File, error)
 	GetByUUID(fileUUID, containerUUID uuid.UUID, authUser auth.User) (File, error)
-	Create(containerUUID uuid.UUID, request *file.CreateFileRequest, authUser auth.User) (File, error)
-	Rename(fileUUID, containerUUID uuid.UUID, authUser auth.User, request *file.RenameFileRequest) (*File, error)
-	Delete(fileUUID, containerUUID uuid.UUID, authUser auth.User, request dto.DefaultRequestWithProjectHeader) (bool, error)
+	Create(containerUUID uuid.UUID, request *CreateFileInput, authUser auth.User) (File, error)
+	Rename(fileUUID, containerUUID uuid.UUID, authUser auth.User, request *RenameFileInput) (*File, error)
+	Delete(fileUUID, containerUUID uuid.UUID, authUser auth.User, context echo.Context) (bool, error)
 }
 
 type ServiceImpl struct {
@@ -95,7 +94,7 @@ func (s *ServiceImpl) GetByUUID(fileUUID, containerUUID uuid.UUID, authUser auth
 	return fetchedFile, nil
 }
 
-func (s *ServiceImpl) Create(containerUUID uuid.UUID, request *file.CreateFileRequest, authUser auth.User) (File, error) {
+func (s *ServiceImpl) Create(containerUUID uuid.UUID, request *CreateFileInput, authUser auth.User) (File, error) {
 	fetchedContainer, err := s.containerRepo.GetByUUID(containerUUID)
 	if err != nil {
 		return File{}, err
@@ -158,7 +157,7 @@ func (s *ServiceImpl) Create(containerUUID uuid.UUID, request *file.CreateFileRe
 	return fileInput, nil
 }
 
-func (s *ServiceImpl) Rename(fileUUID, containerUUID uuid.UUID, authUser auth.User, request *file.RenameFileRequest) (*File, error) {
+func (s *ServiceImpl) Rename(fileUUID, containerUUID uuid.UUID, authUser auth.User, request *RenameFileInput) (*File, error) {
 	fetchedContainer, err := s.containerRepo.GetByUUID(containerUUID)
 	if err != nil {
 		return nil, err
@@ -204,7 +203,7 @@ func (s *ServiceImpl) Rename(fileUUID, containerUUID uuid.UUID, authUser auth.Us
 	return s.fileRepo.Rename(&fetchedFile)
 }
 
-func (s *ServiceImpl) Delete(fileUUID, containerUUID uuid.UUID, authUser auth.User, request dto.DefaultRequestWithProjectHeader) (bool, error) {
+func (s *ServiceImpl) Delete(fileUUID, containerUUID uuid.UUID, authUser auth.User, context echo.Context) (bool, error) {
 	fetchedContainer, err := s.containerRepo.GetByUUID(containerUUID)
 	if err != nil {
 		return false, err
@@ -224,7 +223,7 @@ func (s *ServiceImpl) Delete(fileUUID, containerUUID uuid.UUID, authUser auth.Us
 		return false, err
 	}
 
-	storageService, err := storage.GetProvider(s.settingService.GetStorageDriver(request.Context))
+	storageService, err := storage.GetProvider(s.settingService.GetStorageDriver(context))
 	if err != nil {
 		return false, err
 	}
@@ -252,7 +251,7 @@ func (s *ServiceImpl) Delete(fileUUID, containerUUID uuid.UUID, authUser auth.Us
 	return fileDeleted, nil
 }
 
-func (s *ServiceImpl) getFileContents(request file.CreateFileRequest) ([]byte, error) {
+func (s *ServiceImpl) getFileContents(request CreateFileInput) ([]byte, error) {
 	fileHandler, err := request.File.Open() // Open the file
 	if err != nil {
 		return nil, fmt.Errorf("failed to open file: %w", err)
@@ -267,7 +266,7 @@ func (s *ServiceImpl) getFileContents(request file.CreateFileRequest) ([]byte, e
 	return fileBytes, nil
 }
 
-func (s *ServiceImpl) validate(request *file.CreateFileRequest, container container.Container) error {
+func (s *ServiceImpl) validate(request *CreateFileInput, container container.Container) error {
 	fileSize := pkg.ConvertBytesToKiloBytes(int(request.File.Size))
 
 	err := s.validateMimeType(request.File.Header.Get("Content-Type"), container)

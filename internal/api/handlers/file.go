@@ -122,7 +122,7 @@ func (fc *FileHandler) Show(c echo.Context) error {
 //
 // @Param Authorization header string true "Bearer Token"
 // @Param containerUUID path string true "Container UUID"
-// @Param file body container_requests.CreateFileRequest true "File details"
+// @Param file body container_requests.CreateRequest true "File details"
 //
 // @Success 201 {object} responses.Response{content=resources.FileResponse} "File details"
 // @Failure 400 "Invalid input"
@@ -131,7 +131,7 @@ func (fc *FileHandler) Show(c echo.Context) error {
 //
 // @Router /containers/{containerUUID}/files [post]
 func (fc *FileHandler) Store(c echo.Context) error {
-	var request file.CreateFileRequest
+	var request file.CreateRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
 	}
@@ -143,7 +143,7 @@ func (fc *FileHandler) Store(c echo.Context) error {
 		return response.BadRequestResponse(c, err.Error())
 	}
 
-	createdFile, err := fc.fileService.Create(containerUUID, &request, authUser)
+	createdFile, err := fc.fileService.Create(containerUUID, file.ToCreateFileInput(&request), authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
@@ -163,7 +163,7 @@ func (fc *FileHandler) Store(c echo.Context) error {
 // @Param Authorization header string true "Bearer Token"
 // @Param containerUUID path string true "Container UUID"
 // @Param fileUUID path string true "File UUID"
-// @Param file body container_requests.RenameFileRequest true "New file name"
+// @Param file body container_requests.RenameRequest true "New file name"
 //
 // @Success 200 {object} responses.Response{content=resources.FileResponse} "File details"
 // @Failure 400 "Invalid input"
@@ -172,7 +172,7 @@ func (fc *FileHandler) Store(c echo.Context) error {
 //
 // @Router /containers/{containerUUID}/files/{fileUUID}/rename [put]
 func (fc *FileHandler) Rename(c echo.Context) error {
-	var request file.RenameFileRequest
+	var request file.RenameRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
 	}
@@ -189,7 +189,7 @@ func (fc *FileHandler) Rename(c echo.Context) error {
 		return response.BadRequestResponse(c, err.Error())
 	}
 
-	updatedFile, err := fc.fileService.Rename(fileUUID, containerUUID, authUser, &request)
+	updatedFile, err := fc.fileService.Rename(fileUUID, containerUUID, authUser, file.ToRenameFileInput(&request))
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
@@ -234,7 +234,7 @@ func (fc *FileHandler) Delete(c echo.Context) error {
 		return response.BadRequestResponse(c, err.Error())
 	}
 
-	if _, err := fc.fileService.Delete(fileUUID, containerUUID, authUser, request); err != nil {
+	if _, err := fc.fileService.Delete(fileUUID, containerUUID, authUser, request.Context); err != nil {
 		return response.ErrorResponse(c, err)
 	}
 
