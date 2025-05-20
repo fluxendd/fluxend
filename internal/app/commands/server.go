@@ -1,16 +1,15 @@
 package commands
 
 import (
-	middlewares2 "fluxton/internal/api/middlewares"
-	routes2 "fluxton/internal/api/routes"
+	"fluxton/internal/api/middlewares"
+	"fluxton/internal/api/routes"
 	"fluxton/internal/app"
-	"fluxton/internal/database/repositories"
+	"fluxton/internal/domain/logging"
 	"fluxton/internal/domain/setting"
 	"fluxton/internal/domain/user"
-	//"fluxton/repositories"
 	"fmt"
 	"github.com/getsentry/sentry-go"
-	sentryecho "github.com/getsentry/sentry-go/echo"
+	echoSentry "github.com/getsentry/sentry-go/echo"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/samber/do"
@@ -47,7 +46,7 @@ func setupServer(container *do.Injector) *echo.Echo {
 			fmt.Printf("Sentry initialization failed: %v\n", err)
 		}
 
-		e.Use(sentryecho.New(sentryecho.Options{}))
+		e.Use(echoSentry.New(echoSentry.Options{}))
 	}
 
 	registerRoutes(e, container)
@@ -59,25 +58,25 @@ func registerRoutes(e *echo.Echo, container *do.Injector) {
 	settingService := do.MustInvoke[setting.Service](container)
 	userRepo := do.MustInvoke[user.Repository](container)
 
-	authMiddleware := middlewares2.AuthMiddleware(userRepo)
-	allowProjectMiddleware := middlewares2.AllowProjectMiddleware(settingService)
-	allowFormMiddleware := middlewares2.AllowFormMiddleware(settingService)
-	allowStorageMiddleware := middlewares2.AllowStorageMiddleware(settingService)
-	allowBackupMiddleware := middlewares2.AllowBackupMiddleware(settingService)
+	authMiddleware := middlewares.AuthMiddleware(userRepo)
+	allowProjectMiddleware := middlewares.AllowProjectMiddleware(settingService)
+	allowFormMiddleware := middlewares.AllowFormMiddleware(settingService)
+	allowStorageMiddleware := middlewares.AllowStorageMiddleware(settingService)
+	allowBackupMiddleware := middlewares.AllowBackupMiddleware(settingService)
 
-	requestLogRepo := do.MustInvoke[*repositories.RequestLogRepository](container)
-	requestLogMiddleware := middlewares2.RequestLoggerMiddleware(requestLogRepo)
+	requestLogRepo := do.MustInvoke[logging.Repository](container)
+	requestLogMiddleware := middlewares.RequestLoggerMiddleware(requestLogRepo)
 	e.Use(requestLogMiddleware)
 
-	routes2.RegisterUserRoutes(e, container, authMiddleware)
-	routes2.RegisterAdminRoutes(e, container, authMiddleware)
-	routes2.RegisterOrganizationRoutes(e, container, authMiddleware)
-	routes2.RegisterProjectRoutes(e, container, authMiddleware, allowProjectMiddleware)
-	routes2.RegisterTableRoutes(e, container, authMiddleware)
-	routes2.RegisterFormRoutes(e, container, authMiddleware, allowFormMiddleware)
-	routes2.RegisterStorageRoutes(e, container, authMiddleware, allowStorageMiddleware)
-	routes2.RegisterFunctionRoutes(e, container, authMiddleware)
-	routes2.RegisterBackup(e, container, authMiddleware, allowBackupMiddleware)
+	routes.RegisterUserRoutes(e, container, authMiddleware)
+	routes.RegisterAdminRoutes(e, container, authMiddleware)
+	routes.RegisterOrganizationRoutes(e, container, authMiddleware)
+	routes.RegisterProjectRoutes(e, container, authMiddleware, allowProjectMiddleware)
+	routes.RegisterTableRoutes(e, container, authMiddleware)
+	routes.RegisterFormRoutes(e, container, authMiddleware, allowFormMiddleware)
+	routes.RegisterStorageRoutes(e, container, authMiddleware, allowStorageMiddleware)
+	routes.RegisterFunctionRoutes(e, container, authMiddleware)
+	routes.RegisterBackup(e, container, authMiddleware, allowBackupMiddleware)
 
 	e.GET("/docs/*", echoSwagger.WrapHandler)
 }

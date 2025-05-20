@@ -8,7 +8,7 @@ import (
 	"fluxton/internal/database/factories"
 	"fluxton/internal/database/repositories"
 	"fluxton/internal/domain/backup"
-	database2 "fluxton/internal/domain/database"
+	databaseDomain "fluxton/internal/domain/database"
 	"fluxton/internal/domain/form"
 	"fluxton/internal/domain/health"
 	"fluxton/internal/domain/organization"
@@ -36,6 +36,7 @@ func InitializeContainer() *do.Injector {
 	do.Provide(injector, client.NewDatabaseRepository)
 
 	// --- User ---
+	do.Provide(injector, user.NewUserPolicy)
 	do.Provide(injector, repositories.NewUserRepository)
 	do.Provide(injector, user.NewUserService)
 	do.Provide(injector, handlers.NewUserHandler)
@@ -95,11 +96,11 @@ func InitializeContainer() *do.Injector {
 	do.Provide(injector, postgrest.NewPostgrestService)
 
 	// --- Tables ---
-	do.Provide(injector, database2.NewTableService)
-	do.Provide(injector, database2.NewFileImportService)
-	do.Provide(injector, database2.NewColumnService)
-	do.Provide(injector, database2.NewIndexService)
-	do.Provide(injector, database2.NewFunctionService)
+	do.Provide(injector, databaseDomain.NewTableService)
+	do.Provide(injector, databaseDomain.NewFileImportService)
+	do.Provide(injector, databaseDomain.NewColumnService)
+	do.Provide(injector, databaseDomain.NewIndexService)
+	do.Provide(injector, databaseDomain.NewFunctionService)
 
 	do.Provide(injector, handlers.NewTableHandler)
 	do.Provide(injector, handlers.NewColumnHandler)

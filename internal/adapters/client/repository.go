@@ -2,6 +2,7 @@ package client
 
 import (
 	"fluxton/internal/config/constants"
+	"fluxton/internal/domain/shared"
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
@@ -19,7 +20,7 @@ type Repository struct {
 	db *sqlx.DB
 }
 
-func NewDatabaseRepository(injector *do.Injector) (*Repository, error) {
+func NewDatabaseRepository(injector *do.Injector) (shared.DatabaseService, error) {
 	db := do.MustInvoke[*sqlx.DB](injector)
 
 	return &Repository{db: db}, nil

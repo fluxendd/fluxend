@@ -12,5 +12,4 @@ type DatabaseService interface {
 	List() ([]string, error)
 	Exists(name string) (bool, error)
 	Connect(name string) (*sqlx.DB, error)
-	importSeedFiles(databaseName string, userUUID uuid.UUID) error
 }
