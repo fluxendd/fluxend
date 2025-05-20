@@ -7,15 +7,27 @@ import (
 	"github.com/samber/do"
 )
 
-func GetProvider(ctx echo.Context, injector *do.Injector, provider string) (EmailInterface, error) {
-	switch provider {
+type Provider interface {
+	Send(ctx echo.Context, to, subject, body string) error
+}
+
+type Factory struct {
+	injector *do.Injector
+}
+
+func NewFactory(injector *do.Injector) *Factory {
+	return &Factory{injector: injector}
+}
+
+func (f *Factory) CreateProvider(ctx echo.Context, providerType string) (Provider, error) {
+	switch providerType {
 	case constants.EmailDriverSES:
-		return NewSESService(ctx, injector)
+		return NewSESProvider(ctx, f.injector)
 	case constants.EmailDriverSendGrid:
-		return NewSendGridService(ctx, injector)
+		return NewSendGridProvider(ctx, f.injector)
 	case constants.EmailDriverMailgun:
-		return NewMailgunService(ctx, injector)
+		return NewMailgunProvider(ctx, f.injector)
 	default:
-		return nil, fmt.Errorf("unsupported email provider: %s", provider)
+		return nil, fmt.Errorf("unsupported email provider: %s", providerType)
 	}
 }

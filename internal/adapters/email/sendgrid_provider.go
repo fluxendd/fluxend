@@ -14,7 +14,7 @@ type SendGridServiceImpl struct {
 	settingService setting.Service
 }
 
-func NewSendGridService(ctx echo.Context, injector *do.Injector) (EmailInterface, error) {
+func NewSendGridProvider(ctx echo.Context, injector *do.Injector) (Provider, error) {
 	settingService, err := setting.NewSettingService(injector)
 	if err != nil {
 		return nil, err

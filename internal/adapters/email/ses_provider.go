@@ -18,7 +18,7 @@ type SESServiceImpl struct {
 	settingService setting.Service
 }
 
-func NewSESService(ctx echo.Context, injector *do.Injector) (EmailInterface, error) {
+func NewSESProvider(ctx echo.Context, injector *do.Injector) (Provider, error) {
 	settingService, err := setting.NewSettingService(injector)
 	if err != nil {
 		return nil, err

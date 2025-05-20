@@ -17,7 +17,7 @@ type MailgunServiceImpl struct {
 	settingService setting.Service
 }
 
-func NewMailgunService(ctx echo.Context, injector *do.Injector) (EmailInterface, error) {
+func NewMailgunProvider(ctx echo.Context, injector *do.Injector) (Provider, error) {
 	settingService, err := setting.NewSettingService(injector)
 	if err != nil {
 		return nil, err
