@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fluxton/pkg/errors"
 	"fmt"
-	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
 	"io"
 	"net/http"
@@ -17,7 +16,7 @@ import (
 	"github.com/guregu/null/v6"
 )
 
-func NewBackblazeProvider(ctx echo.Context, injector *do.Injector) (Provider, error) {
+func NewBackblazeProvider(injector *do.Injector) (Provider, error) {
 	applicationKeyID := os.Getenv("BACKBLAZE_KEY_ID")
 	applicationKey := os.Getenv("BACKBLAZE_APPLICATION_KEY")
 

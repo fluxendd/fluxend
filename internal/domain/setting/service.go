@@ -48,6 +48,7 @@ func (s *ServiceImpl) List() ([]Setting, error) {
 }
 
 func (s *ServiceImpl) Get(name string) Setting {
+	// TODO: cache using Redis instead of context
 	fetchedSetting, err := s.settingRepo.Get(name)
 	if err != nil {
 		log.Error().
