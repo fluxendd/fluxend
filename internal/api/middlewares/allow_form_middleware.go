@@ -9,7 +9,7 @@ import (
 func AllowFormMiddleware(settingService setting.Service) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
-			if !settingService.GetBool(c, "allowForms") {
+			if !settingService.GetBool("allowForms") {
 				return response.ForbiddenResponse(c, "form.error.disabled")
 			}
 

@@ -9,7 +9,7 @@ import (
 func AllowProjectMiddleware(settingService setting.Service) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
-			if !settingService.GetBool(c, "allowProjects") {
+			if !settingService.GetBool("allowProjects") {
 				return response.ForbiddenResponse(c, "project.error.disabled")
 			}
 
