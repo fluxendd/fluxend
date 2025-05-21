@@ -10,7 +10,7 @@ COPY . .
 RUN go mod tidy
 
 # Build the Go app using your specific build command
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -trimpath -o bin/fluxton main.go
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -trimpath -o bin/fluxton cmd/main.go
 
 # Expose the port Echo is running on (change if needed)
 EXPOSE 8080
