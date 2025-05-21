@@ -212,7 +212,7 @@ func (ch *ContainerHandler) Delete(c echo.Context) error {
 		return response.BadRequestResponse(c, err.Error())
 	}
 
-	if _, err := ch.containerService.Delete(request.Context, containerUUID, authUser); err != nil {
+	if _, err := ch.containerService.Delete(containerUUID, authUser); err != nil {
 		return response.ErrorResponse(c, err)
 	}
 
