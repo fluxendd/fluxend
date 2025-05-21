@@ -6,7 +6,6 @@ import (
 	"fluxton/internal/domain/project"
 	"fluxton/pkg/errors"
 	"github.com/google/uuid"
-	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
 	"time"
 )
@@ -14,8 +13,8 @@ import (
 type Service interface {
 	List(projectUUID uuid.UUID, authUser auth.User) ([]Backup, error)
 	GetByUUID(backupUUID uuid.UUID, authUser auth.User) (Backup, error)
-	Create(projectUUID uuid.UUID, context echo.Context, authUser auth.User) (Backup, error)
-	Delete(context echo.Context, backupUUID uuid.UUID, authUser auth.User) (bool, error)
+	Create(projectUUID uuid.UUID, authUser auth.User) (Backup, error)
+	Delete(backupUUID uuid.UUID, authUser auth.User) (bool, error)
 }
 
 type ServiceImpl struct {
@@ -70,7 +69,7 @@ func (s *ServiceImpl) GetByUUID(backupUUID uuid.UUID, authUser auth.User) (Backu
 	return backup, nil
 }
 
-func (s *ServiceImpl) Create(projectUUID uuid.UUID, context echo.Context, authUser auth.User) (Backup, error) {
+func (s *ServiceImpl) Create(projectUUID uuid.UUID, authUser auth.User) (Backup, error) {
 	fetchedProject, err := s.projectRepo.GetByUUID(projectUUID)
 	if err != nil {
 		return Backup{}, err
@@ -92,12 +91,12 @@ func (s *ServiceImpl) Create(projectUUID uuid.UUID, context echo.Context, authUs
 		return Backup{}, err
 	}
 
-	go s.backupWorkFlowService.Create(context, fetchedProject.DBName, createdBackup.Uuid)
+	go s.backupWorkFlowService.Create(fetchedProject.DBName, createdBackup.Uuid)
 
 	return backup, nil
 }
 
-func (s *ServiceImpl) Delete(context echo.Context, backupUUID uuid.UUID, authUser auth.User) (bool, error) {
+func (s *ServiceImpl) Delete(backupUUID uuid.UUID, authUser auth.User) (bool, error) {
 	backup, err := s.backupRepo.GetByUUID(backupUUID)
 	if err != nil {
 		return false, err
@@ -126,7 +125,7 @@ func (s *ServiceImpl) Delete(context echo.Context, backupUUID uuid.UUID, authUse
 		return false, err
 	}
 
-	go s.backupWorkFlowService.Delete(context, databaseName, backupUUID)
+	go s.backupWorkFlowService.Delete(databaseName, backupUUID)
 
 	return true, nil
 }

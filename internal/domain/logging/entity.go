@@ -18,7 +18,3 @@ type RequestLog struct {
 	Body      string    `db:"body" json:"body"`
 	CreatedAt time.Time `db:"created_at" json:"createdAt"`
 }
-
-func (ff RequestLog) GetTableName() string {
-	return "fluxton.api_logs"
-}

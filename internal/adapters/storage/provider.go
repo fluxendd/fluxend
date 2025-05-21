@@ -3,7 +3,6 @@ package storage
 import (
 	"fluxton/internal/config/constants"
 	"fmt"
-	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
 )
 
@@ -28,14 +27,14 @@ func NewFactory(injector *do.Injector) (*Factory, error) {
 }
 
 // TODO: use injector and context
-func (f *Factory) CreateProvider(ctx echo.Context, providerType string) (Provider, error) {
+func (f *Factory) CreateProvider(providerType string) (Provider, error) {
 	switch providerType {
 	case constants.StorageDriverDropbox:
-		return NewDropboxProvider(ctx, f.injector)
+		return NewDropboxProvider(f.injector)
 	case constants.StorageDriverS3:
-		return NewS3Provider(ctx, f.injector)
+		return NewS3Provider(f.injector)
 	case constants.StorageDriverBackBlaze:
-		return NewBackblazeProvider(ctx, f.injector)
+		return NewBackblazeProvider(f.injector)
 	default:
 		return nil, fmt.Errorf("unsupported email provider: %s", providerType)
 	}

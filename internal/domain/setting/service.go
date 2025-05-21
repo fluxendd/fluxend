@@ -5,7 +5,6 @@ import (
 	"fluxton/internal/domain/admin"
 	"fluxton/internal/domain/auth"
 	"fluxton/pkg/errors"
-	"github.com/labstack/echo/v4"
 	"github.com/rs/zerolog/log"
 	"github.com/samber/do"
 	"time"
@@ -14,13 +13,13 @@ import (
 const settingsCacheKey = "settings"
 
 type Service interface {
-	List(ctx echo.Context, skipCache bool) ([]Setting, error)
-	Get(ctx echo.Context, name string) Setting
-	GetValue(ctx echo.Context, name string) string
-	GetBool(ctx echo.Context, name string) bool
-	Update(ctx echo.Context, authUser auth.User, request *setting.UpdateRequest) ([]Setting, error)
-	Reset(ctx echo.Context, authUser auth.User) ([]Setting, error)
-	GetStorageDriver(ctx echo.Context) string
+	List() ([]Setting, error)
+	Get(name string) Setting
+	GetValue(name string) string
+	GetBool(name string) bool
+	Update(authUser auth.User, request *setting.UpdateRequest) ([]Setting, error)
+	Reset(authUser auth.User) ([]Setting, error)
+	GetStorageDriver() string
 }
 
 type ServiceImpl struct {
@@ -38,57 +37,44 @@ func NewSettingService(injector *do.Injector) (Service, error) {
 	}, nil
 }
 
-func (s *ServiceImpl) List(ctx echo.Context, skipCache bool) ([]Setting, error) {
-	if !skipCache && ctx.Get(settingsCacheKey) != nil {
-		settings := ctx.Get(settingsCacheKey).([]Setting)
-
-		return settings, nil
-	}
-
+func (s *ServiceImpl) List() ([]Setting, error) {
+	// TODO: cache using Redis instead of context
 	settings, err := s.settingRepo.List()
 	if err != nil {
 		return nil, err
 	}
 
-	ctx.Set(settingsCacheKey, settings)
-
 	return settings, nil
 }
 
-func (s *ServiceImpl) Get(ctx echo.Context, name string) Setting {
-	settings, err := s.List(ctx, false)
+func (s *ServiceImpl) Get(name string) Setting {
+	// TODO: cache using Redis instead of context
+	fetchedSetting, err := s.settingRepo.Get(name)
 	if err != nil {
 		log.Error().
-			Str("error", err.Error()).
-			Msg("Error fetching settings")
+			Err(err).
+			Str("name", name).
+			Msg("Error fetching setting")
+
+		return Setting{}
 	}
 
-	for _, currentSetting := range settings {
-		if currentSetting.Name == name {
-			return currentSetting
-		}
-	}
-
-	log.Error().
-		Str("name", name).
-		Msg("Setting not found")
-
-	return Setting{}
+	return fetchedSetting
 }
 
-func (s *ServiceImpl) GetValue(ctx echo.Context, name string) string {
-	currentSetting := s.Get(ctx, name)
+func (s *ServiceImpl) GetValue(name string) string {
+	currentSetting := s.Get(name)
 
 	return currentSetting.Value
 }
 
-func (s *ServiceImpl) GetBool(ctx echo.Context, name string) bool {
-	currentSetting := s.Get(ctx, name)
+func (s *ServiceImpl) GetBool(name string) bool {
+	currentSetting := s.Get(name)
 
 	return currentSetting.Value == "yes"
 }
 
-func (s *ServiceImpl) Update(ctx echo.Context, authUser auth.User, request *setting.UpdateRequest) ([]Setting, error) {
+func (s *ServiceImpl) Update(authUser auth.User, request *setting.UpdateRequest) ([]Setting, error) {
 	// Authorization check
 	if !s.adminPolicy.CanUpdate(authUser) {
 		return nil, errors.NewForbiddenError("setting.error.updateForbidden")
@@ -116,10 +102,10 @@ func (s *ServiceImpl) Update(ctx echo.Context, authUser auth.User, request *sett
 		return nil, err
 	}
 
-	return s.List(ctx, true)
+	return s.List()
 }
 
-func (s *ServiceImpl) Reset(ctx echo.Context, authUser auth.User) ([]Setting, error) {
+func (s *ServiceImpl) Reset(authUser auth.User) ([]Setting, error) {
 	if !s.adminPolicy.CanUpdate(authUser) {
 		return []Setting{}, errors.NewForbiddenError("setting.error.resetForbidden")
 	}
@@ -139,9 +125,9 @@ func (s *ServiceImpl) Reset(ctx echo.Context, authUser auth.User) ([]Setting, er
 		return []Setting{}, err
 	}
 
-	return s.List(ctx, true)
+	return s.List()
 }
 
-func (s *ServiceImpl) GetStorageDriver(ctx echo.Context) string {
-	return s.GetValue(ctx, "storageDriver")
+func (s *ServiceImpl) GetStorageDriver() string {
+	return s.GetValue("storageDriver")
 }

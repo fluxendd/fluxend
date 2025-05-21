@@ -14,7 +14,3 @@ type Setting struct {
 	CreatedAt    time.Time `db:"created_at"`
 	UpdatedAt    time.Time `db:"updated_at"`
 }
-
-func (s Setting) GetTableName() string {
-	return "settings"
-}

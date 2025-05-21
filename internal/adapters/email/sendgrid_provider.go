@@ -3,7 +3,6 @@ package email
 import (
 	"fluxton/internal/domain/setting"
 	"fmt"
-	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
 	"github.com/sendgrid/sendgrid-go"
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
@@ -14,13 +13,13 @@ type SendGridServiceImpl struct {
 	settingService setting.Service
 }
 
-func NewSendGridProvider(ctx echo.Context, injector *do.Injector) (Provider, error) {
+func NewSendGridProvider(injector *do.Injector) (Provider, error) {
 	settingService, err := setting.NewSettingService(injector)
 	if err != nil {
 		return nil, err
 	}
 
-	apiKey := settingService.GetValue(ctx, "sendgridApiKey")
+	apiKey := settingService.GetValue("sendgridApiKey")
 	if apiKey == "" {
 		return nil, fmt.Errorf("sendgridApiKey is required")
 	}
@@ -33,8 +32,8 @@ func NewSendGridProvider(ctx echo.Context, injector *do.Injector) (Provider, err
 	}, nil
 }
 
-func (s *SendGridServiceImpl) Send(ctx echo.Context, to, subject, body string) error {
-	from := s.settingService.GetValue(ctx, "sendgridEmailSource")
+func (s *SendGridServiceImpl) Send(to, subject, body string) error {
+	from := s.settingService.GetValue("sendgridEmailSource")
 	if from == "" {
 		return fmt.Errorf("sendgridEmailSource is required")
 	}

@@ -9,7 +9,6 @@ import (
 	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/ses"
 	"github.com/aws/aws-sdk-go-v2/service/ses/types"
-	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
 )
 
@@ -18,15 +17,15 @@ type SESServiceImpl struct {
 	settingService setting.Service
 }
 
-func NewSESProvider(ctx echo.Context, injector *do.Injector) (Provider, error) {
+func NewSESProvider(injector *do.Injector) (Provider, error) {
 	settingService, err := setting.NewSettingService(injector)
 	if err != nil {
 		return nil, err
 	}
 
-	accessKey := settingService.GetValue(ctx, "awsAccessKey")
-	secretKey := settingService.GetValue(ctx, "awsSecretKey")
-	region := settingService.GetValue(ctx, "awsRegion")
+	accessKey := settingService.GetValue("awsAccessKey")
+	secretKey := settingService.GetValue("awsSecretKey")
+	region := settingService.GetValue("awsRegion")
 
 	cfg, err := config.LoadDefaultConfig(context.TODO(),
 		config.WithRegion(region),
@@ -46,8 +45,8 @@ func NewSESProvider(ctx echo.Context, injector *do.Injector) (Provider, error) {
 	}, nil
 }
 
-func (s *SESServiceImpl) Send(ctx echo.Context, to, subject, body string) error {
-	from := s.settingService.GetValue(ctx, "sesEmailSource")
+func (s *SESServiceImpl) Send(to, subject, body string) error {
+	from := s.settingService.GetValue("sesEmailSource")
 	if from == "" {
 		return fmt.Errorf("sesEmailSource is required")
 	}

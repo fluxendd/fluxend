@@ -8,7 +8,6 @@ import (
 	"fluxton/internal/domain/shared"
 	"fluxton/pkg/errors"
 	"github.com/google/uuid"
-	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
 	"strings"
 	"time"
@@ -19,7 +18,7 @@ type Service interface {
 	GetByUUID(containerUUID uuid.UUID, authUser auth.User) (Container, error)
 	Create(request *CreateContainerInput, authUser auth.User) (Container, error)
 	Update(containerUUID uuid.UUID, authUser auth.User, request *CreateContainerInput) (*Container, error)
-	Delete(context echo.Context, containerUUID uuid.UUID, authUser auth.User) (bool, error)
+	Delete(containerUUID uuid.UUID, authUser auth.User) (bool, error)
 }
 
 type ServiceImpl struct {
@@ -96,8 +95,7 @@ func (s *ServiceImpl) Create(request *CreateContainerInput, authUser auth.User) 
 		return Container{}, err
 	}
 
-	storageDriver := s.settingService.GetStorageDriver(request.Context)
-
+	storageDriver := s.settingService.GetStorageDriver()
 	containerInput := Container{
 		ProjectUuid: request.ProjectUUID,
 		Name:        request.Name,
@@ -110,7 +108,7 @@ func (s *ServiceImpl) Create(request *CreateContainerInput, authUser auth.User) 
 		UpdatedBy:   authUser.Uuid,
 	}
 
-	storageService, err := s.storageFactory.CreateProvider(request.Context, s.settingService.GetStorageDriver(request.Context))
+	storageService, err := s.storageFactory.CreateProvider(storageDriver)
 	if err != nil {
 		return Container{}, err
 	}
@@ -161,7 +159,7 @@ func (s *ServiceImpl) Update(containerUUID uuid.UUID, authUser auth.User, reques
 	return s.containerRepo.Update(&fetchedContainer)
 }
 
-func (s *ServiceImpl) Delete(context echo.Context, containerUUID uuid.UUID, authUser auth.User) (bool, error) {
+func (s *ServiceImpl) Delete(containerUUID uuid.UUID, authUser auth.User) (bool, error) {
 	fetchedContainer, err := s.containerRepo.GetByUUID(containerUUID)
 	if err != nil {
 		return false, err
@@ -180,7 +178,7 @@ func (s *ServiceImpl) Delete(context echo.Context, containerUUID uuid.UUID, auth
 		return false, errors.NewForbiddenError("container.error.deleteForbidden")
 	}
 
-	storageService, err := s.storageFactory.CreateProvider(context, s.settingService.GetStorageDriver(context))
+	storageService, err := s.storageFactory.CreateProvider(s.settingService.GetStorageDriver())
 	if err != nil {
 		return false, err
 	}

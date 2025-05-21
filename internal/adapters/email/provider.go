@@ -3,12 +3,11 @@ package email
 import (
 	"fluxton/internal/config/constants"
 	"fmt"
-	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
 )
 
 type Provider interface {
-	Send(ctx echo.Context, to, subject, body string) error
+	Send(to, subject, body string) error
 }
 
 type Factory struct {
@@ -19,14 +18,14 @@ func NewFactory(injector *do.Injector) (*Factory, error) {
 	return &Factory{injector: injector}, nil
 }
 
-func (f *Factory) CreateProvider(ctx echo.Context, providerType string) (Provider, error) {
+func (f *Factory) CreateProvider(providerType string) (Provider, error) {
 	switch providerType {
 	case constants.EmailDriverSES:
-		return NewSESProvider(ctx, f.injector)
+		return NewSESProvider(f.injector)
 	case constants.EmailDriverSendGrid:
-		return NewSendGridProvider(ctx, f.injector)
+		return NewSendGridProvider(f.injector)
 	case constants.EmailDriverMailgun:
-		return NewMailgunProvider(ctx, f.injector)
+		return NewMailgunProvider(f.injector)
 	default:
 		return nil, fmt.Errorf("unsupported email provider: %s", providerType)
 	}

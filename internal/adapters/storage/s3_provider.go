@@ -11,7 +11,6 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/aws/aws-sdk-go-v2/service/s3/types"
 	"github.com/guregu/null/v6"
-	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
 	"io"
 	"os"
@@ -22,7 +21,7 @@ type S3ServiceImpl struct {
 	client *s3.Client
 }
 
-func NewS3Provider(ctx echo.Context, injector *do.Injector) (Provider, error) {
+func NewS3Provider(injector *do.Injector) (Provider, error) {
 	accessKey := os.Getenv("AWS_ACCESS_KEY_ID")
 	secretKey := os.Getenv("AWS_SECRET_ACCESS_KEY")
 	region := os.Getenv("AWS_REGION")

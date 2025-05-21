@@ -21,7 +21,7 @@ func NewSettingHandler(injector *do.Injector) (*SettingHandler, error) {
 }
 
 func (sc *SettingHandler) List(c echo.Context) error {
-	settings, err := sc.settingService.List(c, false)
+	settings, err := sc.settingService.List()
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
@@ -37,7 +37,7 @@ func (sc *SettingHandler) Update(c echo.Context) error {
 		return response.UnprocessableResponse(c, err)
 	}
 
-	updatedSettings, err := sc.settingService.Update(c, authUser, &request)
+	updatedSettings, err := sc.settingService.Update(authUser, &request)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
@@ -48,7 +48,7 @@ func (sc *SettingHandler) Update(c echo.Context) error {
 func (sc *SettingHandler) Reset(c echo.Context) error {
 	authUser, _ := auth.NewAuth(c).User()
 
-	updatedSettings, err := sc.settingService.Reset(c, authUser)
+	updatedSettings, err := sc.settingService.Reset(authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}

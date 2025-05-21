@@ -23,7 +23,3 @@ type Container struct {
 	CreatedAt   time.Time `db:"created_at" json:"createdAt"`
 	UpdatedAt   time.Time `db:"updated_at" json:"updatedAt"`
 }
-
-func (u Container) GetTableName() string {
-	return "storage.containers"
-}

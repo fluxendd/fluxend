@@ -234,7 +234,7 @@ func (fc *FileHandler) Delete(c echo.Context) error {
 		return response.BadRequestResponse(c, err.Error())
 	}
 
-	if _, err := fc.fileService.Delete(fileUUID, containerUUID, authUser, request.Context); err != nil {
+	if _, err := fc.fileService.Delete(fileUUID, containerUUID, authUser); err != nil {
 		return response.ErrorResponse(c, err)
 	}
 

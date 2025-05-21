@@ -5,7 +5,6 @@ import (
 	"fluxton/pkg"
 	"fluxton/pkg/errors"
 	"fmt"
-	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
 	"os"
 	"resty.dev/v3"
@@ -59,7 +58,7 @@ type ListFolderResult struct {
 	HasMore bool   `json:"has_more"`
 }
 
-func NewDropboxProvider(ctx echo.Context, injector *do.Injector) (Provider, error) {
+func NewDropboxProvider(injector *do.Injector) (Provider, error) {
 	// TODO: go with refreshable tokens instead
 	accessToken := os.Getenv("DROPBOX_ACCESS_TOKEN")
 	if accessToken == "" {

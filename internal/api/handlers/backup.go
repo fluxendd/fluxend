@@ -122,7 +122,7 @@ func (bc *BackupHandler) Store(c echo.Context) error {
 
 	authUser, _ := auth.NewAuth(c).User()
 
-	backup, err := bc.backupService.Create(request.ProjectUUID, request.Context, authUser)
+	backup, err := bc.backupService.Create(request.ProjectUUID, authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
@@ -163,7 +163,7 @@ func (bc *BackupHandler) Delete(c echo.Context) error {
 		return response.BadRequestResponse(c, err.Error())
 	}
 
-	if _, err := bc.backupService.Delete(request.Context, backupUUID, authUser); err != nil {
+	if _, err := bc.backupService.Delete(backupUUID, authUser); err != nil {
 		return response.ErrorResponse(c, err)
 	}
 

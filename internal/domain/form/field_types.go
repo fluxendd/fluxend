@@ -38,7 +38,3 @@ type UpdateFormFieldsInput struct {
 	ProjectUUID uuid.UUID
 	FieldInput
 }
-
-func (ff Field) GetTableName() string {
-	return "fluxton.form_fields"
-}
