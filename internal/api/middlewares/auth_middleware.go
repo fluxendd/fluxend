@@ -2,6 +2,7 @@ package middlewares
 
 import (
 	"fluxton/internal/api/response"
+	"fluxton/internal/config/constants"
 	"fluxton/internal/domain/auth"
 	"fluxton/internal/domain/user"
 	"fluxton/pkg/errors"
@@ -58,7 +59,7 @@ func AuthMiddleware(userRepo user.Repository) echo.MiddlewareFunc {
 			}
 
 			// Allow a max 5 sessions to be active at the same time
-			if (latestVersion - loggedInJWTVersion) >= 5 {
+			if (latestVersion - loggedInJWTVersion) >= constants.UserMaxLoginSessions {
 				return response.UnauthorizedResponse(c, "auth.error.tokenInvalid")
 			}
 
