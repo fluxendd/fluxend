@@ -14,7 +14,3 @@ type FormResponse struct {
 	UpdatedAt time.Time       `db:"updated_at" json:"updatedAt"`
 	Responses []FieldResponse `json:"responses"`
 }
-
-func (u FormResponse) GetTableName() string {
-	return "fluxton.form_field_responses"
-}

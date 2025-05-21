@@ -9,7 +9,3 @@ type CreateFormInput struct {
 	Name        string    `json:"name"`
 	Description string    `json:"description"`
 }
-
-func (u Form) GetTableName() string {
-	return "fluxton.forms"
-}

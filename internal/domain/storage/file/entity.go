@@ -18,7 +18,3 @@ type File struct {
 	CreatedAt     time.Time `db:"created_at" json:"createdAt"`
 	UpdatedAt     time.Time `db:"updated_at" json:"updatedAt"`
 }
-
-func (u File) GetTableName() string {
-	return "storage.files"
-}
