@@ -11,7 +11,6 @@ import (
 	"fluxton/pkg/errors"
 	"fmt"
 	"github.com/google/uuid"
-	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
 	"io"
 	"time"
@@ -22,7 +21,7 @@ type Service interface {
 	GetByUUID(fileUUID, containerUUID uuid.UUID, authUser auth.User) (File, error)
 	Create(containerUUID uuid.UUID, request *CreateFileInput, authUser auth.User) (File, error)
 	Rename(fileUUID, containerUUID uuid.UUID, authUser auth.User, request *RenameFileInput) (*File, error)
-	Delete(fileUUID, containerUUID uuid.UUID, authUser auth.User, context echo.Context) (bool, error)
+	Delete(fileUUID, containerUUID uuid.UUID, authUser auth.User) (bool, error)
 }
 
 type ServiceImpl struct {
@@ -133,7 +132,7 @@ func (s *ServiceImpl) Create(containerUUID uuid.UUID, request *CreateFileInput, 
 		return File{}, err
 	}
 
-	storageService, err := s.storageFactory.CreateProvider(request.Context, s.settingService.GetStorageDriver(request.Context))
+	storageService, err := s.storageFactory.CreateProvider(s.settingService.GetStorageDriver())
 	if err != nil {
 		return File{}, err
 	}
@@ -185,7 +184,7 @@ func (s *ServiceImpl) Rename(fileUUID, containerUUID uuid.UUID, authUser auth.Us
 		return &File{}, err
 	}
 
-	storageService, err := s.storageFactory.CreateProvider(request.Context, s.settingService.GetStorageDriver(request.Context))
+	storageService, err := s.storageFactory.CreateProvider(s.settingService.GetStorageDriver())
 	if err != nil {
 		return &File{}, err
 	}
@@ -206,7 +205,7 @@ func (s *ServiceImpl) Rename(fileUUID, containerUUID uuid.UUID, authUser auth.Us
 	return s.fileRepo.Rename(&fetchedFile)
 }
 
-func (s *ServiceImpl) Delete(fileUUID, containerUUID uuid.UUID, authUser auth.User, context echo.Context) (bool, error) {
+func (s *ServiceImpl) Delete(fileUUID, containerUUID uuid.UUID, authUser auth.User) (bool, error) {
 	fetchedContainer, err := s.containerRepo.GetByUUID(containerUUID)
 	if err != nil {
 		return false, err
@@ -226,7 +225,7 @@ func (s *ServiceImpl) Delete(fileUUID, containerUUID uuid.UUID, authUser auth.Us
 		return false, err
 	}
 
-	storageService, err := s.storageFactory.CreateProvider(context, s.settingService.GetStorageDriver(context))
+	storageService, err := s.storageFactory.CreateProvider(s.settingService.GetStorageDriver())
 	if err != nil {
 		return false, err
 	}

@@ -8,7 +8,6 @@ import (
 	"fluxton/internal/domain/shared"
 	"fluxton/pkg/errors"
 	"github.com/google/uuid"
-	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
 	"strings"
 	"time"
@@ -19,7 +18,7 @@ type Service interface {
 	GetByUUID(containerUUID uuid.UUID, authUser auth.User) (Container, error)
 	Create(request *CreateContainerInput, authUser auth.User) (Container, error)
 	Update(containerUUID uuid.UUID, authUser auth.User, request *CreateContainerInput) (*Container, error)
-	Delete(context echo.Context, containerUUID uuid.UUID, authUser auth.User) (bool, error)
+	Delete(containerUUID uuid.UUID, authUser auth.User) (bool, error)
 }
 
 type ServiceImpl struct {
@@ -160,7 +159,7 @@ func (s *ServiceImpl) Update(containerUUID uuid.UUID, authUser auth.User, reques
 	return s.containerRepo.Update(&fetchedContainer)
 }
 
-func (s *ServiceImpl) Delete(context echo.Context, containerUUID uuid.UUID, authUser auth.User) (bool, error) {
+func (s *ServiceImpl) Delete(containerUUID uuid.UUID, authUser auth.User) (bool, error) {
 	fetchedContainer, err := s.containerRepo.GetByUUID(containerUUID)
 	if err != nil {
 		return false, err
