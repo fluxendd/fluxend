@@ -51,13 +51,14 @@ func AuthMiddleware(userRepo user.Repository) echo.MiddlewareFunc {
 				return response.ErrorResponse(c, errors.NewUnauthorizedError("auth.error.tokenInvalid"))
 			}
 
-			currentJWTVersion := int(claims["version"].(float64))
-			existingJWTVersion, err := userRepo.GetJWTVersion(userUUID)
+			loggedInJWTVersion := int(claims["version"].(float64))
+			latestVersion, err := userRepo.GetJWTVersion(userUUID)
 			if err != nil {
 				return response.ErrorResponse(c, err)
 			}
 
-			if currentJWTVersion != existingJWTVersion {
+			// Allow a max 5 sessions to be active at the same time
+			if (latestVersion - loggedInJWTVersion) >= 5 {
 				return response.UnauthorizedResponse(c, "auth.error.tokenInvalid")
 			}
 
