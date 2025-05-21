@@ -5,5 +5,40 @@ CREATE TABLE IF NOT EXISTS public.tags (
      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-INSERT INTO public.tags (name) VALUES ('Travel');
-INSERT INTO public.tags (name) VALUES ('Diary');
+INSERT INTO public.tags (name) VALUES
+   ('Travel'),
+   ('Diary'),
+   ('Fantasy'),
+   ('Sci-Fi'),
+   ('Adventure'),
+   ('Mystery'),
+   ('Romance'),
+   ('Horror'),
+   ('Thriller'),
+   ('Historical'),
+   ('Biography'),
+   ('Self-help'),
+   ('Poetry'),
+   ('Drama'),
+   ('Comedy'),
+   ('Philosophy'),
+   ('Politics'),
+   ('War'),
+   ('Crime'),
+   ('Dystopian'),
+   ('Utopia'),
+   ('Mythology'),
+   ('Magic'),
+   ('Supernatural'),
+   ('Friendship'),
+   ('Coming of Age'),
+   ('Family'),
+   ('Technology'),
+   ('Psychology'),
+   ('Aliens'),
+   ('Zombies'),
+   ('Vampires'),
+   ('Detective'),
+   ('Memoir'),
+   ('Spirituality');
+
