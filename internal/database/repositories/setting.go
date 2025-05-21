@@ -30,6 +30,17 @@ func (r *SettingRepository) List() ([]setting.Setting, error) {
 	return settings, nil
 }
 
+func (r *SettingRepository) Get(name string) (setting.Setting, error) {
+	query := "SELECT * FROM fluxton.settings WHERE name = $1;"
+	var settingItem setting.Setting
+	err := r.db.Get(&settingItem, query, name)
+	if err != nil {
+		return setting.Setting{}, pkg.FormatError(err, "select", pkg.GetMethodName())
+	}
+
+	return settingItem, nil
+}
+
 func (r *SettingRepository) CreateMany(settings []setting.Setting) (bool, error) {
 	var valuePlaceholders []string
 	var args []interface{}
