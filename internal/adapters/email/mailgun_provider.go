@@ -4,7 +4,6 @@ import (
 	"context"
 	"fluxton/internal/domain/setting"
 	"fmt"
-	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
 	"time"
 
@@ -17,23 +16,23 @@ type MailgunServiceImpl struct {
 	settingService setting.Service
 }
 
-func NewMailgunProvider(ctx echo.Context, injector *do.Injector) (Provider, error) {
+func NewMailgunProvider(injector *do.Injector) (Provider, error) {
 	settingService, err := setting.NewSettingService(injector)
 	if err != nil {
 		return nil, err
 	}
 
-	apiKey := settingService.GetValue(ctx, "mailgunApiKey")
+	apiKey := settingService.GetValue("mailgunApiKey")
 	if apiKey == "" {
 		return nil, fmt.Errorf("mailgun API key is required")
 	}
 
-	domain := settingService.GetValue(ctx, "mailgunDomain")
+	domain := settingService.GetValue("mailgunDomain")
 	if domain == "" {
 		return nil, fmt.Errorf("mailgun domain is required")
 	}
 
-	userSelectedRegion := settingService.Get(ctx, "mailgunRegion")
+	userSelectedRegion := settingService.Get("mailgunRegion")
 	mailgunRegion := userSelectedRegion.Value
 	if mailgunRegion == "" {
 		mailgunRegion = userSelectedRegion.DefaultValue
@@ -52,8 +51,8 @@ func NewMailgunProvider(ctx echo.Context, injector *do.Injector) (Provider, erro
 	}, nil
 }
 
-func (m *MailgunServiceImpl) Send(ctx echo.Context, to, subject, body string) error {
-	from := m.settingService.GetValue(ctx, "mailgunEmailSource")
+func (m *MailgunServiceImpl) Send(to, subject, body string) error {
+	from := m.settingService.GetValue("mailgunEmailSource")
 	if from == "" {
 		return fmt.Errorf("mailgunEmailSource is required")
 	}

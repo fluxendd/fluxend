@@ -89,7 +89,7 @@ func (s *ServiceImpl) ExistsByUUID(id uuid.UUID) error {
 }
 
 func (s *ServiceImpl) Create(ctx echo.Context, request *CreateUserInput) (User, string, error) {
-	if !s.settingService.GetBool(ctx, "allowRegistrations") {
+	if !s.settingService.GetBool("allowRegistrations") {
 		return User{}, "", errors.NewBadRequestError("user.error.registrationDisabled")
 	}
 
