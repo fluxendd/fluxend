@@ -33,7 +33,7 @@ func NewFormFieldHandler(injector *do.Injector) (*FormFieldHandler, error) {
 // @Param Authorization header string true "Bearer Token"
 // @Param formUUID path string true "Form UUID"
 //
-// @Success 200 {array} responses.Response{content=[]resources.FieldResponse} "List of fields"
+// @Success 200 {array} response.Response{content=[]form.FieldResponse} "List of fields"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
@@ -73,7 +73,7 @@ func (ffh *FormFieldHandler) List(c echo.Context) error {
 // @Param formUUID path string true "Form UUID"
 // @Param fieldUUID path string true "Field UUID"
 //
-// @Success 200 {object} responses.Response{content=resources.FieldResponse} "Field details"
+// @Success 200 {object} response.Response{content=form.FieldResponse} "Field details"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
@@ -110,10 +110,10 @@ func (ffh *FormFieldHandler) Show(c echo.Context) error {
 // @Produce json
 //
 // @Param Authorization header string true "Bearer Token"
-// @Param field body form_requests.CreateFormFieldsRequest true "Field details"
+// @Param field body form.CreateFormFieldsRequest true "Field details"
 // @Param formUUID path string true "Form UUID"
 //
-// @Success 201 {object} responses.Response{content=resources.FieldResponse} "Field created"
+// @Success 201 {object} response.Response{content=form.FieldResponse} "Field created"
 // @Failure 422 "Unprocessable entity"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
@@ -151,11 +151,11 @@ func (ffh *FormFieldHandler) Store(c echo.Context) error {
 // @Produce json
 //
 // @Param Authorization header string true "Bearer Token"
-// @Param field body form_requests.UpdateFormFieldRequest true "Field details"
+// @Param field body form.UpdateFormFieldRequest true "Field details"
 // @Param formUUID path string true "Form UUID"
 // @Param fieldUUID path string true "Field UUID"
 //
-// @Success 200 {object} responses.Response{content=resources.FieldResponse} "Field updated"
+// @Success 200 {object} response.Response{content=form.FieldResponse} "Field updated"
 // @Failure 422 "Unprocessable entity"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"

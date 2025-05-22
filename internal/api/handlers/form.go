@@ -38,7 +38,7 @@ func NewFormHandler(injector *do.Injector) (*FormHandler, error) {
 // @Param sort query string false "Field to sort by"
 // @Param order query string false "Sort order (asc or desc)"
 //
-// @Success 200 {array} responses.Response{content=[]resources.FormResponse} "List of forms"
+// @Success 200 {array} response.Response{content=[]form.Response} "List of forms"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
@@ -74,7 +74,7 @@ func (fh *FormHandler) List(c echo.Context) error {
 //
 // @Param formUUID path string true "Form UUID"
 //
-// @Success 200 {object} responses.Response{content=resources.FormResponse} "Form details"
+// @Success 200 {object} response.Response{content=form.Response} "Form details"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
@@ -113,9 +113,9 @@ func (fh *FormHandler) Show(c echo.Context) error {
 // @Param Authorization header string true "Bearer Token"
 // @Param X-Project header string true "Project UUID"
 //
-// @Param form body form_requests.CreateRequest true "Form name and description"
+// @Param form body form.CreateRequest true "Form name and description"
 //
-// @Success 201 {object} responses.Response{content=resources.FormResponse} "Form created"
+// @Success 201 {object} response.Response{content=form.Response} "Form created"
 // @Failure 422 "Unprocessable entity"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
@@ -151,9 +151,9 @@ func (fh *FormHandler) Store(c echo.Context) error {
 // @Param X-Project header string true "Project UUID"
 //
 // @Param formUUID path string true "Form UUID"
-// @Param form body form_requests.CreateRequest true "Form name and description"
+// @Param form body form.CreateRequest true "Form name and description"
 //
-// @Success 200 {object} responses.Response{content=resources.FormResponse} "Form updated"
+// @Success 200 {object} response.Response{content=form.Response} "Form updated"
 // @Failure 422 "Unprocessable entity"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"

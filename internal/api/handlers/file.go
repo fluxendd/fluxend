@@ -38,7 +38,7 @@ func NewFileHandler(injector *do.Injector) (*FileHandler, error) {
 // @Param sort query string false "Field to sort by"
 // @Param order query string false "Sort order (asc or desc)"
 //
-// @Success 200 {array} responses.Response{content=[]resources.FileResponse} "List of files"
+// @Success 200 {array} response.Response{content=[]file.Response} "List of files"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
@@ -79,7 +79,7 @@ func (fh *FileHandler) List(c echo.Context) error {
 // @Param containerUUID path string true "Container UUID"
 // @Param fileUUID path string true "File UUID"
 //
-// @Success 200 {object} responses.Response{content=resources.FileResponse} "File details"
+// @Success 200 {object} response.Response{content=file.Response} "File details"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
@@ -122,9 +122,9 @@ func (fh *FileHandler) Show(c echo.Context) error {
 //
 // @Param Authorization header string true "Bearer Token"
 // @Param containerUUID path string true "Container UUID"
-// @Param file body container_requests.CreateRequest true "File details"
+// @Param file body file.CreateRequest true "File details"
 //
-// @Success 201 {object} responses.Response{content=resources.FileResponse} "File details"
+// @Success 201 {object} response.Response{content=file.Response} "File details"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
@@ -163,9 +163,9 @@ func (fh *FileHandler) Store(c echo.Context) error {
 // @Param Authorization header string true "Bearer Token"
 // @Param containerUUID path string true "Container UUID"
 // @Param fileUUID path string true "File UUID"
-// @Param file body container_requests.RenameRequest true "New file name"
+// @Param file body file.RenameRequest true "New file name"
 //
-// @Success 200 {object} responses.Response{content=resources.FileResponse} "File details"
+// @Success 200 {object} response.Response{content=file.Response} "File details"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"

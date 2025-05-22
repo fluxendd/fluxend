@@ -37,7 +37,7 @@ func NewOrganizationHandler(injector *do.Injector) (*OrganizationHandler, error)
 // @Param sort query string false "Field to sort by"
 // @Param order query string false "Sort order (asc or desc)"
 //
-// @Success 200 {object} responses.Response{content=[]organizationDto.Response} "List of organizations"
+// @Success 200 {object} response.Response{content=[]organizationDto.Response} "List of organizations"
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
 //
@@ -71,7 +71,7 @@ func (oh *OrganizationHandler) List(c echo.Context) error {
 // @Param Authorization header string true "Bearer Token"
 // @Param organization_id path string true "Organization ID"
 //
-// @Success 200 {object} responses.Response{content=organizationDto.Response} "Organization details"
+// @Success 200 {object} response.Response{content=organizationDto.Response} "Organization details"
 // @Failure 422 "Unprocessable entity"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
@@ -111,7 +111,7 @@ func (oh *OrganizationHandler) Show(c echo.Context) error {
 // @Param Authorization header string true "Bearer Token"
 // @Param organization body organization_requests.CreateRequest true "Organization name"
 //
-// @Success 201 {object} responses.Response{content=organizationDto.Response} "Organization created"
+// @Success 201 {object} response.Response{content=organizationDto.Response} "Organization created"
 // @Failure 422 "Unprocessable entity"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
@@ -150,7 +150,7 @@ func (oh *OrganizationHandler) Store(c echo.Context) error {
 // @Param organization_id path string true "Organization ID"
 // @Param organization body organization_requests.CreateRequest true "Updated organization details"
 //
-// @Success 200 {object} responses.Response{content=organizationDto.Response} "Organization updated"
+// @Success 200 {object} response.Response{content=organizationDto.Response} "Organization updated"
 // @Failure 422 "Unprocessable entity"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
@@ -190,7 +190,7 @@ func (oh *OrganizationHandler) Update(c echo.Context) error {
 // @Param Authorization header string true "Bearer Token"
 // @Param organization_id path string true "Organization ID"
 //
-// @Success 204 {object} responses.Response{} "Organization deleted"
+// @Success 204 {object} response.Response{} "Organization deleted"
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
 //

@@ -34,7 +34,7 @@ func NewColumnHandler(injector *do.Injector) (*ColumnHandler, error) {
 // @Param Authorization header string true "Bearer Token"
 // @param Header X-Project header string true "Project UUID"
 //
-// @Success 200 {object} responses.Response{content=[]resources.ColumnResponse} "List of columns"
+// @Success 200 {object} response.Response{content=[]database.ColumnResponse} "List of columns"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
@@ -74,9 +74,9 @@ func (ch *ColumnHandler) List(c echo.Context) error {
 // @Param X-Project header string true "Project UUID"
 //
 // @Param fullTableName path string true "Full table name"
-// @Param columns body column_requests.CreateRequest true "Columns JSON"
+// @Param columns body database.CreateColumnRequest true "Columns JSON"
 //
-// @Success 201 {object} responses.Response{content=resources.TableResponse} "Columns created"
+// @Success 201 {object} response.Response{content=database.ColumnResponse} "Columns created"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
 // @Failure 422 "Unprocessable entity"
@@ -117,9 +117,9 @@ func (ch *ColumnHandler) Store(c echo.Context) error {
 // @Param X-Project header string true "Project UUID"
 //
 // @Param fullTableName path string true "Full table name"
-// @Param columns body column_requests.CreateRequest true "Updated column definitions"
+// @Param columns body database.CreateColumnRequest true "Updated column definitions"
 //
-// @Success 200 {object} responses.Response{content=resources.TableResponse} "Columns altered"
+// @Success 200 {object} response.Response{content=database.ColumnResponse} "Columns altered"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
 // @Failure 422 "Unprocessable entity"
@@ -161,9 +161,9 @@ func (ch *ColumnHandler) Alter(c echo.Context) error {
 //
 // @Param fullTableName path string true "Full table name"
 // @Param column_name path string true "Existing Column Name"
-// @Param new_name body column_requests.RenameRequest true "New column name JSON"
+// @Param new_name body database.RenameColumnRequest true "New column name JSON"
 //
-// @Success 200 {object} responses.Response "Column renamed"
+// @Success 200 {object} response.Response "Column renamed"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
 // @Failure 422 "Unprocessable entity"

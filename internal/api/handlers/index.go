@@ -32,7 +32,7 @@ func NewIndexHandler(injector *do.Injector) (*IndexHandler, error) {
 // @Param Authorization header string true "Bearer Token"
 // @Param tableUUID path string true "Table UUID"
 //
-// @Success 200 {object} responses.Response{content=[]resources.GenericResponse} "List of indexes"
+// @Success 200 {object} response.Response{content=[]dto.GenericResponse} "List of indexes"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
@@ -61,8 +61,8 @@ func (ih *IndexHandler) List(c echo.Context) error {
 
 // Show Index
 //
-// @Summary Show details of a specifih index
-// @Description Retrieve details for a specifih index in a table.
+// @Summary Show details of a specific index
+// @Description Retrieve details for a specific index in a table.
 // @Tags Indexes
 //
 // @Accept json
@@ -72,7 +72,7 @@ func (ih *IndexHandler) List(c echo.Context) error {
 // @Param tableUUID path string true "Table UUID"
 // @Param index_name path string true "Index Name"
 //
-// @Success 200 {object} responses.Response{content=resources.GenericResponse} "Index details"
+// @Success 200 {object} response.Response{content=dto.GenericResponse} "Index details"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
 // @Failure 404 "Index not found"
@@ -113,9 +113,9 @@ func (ih *IndexHandler) Show(c echo.Context) error {
 //
 // @Param Authorization header string true "Bearer Token"
 // @Param tableUUID path string true "Table UUID"
-// @Param index body requests.IndexCreateRequest true "Index details JSON"
+// @Param index body database.CreateIndexRequest true "Index details JSON"
 //
-// @Success 201 {object} responses.Response{content=resources.GenericResponse} "Index created"
+// @Success 201 {object} response.Response{content=dto.GenericResponse} "Index created"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
 // @Failure 422 "Unprocessable entity"

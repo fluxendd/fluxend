@@ -33,7 +33,7 @@ func NewUserHandler(injector *do.Injector) (*UserHandler, error) {
 // @Param Authorization header string true "Bearer Token"
 // @Param id path string true "User UUID"
 //
-// @Success 200 {object} responses.Response{content=resources.UserResponse} "User details"
+// @Success 200 {object} response.Response{content=resources.UserResponse} "User details"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
@@ -69,7 +69,7 @@ func (uh *UserHandler) Show(c echo.Context) error {
 //
 // @Param user body user.LoginRequest true "Login request"
 //
-// @Success 200 {object} responses.Response{content=resources.UserResponse} "User details"
+// @Success 200 {object} response.Response{content=resources.UserResponse} "User details"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
@@ -107,7 +107,7 @@ func (uh *UserHandler) Login(c echo.Context) error {
 //
 // @Param user body user.CreateRequest true "User details"
 //
-// @Success 201 {object} responses.Response{content=resources.UserResponse} "User created"
+// @Success 201 {object} response.Response{content=resources.UserResponse} "User created"
 // @Failure 422 "Unprocessable entity"
 // @Failure 400 "Invalid input"
 // @Failure 500 "Internal server error"
@@ -147,7 +147,7 @@ func (uh *UserHandler) Store(c echo.Context) error {
 // @Param userUUID path string true "User UUID"
 // @Param user body user.UpdateRequest true "User details"
 //
-// @Success 200 {object} responses.Response{content=resources.UserResponse} "User updated"
+// @Success 200 {object} response.Response{content=resources.UserResponse} "User updated"
 // @Failure 422 "Unprocessable entity"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
@@ -189,7 +189,7 @@ func (uh *UserHandler) Update(c echo.Context) error {
 //
 // @Param Authorization header string true "Bearer Token"
 //
-// @Success 200 {object} responses.Response{} "User logged out"
+// @Success 200 {object} response.Response{} "User logged out"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
