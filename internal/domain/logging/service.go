@@ -17,8 +17,8 @@ type ServiceImpl struct {
 	logRepo     Repository
 }
 
-func NewFileService(injector *do.Injector) (Service, error) {
-	policy := do.MustInvoke[*admin.Policy](injector)
+func NewLogService(injector *do.Injector) (Service, error) {
+	policy := admin.NewAdminPolicy()
 	logRepo := do.MustInvoke[Repository](injector)
 
 	return &ServiceImpl{
