@@ -50,11 +50,6 @@ var (
 
 type BaseRequest struct {
 	ProjectUUID uuid.UUID `json:"projectUUID,omitempty"`
-	Context     echo.Context
-}
-
-func (r *BaseRequest) SetContext(c echo.Context) {
-	r.Context = c
 }
 
 func (r *BaseRequest) WithProjectHeader(c echo.Context) error {

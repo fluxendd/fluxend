@@ -18,7 +18,5 @@ func (r *DefaultRequestWithProjectHeader) BindAndValidate(c echo.Context) []stri
 		return []string{err.Error()}
 	}
 
-	r.SetContext(c)
-
 	return nil
 }

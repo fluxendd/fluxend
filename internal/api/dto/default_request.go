@@ -13,7 +13,5 @@ func (r *DefaultRequest) BindAndValidate(c echo.Context) []string {
 		return []string{"Invalid request payload"}
 	}
 
-	r.SetContext(c)
-
 	return nil
 }

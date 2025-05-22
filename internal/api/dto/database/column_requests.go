@@ -33,8 +33,6 @@ func (r *CreateColumnRequest) BindAndValidate(c echo.Context) []string {
 		return []string{err.Error()}
 	}
 
-	r.SetContext(c)
-
 	var requestErrors []string
 
 	for _, currentColumn := range r.Columns {
@@ -57,8 +55,6 @@ func (r *RenameColumnRequest) BindAndValidate(c echo.Context) []string {
 	if err != nil {
 		return []string{err.Error()}
 	}
-
-	r.SetContext(c)
 
 	err = validation.ValidateStruct(r,
 		validation.Field(

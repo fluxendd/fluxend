@@ -30,8 +30,6 @@ func (r *CreateRequest) BindAndValidate(c echo.Context) []string {
 		return []string{err.Error()}
 	}
 
-	r.SetContext(c)
-
 	err = validation.ValidateStruct(r,
 		validation.Field(
 			&r.FullFileName,
@@ -63,8 +61,6 @@ func (r *RenameRequest) BindAndValidate(c echo.Context) []string {
 	if err != nil {
 		return []string{err.Error()}
 	}
-
-	r.SetContext(c)
 
 	err = validation.ValidateStruct(r,
 		validation.Field(

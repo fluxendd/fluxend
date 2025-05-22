@@ -29,8 +29,6 @@ func (r *CreateRequest) BindAndValidate(c echo.Context) []string {
 		return []string{"Invalid request payload"}
 	}
 
-	r.SetContext(c)
-
 	err := validation.ValidateStruct(r,
 		validation.Field(
 			&r.Name,
@@ -57,8 +55,6 @@ func (r *UpdateRequest) BindAndValidate(c echo.Context) []string {
 	if err := c.Bind(r); err != nil {
 		return []string{"Invalid request payload"}
 	}
-
-	r.SetContext(c)
 
 	err := validation.ValidateStruct(r,
 		validation.Field(
