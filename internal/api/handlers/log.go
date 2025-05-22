@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"fluxton/internal/api/dto"
+	"fluxton/internal/api/dto/logging"
 	logMapper "fluxton/internal/api/mapper/logging"
 	"fluxton/internal/api/response"
 	logDomain "fluxton/internal/domain/logging"
@@ -43,7 +43,7 @@ func NewLogHandler(injector *do.Injector) (*LogHandler, error) {
 //
 // @Router /admin/logs [get]
 func (lh *LogHandler) List(c echo.Context) error {
-	var request dto.DefaultRequest
+	var request logging.ListRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
 	}
