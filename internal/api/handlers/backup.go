@@ -32,7 +32,7 @@ func NewBackupHandler(injector *do.Injector) (*BackupHandler, error) {
 // @Param Authorization header string true "Bearer Token"
 // @Param X-Project header string true "Project UUID"
 //
-// @Success 200 {array} responses.Response{content=[]backupDto.Response} "List of backups"
+// @Success 200 {array} response.Response{content=[]backup.Response} "List of backups"
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
 //
@@ -66,7 +66,7 @@ func (bh *BackupHandler) List(c echo.Context) error {
 //
 // @Param backupUUID path string true "Backup UUID"
 //
-// @Success 200 {object} responses.Response{content=backupDto.Response} "Backup details"
+// @Success 200 {object} response.Response{content=backup.Response} "Backup details"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
@@ -105,9 +105,9 @@ func (bh *BackupHandler) Show(c echo.Context) error {
 // @Param Authorization header string true "Bearer Token"
 // @Param X-Project header string true "Project UUID"
 //
-// @Param backup body requests.DefaultRequestWithProjectHeader true "Project UUID"
+// @Param backup body dto.DefaultRequestWithProjectHeader true "Project UUID"
 //
-// @Success 201 {object} responses.Response{content=backupDto.Response} "Backup created"
+// @Success 201 {object} response.Response{content=backup.Response} "Backup created"
 // @Failure 422 "Unprocessable entity"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
