@@ -44,7 +44,7 @@ func NewFileHandler(injector *do.Injector) (*FileHandler, error) {
 // @Failure 500 "Internal server error"
 //
 // @Router /containers/{containerUUID}/files [get]
-func (fc *FileHandler) List(c echo.Context) error {
+func (fh *FileHandler) List(c echo.Context) error {
 	var request dto.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
@@ -58,7 +58,7 @@ func (fc *FileHandler) List(c echo.Context) error {
 	}
 
 	paginationParams := request.ExtractPaginationParams(c)
-	files, err := fc.fileService.List(paginationParams, containerUUID, authUser)
+	files, err := fh.fileService.List(paginationParams, containerUUID, authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
@@ -85,7 +85,7 @@ func (fc *FileHandler) List(c echo.Context) error {
 // @Failure 500 "Internal server error"
 //
 // @Router /containers/{containerUUID}/files/{fileUUID} [get]
-func (fc *FileHandler) Show(c echo.Context) error {
+func (fh *FileHandler) Show(c echo.Context) error {
 	var request dto.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
@@ -103,7 +103,7 @@ func (fc *FileHandler) Show(c echo.Context) error {
 		return response.BadRequestResponse(c, err.Error())
 	}
 
-	fetchedFile, err := fc.fileService.GetByUUID(fileUUID, containerUUID, authUser)
+	fetchedFile, err := fh.fileService.GetByUUID(fileUUID, containerUUID, authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
@@ -130,7 +130,7 @@ func (fc *FileHandler) Show(c echo.Context) error {
 // @Failure 500 "Internal server error"
 //
 // @Router /containers/{containerUUID}/files [post]
-func (fc *FileHandler) Store(c echo.Context) error {
+func (fh *FileHandler) Store(c echo.Context) error {
 	var request file.CreateRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
@@ -143,7 +143,7 @@ func (fc *FileHandler) Store(c echo.Context) error {
 		return response.BadRequestResponse(c, err.Error())
 	}
 
-	createdFile, err := fc.fileService.Create(containerUUID, file.ToCreateFileInput(&request), authUser)
+	createdFile, err := fh.fileService.Create(containerUUID, file.ToCreateFileInput(&request), authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
@@ -171,7 +171,7 @@ func (fc *FileHandler) Store(c echo.Context) error {
 // @Failure 500 "Internal server error"
 //
 // @Router /containers/{containerUUID}/files/{fileUUID}/rename [put]
-func (fc *FileHandler) Rename(c echo.Context) error {
+func (fh *FileHandler) Rename(c echo.Context) error {
 	var request file.RenameRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
@@ -189,7 +189,7 @@ func (fc *FileHandler) Rename(c echo.Context) error {
 		return response.BadRequestResponse(c, err.Error())
 	}
 
-	updatedFile, err := fc.fileService.Rename(fileUUID, containerUUID, authUser, file.ToRenameFileInput(&request))
+	updatedFile, err := fh.fileService.Rename(fileUUID, containerUUID, authUser, file.ToRenameFileInput(&request))
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
@@ -216,7 +216,7 @@ func (fc *FileHandler) Rename(c echo.Context) error {
 // @Failure 500 "Internal server error"
 //
 // @Router /containers/{containerUUID}/files/{fileUUID} [delete]
-func (fc *FileHandler) Delete(c echo.Context) error {
+func (fh *FileHandler) Delete(c echo.Context) error {
 	var request dto.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
@@ -234,7 +234,7 @@ func (fc *FileHandler) Delete(c echo.Context) error {
 		return response.BadRequestResponse(c, err.Error())
 	}
 
-	if _, err := fc.fileService.Delete(fileUUID, containerUUID, authUser); err != nil {
+	if _, err := fh.fileService.Delete(fileUUID, containerUUID, authUser); err != nil {
 		return response.ErrorResponse(c, err)
 	}
 

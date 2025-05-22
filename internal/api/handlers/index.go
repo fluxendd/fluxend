@@ -38,7 +38,7 @@ func NewIndexHandler(injector *do.Injector) (*IndexHandler, error) {
 // @Failure 500 "Internal server error"
 //
 // @Router /tables/{tableUUID}/indexes [get]
-func (ic *IndexHandler) List(c echo.Context) error {
+func (ih *IndexHandler) List(c echo.Context) error {
 	var request dto.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
@@ -51,7 +51,7 @@ func (ic *IndexHandler) List(c echo.Context) error {
 		return response.BadRequestResponse(c, "Table name is required")
 	}
 
-	indexes, err := ic.indexService.List(fullTableName, request.ProjectUUID, authUser)
+	indexes, err := ih.indexService.List(fullTableName, request.ProjectUUID, authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
@@ -61,8 +61,8 @@ func (ic *IndexHandler) List(c echo.Context) error {
 
 // Show Index
 //
-// @Summary Show details of a specific index
-// @Description Retrieve details for a specific index in a table.
+// @Summary Show details of a specifih index
+// @Description Retrieve details for a specifih index in a table.
 // @Tags Indexes
 //
 // @Accept json
@@ -79,7 +79,7 @@ func (ic *IndexHandler) List(c echo.Context) error {
 // @Failure 500 "Internal server error"
 //
 // @Router /tables/{tableUUID}/indexes/{indexName} [get]
-func (ic *IndexHandler) Show(c echo.Context) error {
+func (ih *IndexHandler) Show(c echo.Context) error {
 	var request dto.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
@@ -94,7 +94,7 @@ func (ic *IndexHandler) Show(c echo.Context) error {
 
 	indexName := c.Param("indexName")
 
-	index, err := ic.indexService.GetByName(indexName, fullTableName, request.ProjectUUID, authUser)
+	index, err := ih.indexService.GetByName(indexName, fullTableName, request.ProjectUUID, authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
@@ -122,7 +122,7 @@ func (ic *IndexHandler) Show(c echo.Context) error {
 // @Failure 500 "Internal server error"
 //
 // @Router /tables/{tableUUID}/indexes [post]
-func (ic *IndexHandler) Store(c echo.Context) error {
+func (ih *IndexHandler) Store(c echo.Context) error {
 	var request databaseDto.CreateIndexRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
@@ -135,7 +135,7 @@ func (ic *IndexHandler) Store(c echo.Context) error {
 		return response.BadRequestResponse(c, "Table name is required")
 	}
 
-	index, err := ic.indexService.Create(fullTableName, databaseDto.ToCreateIndexInput(request), authUser)
+	index, err := ih.indexService.Create(fullTableName, databaseDto.ToCreateIndexInput(request), authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
@@ -163,7 +163,7 @@ func (ic *IndexHandler) Store(c echo.Context) error {
 // @Failure 500 "Internal server error"
 //
 // @Router /tables/{tableUUID}/indexes/{indexName} [delete]
-func (ic *IndexHandler) Delete(c echo.Context) error {
+func (ih *IndexHandler) Delete(c echo.Context) error {
 	var request dto.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
@@ -178,7 +178,7 @@ func (ic *IndexHandler) Delete(c echo.Context) error {
 
 	indexName := c.Param("indexName")
 
-	if _, err := ic.indexService.Delete(indexName, fullTableName, request.ProjectUUID, authUser); err != nil {
+	if _, err := ih.indexService.Delete(indexName, fullTableName, request.ProjectUUID, authUser); err != nil {
 		return response.ErrorResponse(c, err)
 	}
 

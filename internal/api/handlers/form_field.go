@@ -39,7 +39,7 @@ func NewFormFieldHandler(injector *do.Injector) (*FormFieldHandler, error) {
 // @Failure 500 "Internal server error"
 //
 // @Router /forms/{formUUID}/fields [get]
-func (ffc *FormFieldHandler) List(c echo.Context) error {
+func (ffh *FormFieldHandler) List(c echo.Context) error {
 	var request dto.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
@@ -52,7 +52,7 @@ func (ffc *FormFieldHandler) List(c echo.Context) error {
 		return response.BadRequestResponse(c, err.Error())
 	}
 
-	formFields, err := ffc.formFieldService.List(formUUID, authUser)
+	formFields, err := ffh.formFieldService.List(formUUID, authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
@@ -79,7 +79,7 @@ func (ffc *FormFieldHandler) List(c echo.Context) error {
 // @Failure 500 "Internal server error"
 //
 // @Router /forms/{formUUID}/fields/{fieldUUID} [get]
-func (ffc *FormFieldHandler) Show(c echo.Context) error {
+func (ffh *FormFieldHandler) Show(c echo.Context) error {
 	var request dto.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
@@ -92,7 +92,7 @@ func (ffc *FormFieldHandler) Show(c echo.Context) error {
 		return response.BadRequestResponse(c, err.Error())
 	}
 
-	formField, err := ffc.formFieldService.GetByUUID(formUUID, authUser)
+	formField, err := ffh.formFieldService.GetByUUID(formUUID, authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
@@ -120,7 +120,7 @@ func (ffc *FormFieldHandler) Show(c echo.Context) error {
 // @Failure 500 "Internal server error"
 //
 // @Router /forms/{formUUID}/fields [post]
-func (ffc *FormFieldHandler) Store(c echo.Context) error {
+func (ffh *FormFieldHandler) Store(c echo.Context) error {
 	var request form.CreateFormFieldsRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
@@ -133,7 +133,7 @@ func (ffc *FormFieldHandler) Store(c echo.Context) error {
 		return response.BadRequestResponse(c, err.Error())
 	}
 
-	formFields, err := ffc.formFieldService.CreateMany(formUUID, form.ToCreateFormFieldInput(&request), authUser)
+	formFields, err := ffh.formFieldService.CreateMany(formUUID, form.ToCreateFormFieldInput(&request), authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
@@ -162,7 +162,7 @@ func (ffc *FormFieldHandler) Store(c echo.Context) error {
 // @Failure 500 "Internal server error"
 //
 // @Router /forms/{formUUID}/fields/{fieldUUID} [put]
-func (ffc *FormFieldHandler) Update(c echo.Context) error {
+func (ffh *FormFieldHandler) Update(c echo.Context) error {
 	var request form.UpdateFormFieldRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
@@ -180,7 +180,7 @@ func (ffc *FormFieldHandler) Update(c echo.Context) error {
 		return response.BadRequestResponse(c, err.Error())
 	}
 
-	updatedFormField, err := ffc.formFieldService.Update(formUUID, fieldUUID, authUser, form.ToUpdateFormFieldInput(&request))
+	updatedFormField, err := ffh.formFieldService.Update(formUUID, fieldUUID, authUser, form.ToUpdateFormFieldInput(&request))
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
@@ -207,7 +207,7 @@ func (ffc *FormFieldHandler) Update(c echo.Context) error {
 // @Failure 500 "Internal server error"
 //
 // @Router /forms/{formUUID}/fields/{fieldUUID} [delete]
-func (ffc *FormFieldHandler) Delete(c echo.Context) error {
+func (ffh *FormFieldHandler) Delete(c echo.Context) error {
 	var request dto.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
@@ -225,7 +225,7 @@ func (ffc *FormFieldHandler) Delete(c echo.Context) error {
 		return response.BadRequestResponse(c, err.Error())
 	}
 
-	if _, err := ffc.formFieldService.Delete(formUUID, fieldUUID, authUser); err != nil {
+	if _, err := ffh.formFieldService.Delete(formUUID, fieldUUID, authUser); err != nil {
 		return response.ErrorResponse(c, err)
 	}
 

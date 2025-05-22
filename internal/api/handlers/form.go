@@ -44,7 +44,7 @@ func NewFormHandler(injector *do.Injector) (*FormHandler, error) {
 // @Failure 500 "Internal server error"
 //
 // @Router /forms [get]
-func (fc *FormHandler) List(c echo.Context) error {
+func (fh *FormHandler) List(c echo.Context) error {
 	var request dto.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
@@ -52,7 +52,7 @@ func (fc *FormHandler) List(c echo.Context) error {
 	authUser, _ := auth.NewAuth(c).User()
 
 	paginationParams := request.ExtractPaginationParams(c)
-	forms, err := fc.formService.List(paginationParams, request.ProjectUUID, authUser)
+	forms, err := fh.formService.List(paginationParams, request.ProjectUUID, authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
@@ -80,7 +80,7 @@ func (fc *FormHandler) List(c echo.Context) error {
 // @Failure 500 "Internal server error"
 //
 // @Router /forms/{formUUID} [get]
-func (fc *FormHandler) Show(c echo.Context) error {
+func (fh *FormHandler) Show(c echo.Context) error {
 	var request dto.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
@@ -93,7 +93,7 @@ func (fc *FormHandler) Show(c echo.Context) error {
 		return response.BadRequestResponse(c, err.Error())
 	}
 
-	fetchedForm, err := fc.formService.GetByUUID(formUUID, authUser)
+	fetchedForm, err := fh.formService.GetByUUID(formUUID, authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
@@ -122,7 +122,7 @@ func (fc *FormHandler) Show(c echo.Context) error {
 // @Failure 500 "Internal server error"
 //
 // @Router /forms [post]
-func (fc *FormHandler) Store(c echo.Context) error {
+func (fh *FormHandler) Store(c echo.Context) error {
 	var request form.CreateRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
@@ -130,7 +130,7 @@ func (fc *FormHandler) Store(c echo.Context) error {
 
 	authUser, _ := auth.NewAuth(c).User()
 
-	createdForm, err := fc.formService.Create(form.ToCreateFormInput(&request), authUser)
+	createdForm, err := fh.formService.Create(form.ToCreateFormInput(&request), authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
@@ -160,7 +160,7 @@ func (fc *FormHandler) Store(c echo.Context) error {
 // @Failure 500 "Internal server error"
 //
 // @Router /forms/{formUUID} [put]
-func (fc *FormHandler) Update(c echo.Context) error {
+func (fh *FormHandler) Update(c echo.Context) error {
 	var request form.CreateRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
@@ -173,7 +173,7 @@ func (fc *FormHandler) Update(c echo.Context) error {
 		return response.BadRequestResponse(c, err.Error())
 	}
 
-	updatedForm, err := fc.formService.Update(formUUID, authUser, form.ToCreateFormInput(&request))
+	updatedForm, err := fh.formService.Update(formUUID, authUser, form.ToCreateFormInput(&request))
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
@@ -201,7 +201,7 @@ func (fc *FormHandler) Update(c echo.Context) error {
 // @Failure 500 "Internal server error"
 //
 // @Router /forms/{formUUID} [delete]
-func (fc *FormHandler) Delete(c echo.Context) error {
+func (fh *FormHandler) Delete(c echo.Context) error {
 	var request dto.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
@@ -214,7 +214,7 @@ func (fc *FormHandler) Delete(c echo.Context) error {
 		return response.BadRequestResponse(c, err.Error())
 	}
 
-	if _, err := fc.formService.Delete(formUUID, authUser); err != nil {
+	if _, err := fh.formService.Delete(formUUID, authUser); err != nil {
 		return response.ErrorResponse(c, err)
 	}
 

@@ -40,7 +40,7 @@ func NewOrganizationMemberHandler(injector *do.Injector) (*OrganizationMemberHan
 // @Failure 500 "Internal server error"
 //
 // @Router /organizations/{organizationUUID}/users [get]
-func (ouc *OrganizationMemberHandler) List(c echo.Context) error {
+func (omh *OrganizationMemberHandler) List(c echo.Context) error {
 	var request dto.DefaultRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
@@ -53,7 +53,7 @@ func (ouc *OrganizationMemberHandler) List(c echo.Context) error {
 		return response.BadRequestResponse(c, err.Error())
 	}
 
-	organizationUsers, err := ouc.organizationService.ListUsers(organizationUUID, authUser)
+	organizationUsers, err := omh.organizationService.ListUsers(organizationUUID, authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
@@ -81,7 +81,7 @@ func (ouc *OrganizationMemberHandler) List(c echo.Context) error {
 // @Failure 500 "Internal server error"
 //
 // @Router /organizations/{organizationUUID}/users [post]
-func (ouc *OrganizationMemberHandler) Store(c echo.Context) error {
+func (omh *OrganizationMemberHandler) Store(c echo.Context) error {
 	var request organizationDto.MemberCreateRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
@@ -94,7 +94,7 @@ func (ouc *OrganizationMemberHandler) Store(c echo.Context) error {
 		return response.BadRequestResponse(c, err.Error())
 	}
 
-	organizationUser, err := ouc.organizationService.CreateUser(request.UserID, organizationUUID, authUser)
+	organizationUser, err := omh.organizationService.CreateUser(request.UserID, organizationUUID, authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
@@ -122,7 +122,7 @@ func (ouc *OrganizationMemberHandler) Store(c echo.Context) error {
 // @Failure 500 "Internal server error"
 //
 // @Router /organizations/{organizationUUID}/users/{userUUID} [delete]
-func (ouc *OrganizationMemberHandler) Delete(c echo.Context) error {
+func (omh *OrganizationMemberHandler) Delete(c echo.Context) error {
 	var request dto.DefaultRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
@@ -140,7 +140,7 @@ func (ouc *OrganizationMemberHandler) Delete(c echo.Context) error {
 		return response.BadRequestResponse(c, err.Error())
 	}
 
-	if err := ouc.organizationService.DeleteUser(organizationUUID, userID, authUser); err != nil {
+	if err := omh.organizationService.DeleteUser(organizationUUID, userID, authUser); err != nil {
 		return response.ErrorResponse(c, err)
 	}
 

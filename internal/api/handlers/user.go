@@ -39,7 +39,7 @@ func NewUserHandler(injector *do.Injector) (*UserHandler, error) {
 // @Failure 500 "Internal server error"
 //
 // @Router /users/{userUUID} [get]
-func (uc *UserHandler) Show(c echo.Context) error {
+func (uh *UserHandler) Show(c echo.Context) error {
 	var request dto.DefaultRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
@@ -50,7 +50,7 @@ func (uc *UserHandler) Show(c echo.Context) error {
 		return response.BadRequestResponse(c, err.Error())
 	}
 
-	user, err := uc.userService.GetByID(id)
+	user, err := uh.userService.GetByID(id)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
@@ -75,7 +75,7 @@ func (uc *UserHandler) Show(c echo.Context) error {
 // @Failure 500 "Internal server error"
 //
 // @Router /users/login [post]
-func (uc *UserHandler) Login(c echo.Context) error {
+func (uh *UserHandler) Login(c echo.Context) error {
 	var request userDto.LoginRequest
 	if err := c.Bind(&request); err != nil {
 		return response.BadRequestResponse(c, "user.error.invalidPayload")
@@ -85,7 +85,7 @@ func (uc *UserHandler) Login(c echo.Context) error {
 		return response.UnprocessableResponse(c, err)
 	}
 
-	user, token, err := uc.userService.Login(userDto.ToLoginUserInput(&request))
+	user, token, err := uh.userService.Login(userDto.ToLoginUserInput(&request))
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
@@ -113,7 +113,7 @@ func (uc *UserHandler) Login(c echo.Context) error {
 // @Failure 500 "Internal server error"
 //
 // @Router /users [post]
-func (uc *UserHandler) Store(c echo.Context) error {
+func (uh *UserHandler) Store(c echo.Context) error {
 	var request userDto.CreateRequest
 	if err := c.Bind(&request); err != nil {
 		return response.BadRequestResponse(c, "user.error.invalidPayload")
@@ -123,7 +123,7 @@ func (uc *UserHandler) Store(c echo.Context) error {
 		return response.UnprocessableResponse(c, err)
 	}
 
-	user, token, err := uc.userService.Create(c, userDto.ToCreateUserInput(&request))
+	user, token, err := uh.userService.Create(c, userDto.ToCreateUserInput(&request))
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
@@ -154,7 +154,7 @@ func (uc *UserHandler) Store(c echo.Context) error {
 // @Failure 500 "Internal server error"
 //
 // @Router /users/{userUUID} [put]
-func (uc *UserHandler) Update(c echo.Context) error {
+func (uh *UserHandler) Update(c echo.Context) error {
 	authUserUUID, err := auth.NewAuth(c).Uuid()
 	if err != nil {
 		return response.UnauthorizedResponse(c, err.Error())
@@ -170,7 +170,7 @@ func (uc *UserHandler) Update(c echo.Context) error {
 		return response.BadRequestResponse(c, "user.error.invalidPayload")
 	}
 
-	updatedUser, err := uc.userService.Update(userUUID, authUserUUID, userDto.ToUpdateUserInput(&request))
+	updatedUser, err := uh.userService.Update(userUUID, authUserUUID, userDto.ToUpdateUserInput(&request))
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
@@ -195,13 +195,13 @@ func (uc *UserHandler) Update(c echo.Context) error {
 // @Failure 500 "Internal server error"
 //
 // @Router /users/logout [post]
-func (uc *UserHandler) Logout(c echo.Context) error {
+func (uh *UserHandler) Logout(c echo.Context) error {
 	userUUID, err := auth.NewAuth(c).Uuid()
 	if err != nil {
 		return response.UnauthorizedResponse(c, err.Error())
 	}
 
-	err = uc.userService.Logout(userUUID)
+	err = uh.userService.Logout(userUUID)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}

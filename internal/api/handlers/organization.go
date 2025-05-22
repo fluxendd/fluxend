@@ -42,7 +42,7 @@ func NewOrganizationHandler(injector *do.Injector) (*OrganizationHandler, error)
 // @Failure 500 "Internal server error"
 //
 // @Router /organizations [get]
-func (oc *OrganizationHandler) List(c echo.Context) error {
+func (oh *OrganizationHandler) List(c echo.Context) error {
 	var request dto.DefaultRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
@@ -51,7 +51,7 @@ func (oc *OrganizationHandler) List(c echo.Context) error {
 	authUserId, _ := auth.NewAuth(c).Uuid()
 
 	paginationParams := request.ExtractPaginationParams(c)
-	organizations, err := oc.organizationService.List(paginationParams, authUserId)
+	organizations, err := oh.organizationService.List(paginationParams, authUserId)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
@@ -78,7 +78,7 @@ func (oc *OrganizationHandler) List(c echo.Context) error {
 // @Failure 500 "Internal server error"
 //
 // @Router /organizations/{organizationUUID} [get]
-func (oc *OrganizationHandler) Show(c echo.Context) error {
+func (oh *OrganizationHandler) Show(c echo.Context) error {
 	var request dto.DefaultRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
@@ -91,7 +91,7 @@ func (oc *OrganizationHandler) Show(c echo.Context) error {
 		return response.BadRequestResponse(c, err.Error())
 	}
 
-	organization, err := oc.organizationService.GetByID(organizationUUID, authUser)
+	organization, err := oh.organizationService.GetByID(organizationUUID, authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
@@ -118,7 +118,7 @@ func (oc *OrganizationHandler) Show(c echo.Context) error {
 // @Failure 500 "Internal server error"
 //
 // @Router /organizations [post]
-func (oc *OrganizationHandler) Store(c echo.Context) error {
+func (oh *OrganizationHandler) Store(c echo.Context) error {
 	var request organizationDto.CreateRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
@@ -129,7 +129,7 @@ func (oc *OrganizationHandler) Store(c echo.Context) error {
 		return response.UnauthorizedResponse(c, err.Error())
 	}
 
-	organization, err := oc.organizationService.Create(request.Name, authUser)
+	organization, err := oh.organizationService.Create(request.Name, authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
@@ -157,7 +157,7 @@ func (oc *OrganizationHandler) Store(c echo.Context) error {
 // @Failure 500 "Internal server error"
 //
 // @Router /organizations/{organizationUUID} [put]
-func (oc *OrganizationHandler) Update(c echo.Context) error {
+func (oh *OrganizationHandler) Update(c echo.Context) error {
 	var request organizationDto.CreateRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
@@ -170,7 +170,7 @@ func (oc *OrganizationHandler) Update(c echo.Context) error {
 		return response.BadRequestResponse(c, err.Error())
 	}
 
-	updatedOrganization, err := oc.organizationService.Update(request.Name, organizationUUID, authUser)
+	updatedOrganization, err := oh.organizationService.Update(request.Name, organizationUUID, authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
@@ -195,7 +195,7 @@ func (oc *OrganizationHandler) Update(c echo.Context) error {
 // @Failure 500 "Internal server error"
 //
 // @Router /organizations/{organizationUUID} [delete]
-func (oc *OrganizationHandler) Delete(c echo.Context) error {
+func (oh *OrganizationHandler) Delete(c echo.Context) error {
 	var request dto.DefaultRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
@@ -208,7 +208,7 @@ func (oc *OrganizationHandler) Delete(c echo.Context) error {
 		return response.BadRequestResponse(c, err.Error())
 	}
 
-	if _, err := oc.organizationService.Delete(organizationUUID, authUser); err != nil {
+	if _, err := oh.organizationService.Delete(organizationUUID, authUser); err != nil {
 		return response.ErrorResponse(c, err)
 	}
 

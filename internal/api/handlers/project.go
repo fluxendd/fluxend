@@ -44,7 +44,7 @@ func NewProjectHandler(injector *do.Injector) (*ProjectHandler, error) {
 // @Failure 500 "Internal server error"
 //
 // @Router /projects [get]
-func (pc *ProjectHandler) List(c echo.Context) error {
+func (ph *ProjectHandler) List(c echo.Context) error {
 	var request dto.DefaultRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
@@ -58,7 +58,7 @@ func (pc *ProjectHandler) List(c echo.Context) error {
 	}
 
 	paginationParams := request.ExtractPaginationParams(c)
-	projects, err := pc.projectService.List(paginationParams, organizationUUID, authUser)
+	projects, err := ph.projectService.List(paginationParams, organizationUUID, authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
@@ -85,7 +85,7 @@ func (pc *ProjectHandler) List(c echo.Context) error {
 // @Failure 500 "Internal server error"
 //
 // @Router /projects/{projectUUID} [get]
-func (pc *ProjectHandler) Show(c echo.Context) error {
+func (ph *ProjectHandler) Show(c echo.Context) error {
 	var request dto.DefaultRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
@@ -98,7 +98,7 @@ func (pc *ProjectHandler) Show(c echo.Context) error {
 		return response.BadRequestResponse(c, err.Error())
 	}
 
-	fetchedProject, err := pc.projectService.GetByUUID(projectUUID, authUser)
+	fetchedProject, err := ph.projectService.GetByUUID(projectUUID, authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
@@ -126,7 +126,7 @@ func (pc *ProjectHandler) Show(c echo.Context) error {
 // @Failure 500 "Internal server error"
 //
 // @Router /projects [post]
-func (pc *ProjectHandler) Store(c echo.Context) error {
+func (ph *ProjectHandler) Store(c echo.Context) error {
 	var request project.CreateRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
@@ -134,7 +134,7 @@ func (pc *ProjectHandler) Store(c echo.Context) error {
 
 	authUser, _ := auth.NewAuth(c).User()
 
-	updatedProject, err := pc.projectService.Create(project.ToCreateProjectInput(&request), authUser)
+	updatedProject, err := ph.projectService.Create(project.ToCreateProjectInput(&request), authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
@@ -162,7 +162,7 @@ func (pc *ProjectHandler) Store(c echo.Context) error {
 // @Failure 500 "Internal server error"
 //
 // @Router /projects/{projectUUID} [put]
-func (pc *ProjectHandler) Update(c echo.Context) error {
+func (ph *ProjectHandler) Update(c echo.Context) error {
 	var request project.UpdateRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
@@ -175,7 +175,7 @@ func (pc *ProjectHandler) Update(c echo.Context) error {
 		return response.BadRequestResponse(c, err.Error())
 	}
 
-	updatedOrganization, err := pc.projectService.Update(projectUUID, authUser, project.ToUpdateProjectInput(&request))
+	updatedOrganization, err := ph.projectService.Update(projectUUID, authUser, project.ToUpdateProjectInput(&request))
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
@@ -201,7 +201,7 @@ func (pc *ProjectHandler) Update(c echo.Context) error {
 // @Failure 500 "Internal server error"
 //
 // @Router /projects/{projectUUID} [delete]
-func (pc *ProjectHandler) Delete(c echo.Context) error {
+func (ph *ProjectHandler) Delete(c echo.Context) error {
 	var request dto.DefaultRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
@@ -214,7 +214,7 @@ func (pc *ProjectHandler) Delete(c echo.Context) error {
 		return response.BadRequestResponse(c, err.Error())
 	}
 
-	if _, err := pc.projectService.Delete(projectUUID, authUser); err != nil {
+	if _, err := ph.projectService.Delete(projectUUID, authUser); err != nil {
 		return response.ErrorResponse(c, err)
 	}
 

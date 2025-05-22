@@ -37,14 +37,14 @@ func NewBackupHandler(injector *do.Injector) (*BackupHandler, error) {
 // @Failure 500 "Internal server error"
 //
 // @Router /backups [get]
-func (bc *BackupHandler) List(c echo.Context) error {
+func (bh *BackupHandler) List(c echo.Context) error {
 	var request dto.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
 	}
 	authUser, _ := auth.NewAuth(c).User()
 
-	backups, err := bc.backupService.List(request.ProjectUUID, authUser)
+	backups, err := bh.backupService.List(request.ProjectUUID, authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
@@ -72,7 +72,7 @@ func (bc *BackupHandler) List(c echo.Context) error {
 // @Failure 500 "Internal server error"
 //
 // @Router /backups/{backupUUID} [get]
-func (bc *BackupHandler) Show(c echo.Context) error {
+func (bh *BackupHandler) Show(c echo.Context) error {
 	var request dto.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
@@ -85,7 +85,7 @@ func (bc *BackupHandler) Show(c echo.Context) error {
 		return response.BadRequestResponse(c, err.Error())
 	}
 
-	backup, err := bc.backupService.GetByUUID(backupUUID, authUser)
+	backup, err := bh.backupService.GetByUUID(backupUUID, authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
@@ -114,7 +114,7 @@ func (bc *BackupHandler) Show(c echo.Context) error {
 // @Failure 500 "Internal server error"
 //
 // @Router /backups [post]
-func (bc *BackupHandler) Store(c echo.Context) error {
+func (bh *BackupHandler) Store(c echo.Context) error {
 	var request dto.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
@@ -122,7 +122,7 @@ func (bc *BackupHandler) Store(c echo.Context) error {
 
 	authUser, _ := auth.NewAuth(c).User()
 
-	backup, err := bc.backupService.Create(request.ProjectUUID, authUser)
+	backup, err := bh.backupService.Create(request.ProjectUUID, authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
@@ -150,7 +150,7 @@ func (bc *BackupHandler) Store(c echo.Context) error {
 // @Failure 500 "Internal server error"
 //
 // @Router /backups/{backupUUID} [delete]
-func (bc *BackupHandler) Delete(c echo.Context) error {
+func (bh *BackupHandler) Delete(c echo.Context) error {
 	var request dto.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
@@ -163,7 +163,7 @@ func (bc *BackupHandler) Delete(c echo.Context) error {
 		return response.BadRequestResponse(c, err.Error())
 	}
 
-	if _, err := bc.backupService.Delete(backupUUID, authUser); err != nil {
+	if _, err := bh.backupService.Delete(backupUUID, authUser); err != nil {
 		return response.ErrorResponse(c, err)
 	}
 
