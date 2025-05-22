@@ -37,7 +37,7 @@ func NewOrganizationHandler(injector *do.Injector) (*OrganizationHandler, error)
 // @Param sort query string false "Field to sort by"
 // @Param order query string false "Sort order (asc or desc)"
 //
-// @Success 200 {object} response.Response{content=[]organizationDto.Response} "List of organizations"
+// @Success 200 {object} response.Response{content=[]organization.Response} "List of organizations"
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
 //
@@ -71,7 +71,7 @@ func (oh *OrganizationHandler) List(c echo.Context) error {
 // @Param Authorization header string true "Bearer Token"
 // @Param organization_id path string true "Organization ID"
 //
-// @Success 200 {object} response.Response{content=organizationDto.Response} "Organization details"
+// @Success 200 {object} response.Response{content=organization.Response} "Organization details"
 // @Failure 422 "Unprocessable entity"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
@@ -109,9 +109,9 @@ func (oh *OrganizationHandler) Show(c echo.Context) error {
 // @Produce json
 //
 // @Param Authorization header string true "Bearer Token"
-// @Param organization body organization_requests.CreateRequest true "Organization name"
+// @Param organization body organization.CreateRequest true "Organization name"
 //
-// @Success 201 {object} response.Response{content=organizationDto.Response} "Organization created"
+// @Success 201 {object} response.Response{content=organization.Response} "Organization created"
 // @Failure 422 "Unprocessable entity"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
@@ -148,9 +148,9 @@ func (oh *OrganizationHandler) Store(c echo.Context) error {
 //
 // @Param Authorization header string true "Bearer Token"
 // @Param organization_id path string true "Organization ID"
-// @Param organization body organization_requests.CreateRequest true "Updated organization details"
+// @Param organization body organization.CreateRequest true "Updated organization details"
 //
-// @Success 200 {object} response.Response{content=organizationDto.Response} "Organization updated"
+// @Success 200 {object} response.Response{content=organization.Response} "Organization updated"
 // @Failure 422 "Unprocessable entity"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"

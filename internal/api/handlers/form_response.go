@@ -35,7 +35,7 @@ func NewFormResponseHandler(injector *do.Injector) (*FormResponseHandler, error)
 // @Param projectUUID path string true "Project UUID"
 // @Param formUUID path string true "Form UUID"
 //
-// @Success 200 {object} response.Response{content=[]resources.FormResponseForAPI} "List of form responses"
+// @Success 200 {object} response.Response{content=[]form.ResponseForAPI} "List of form responses"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
@@ -77,7 +77,7 @@ func (ffh *FormResponseHandler) List(c echo.Context) error {
 // @Param formUUID path string true "Form UUID"
 // @Param formResponseUUID path string true "Form Response UUID"
 //
-// @Success 200 {object} response.Response{content=resources.FormResponseForAPI} "Form response details"
+// @Success 200 {object} response.Response{content=form.ResponseForAPI} "Form response details"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
@@ -117,9 +117,9 @@ func (ffh *FormResponseHandler) Show(c echo.Context) error {
 // @Param projectUUID path string true "Project UUID"
 // @Param formUUID path string true "Form UUID"
 //
-// @Param request body form_requests.CreateResponseRequest true "Request body to create a new form response"
+// @Param request body form.CreateResponseRequest true "Request body to create a new form response"
 //
-// @Success 201 {object} response.Response{content=resources.FormResponseForAPI} "Form response details"
+// @Success 201 {object} response.Response{content=form.ResponseForAPI} "Form response details"
 // @Failure 422 "Unprocessable entity"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"

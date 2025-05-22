@@ -33,7 +33,7 @@ func NewOrganizationMemberHandler(injector *do.Injector) (*OrganizationMemberHan
 // @Param Authorization header string true "Bearer Token"
 // @Param organization_id path string true "Organization ID"
 //
-// @Success 201 {object} response.Response{content=[]resources.UserResponse} "User created"
+// @Success 201 {object} response.Response{content=[]user.Response} "User created"
 // @Failure 422 "Unprocessable entity"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
@@ -72,9 +72,9 @@ func (omh *OrganizationMemberHandler) List(c echo.Context) error {
 //
 // @Param Authorization header string true "Bearer Token"
 // @Param organization_id path string true "Organization ID"
-// @Param user body organization_requests.MemberCreateRequest true "User ID JSON"
+// @Param user body organization.MemberCreateRequest true "User ID JSON"
 //
-// @Success 201 {object} response.Response{content=resources.UserResponse} "User created"
+// @Success 201 {object} response.Response{content=user.Response} "User created"
 // @Failure 422 "Unprocessable entity"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"

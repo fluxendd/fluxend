@@ -36,7 +36,7 @@ func NewLogHandler(injector *do.Injector) (*LogHandler, error) {
 // @Param sort query string false "Field to sort by"
 // @Param order query string false "Sort order (asc or desc)"
 //
-// @Success 200 {array} response.Response{content=[]resources.FileResponse} "List of files"
+// @Success 200 {array} response.Response{content=[]logging.Response} "List of files"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"

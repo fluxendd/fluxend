@@ -36,7 +36,7 @@ func NewFunctionHandler(injector *do.Injector) (*FunctionHandler, error) {
 // @Param projectUUID path string true "Project UUID"
 // @Param schema path string true "Schema to search under"
 //
-// @Success 200 {array} response.Response{content=[]resources.FunctionResponse} "List of functions"
+// @Success 200 {array} response.Response{content=[]database.FunctionResponse} "List of functions"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
@@ -78,7 +78,7 @@ func (fh *FunctionHandler) List(c echo.Context) error {
 // @Param schema path string true "Schema name"
 // @Param functionName path string true "Function name"
 //
-// @Success 200 {object} response.Response{content=resources.FunctionResponse} "Function details"
+// @Success 200 {object} response.Response{content=database.FunctionResponse} "Function details"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
@@ -122,9 +122,9 @@ func (fh *FunctionHandler) Show(c echo.Context) error {
 // @Param Authorization header string true "Bearer Token"
 // @Param Header X-Project header string true "Project UUID"
 //
-// @Param form body requests.CreateFunctionRequest true "Function details"
+// @Param function body database.CreateFunctionRequest true "Function details"
 //
-// @Success 201 {object} response.Response{content=resources.FunctionResponse} "Function created"
+// @Success 201 {object} response.Response{content=database.FunctionResponse} "Function created"
 // @Failure 422 "Unprocessable entity"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"

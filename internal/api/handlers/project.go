@@ -38,7 +38,7 @@ func NewProjectHandler(injector *do.Injector) (*ProjectHandler, error) {
 // @Param sort query string false "Field to sort by"
 // @Param order query string false "Sort order (asc or desc)"
 //
-// @Success 200 {object} response.Response{content=[]resources.ProjectResponse} "List of projects"
+// @Success 200 {object} response.Response{content=[]project.Response} "List of projects"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
@@ -78,7 +78,7 @@ func (ph *ProjectHandler) List(c echo.Context) error {
 // @Param Authorization header string true "Bearer Token"
 // @Param projectUUID path string true "Project UUID"
 //
-// @Success 200 {object} response.Response{content=resources.ProjectResponse} "Project details"
+// @Success 200 {object} response.Response{content=project.Response} "Project details"
 // @Failure 422 "Unprocessable entity"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
@@ -117,9 +117,9 @@ func (ph *ProjectHandler) Show(c echo.Context) error {
 //
 // @Param Authorization header string true "Bearer Token"
 // @Param organizationUUID query string true "Organization UUID"
-// @Param name body project_requests.CreateRequest true "Project name"
+// @Param name body project.CreateRequest true "Project name"
 //
-// @Success 201 {object} response.Response{content=resources.ProjectResponse} "Project details"
+// @Success 201 {object} response.Response{content=project.Response} "Project details"
 // @Failure 422 "Unprocessable entity"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
@@ -153,9 +153,9 @@ func (ph *ProjectHandler) Store(c echo.Context) error {
 //
 // @Param Authorization header string true "Bearer Token"
 // @Param projectUUID path string true "Project UUID"
-// @Param name body project_requests.UpdateRequest true "Project name"
+// @Param name body project.UpdateRequest true "Project name"
 //
-// @Success 200 {object} response.Response{content=resources.ProjectResponse} "Project details"
+// @Success 200 {object} response.Response{content=project.Response} "Project details"
 // @Failure 422 "Unprocessable entity"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"

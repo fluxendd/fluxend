@@ -27,8 +27,8 @@ func ToFormResourceCollection(forms []formDomain.Form) []formDto.Response {
 	return resourceForms
 }
 
-func ToFieldResource(formField *formDomain.Field) formDto.FieldResponse {
-	return formDto.FieldResponse{
+func ToFieldResource(formField *formDomain.Field) formDto.FieldResponseApi {
+	return formDto.FieldResponseApi{
 		Uuid:         formField.Uuid,
 		FormUuid:     formField.FormUuid,
 		Label:        formField.Label,
@@ -50,8 +50,8 @@ func ToFieldResource(formField *formDomain.Field) formDto.FieldResponse {
 	}
 }
 
-func ToFieldResourceCollection(formFields []formDomain.Field) []formDto.FieldResponse {
-	resourceFormFields := make([]formDto.FieldResponse, len(formFields))
+func ToFieldResourceCollection(formFields []formDomain.Field) []formDto.FieldResponseApi {
+	resourceFormFields := make([]formDto.FieldResponseApi, len(formFields))
 	for i, formField := range formFields {
 		resourceFormFields[i] = ToFieldResource(&formField)
 	}

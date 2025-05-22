@@ -33,7 +33,7 @@ func NewTableHandler(injector *do.Injector) (*TableHandler, error) {
 // @Param Authorization header string true "Bearer Token"
 // @param Header X-Project header string true "Project UUID"
 //
-// @Success 200 {object} response.Response{content=[]resources.TableResponse} "List of tables"
+// @Success 200 {object} response.Response{content=[]database.TableResponse} "List of tables"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
@@ -69,7 +69,7 @@ func (th *TableHandler) List(c echo.Context) error {
 //
 // @Param tableUUID path string true "Table UUID"
 //
-// @Success 200 {object} response.Response{content=resources.TableResponse} "Table details"
+// @Success 200 {object} response.Response{content=database.TableResponse} "Table details"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
 // @Failure 404 "Table not found"
@@ -109,9 +109,9 @@ func (th *TableHandler) Show(c echo.Context) error {
 // @Param Authorization header string true "Bearer Token"
 // @param Header X-Project header string true "Project UUID"
 //
-// @Param table body table_requests.CreateRequest true "Table definition JSON"
+// @Param table body database.CreateTableRequest true "Table definition JSON"
 //
-// @Success 201 {object} response.Response{content=resources.TableResponse} "Table created"
+// @Success 201 {object} response.Response{content=database.TableResponse} "Table created"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
 // @Failure 422 "Unprocessable entity"
@@ -146,9 +146,9 @@ func (th *TableHandler) Store(c echo.Context) error {
 // @Param Authorization header string true "Bearer Token"
 // @param Header X-Project header string true "Project UUID"
 //
-// @Param table body table_requests.UploadRequest true "Table definition multipart/form-data"
+// @Param table body database.UploadTableRequest true "Table definition multipart/form-data"
 //
-// @Success 201 {object} response.Response{content=resources.TableResponse} "Table created"
+// @Success 201 {object} response.Response{content=database.TableResponse} "Table created"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
 // @Failure 422 "Unprocessable entity"
@@ -184,9 +184,9 @@ func (th *TableHandler) Upload(c echo.Context) error {
 // @param Header X-Project header string true "Project UUID"
 //
 // @Param tableUUID path string true "Table UUID"
-// @Param new_name body table_requests.RenameRequest true "Duplicate table name JSON"
+// @Param new_name body database.RenameTableRequest true "Duplicate table name JSON"
 //
-// @Success 201 {object} response.Response{content=resources.TableResponse} "Table duplicated"
+// @Success 201 {object} response.Response{content=database.TableResponse} "Table duplicated"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
 // @Failure 422 "Unprocessable entity"
@@ -227,9 +227,9 @@ func (th *TableHandler) Duplicate(c echo.Context) error {
 // @param Header X-Project header string true "Project UUID"
 //
 // @Param tableUUID path string true "Table UUID"
-// @Param new_name body table_requests.RenameRequest true "New table name JSON"
+// @Param new_name body database.RenameTableRequest true "New table name JSON"
 //
-// @Success 200 {object} response.Response{content=resources.TableResponse} "Table renamed"
+// @Success 200 {object} response.Response{content=database.TableResponse} "Table renamed"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
 // @Failure 422 "Unprocessable entity"
