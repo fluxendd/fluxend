@@ -38,7 +38,7 @@ func NewContainerHandler(injector *do.Injector) (*ContainerHandler, error) {
 // @Param sort query string false "Field to sort by"
 // @Param order query string false "Sort order (asc or desc)"
 //
-// @Success 200 {object} responses.Response{content=[]resources.ContainerResponse} "List of container"
+// @Success 200 {object} response.Response{content=[]container.Response} "List of container"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
@@ -75,7 +75,7 @@ func (ch *ContainerHandler) List(c echo.Context) error {
 //
 // @Param containerUUID path string true "Container UUID"
 //
-// @Success 200 {object} responses.Response{content=resources.ContainerResponse} "Container details"
+// @Success 200 {object} response.Response{content=container.Response} "Container details"
 // @Failure 422 "Unprocessable entity"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
@@ -111,9 +111,9 @@ func (ch *ContainerHandler) Show(c echo.Context) error {
 //
 // @Param Authorization header string true "Bearer Token"
 // @Param X-Project header string true "Project UUID"
-// @Param container body container_requests.CreateRequest true "Container details"
+// @Param container body container.CreateRequest true "Container details"
 //
-// @Success 201 {object} responses.Response{content=resources.ContainerResponse} "Container created"
+// @Success 201 {object} response.Response{content=container.Response} "Container created"
 // @Failure 422 "Unprocessable entity"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
@@ -149,9 +149,9 @@ func (ch *ContainerHandler) Store(c echo.Context) error {
 // @Param X-Project header string true "Project UUID"
 //
 // @Param containerUUID path string true "Container UUID"
-// @Param container body container_requests.CreateRequest true "Container details"
+// @Param container body container.CreateRequest true "Container details"
 //
-// @Success 200 {object} responses.Response{content=resources.ContainerResponse} "Container updated"
+// @Success 200 {object} response.Response{content=container.Response} "Container updated"
 // @Failure 422 "Unprocessable entity"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"

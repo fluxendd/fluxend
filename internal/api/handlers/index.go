@@ -32,13 +32,13 @@ func NewIndexHandler(injector *do.Injector) (*IndexHandler, error) {
 // @Param Authorization header string true "Bearer Token"
 // @Param tableUUID path string true "Table UUID"
 //
-// @Success 200 {object} responses.Response{content=[]resources.GenericResponse} "List of indexes"
+// @Success 200 {object} response.Response{content=[]dto.GenericResponse} "List of indexes"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
 //
 // @Router /tables/{tableUUID}/indexes [get]
-func (ic *IndexHandler) List(c echo.Context) error {
+func (ih *IndexHandler) List(c echo.Context) error {
 	var request dto.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
@@ -51,7 +51,7 @@ func (ic *IndexHandler) List(c echo.Context) error {
 		return response.BadRequestResponse(c, "Table name is required")
 	}
 
-	indexes, err := ic.indexService.List(fullTableName, request.ProjectUUID, authUser)
+	indexes, err := ih.indexService.List(fullTableName, request.ProjectUUID, authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
@@ -72,14 +72,14 @@ func (ic *IndexHandler) List(c echo.Context) error {
 // @Param tableUUID path string true "Table UUID"
 // @Param index_name path string true "Index Name"
 //
-// @Success 200 {object} responses.Response{content=resources.GenericResponse} "Index details"
+// @Success 200 {object} response.Response{content=dto.GenericResponse} "Index details"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
 // @Failure 404 "Index not found"
 // @Failure 500 "Internal server error"
 //
 // @Router /tables/{tableUUID}/indexes/{indexName} [get]
-func (ic *IndexHandler) Show(c echo.Context) error {
+func (ih *IndexHandler) Show(c echo.Context) error {
 	var request dto.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
@@ -94,7 +94,7 @@ func (ic *IndexHandler) Show(c echo.Context) error {
 
 	indexName := c.Param("indexName")
 
-	index, err := ic.indexService.GetByName(indexName, fullTableName, request.ProjectUUID, authUser)
+	index, err := ih.indexService.GetByName(indexName, fullTableName, request.ProjectUUID, authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
@@ -113,16 +113,16 @@ func (ic *IndexHandler) Show(c echo.Context) error {
 //
 // @Param Authorization header string true "Bearer Token"
 // @Param tableUUID path string true "Table UUID"
-// @Param index body requests.IndexCreateRequest true "Index details JSON"
+// @Param index body database.CreateIndexRequest true "Index details JSON"
 //
-// @Success 201 {object} responses.Response{content=resources.GenericResponse} "Index created"
+// @Success 201 {object} response.Response{content=dto.GenericResponse} "Index created"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
 // @Failure 422 "Unprocessable entity"
 // @Failure 500 "Internal server error"
 //
 // @Router /tables/{tableUUID}/indexes [post]
-func (ic *IndexHandler) Store(c echo.Context) error {
+func (ih *IndexHandler) Store(c echo.Context) error {
 	var request databaseDto.CreateIndexRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
@@ -135,7 +135,7 @@ func (ic *IndexHandler) Store(c echo.Context) error {
 		return response.BadRequestResponse(c, "Table name is required")
 	}
 
-	index, err := ic.indexService.Create(fullTableName, databaseDto.ToCreateIndexInput(request), authUser)
+	index, err := ih.indexService.Create(fullTableName, databaseDto.ToCreateIndexInput(request), authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
@@ -163,7 +163,7 @@ func (ic *IndexHandler) Store(c echo.Context) error {
 // @Failure 500 "Internal server error"
 //
 // @Router /tables/{tableUUID}/indexes/{indexName} [delete]
-func (ic *IndexHandler) Delete(c echo.Context) error {
+func (ih *IndexHandler) Delete(c echo.Context) error {
 	var request dto.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
@@ -178,7 +178,7 @@ func (ic *IndexHandler) Delete(c echo.Context) error {
 
 	indexName := c.Param("indexName")
 
-	if _, err := ic.indexService.Delete(indexName, fullTableName, request.ProjectUUID, authUser); err != nil {
+	if _, err := ih.indexService.Delete(indexName, fullTableName, request.ProjectUUID, authUser); err != nil {
 		return response.ErrorResponse(c, err)
 	}
 

@@ -44,8 +44,6 @@ func (r *UploadTableRequest) BindAndValidate(c echo.Context) []string {
 		return []string{err.Error()}
 	}
 
-	r.SetContext(c)
-
 	var errors []string
 	if err := r.validate(); err != nil {
 		errors = append(errors, r.ExtractValidationErrors(err)...)
@@ -91,8 +89,6 @@ func (r *RenameTableRequest) BindAndValidate(c echo.Context) []string {
 		return []string{err.Error()}
 	}
 
-	r.SetContext(c)
-
 	err = validation.ValidateStruct(r,
 		validation.Field(
 			&r.Name, validation.Required.Error("Name is required"),
@@ -124,8 +120,6 @@ func (r *CreateTableRequest) BindAndValidate(c echo.Context) []string {
 	if err != nil {
 		return []string{err.Error()}
 	}
-
-	r.SetContext(c)
 
 	var errors []string
 

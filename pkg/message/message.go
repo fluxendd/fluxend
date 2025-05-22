@@ -138,6 +138,7 @@ var messages = map[string]string{
 	// Others
 	"database_stats.error.forbidden": "You don't have permission to view database stats",
 	"function.error.listForbidden":   "You don't have permission to view functions",
+	"log.error.listForbidden":        "You don't have permission to view logs",
 }
 
 func Message(key string) string {

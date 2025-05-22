@@ -19,6 +19,89 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/admin/logs": {
+            "get": {
+                "description": "Get all logs",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Logs"
+                ],
+                "summary": "List all logs",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Page number for pagination",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Number of items per page",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Field to sort by",
+                        "name": "sort",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort order (asc or desc)",
+                        "name": "order",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of files",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "allOf": [
+                                    {
+                                        "$ref": "#/definitions/response.Response"
+                                    },
+                                    {
+                                        "type": "object",
+                                        "properties": {
+                                            "content": {
+                                                "type": "array",
+                                                "items": {
+                                                    "$ref": "#/definitions/logging.Response"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
         "/backups": {
             "get": {
                 "description": "Retrieve a list of all backups for the specified project",
@@ -56,7 +139,7 @@ const docTemplate = `{
                             "items": {
                                 "allOf": [
                                     {
-                                        "$ref": "#/definitions/responses.Response"
+                                        "$ref": "#/definitions/response.Response"
                                     },
                                     {
                                         "type": "object",
@@ -64,7 +147,7 @@ const docTemplate = `{
                                             "content": {
                                                 "type": "array",
                                                 "items": {
-                                                    "$ref": "#/definitions/resources.BackupResponse"
+                                                    "$ref": "#/definitions/backup.Response"
                                                 }
                                             }
                                         }
@@ -114,7 +197,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/requests.DefaultRequestWithProjectHeader"
+                            "$ref": "#/definitions/dto.DefaultRequestWithProjectHeader"
                         }
                     }
                 ],
@@ -124,13 +207,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/responses.Response"
+                                    "$ref": "#/definitions/response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "content": {
-                                            "$ref": "#/definitions/resources.BackupResponse"
+                                            "$ref": "#/definitions/backup.Response"
                                         }
                                     }
                                 }
@@ -194,13 +277,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/responses.Response"
+                                    "$ref": "#/definitions/response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "content": {
-                                            "$ref": "#/definitions/resources.BackupResponse"
+                                            "$ref": "#/definitions/backup.Response"
                                         }
                                     }
                                 }
@@ -330,7 +413,7 @@ const docTemplate = `{
                             "items": {
                                 "allOf": [
                                     {
-                                        "$ref": "#/definitions/responses.Response"
+                                        "$ref": "#/definitions/response.Response"
                                     },
                                     {
                                         "type": "object",
@@ -338,7 +421,7 @@ const docTemplate = `{
                                             "content": {
                                                 "type": "array",
                                                 "items": {
-                                                    "$ref": "#/definitions/resources.FileResponse"
+                                                    "$ref": "#/definitions/file.Response"
                                                 }
                                             }
                                         }
@@ -391,7 +474,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/container_requests.CreateFileRequest"
+                            "$ref": "#/definitions/file.CreateRequest"
                         }
                     }
                 ],
@@ -401,13 +484,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/responses.Response"
+                                    "$ref": "#/definitions/response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "content": {
-                                            "$ref": "#/definitions/resources.FileResponse"
+                                            "$ref": "#/definitions/file.Response"
                                         }
                                     }
                                 }
@@ -468,13 +551,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/responses.Response"
+                                    "$ref": "#/definitions/response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "content": {
-                                            "$ref": "#/definitions/resources.FileResponse"
+                                            "$ref": "#/definitions/file.Response"
                                         }
                                     }
                                 }
@@ -584,7 +667,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/container_requests.RenameFileRequest"
+                            "$ref": "#/definitions/file.RenameRequest"
                         }
                     }
                 ],
@@ -594,13 +677,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/responses.Response"
+                                    "$ref": "#/definitions/response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "content": {
-                                            "$ref": "#/definitions/resources.FileResponse"
+                                            "$ref": "#/definitions/file.Response"
                                         }
                                     }
                                 }
@@ -680,7 +763,7 @@ const docTemplate = `{
                             "items": {
                                 "allOf": [
                                     {
-                                        "$ref": "#/definitions/responses.Response"
+                                        "$ref": "#/definitions/response.Response"
                                     },
                                     {
                                         "type": "object",
@@ -688,7 +771,7 @@ const docTemplate = `{
                                             "content": {
                                                 "type": "array",
                                                 "items": {
-                                                    "$ref": "#/definitions/resources.FormResponse"
+                                                    "$ref": "#/definitions/form.Response"
                                                 }
                                             }
                                         }
@@ -741,7 +824,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/form_requests.CreateRequest"
+                            "$ref": "#/definitions/form.CreateRequest"
                         }
                     }
                 ],
@@ -751,13 +834,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/responses.Response"
+                                    "$ref": "#/definitions/response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "content": {
-                                            "$ref": "#/definitions/resources.FormResponse"
+                                            "$ref": "#/definitions/form.Response"
                                         }
                                     }
                                 }
@@ -821,13 +904,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/responses.Response"
+                                    "$ref": "#/definitions/response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "content": {
-                                            "$ref": "#/definitions/resources.FormResponse"
+                                            "$ref": "#/definitions/form.Response"
                                         }
                                     }
                                 }
@@ -885,7 +968,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/form_requests.CreateRequest"
+                            "$ref": "#/definitions/form.CreateRequest"
                         }
                     }
                 ],
@@ -895,13 +978,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/responses.Response"
+                                    "$ref": "#/definitions/response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "content": {
-                                            "$ref": "#/definitions/resources.FormResponse"
+                                            "$ref": "#/definitions/form.Response"
                                         }
                                     }
                                 }
@@ -1010,7 +1093,7 @@ const docTemplate = `{
                             "items": {
                                 "allOf": [
                                     {
-                                        "$ref": "#/definitions/responses.Response"
+                                        "$ref": "#/definitions/response.Response"
                                     },
                                     {
                                         "type": "object",
@@ -1018,7 +1101,7 @@ const docTemplate = `{
                                             "content": {
                                                 "type": "array",
                                                 "items": {
-                                                    "$ref": "#/definitions/resources.FormFieldResponse"
+                                                    "$ref": "#/definitions/form.FieldResponseApi"
                                                 }
                                             }
                                         }
@@ -1064,7 +1147,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/form_requests.CreateFormFieldsRequest"
+                            "$ref": "#/definitions/form.CreateFormFieldsRequest"
                         }
                     },
                     {
@@ -1081,13 +1164,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/responses.Response"
+                                    "$ref": "#/definitions/response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "content": {
-                                            "$ref": "#/definitions/resources.FormFieldResponse"
+                                            "$ref": "#/definitions/form.FieldResponseApi"
                                         }
                                     }
                                 }
@@ -1151,13 +1234,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/responses.Response"
+                                    "$ref": "#/definitions/response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "content": {
-                                            "$ref": "#/definitions/resources.FormFieldResponse"
+                                            "$ref": "#/definitions/form.FieldResponseApi"
                                         }
                                     }
                                 }
@@ -1201,7 +1284,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/form_requests.UpdateFormFieldRequest"
+                            "$ref": "#/definitions/form.UpdateFormFieldRequest"
                         }
                     },
                     {
@@ -1225,13 +1308,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/responses.Response"
+                                    "$ref": "#/definitions/response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "content": {
-                                            "$ref": "#/definitions/resources.FormFieldResponse"
+                                            "$ref": "#/definitions/form.FieldResponseApi"
                                         }
                                     }
                                 }
@@ -1345,7 +1428,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/responses.Response"
+                                    "$ref": "#/definitions/response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -1353,7 +1436,7 @@ const docTemplate = `{
                                         "content": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/resources.FormResponseForAPI"
+                                                "$ref": "#/definitions/form.ResponseForAPI"
                                             }
                                         }
                                     }
@@ -1412,7 +1495,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/form_requests.CreateResponseRequest"
+                            "$ref": "#/definitions/form.CreateResponseRequest"
                         }
                     }
                 ],
@@ -1422,13 +1505,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/responses.Response"
+                                    "$ref": "#/definitions/response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "content": {
-                                            "$ref": "#/definitions/resources.FormResponseForAPI"
+                                            "$ref": "#/definitions/form.ResponseForAPI"
                                         }
                                     }
                                 }
@@ -1499,13 +1582,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/responses.Response"
+                                    "$ref": "#/definitions/response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "content": {
-                                            "$ref": "#/definitions/resources.FormResponseForAPI"
+                                            "$ref": "#/definitions/form.ResponseForAPI"
                                         }
                                     }
                                 }
@@ -1632,7 +1715,7 @@ const docTemplate = `{
                             "items": {
                                 "allOf": [
                                     {
-                                        "$ref": "#/definitions/responses.Response"
+                                        "$ref": "#/definitions/response.Response"
                                     },
                                     {
                                         "type": "object",
@@ -1640,7 +1723,7 @@ const docTemplate = `{
                                             "content": {
                                                 "type": "array",
                                                 "items": {
-                                                    "$ref": "#/definitions/resources.FunctionResponse"
+                                                    "$ref": "#/definitions/database.FunctionResponse"
                                                 }
                                             }
                                         }
@@ -1689,11 +1772,11 @@ const docTemplate = `{
                     },
                     {
                         "description": "Function details",
-                        "name": "form",
+                        "name": "function",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/requests.CreateFunctionRequest"
+                            "$ref": "#/definitions/database.CreateFunctionRequest"
                         }
                     }
                 ],
@@ -1703,13 +1786,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/responses.Response"
+                                    "$ref": "#/definitions/response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "content": {
-                                            "$ref": "#/definitions/resources.FunctionResponse"
+                                            "$ref": "#/definitions/database.FunctionResponse"
                                         }
                                     }
                                 }
@@ -1780,13 +1863,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/responses.Response"
+                                    "$ref": "#/definitions/response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "content": {
-                                            "$ref": "#/definitions/resources.FunctionResponse"
+                                            "$ref": "#/definitions/database.FunctionResponse"
                                         }
                                     }
                                 }
@@ -1921,7 +2004,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/responses.Response"
+                                    "$ref": "#/definitions/response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -1929,7 +2012,7 @@ const docTemplate = `{
                                         "content": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/resources.OrganizationResponse"
+                                                "$ref": "#/definitions/organization.Response"
                                             }
                                         }
                                     }
@@ -1971,7 +2054,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/organization_requests.CreateRequest"
+                            "$ref": "#/definitions/organization.CreateRequest"
                         }
                     }
                 ],
@@ -1981,13 +2064,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/responses.Response"
+                                    "$ref": "#/definitions/response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "content": {
-                                            "$ref": "#/definitions/resources.OrganizationResponse"
+                                            "$ref": "#/definitions/organization.Response"
                                         }
                                     }
                                 }
@@ -2044,13 +2127,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/responses.Response"
+                                    "$ref": "#/definitions/response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "content": {
-                                            "$ref": "#/definitions/resources.OrganizationResponse"
+                                            "$ref": "#/definitions/organization.Response"
                                         }
                                     }
                                 }
@@ -2104,7 +2187,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/organization_requests.CreateRequest"
+                            "$ref": "#/definitions/organization.CreateRequest"
                         }
                     }
                 ],
@@ -2114,13 +2197,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/responses.Response"
+                                    "$ref": "#/definitions/response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "content": {
-                                            "$ref": "#/definitions/resources.OrganizationResponse"
+                                            "$ref": "#/definitions/organization.Response"
                                         }
                                     }
                                 }
@@ -2173,7 +2256,7 @@ const docTemplate = `{
                     "204": {
                         "description": "Organization deleted",
                         "schema": {
-                            "$ref": "#/definitions/responses.Response"
+                            "$ref": "#/definitions/response.Response"
                         }
                     },
                     "401": {
@@ -2220,7 +2303,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/responses.Response"
+                                    "$ref": "#/definitions/response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -2228,7 +2311,7 @@ const docTemplate = `{
                                         "content": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/resources.UserResponse"
+                                                "$ref": "#/definitions/user.Response"
                                             }
                                         }
                                     }
@@ -2283,7 +2366,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/organization_requests.MemberCreateRequest"
+                            "$ref": "#/definitions/organization.MemberCreateRequest"
                         }
                     }
                 ],
@@ -2293,13 +2376,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/responses.Response"
+                                    "$ref": "#/definitions/response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "content": {
-                                            "$ref": "#/definitions/resources.UserResponse"
+                                            "$ref": "#/definitions/user.Response"
                                         }
                                     }
                                 }
@@ -2435,7 +2518,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/responses.Response"
+                                    "$ref": "#/definitions/response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -2443,7 +2526,7 @@ const docTemplate = `{
                                         "content": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/resources.ProjectResponse"
+                                                "$ref": "#/definitions/project.Response"
                                             }
                                         }
                                     }
@@ -2495,7 +2578,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/project_requests.CreateRequest"
+                            "$ref": "#/definitions/project.CreateRequest"
                         }
                     }
                 ],
@@ -2505,13 +2588,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/responses.Response"
+                                    "$ref": "#/definitions/response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "content": {
-                                            "$ref": "#/definitions/resources.ProjectResponse"
+                                            "$ref": "#/definitions/project.Response"
                                         }
                                     }
                                 }
@@ -2568,13 +2651,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/responses.Response"
+                                    "$ref": "#/definitions/response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "content": {
-                                            "$ref": "#/definitions/resources.ProjectResponse"
+                                            "$ref": "#/definitions/project.Response"
                                         }
                                     }
                                 }
@@ -2628,7 +2711,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/project_requests.UpdateRequest"
+                            "$ref": "#/definitions/project.UpdateRequest"
                         }
                     }
                 ],
@@ -2638,13 +2721,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/responses.Response"
+                                    "$ref": "#/definitions/response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "content": {
-                                            "$ref": "#/definitions/resources.ProjectResponse"
+                                            "$ref": "#/definitions/project.Response"
                                         }
                                     }
                                 }
@@ -2697,7 +2780,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Project deleted",
                         "schema": {
-                            "$ref": "#/definitions/responses.Response"
+                            "$ref": "#/definitions/response.Response"
                         }
                     },
                     "400": {
@@ -2771,7 +2854,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/responses.Response"
+                                    "$ref": "#/definitions/response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -2779,7 +2862,7 @@ const docTemplate = `{
                                         "content": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/resources.ContainerResponse"
+                                                "$ref": "#/definitions/container.Response"
                                             }
                                         }
                                     }
@@ -2831,7 +2914,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/container_requests.CreateRequest"
+                            "$ref": "#/definitions/container.CreateRequest"
                         }
                     }
                 ],
@@ -2841,13 +2924,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/responses.Response"
+                                    "$ref": "#/definitions/response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "content": {
-                                            "$ref": "#/definitions/resources.ContainerResponse"
+                                            "$ref": "#/definitions/container.Response"
                                         }
                                     }
                                 }
@@ -2911,13 +2994,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/responses.Response"
+                                    "$ref": "#/definitions/response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "content": {
-                                            "$ref": "#/definitions/resources.ContainerResponse"
+                                            "$ref": "#/definitions/container.Response"
                                         }
                                     }
                                 }
@@ -2978,7 +3061,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/container_requests.CreateRequest"
+                            "$ref": "#/definitions/container.CreateRequest"
                         }
                     }
                 ],
@@ -2988,13 +3071,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/responses.Response"
+                                    "$ref": "#/definitions/response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "content": {
-                                            "$ref": "#/definitions/resources.ContainerResponse"
+                                            "$ref": "#/definitions/container.Response"
                                         }
                                     }
                                 }
@@ -3101,7 +3184,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/responses.Response"
+                                    "$ref": "#/definitions/response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -3109,7 +3192,7 @@ const docTemplate = `{
                                         "content": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/resources.TableResponse"
+                                                "$ref": "#/definitions/database.TableResponse"
                                             }
                                         }
                                     }
@@ -3161,7 +3244,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/table_requests.CreateRequest"
+                            "$ref": "#/definitions/database.CreateTableRequest"
                         }
                     }
                 ],
@@ -3171,13 +3254,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/responses.Response"
+                                    "$ref": "#/definitions/response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "content": {
-                                            "$ref": "#/definitions/resources.TableResponse"
+                                            "$ref": "#/definitions/database.TableResponse"
                                         }
                                     }
                                 }
@@ -3233,7 +3316,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/table_requests.UploadRequest"
+                            "$ref": "#/definitions/database.UploadTableRequest"
                         }
                     }
                 ],
@@ -3243,13 +3326,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/responses.Response"
+                                    "$ref": "#/definitions/response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "content": {
-                                            "$ref": "#/definitions/resources.TableResponse"
+                                            "$ref": "#/definitions/database.TableResponse"
                                         }
                                     }
                                 }
@@ -3306,7 +3389,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/responses.Response"
+                                    "$ref": "#/definitions/response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -3314,7 +3397,7 @@ const docTemplate = `{
                                         "content": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/resources.ColumnResponse"
+                                                "$ref": "#/definitions/database.ColumnResponse"
                                             }
                                         }
                                     }
@@ -3373,7 +3456,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/column_requests.CreateRequest"
+                            "$ref": "#/definitions/database.CreateColumnRequest"
                         }
                     }
                 ],
@@ -3383,13 +3466,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/responses.Response"
+                                    "$ref": "#/definitions/response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "content": {
-                                            "$ref": "#/definitions/resources.TableResponse"
+                                            "$ref": "#/definitions/database.ColumnResponse"
                                         }
                                     }
                                 }
@@ -3450,7 +3533,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/column_requests.CreateRequest"
+                            "$ref": "#/definitions/database.CreateColumnRequest"
                         }
                     }
                 ],
@@ -3460,13 +3543,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/responses.Response"
+                                    "$ref": "#/definitions/response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "content": {
-                                            "$ref": "#/definitions/resources.TableResponse"
+                                            "$ref": "#/definitions/database.ColumnResponse"
                                         }
                                     }
                                 }
@@ -3536,7 +3619,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/column_requests.RenameRequest"
+                            "$ref": "#/definitions/database.RenameColumnRequest"
                         }
                     }
                 ],
@@ -3544,7 +3627,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Column renamed",
                         "schema": {
-                            "$ref": "#/definitions/responses.Response"
+                            "$ref": "#/definitions/response.Response"
                         }
                     },
                     "400": {
@@ -3664,13 +3747,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/responses.Response"
+                                    "$ref": "#/definitions/response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "content": {
-                                            "$ref": "#/definitions/resources.TableResponse"
+                                            "$ref": "#/definitions/database.TableResponse"
                                         }
                                     }
                                 }
@@ -3786,7 +3869,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/table_requests.RenameRequest"
+                            "$ref": "#/definitions/database.RenameTableRequest"
                         }
                     }
                 ],
@@ -3796,13 +3879,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/responses.Response"
+                                    "$ref": "#/definitions/response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "content": {
-                                            "$ref": "#/definitions/resources.TableResponse"
+                                            "$ref": "#/definitions/database.TableResponse"
                                         }
                                     }
                                 }
@@ -3859,7 +3942,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/responses.Response"
+                                    "$ref": "#/definitions/response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -3917,7 +4000,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/requests.IndexCreateRequest"
+                            "$ref": "#/definitions/database.CreateIndexRequest"
                         }
                     }
                 ],
@@ -3927,7 +4010,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/responses.Response"
+                                    "$ref": "#/definitions/response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -3995,7 +4078,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/responses.Response"
+                                    "$ref": "#/definitions/response.Response"
                                 },
                                 {
                                     "type": "object",
@@ -4115,7 +4198,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/table_requests.RenameRequest"
+                            "$ref": "#/definitions/database.RenameTableRequest"
                         }
                     }
                 ],
@@ -4125,13 +4208,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/responses.Response"
+                                    "$ref": "#/definitions/response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "content": {
-                                            "$ref": "#/definitions/resources.TableResponse"
+                                            "$ref": "#/definitions/database.TableResponse"
                                         }
                                     }
                                 }
@@ -4173,7 +4256,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/user_requests.CreateRequest"
+                            "$ref": "#/definitions/user.CreateRequest"
                         }
                     }
                 ],
@@ -4183,13 +4266,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/responses.Response"
+                                    "$ref": "#/definitions/response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "content": {
-                                            "$ref": "#/definitions/resources.UserResponse"
+                                            "$ref": "#/definitions/user.Response"
                                         }
                                     }
                                 }
@@ -4228,7 +4311,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/user_requests.LoginRequest"
+                            "$ref": "#/definitions/user.LoginRequest"
                         }
                     }
                 ],
@@ -4238,13 +4321,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/responses.Response"
+                                    "$ref": "#/definitions/response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "content": {
-                                            "$ref": "#/definitions/resources.UserResponse"
+                                            "$ref": "#/definitions/user.Response"
                                         }
                                     }
                                 }
@@ -4289,7 +4372,7 @@ const docTemplate = `{
                     "200": {
                         "description": "User logged out",
                         "schema": {
-                            "$ref": "#/definitions/responses.Response"
+                            "$ref": "#/definitions/response.Response"
                         }
                     },
                     "400": {
@@ -4339,13 +4422,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/responses.Response"
+                                    "$ref": "#/definitions/response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "content": {
-                                            "$ref": "#/definitions/resources.UserResponse"
+                                            "$ref": "#/definitions/user.Response"
                                         }
                                     }
                                 }
@@ -4396,7 +4479,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/user_requests.UpdateRequest"
+                            "$ref": "#/definitions/user.UpdateRequest"
                         }
                     }
                 ],
@@ -4406,13 +4489,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/responses.Response"
+                                    "$ref": "#/definitions/response.Response"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "content": {
-                                            "$ref": "#/definitions/resources.UserResponse"
+                                            "$ref": "#/definitions/user.Response"
                                         }
                                     }
                                 }
@@ -4436,55 +4519,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "column_requests.CreateRequest": {
-            "type": "object"
-        },
-        "column_requests.RenameRequest": {
-            "type": "object"
-        },
-        "container_requests.CreateFileRequest": {
-            "type": "object"
-        },
-        "container_requests.CreateRequest": {
-            "type": "object"
-        },
-        "container_requests.RenameFileRequest": {
-            "type": "object"
-        },
-        "form_requests.CreateFormFieldsRequest": {
-            "type": "object"
-        },
-        "form_requests.CreateRequest": {
-            "type": "object"
-        },
-        "form_requests.CreateResponseRequest": {
-            "type": "object"
-        },
-        "form_requests.UpdateFormFieldRequest": {
-            "type": "object"
-        },
-        "organization_requests.CreateRequest": {
-            "type": "object"
-        },
-        "organization_requests.MemberCreateRequest": {
-            "type": "object"
-        },
-        "project_requests.CreateRequest": {
-            "type": "object"
-        },
-        "project_requests.UpdateRequest": {
-            "type": "object"
-        },
-        "requests.CreateFunctionRequest": {
-            "type": "object"
-        },
-        "requests.DefaultRequestWithProjectHeader": {
-            "type": "object"
-        },
-        "requests.IndexCreateRequest": {
-            "type": "object"
-        },
-        "resources.BackupResponse": {
+        "backup.Response": {
             "type": "object",
             "properties": {
                 "completedAt": {
@@ -4507,42 +4542,27 @@ const docTemplate = `{
                 }
             }
         },
-        "resources.ColumnResponse": {
+        "container.CreateRequest": {
             "type": "object",
             "properties": {
-                "defaultValue": {
+                "description": {
                     "type": "string"
                 },
-                "foreign": {
+                "is_public": {
                     "type": "boolean"
+                },
+                "max_file_size": {
+                    "type": "integer"
                 },
                 "name": {
                     "type": "string"
                 },
-                "notNull": {
-                    "type": "boolean"
-                },
-                "position": {
-                    "type": "integer"
-                },
-                "primary": {
-                    "type": "boolean"
-                },
-                "referenceColumn": {
+                "projectUUID": {
                     "type": "string"
-                },
-                "referenceTable": {
-                    "type": "string"
-                },
-                "type": {
-                    "type": "string"
-                },
-                "unique": {
-                    "type": "boolean"
                 }
             }
         },
-        "resources.ContainerResponse": {
+        "container.Response": {
             "type": "object",
             "properties": {
                 "createdAt": {
@@ -4583,7 +4603,197 @@ const docTemplate = `{
                 }
             }
         },
-        "resources.FileResponse": {
+        "database.ColumnResponse": {
+            "type": "object",
+            "properties": {
+                "defaultValue": {
+                    "type": "string"
+                },
+                "foreign": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "notNull": {
+                    "type": "boolean"
+                },
+                "position": {
+                    "type": "integer"
+                },
+                "primary": {
+                    "type": "boolean"
+                },
+                "referenceColumn": {
+                    "type": "string"
+                },
+                "referenceTable": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "unique": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "database.CreateColumnRequest": {
+            "type": "object"
+        },
+        "database.CreateFunctionRequest": {
+            "type": "object",
+            "properties": {
+                "definition": {
+                    "type": "string"
+                },
+                "language": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "parameters": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/database.functionParameter"
+                    }
+                },
+                "projectUUID": {
+                    "type": "string"
+                },
+                "return_type": {
+                    "type": "string"
+                }
+            }
+        },
+        "database.CreateIndexRequest": {
+            "type": "object",
+            "properties": {
+                "columns": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "is_unique": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "projectUUID": {
+                    "type": "string"
+                }
+            }
+        },
+        "database.CreateTableRequest": {
+            "type": "object"
+        },
+        "database.FunctionResponse": {
+            "type": "object",
+            "properties": {
+                "dataType": {
+                    "type": "string"
+                },
+                "definition": {
+                    "type": "string"
+                },
+                "language": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "database.RenameColumnRequest": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "projectUUID": {
+                    "type": "string"
+                }
+            }
+        },
+        "database.RenameTableRequest": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "projectUUID": {
+                    "type": "string"
+                }
+            }
+        },
+        "database.TableResponse": {
+            "type": "object",
+            "properties": {
+                "estimatedRows": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "schema": {
+                    "type": "string"
+                },
+                "totalSize": {
+                    "type": "string"
+                }
+            }
+        },
+        "database.UploadTableRequest": {
+            "type": "object"
+        },
+        "database.functionParameter": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.DefaultRequestWithProjectHeader": {
+            "type": "object",
+            "properties": {
+                "projectUUID": {
+                    "type": "string"
+                }
+            }
+        },
+        "file.CreateRequest": {
+            "type": "object",
+            "properties": {
+                "projectUUID": {
+                    "type": "string"
+                }
+            }
+        },
+        "file.RenameRequest": {
+            "type": "object",
+            "properties": {
+                "full_file_name": {
+                    "type": "string"
+                },
+                "projectUUID": {
+                    "type": "string"
+                }
+            }
+        },
+        "file.Response": {
             "type": "object",
             "properties": {
                 "containerUuid": {
@@ -4616,7 +4826,100 @@ const docTemplate = `{
                 }
             }
         },
-        "resources.FormFieldResponse": {
+        "form.CreateFormFieldsRequest": {
+            "type": "object",
+            "properties": {
+                "fields": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/form.FieldRequest"
+                    }
+                },
+                "projectUUID": {
+                    "type": "string"
+                }
+            }
+        },
+        "form.CreateRequest": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "projectUUID": {
+                    "type": "string"
+                }
+            }
+        },
+        "form.CreateResponseRequest": {
+            "type": "object",
+            "properties": {
+                "projectUUID": {
+                    "type": "string"
+                },
+                "response": {
+                    "type": "object",
+                    "additionalProperties": true
+                }
+            }
+        },
+        "form.FieldRequest": {
+            "type": "object",
+            "properties": {
+                "date_format": {
+                    "description": "fails if provided and field value doesn't match",
+                    "type": "string"
+                },
+                "default_value": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "end_date": {
+                    "type": "string"
+                },
+                "is_required": {
+                    "type": "boolean"
+                },
+                "label": {
+                    "description": "required fields",
+                    "type": "string"
+                },
+                "max_length": {
+                    "type": "integer"
+                },
+                "max_value": {
+                    "type": "integer"
+                },
+                "min_length": {
+                    "description": "all fields from this point are optional",
+                    "type": "integer"
+                },
+                "min_value": {
+                    "description": "only applicable for number types",
+                    "type": "integer"
+                },
+                "options": {
+                    "description": "Options for select/radio types",
+                    "type": "string"
+                },
+                "pattern": {
+                    "type": "string"
+                },
+                "start_date": {
+                    "description": "only applicable for date types",
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "form.FieldResponseApi": {
             "type": "object",
             "properties": {
                 "createdAt": {
@@ -4675,7 +4978,7 @@ const docTemplate = `{
                 }
             }
         },
-        "resources.FormFieldResponseForAPI": {
+        "form.FieldResponseForAPI": {
             "type": "object",
             "properties": {
                 "createdAt": {
@@ -4698,7 +5001,7 @@ const docTemplate = `{
                 }
             }
         },
-        "resources.FormResponse": {
+        "form.Response": {
             "type": "object",
             "properties": {
                 "createdAt": {
@@ -4727,7 +5030,7 @@ const docTemplate = `{
                 }
             }
         },
-        "resources.FormResponseForAPI": {
+        "form.ResponseForAPI": {
             "type": "object",
             "properties": {
                 "formUuid": {
@@ -4736,7 +5039,7 @@ const docTemplate = `{
                 "responses": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/resources.FormFieldResponseForAPI"
+                        "$ref": "#/definitions/form.FieldResponseForAPI"
                     }
                 },
                 "uuid": {
@@ -4744,19 +5047,55 @@ const docTemplate = `{
                 }
             }
         },
-        "resources.FunctionResponse": {
+        "form.UpdateFormFieldRequest": {
             "type": "object",
             "properties": {
-                "dataType": {
+                "date_format": {
+                    "description": "fails if provided and field value doesn't match",
                     "type": "string"
                 },
-                "definition": {
+                "default_value": {
                     "type": "string"
                 },
-                "language": {
+                "description": {
                     "type": "string"
                 },
-                "name": {
+                "end_date": {
+                    "type": "string"
+                },
+                "is_required": {
+                    "type": "boolean"
+                },
+                "label": {
+                    "description": "required fields",
+                    "type": "string"
+                },
+                "max_length": {
+                    "type": "integer"
+                },
+                "max_value": {
+                    "type": "integer"
+                },
+                "min_length": {
+                    "description": "all fields from this point are optional",
+                    "type": "integer"
+                },
+                "min_value": {
+                    "description": "only applicable for number types",
+                    "type": "integer"
+                },
+                "options": {
+                    "description": "Options for select/radio types",
+                    "type": "string"
+                },
+                "pattern": {
+                    "type": "string"
+                },
+                "projectUUID": {
+                    "type": "string"
+                },
+                "start_date": {
+                    "description": "only applicable for date types",
                     "type": "string"
                 },
                 "type": {
@@ -4764,7 +5103,64 @@ const docTemplate = `{
                 }
             }
         },
-        "resources.OrganizationResponse": {
+        "logging.Response": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "endpoint": {
+                    "type": "string"
+                },
+                "ipAddress": {
+                    "type": "string"
+                },
+                "method": {
+                    "type": "string"
+                },
+                "params": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "userAgent": {
+                    "type": "string"
+                },
+                "userUuid": {
+                    "type": "string"
+                },
+                "uuid": {
+                    "type": "string"
+                }
+            }
+        },
+        "organization.CreateRequest": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "projectUUID": {
+                    "type": "string"
+                }
+            }
+        },
+        "organization.MemberCreateRequest": {
+            "type": "object",
+            "properties": {
+                "projectUUID": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "organization.Response": {
             "type": "object",
             "properties": {
                 "createdAt": {
@@ -4787,7 +5183,24 @@ const docTemplate = `{
                 }
             }
         },
-        "resources.ProjectResponse": {
+        "project.CreateRequest": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "organization_uuid": {
+                    "type": "string"
+                },
+                "projectUUID": {
+                    "type": "string"
+                }
+            }
+        },
+        "project.Response": {
             "type": "object",
             "properties": {
                 "createdAt": {
@@ -4822,27 +5235,70 @@ const docTemplate = `{
                 }
             }
         },
-        "resources.TableResponse": {
+        "project.UpdateRequest": {
             "type": "object",
             "properties": {
-                "estimatedRows": {
-                    "type": "integer"
-                },
-                "id": {
-                    "type": "integer"
+                "description": {
+                    "type": "string"
                 },
                 "name": {
                     "type": "string"
                 },
-                "schema": {
-                    "type": "string"
-                },
-                "totalSize": {
+                "projectUUID": {
                     "type": "string"
                 }
             }
         },
-        "resources.UserResponse": {
+        "response.Response": {
+            "type": "object",
+            "properties": {
+                "content": {},
+                "errors": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "user.CreateRequest": {
+            "type": "object",
+            "properties": {
+                "bio": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "projectUUID": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "user.LoginRequest": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "projectUUID": {
+                    "type": "string"
+                }
+            }
+        },
+        "user.Response": {
             "type": "object",
             "properties": {
                 "bio": {
@@ -4871,38 +5327,16 @@ const docTemplate = `{
                 }
             }
         },
-        "responses.Response": {
+        "user.UpdateRequest": {
             "type": "object",
             "properties": {
-                "content": {},
-                "errors": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
+                "bio": {
+                    "type": "string"
                 },
-                "success": {
-                    "type": "boolean"
+                "projectUUID": {
+                    "type": "string"
                 }
             }
-        },
-        "table_requests.CreateRequest": {
-            "type": "object"
-        },
-        "table_requests.RenameRequest": {
-            "type": "object"
-        },
-        "table_requests.UploadRequest": {
-            "type": "object"
-        },
-        "user_requests.CreateRequest": {
-            "type": "object"
-        },
-        "user_requests.LoginRequest": {
-            "type": "object"
-        },
-        "user_requests.UpdateRequest": {
-            "type": "object"
         }
     }
 }`

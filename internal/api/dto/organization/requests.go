@@ -21,8 +21,6 @@ func (r *CreateRequest) BindAndValidate(c echo.Context) []string {
 		return []string{"Invalid request payload"}
 	}
 
-	r.SetContext(c)
-
 	err := validation.ValidateStruct(r,
 		validation.Field(
 			&r.Name,
@@ -58,8 +56,6 @@ func (r *MemberCreateRequest) BindAndValidate(c echo.Context) []string {
 	err := validation.ValidateStruct(r,
 		validation.Field(&r.UserID, validation.Required.Error("UserID is required")),
 	)
-
-	r.SetContext(c)
 
 	return r.ExtractValidationErrors(err)
 }

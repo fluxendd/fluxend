@@ -78,8 +78,6 @@ func (r *CreateRequest) BindAndValidate(c echo.Context) []string {
 		return []string{err.Error()}
 	}
 
-	r.SetContext(c)
-
 	err = validation.ValidateStruct(r,
 		validation.Field(
 			&r.Name,
@@ -111,8 +109,6 @@ func (r *CreateFormFieldsRequest) BindAndValidate(c echo.Context) []string {
 	if err != nil {
 		return []string{err.Error()}
 	}
-
-	r.SetContext(c)
 
 	err = validation.ValidateStruct(r,
 		validation.Field(&r.Fields, validation.Required.Error("Fields array is required"), validation.Each(
@@ -171,8 +167,6 @@ func (r *CreateResponseRequest) BindAndValidate(c echo.Context) []string {
 		return []string{err.Error()}
 	}
 
-	r.SetContext(c)
-
 	return nil
 }
 
@@ -185,8 +179,6 @@ func (r *UpdateFormFieldRequest) BindAndValidate(c echo.Context) []string {
 	if err != nil {
 		return []string{err.Error()}
 	}
-
-	r.SetContext(c)
 
 	return r.ExtractValidationErrors(validateField(r.FieldRequest))
 }

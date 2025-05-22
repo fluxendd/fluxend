@@ -13,6 +13,7 @@ import (
 	databaseDomain "fluxton/internal/domain/database"
 	"fluxton/internal/domain/form"
 	"fluxton/internal/domain/health"
+	"fluxton/internal/domain/logging"
 	"fluxton/internal/domain/organization"
 	"fluxton/internal/domain/project"
 	"fluxton/internal/domain/setting"
@@ -34,6 +35,8 @@ func InitializeContainer() *do.Injector {
 	})
 
 	// --- Logging ---
+	do.Provide(injector, handlers.NewLogHandler)
+	do.Provide(injector, logging.NewLogService)
 	do.Provide(injector, repositories.NewRequestLogRepository)
 	do.Provide(injector, client.NewDatabaseRepository)
 

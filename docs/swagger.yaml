@@ -1,38 +1,6 @@
 basePath: /v2
 definitions:
-  column_requests.CreateRequest:
-    type: object
-  column_requests.RenameRequest:
-    type: object
-  container_requests.CreateFileRequest:
-    type: object
-  container_requests.CreateRequest:
-    type: object
-  container_requests.RenameFileRequest:
-    type: object
-  form_requests.CreateFormFieldsRequest:
-    type: object
-  form_requests.CreateRequest:
-    type: object
-  form_requests.CreateResponseRequest:
-    type: object
-  form_requests.UpdateFormFieldRequest:
-    type: object
-  organization_requests.CreateRequest:
-    type: object
-  organization_requests.MemberCreateRequest:
-    type: object
-  project_requests.CreateRequest:
-    type: object
-  project_requests.UpdateRequest:
-    type: object
-  requests.CreateFunctionRequest:
-    type: object
-  requests.DefaultRequestWithProjectHeader:
-    type: object
-  requests.IndexCreateRequest:
-    type: object
-  resources.BackupResponse:
+  backup.Response:
     properties:
       completedAt:
         type: string
@@ -47,30 +15,20 @@ definitions:
       uuid:
         type: string
     type: object
-  resources.ColumnResponse:
+  container.CreateRequest:
     properties:
-      defaultValue:
+      description:
         type: string
-      foreign:
+      is_public:
         type: boolean
+      max_file_size:
+        type: integer
       name:
         type: string
-      notNull:
-        type: boolean
-      position:
-        type: integer
-      primary:
-        type: boolean
-      referenceColumn:
+      projectUUID:
         type: string
-      referenceTable:
-        type: string
-      type:
-        type: string
-      unique:
-        type: boolean
     type: object
-  resources.ContainerResponse:
+  container.Response:
     properties:
       createdAt:
         type: string
@@ -97,7 +55,130 @@ definitions:
       uuid:
         type: string
     type: object
-  resources.FileResponse:
+  database.ColumnResponse:
+    properties:
+      defaultValue:
+        type: string
+      foreign:
+        type: boolean
+      name:
+        type: string
+      notNull:
+        type: boolean
+      position:
+        type: integer
+      primary:
+        type: boolean
+      referenceColumn:
+        type: string
+      referenceTable:
+        type: string
+      type:
+        type: string
+      unique:
+        type: boolean
+    type: object
+  database.CreateColumnRequest:
+    type: object
+  database.CreateFunctionRequest:
+    properties:
+      definition:
+        type: string
+      language:
+        type: string
+      name:
+        type: string
+      parameters:
+        items:
+          $ref: '#/definitions/database.functionParameter'
+        type: array
+      projectUUID:
+        type: string
+      return_type:
+        type: string
+    type: object
+  database.CreateIndexRequest:
+    properties:
+      columns:
+        items:
+          type: string
+        type: array
+      is_unique:
+        type: boolean
+      name:
+        type: string
+      projectUUID:
+        type: string
+    type: object
+  database.CreateTableRequest:
+    type: object
+  database.FunctionResponse:
+    properties:
+      dataType:
+        type: string
+      definition:
+        type: string
+      language:
+        type: string
+      name:
+        type: string
+      type:
+        type: string
+    type: object
+  database.RenameColumnRequest:
+    properties:
+      name:
+        type: string
+      projectUUID:
+        type: string
+    type: object
+  database.RenameTableRequest:
+    properties:
+      name:
+        type: string
+      projectUUID:
+        type: string
+    type: object
+  database.TableResponse:
+    properties:
+      estimatedRows:
+        type: integer
+      id:
+        type: integer
+      name:
+        type: string
+      schema:
+        type: string
+      totalSize:
+        type: string
+    type: object
+  database.UploadTableRequest:
+    type: object
+  database.functionParameter:
+    properties:
+      name:
+        type: string
+      type:
+        type: string
+    type: object
+  dto.DefaultRequestWithProjectHeader:
+    properties:
+      projectUUID:
+        type: string
+    type: object
+  file.CreateRequest:
+    properties:
+      projectUUID:
+        type: string
+    type: object
+  file.RenameRequest:
+    properties:
+      full_file_name:
+        type: string
+      projectUUID:
+        type: string
+    type: object
+  file.Response:
     properties:
       containerUuid:
         type: string
@@ -119,7 +200,70 @@ definitions:
       uuid:
         type: string
     type: object
-  resources.FormFieldResponse:
+  form.CreateFormFieldsRequest:
+    properties:
+      fields:
+        items:
+          $ref: '#/definitions/form.FieldRequest'
+        type: array
+      projectUUID:
+        type: string
+    type: object
+  form.CreateRequest:
+    properties:
+      description:
+        type: string
+      name:
+        type: string
+      projectUUID:
+        type: string
+    type: object
+  form.CreateResponseRequest:
+    properties:
+      projectUUID:
+        type: string
+      response:
+        additionalProperties: true
+        type: object
+    type: object
+  form.FieldRequest:
+    properties:
+      date_format:
+        description: fails if provided and field value doesn't match
+        type: string
+      default_value:
+        type: string
+      description:
+        type: string
+      end_date:
+        type: string
+      is_required:
+        type: boolean
+      label:
+        description: required fields
+        type: string
+      max_length:
+        type: integer
+      max_value:
+        type: integer
+      min_length:
+        description: all fields from this point are optional
+        type: integer
+      min_value:
+        description: only applicable for number types
+        type: integer
+      options:
+        description: Options for select/radio types
+        type: string
+      pattern:
+        type: string
+      start_date:
+        description: only applicable for date types
+        type: string
+      type:
+        type: string
+    type: object
+  form.FieldResponseApi:
     properties:
       createdAt:
         type: string
@@ -158,7 +302,7 @@ definitions:
       uuid:
         type: string
     type: object
-  resources.FormFieldResponseForAPI:
+  form.FieldResponseForAPI:
     properties:
       createdAt:
         type: string
@@ -173,7 +317,7 @@ definitions:
       value:
         type: string
     type: object
-  resources.FormResponse:
+  form.Response:
     properties:
       createdAt:
         type: string
@@ -192,31 +336,94 @@ definitions:
       uuid:
         type: string
     type: object
-  resources.FormResponseForAPI:
+  form.ResponseForAPI:
     properties:
       formUuid:
         type: string
       responses:
         items:
-          $ref: '#/definitions/resources.FormFieldResponseForAPI'
+          $ref: '#/definitions/form.FieldResponseForAPI'
         type: array
       uuid:
         type: string
     type: object
-  resources.FunctionResponse:
+  form.UpdateFormFieldRequest:
     properties:
-      dataType:
+      date_format:
+        description: fails if provided and field value doesn't match
         type: string
-      definition:
+      default_value:
         type: string
-      language:
+      description:
         type: string
-      name:
+      end_date:
+        type: string
+      is_required:
+        type: boolean
+      label:
+        description: required fields
+        type: string
+      max_length:
+        type: integer
+      max_value:
+        type: integer
+      min_length:
+        description: all fields from this point are optional
+        type: integer
+      min_value:
+        description: only applicable for number types
+        type: integer
+      options:
+        description: Options for select/radio types
+        type: string
+      pattern:
+        type: string
+      projectUUID:
+        type: string
+      start_date:
+        description: only applicable for date types
         type: string
       type:
         type: string
     type: object
-  resources.OrganizationResponse:
+  logging.Response:
+    properties:
+      body:
+        type: string
+      createdAt:
+        type: string
+      endpoint:
+        type: string
+      ipAddress:
+        type: string
+      method:
+        type: string
+      params:
+        type: string
+      status:
+        type: integer
+      userAgent:
+        type: string
+      userUuid:
+        type: string
+      uuid:
+        type: string
+    type: object
+  organization.CreateRequest:
+    properties:
+      name:
+        type: string
+      projectUUID:
+        type: string
+    type: object
+  organization.MemberCreateRequest:
+    properties:
+      projectUUID:
+        type: string
+      user_id:
+        type: string
+    type: object
+  organization.Response:
     properties:
       createdAt:
         type: string
@@ -231,7 +438,18 @@ definitions:
       uuid:
         type: string
     type: object
-  resources.ProjectResponse:
+  project.CreateRequest:
+    properties:
+      description:
+        type: string
+      name:
+        type: string
+      organization_uuid:
+        type: string
+      projectUUID:
+        type: string
+    type: object
+  project.Response:
     properties:
       createdAt:
         type: string
@@ -254,20 +472,48 @@ definitions:
       uuid:
         type: string
     type: object
-  resources.TableResponse:
+  project.UpdateRequest:
     properties:
-      estimatedRows:
-        type: integer
-      id:
-        type: integer
+      description:
+        type: string
       name:
         type: string
-      schema:
-        type: string
-      totalSize:
+      projectUUID:
         type: string
     type: object
-  resources.UserResponse:
+  response.Response:
+    properties:
+      content: {}
+      errors:
+        items:
+          type: string
+        type: array
+      success:
+        type: boolean
+    type: object
+  user.CreateRequest:
+    properties:
+      bio:
+        type: string
+      email:
+        type: string
+      password:
+        type: string
+      projectUUID:
+        type: string
+      username:
+        type: string
+    type: object
+  user.LoginRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+      projectUUID:
+        type: string
+    type: object
+  user.Response:
     properties:
       bio:
         type: string
@@ -286,27 +532,12 @@ definitions:
       uuid:
         type: string
     type: object
-  responses.Response:
+  user.UpdateRequest:
     properties:
-      content: {}
-      errors:
-        items:
-          type: string
-        type: array
-      success:
-        type: boolean
-    type: object
-  table_requests.CreateRequest:
-    type: object
-  table_requests.RenameRequest:
-    type: object
-  table_requests.UploadRequest:
-    type: object
-  user_requests.CreateRequest:
-    type: object
-  user_requests.LoginRequest:
-    type: object
-  user_requests.UpdateRequest:
+      bio:
+        type: string
+      projectUUID:
+        type: string
     type: object
 host: fluxton.io/api
 info:
@@ -319,6 +550,58 @@ info:
   title: Fluxton API
   version: "1.0"
 paths:
+  /admin/logs:
+    get:
+      consumes:
+      - application/json
+      description: Get all logs
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Page number for pagination
+        in: query
+        name: page
+        type: string
+      - description: Number of items per page
+        in: query
+        name: limit
+        type: string
+      - description: Field to sort by
+        in: query
+        name: sort
+        type: string
+      - description: Sort order (asc or desc)
+        in: query
+        name: order
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of files
+          schema:
+            items:
+              allOf:
+              - $ref: '#/definitions/response.Response'
+              - properties:
+                  content:
+                    items:
+                      $ref: '#/definitions/logging.Response'
+                    type: array
+                type: object
+            type: array
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal server error
+      summary: List all logs
+      tags:
+      - Logs
   /backups:
     get:
       consumes:
@@ -343,11 +626,11 @@ paths:
           schema:
             items:
               allOf:
-              - $ref: '#/definitions/responses.Response'
+              - $ref: '#/definitions/response.Response'
               - properties:
                   content:
                     items:
-                      $ref: '#/definitions/resources.BackupResponse'
+                      $ref: '#/definitions/backup.Response'
                     type: array
                 type: object
             type: array
@@ -378,7 +661,7 @@ paths:
         name: backup
         required: true
         schema:
-          $ref: '#/definitions/requests.DefaultRequestWithProjectHeader'
+          $ref: '#/definitions/dto.DefaultRequestWithProjectHeader'
       produces:
       - application/json
       responses:
@@ -386,10 +669,10 @@ paths:
           description: Backup created
           schema:
             allOf:
-            - $ref: '#/definitions/responses.Response'
+            - $ref: '#/definitions/response.Response'
             - properties:
                 content:
-                  $ref: '#/definitions/resources.BackupResponse'
+                  $ref: '#/definitions/backup.Response'
               type: object
         "400":
           description: Invalid input
@@ -464,10 +747,10 @@ paths:
           description: Backup details
           schema:
             allOf:
-            - $ref: '#/definitions/responses.Response'
+            - $ref: '#/definitions/response.Response'
             - properties:
                 content:
-                  $ref: '#/definitions/resources.BackupResponse'
+                  $ref: '#/definitions/backup.Response'
               type: object
         "400":
           description: Invalid input
@@ -518,11 +801,11 @@ paths:
           schema:
             items:
               allOf:
-              - $ref: '#/definitions/responses.Response'
+              - $ref: '#/definitions/response.Response'
               - properties:
                   content:
                     items:
-                      $ref: '#/definitions/resources.FileResponse'
+                      $ref: '#/definitions/file.Response'
                     type: array
                 type: object
             type: array
@@ -555,7 +838,7 @@ paths:
         name: file
         required: true
         schema:
-          $ref: '#/definitions/container_requests.CreateFileRequest'
+          $ref: '#/definitions/file.CreateRequest'
       produces:
       - application/json
       responses:
@@ -563,10 +846,10 @@ paths:
           description: File details
           schema:
             allOf:
-            - $ref: '#/definitions/responses.Response'
+            - $ref: '#/definitions/response.Response'
             - properties:
                 content:
-                  $ref: '#/definitions/resources.FileResponse'
+                  $ref: '#/definitions/file.Response'
               type: object
         "400":
           description: Invalid input
@@ -639,10 +922,10 @@ paths:
           description: File details
           schema:
             allOf:
-            - $ref: '#/definitions/responses.Response'
+            - $ref: '#/definitions/response.Response'
             - properties:
                 content:
-                  $ref: '#/definitions/resources.FileResponse'
+                  $ref: '#/definitions/file.Response'
               type: object
         "400":
           description: Invalid input
@@ -680,7 +963,7 @@ paths:
         name: file
         required: true
         schema:
-          $ref: '#/definitions/container_requests.RenameFileRequest'
+          $ref: '#/definitions/file.RenameRequest'
       produces:
       - application/json
       responses:
@@ -688,10 +971,10 @@ paths:
           description: File details
           schema:
             allOf:
-            - $ref: '#/definitions/responses.Response'
+            - $ref: '#/definitions/response.Response'
             - properties:
                 content:
-                  $ref: '#/definitions/resources.FileResponse'
+                  $ref: '#/definitions/file.Response'
               type: object
         "400":
           description: Invalid input
@@ -742,11 +1025,11 @@ paths:
           schema:
             items:
               allOf:
-              - $ref: '#/definitions/responses.Response'
+              - $ref: '#/definitions/response.Response'
               - properties:
                   content:
                     items:
-                      $ref: '#/definitions/resources.FormResponse'
+                      $ref: '#/definitions/form.Response'
                     type: array
                 type: object
             type: array
@@ -779,7 +1062,7 @@ paths:
         name: form
         required: true
         schema:
-          $ref: '#/definitions/form_requests.CreateRequest'
+          $ref: '#/definitions/form.CreateRequest'
       produces:
       - application/json
       responses:
@@ -787,10 +1070,10 @@ paths:
           description: Form created
           schema:
             allOf:
-            - $ref: '#/definitions/responses.Response'
+            - $ref: '#/definitions/response.Response'
             - properties:
                 content:
-                  $ref: '#/definitions/resources.FormResponse'
+                  $ref: '#/definitions/form.Response'
               type: object
         "400":
           description: Invalid input
@@ -865,10 +1148,10 @@ paths:
           description: Form details
           schema:
             allOf:
-            - $ref: '#/definitions/responses.Response'
+            - $ref: '#/definitions/response.Response'
             - properties:
                 content:
-                  $ref: '#/definitions/resources.FormResponse'
+                  $ref: '#/definitions/form.Response'
               type: object
         "400":
           description: Invalid input
@@ -904,7 +1187,7 @@ paths:
         name: form
         required: true
         schema:
-          $ref: '#/definitions/form_requests.CreateRequest'
+          $ref: '#/definitions/form.CreateRequest'
       produces:
       - application/json
       responses:
@@ -912,10 +1195,10 @@ paths:
           description: Form updated
           schema:
             allOf:
-            - $ref: '#/definitions/responses.Response'
+            - $ref: '#/definitions/response.Response'
             - properties:
                 content:
-                  $ref: '#/definitions/resources.FormResponse'
+                  $ref: '#/definitions/form.Response'
               type: object
         "400":
           description: Invalid input
@@ -952,11 +1235,11 @@ paths:
           schema:
             items:
               allOf:
-              - $ref: '#/definitions/responses.Response'
+              - $ref: '#/definitions/response.Response'
               - properties:
                   content:
                     items:
-                      $ref: '#/definitions/resources.FormFieldResponse'
+                      $ref: '#/definitions/form.FieldResponseApi'
                     type: array
                 type: object
             type: array
@@ -984,7 +1267,7 @@ paths:
         name: field
         required: true
         schema:
-          $ref: '#/definitions/form_requests.CreateFormFieldsRequest'
+          $ref: '#/definitions/form.CreateFormFieldsRequest'
       - description: Form UUID
         in: path
         name: formUUID
@@ -997,10 +1280,10 @@ paths:
           description: Field created
           schema:
             allOf:
-            - $ref: '#/definitions/responses.Response'
+            - $ref: '#/definitions/response.Response'
             - properties:
                 content:
-                  $ref: '#/definitions/resources.FormFieldResponse'
+                  $ref: '#/definitions/form.FieldResponseApi'
               type: object
         "400":
           description: Invalid input
@@ -1075,10 +1358,10 @@ paths:
           description: Field details
           schema:
             allOf:
-            - $ref: '#/definitions/responses.Response'
+            - $ref: '#/definitions/response.Response'
             - properties:
                 content:
-                  $ref: '#/definitions/resources.FormFieldResponse'
+                  $ref: '#/definitions/form.FieldResponseApi'
               type: object
         "400":
           description: Invalid input
@@ -1104,7 +1387,7 @@ paths:
         name: field
         required: true
         schema:
-          $ref: '#/definitions/form_requests.UpdateFormFieldRequest'
+          $ref: '#/definitions/form.UpdateFormFieldRequest'
       - description: Form UUID
         in: path
         name: formUUID
@@ -1122,10 +1405,10 @@ paths:
           description: Field updated
           schema:
             allOf:
-            - $ref: '#/definitions/responses.Response'
+            - $ref: '#/definitions/response.Response'
             - properties:
                 content:
-                  $ref: '#/definitions/resources.FormFieldResponse'
+                  $ref: '#/definitions/form.FieldResponseApi'
               type: object
         "400":
           description: Invalid input
@@ -1166,11 +1449,11 @@ paths:
           description: List of form responses
           schema:
             allOf:
-            - $ref: '#/definitions/responses.Response'
+            - $ref: '#/definitions/response.Response'
             - properties:
                 content:
                   items:
-                    $ref: '#/definitions/resources.FormResponseForAPI'
+                    $ref: '#/definitions/form.ResponseForAPI'
                   type: array
               type: object
         "400":
@@ -1207,7 +1490,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/form_requests.CreateResponseRequest'
+          $ref: '#/definitions/form.CreateResponseRequest'
       produces:
       - application/json
       responses:
@@ -1215,10 +1498,10 @@ paths:
           description: Form response details
           schema:
             allOf:
-            - $ref: '#/definitions/responses.Response'
+            - $ref: '#/definitions/response.Response'
             - properties:
                 content:
-                  $ref: '#/definitions/resources.FormResponseForAPI'
+                  $ref: '#/definitions/form.ResponseForAPI'
               type: object
         "400":
           description: Invalid input
@@ -1303,10 +1586,10 @@ paths:
           description: Form response details
           schema:
             allOf:
-            - $ref: '#/definitions/responses.Response'
+            - $ref: '#/definitions/response.Response'
             - properties:
                 content:
-                  $ref: '#/definitions/resources.FormResponseForAPI'
+                  $ref: '#/definitions/form.ResponseForAPI'
               type: object
         "400":
           description: Invalid input
@@ -1351,11 +1634,11 @@ paths:
           schema:
             items:
               allOf:
-              - $ref: '#/definitions/responses.Response'
+              - $ref: '#/definitions/response.Response'
               - properties:
                   content:
                     items:
-                      $ref: '#/definitions/resources.FunctionResponse'
+                      $ref: '#/definitions/database.FunctionResponse'
                     type: array
                 type: object
             type: array
@@ -1385,10 +1668,10 @@ paths:
         type: string
       - description: Function details
         in: body
-        name: form
+        name: function
         required: true
         schema:
-          $ref: '#/definitions/requests.CreateFunctionRequest'
+          $ref: '#/definitions/database.CreateFunctionRequest'
       produces:
       - application/json
       responses:
@@ -1396,10 +1679,10 @@ paths:
           description: Function created
           schema:
             allOf:
-            - $ref: '#/definitions/responses.Response'
+            - $ref: '#/definitions/response.Response'
             - properties:
                 content:
-                  $ref: '#/definitions/resources.FunctionResponse'
+                  $ref: '#/definitions/database.FunctionResponse'
               type: object
         "400":
           description: Invalid input
@@ -1489,10 +1772,10 @@ paths:
           description: Function details
           schema:
             allOf:
-            - $ref: '#/definitions/responses.Response'
+            - $ref: '#/definitions/response.Response'
             - properties:
                 content:
-                  $ref: '#/definitions/resources.FunctionResponse'
+                  $ref: '#/definitions/database.FunctionResponse'
               type: object
         "400":
           description: Invalid input
@@ -1537,11 +1820,11 @@ paths:
           description: List of organizations
           schema:
             allOf:
-            - $ref: '#/definitions/responses.Response'
+            - $ref: '#/definitions/response.Response'
             - properties:
                 content:
                   items:
-                    $ref: '#/definitions/resources.OrganizationResponse'
+                    $ref: '#/definitions/organization.Response'
                   type: array
               type: object
         "401":
@@ -1566,7 +1849,7 @@ paths:
         name: organization
         required: true
         schema:
-          $ref: '#/definitions/organization_requests.CreateRequest'
+          $ref: '#/definitions/organization.CreateRequest'
       produces:
       - application/json
       responses:
@@ -1574,10 +1857,10 @@ paths:
           description: Organization created
           schema:
             allOf:
-            - $ref: '#/definitions/responses.Response'
+            - $ref: '#/definitions/response.Response'
             - properties:
                 content:
-                  $ref: '#/definitions/resources.OrganizationResponse'
+                  $ref: '#/definitions/organization.Response'
               type: object
         "400":
           description: Invalid input
@@ -1612,7 +1895,7 @@ paths:
         "204":
           description: Organization deleted
           schema:
-            $ref: '#/definitions/responses.Response'
+            $ref: '#/definitions/response.Response'
         "401":
           description: Unauthorized
         "500":
@@ -1642,10 +1925,10 @@ paths:
           description: Organization details
           schema:
             allOf:
-            - $ref: '#/definitions/responses.Response'
+            - $ref: '#/definitions/response.Response'
             - properties:
                 content:
-                  $ref: '#/definitions/resources.OrganizationResponse'
+                  $ref: '#/definitions/organization.Response'
               type: object
         "400":
           description: Invalid input
@@ -1678,7 +1961,7 @@ paths:
         name: organization
         required: true
         schema:
-          $ref: '#/definitions/organization_requests.CreateRequest'
+          $ref: '#/definitions/organization.CreateRequest'
       produces:
       - application/json
       responses:
@@ -1686,10 +1969,10 @@ paths:
           description: Organization updated
           schema:
             allOf:
-            - $ref: '#/definitions/responses.Response'
+            - $ref: '#/definitions/response.Response'
             - properties:
                 content:
-                  $ref: '#/definitions/resources.OrganizationResponse'
+                  $ref: '#/definitions/organization.Response'
               type: object
         "400":
           description: Invalid input
@@ -1725,11 +2008,11 @@ paths:
           description: User created
           schema:
             allOf:
-            - $ref: '#/definitions/responses.Response'
+            - $ref: '#/definitions/response.Response'
             - properties:
                 content:
                   items:
-                    $ref: '#/definitions/resources.UserResponse'
+                    $ref: '#/definitions/user.Response'
                   type: array
               type: object
         "400":
@@ -1763,7 +2046,7 @@ paths:
         name: user
         required: true
         schema:
-          $ref: '#/definitions/organization_requests.MemberCreateRequest'
+          $ref: '#/definitions/organization.MemberCreateRequest'
       produces:
       - application/json
       responses:
@@ -1771,10 +2054,10 @@ paths:
           description: User created
           schema:
             allOf:
-            - $ref: '#/definitions/responses.Response'
+            - $ref: '#/definitions/response.Response'
             - properties:
                 content:
-                  $ref: '#/definitions/resources.UserResponse'
+                  $ref: '#/definitions/user.Response'
               type: object
         "400":
           description: Invalid input
@@ -1863,11 +2146,11 @@ paths:
           description: List of projects
           schema:
             allOf:
-            - $ref: '#/definitions/responses.Response'
+            - $ref: '#/definitions/response.Response'
             - properties:
                 content:
                   items:
-                    $ref: '#/definitions/resources.ProjectResponse'
+                    $ref: '#/definitions/project.Response'
                   type: array
               type: object
         "400":
@@ -1899,7 +2182,7 @@ paths:
         name: name
         required: true
         schema:
-          $ref: '#/definitions/project_requests.CreateRequest'
+          $ref: '#/definitions/project.CreateRequest'
       produces:
       - application/json
       responses:
@@ -1907,10 +2190,10 @@ paths:
           description: Project details
           schema:
             allOf:
-            - $ref: '#/definitions/responses.Response'
+            - $ref: '#/definitions/response.Response'
             - properties:
                 content:
-                  $ref: '#/definitions/resources.ProjectResponse'
+                  $ref: '#/definitions/project.Response'
               type: object
         "400":
           description: Invalid input
@@ -1945,7 +2228,7 @@ paths:
         "200":
           description: Project deleted
           schema:
-            $ref: '#/definitions/responses.Response'
+            $ref: '#/definitions/response.Response'
         "400":
           description: Invalid input
         "401":
@@ -1977,10 +2260,10 @@ paths:
           description: Project details
           schema:
             allOf:
-            - $ref: '#/definitions/responses.Response'
+            - $ref: '#/definitions/response.Response'
             - properties:
                 content:
-                  $ref: '#/definitions/resources.ProjectResponse'
+                  $ref: '#/definitions/project.Response'
               type: object
         "400":
           description: Invalid input
@@ -2013,7 +2296,7 @@ paths:
         name: name
         required: true
         schema:
-          $ref: '#/definitions/project_requests.UpdateRequest'
+          $ref: '#/definitions/project.UpdateRequest'
       produces:
       - application/json
       responses:
@@ -2021,10 +2304,10 @@ paths:
           description: Project details
           schema:
             allOf:
-            - $ref: '#/definitions/responses.Response'
+            - $ref: '#/definitions/response.Response'
             - properties:
                 content:
-                  $ref: '#/definitions/resources.ProjectResponse'
+                  $ref: '#/definitions/project.Response'
               type: object
         "400":
           description: Invalid input
@@ -2076,11 +2359,11 @@ paths:
           description: List of container
           schema:
             allOf:
-            - $ref: '#/definitions/responses.Response'
+            - $ref: '#/definitions/response.Response'
             - properties:
                 content:
                   items:
-                    $ref: '#/definitions/resources.ContainerResponse'
+                    $ref: '#/definitions/container.Response'
                   type: array
               type: object
         "400":
@@ -2112,7 +2395,7 @@ paths:
         name: container
         required: true
         schema:
-          $ref: '#/definitions/container_requests.CreateRequest'
+          $ref: '#/definitions/container.CreateRequest'
       produces:
       - application/json
       responses:
@@ -2120,10 +2403,10 @@ paths:
           description: Container created
           schema:
             allOf:
-            - $ref: '#/definitions/responses.Response'
+            - $ref: '#/definitions/response.Response'
             - properties:
                 content:
-                  $ref: '#/definitions/resources.ContainerResponse'
+                  $ref: '#/definitions/container.Response'
               type: object
         "400":
           description: Invalid input
@@ -2198,10 +2481,10 @@ paths:
           description: Container details
           schema:
             allOf:
-            - $ref: '#/definitions/responses.Response'
+            - $ref: '#/definitions/response.Response'
             - properties:
                 content:
-                  $ref: '#/definitions/resources.ContainerResponse'
+                  $ref: '#/definitions/container.Response'
               type: object
         "400":
           description: Invalid input
@@ -2239,7 +2522,7 @@ paths:
         name: container
         required: true
         schema:
-          $ref: '#/definitions/container_requests.CreateRequest'
+          $ref: '#/definitions/container.CreateRequest'
       produces:
       - application/json
       responses:
@@ -2247,10 +2530,10 @@ paths:
           description: Container updated
           schema:
             allOf:
-            - $ref: '#/definitions/responses.Response'
+            - $ref: '#/definitions/response.Response'
             - properties:
                 content:
-                  $ref: '#/definitions/resources.ContainerResponse'
+                  $ref: '#/definitions/container.Response'
               type: object
         "400":
           description: Invalid input
@@ -2286,11 +2569,11 @@ paths:
           description: List of tables
           schema:
             allOf:
-            - $ref: '#/definitions/responses.Response'
+            - $ref: '#/definitions/response.Response'
             - properties:
                 content:
                   items:
-                    $ref: '#/definitions/resources.TableResponse'
+                    $ref: '#/definitions/database.TableResponse'
                   type: array
               type: object
         "400":
@@ -2322,7 +2605,7 @@ paths:
         name: table
         required: true
         schema:
-          $ref: '#/definitions/table_requests.CreateRequest'
+          $ref: '#/definitions/database.CreateTableRequest'
       produces:
       - application/json
       responses:
@@ -2330,10 +2613,10 @@ paths:
           description: Table created
           schema:
             allOf:
-            - $ref: '#/definitions/responses.Response'
+            - $ref: '#/definitions/response.Response'
             - properties:
                 content:
-                  $ref: '#/definitions/resources.TableResponse'
+                  $ref: '#/definitions/database.TableResponse'
               type: object
         "400":
           description: Invalid input
@@ -2369,11 +2652,11 @@ paths:
           description: List of columns
           schema:
             allOf:
-            - $ref: '#/definitions/responses.Response'
+            - $ref: '#/definitions/response.Response'
             - properties:
                 content:
                   items:
-                    $ref: '#/definitions/resources.ColumnResponse'
+                    $ref: '#/definitions/database.ColumnResponse'
                   type: array
               type: object
         "400":
@@ -2410,7 +2693,7 @@ paths:
         name: columns
         required: true
         schema:
-          $ref: '#/definitions/column_requests.CreateRequest'
+          $ref: '#/definitions/database.CreateColumnRequest'
       produces:
       - application/json
       responses:
@@ -2418,10 +2701,10 @@ paths:
           description: Columns created
           schema:
             allOf:
-            - $ref: '#/definitions/responses.Response'
+            - $ref: '#/definitions/response.Response'
             - properties:
                 content:
-                  $ref: '#/definitions/resources.TableResponse'
+                  $ref: '#/definitions/database.ColumnResponse'
               type: object
         "400":
           description: Invalid input
@@ -2459,7 +2742,7 @@ paths:
         name: columns
         required: true
         schema:
-          $ref: '#/definitions/column_requests.CreateRequest'
+          $ref: '#/definitions/database.CreateColumnRequest'
       produces:
       - application/json
       responses:
@@ -2467,10 +2750,10 @@ paths:
           description: Columns altered
           schema:
             allOf:
-            - $ref: '#/definitions/responses.Response'
+            - $ref: '#/definitions/response.Response'
             - properties:
                 content:
-                  $ref: '#/definitions/resources.TableResponse'
+                  $ref: '#/definitions/database.ColumnResponse'
               type: object
         "400":
           description: Invalid input
@@ -2555,14 +2838,14 @@ paths:
         name: new_name
         required: true
         schema:
-          $ref: '#/definitions/column_requests.RenameRequest'
+          $ref: '#/definitions/database.RenameColumnRequest'
       produces:
       - application/json
       responses:
         "200":
           description: Column renamed
           schema:
-            $ref: '#/definitions/responses.Response'
+            $ref: '#/definitions/response.Response'
         "400":
           description: Invalid input
         "401":
@@ -2638,10 +2921,10 @@ paths:
           description: Table details
           schema:
             allOf:
-            - $ref: '#/definitions/responses.Response'
+            - $ref: '#/definitions/response.Response'
             - properties:
                 content:
-                  $ref: '#/definitions/resources.TableResponse'
+                  $ref: '#/definitions/database.TableResponse'
               type: object
         "400":
           description: Invalid input
@@ -2680,7 +2963,7 @@ paths:
         name: new_name
         required: true
         schema:
-          $ref: '#/definitions/table_requests.RenameRequest'
+          $ref: '#/definitions/database.RenameTableRequest'
       produces:
       - application/json
       responses:
@@ -2688,10 +2971,10 @@ paths:
           description: Table duplicated
           schema:
             allOf:
-            - $ref: '#/definitions/responses.Response'
+            - $ref: '#/definitions/response.Response'
             - properties:
                 content:
-                  $ref: '#/definitions/resources.TableResponse'
+                  $ref: '#/definitions/database.TableResponse'
               type: object
         "400":
           description: Invalid input
@@ -2727,7 +3010,7 @@ paths:
           description: List of indexes
           schema:
             allOf:
-            - $ref: '#/definitions/responses.Response'
+            - $ref: '#/definitions/response.Response'
             - properties:
                 content:
                   items: {}
@@ -2762,7 +3045,7 @@ paths:
         name: index
         required: true
         schema:
-          $ref: '#/definitions/requests.IndexCreateRequest'
+          $ref: '#/definitions/database.CreateIndexRequest'
       produces:
       - application/json
       responses:
@@ -2770,7 +3053,7 @@ paths:
           description: Index created
           schema:
             allOf:
-            - $ref: '#/definitions/responses.Response'
+            - $ref: '#/definitions/response.Response'
             - properties:
                 content: {}
               type: object
@@ -2849,7 +3132,7 @@ paths:
           description: Index details
           schema:
             allOf:
-            - $ref: '#/definitions/responses.Response'
+            - $ref: '#/definitions/response.Response'
             - properties:
                 content: {}
               type: object
@@ -2890,7 +3173,7 @@ paths:
         name: new_name
         required: true
         schema:
-          $ref: '#/definitions/table_requests.RenameRequest'
+          $ref: '#/definitions/database.RenameTableRequest'
       produces:
       - application/json
       responses:
@@ -2898,10 +3181,10 @@ paths:
           description: Table renamed
           schema:
             allOf:
-            - $ref: '#/definitions/responses.Response'
+            - $ref: '#/definitions/response.Response'
             - properties:
                 content:
-                  $ref: '#/definitions/resources.TableResponse'
+                  $ref: '#/definitions/database.TableResponse'
               type: object
         "400":
           description: Invalid input
@@ -2935,7 +3218,7 @@ paths:
         name: table
         required: true
         schema:
-          $ref: '#/definitions/table_requests.UploadRequest'
+          $ref: '#/definitions/database.UploadTableRequest'
       produces:
       - application/json
       responses:
@@ -2943,10 +3226,10 @@ paths:
           description: Table created
           schema:
             allOf:
-            - $ref: '#/definitions/responses.Response'
+            - $ref: '#/definitions/response.Response'
             - properties:
                 content:
-                  $ref: '#/definitions/resources.TableResponse'
+                  $ref: '#/definitions/database.TableResponse'
               type: object
         "400":
           description: Invalid input
@@ -2970,7 +3253,7 @@ paths:
         name: user
         required: true
         schema:
-          $ref: '#/definitions/user_requests.CreateRequest'
+          $ref: '#/definitions/user.CreateRequest'
       produces:
       - application/json
       responses:
@@ -2978,10 +3261,10 @@ paths:
           description: User created
           schema:
             allOf:
-            - $ref: '#/definitions/responses.Response'
+            - $ref: '#/definitions/response.Response'
             - properties:
                 content:
-                  $ref: '#/definitions/resources.UserResponse'
+                  $ref: '#/definitions/user.Response'
               type: object
         "400":
           description: Invalid input
@@ -3015,10 +3298,10 @@ paths:
           description: User details
           schema:
             allOf:
-            - $ref: '#/definitions/responses.Response'
+            - $ref: '#/definitions/response.Response'
             - properties:
                 content:
-                  $ref: '#/definitions/resources.UserResponse'
+                  $ref: '#/definitions/user.Response'
               type: object
         "400":
           description: Invalid input
@@ -3049,7 +3332,7 @@ paths:
         name: user
         required: true
         schema:
-          $ref: '#/definitions/user_requests.UpdateRequest'
+          $ref: '#/definitions/user.UpdateRequest'
       produces:
       - application/json
       responses:
@@ -3057,10 +3340,10 @@ paths:
           description: User updated
           schema:
             allOf:
-            - $ref: '#/definitions/responses.Response'
+            - $ref: '#/definitions/response.Response'
             - properties:
                 content:
-                  $ref: '#/definitions/resources.UserResponse'
+                  $ref: '#/definitions/user.Response'
               type: object
         "400":
           description: Invalid input
@@ -3084,7 +3367,7 @@ paths:
         name: user
         required: true
         schema:
-          $ref: '#/definitions/user_requests.LoginRequest'
+          $ref: '#/definitions/user.LoginRequest'
       produces:
       - application/json
       responses:
@@ -3092,10 +3375,10 @@ paths:
           description: User details
           schema:
             allOf:
-            - $ref: '#/definitions/responses.Response'
+            - $ref: '#/definitions/response.Response'
             - properties:
                 content:
-                  $ref: '#/definitions/resources.UserResponse'
+                  $ref: '#/definitions/user.Response'
               type: object
         "400":
           description: Invalid input
@@ -3123,7 +3406,7 @@ paths:
         "200":
           description: User logged out
           schema:
-            $ref: '#/definitions/responses.Response'
+            $ref: '#/definitions/response.Response'
         "400":
           description: Invalid input
         "401":

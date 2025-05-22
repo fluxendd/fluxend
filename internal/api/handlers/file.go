@@ -38,13 +38,13 @@ func NewFileHandler(injector *do.Injector) (*FileHandler, error) {
 // @Param sort query string false "Field to sort by"
 // @Param order query string false "Sort order (asc or desc)"
 //
-// @Success 200 {array} responses.Response{content=[]resources.FileResponse} "List of files"
+// @Success 200 {array} response.Response{content=[]file.Response} "List of files"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
 //
 // @Router /containers/{containerUUID}/files [get]
-func (fc *FileHandler) List(c echo.Context) error {
+func (fh *FileHandler) List(c echo.Context) error {
 	var request dto.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
@@ -58,7 +58,7 @@ func (fc *FileHandler) List(c echo.Context) error {
 	}
 
 	paginationParams := request.ExtractPaginationParams(c)
-	files, err := fc.fileService.List(paginationParams, containerUUID, authUser)
+	files, err := fh.fileService.List(paginationParams, containerUUID, authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
@@ -79,13 +79,13 @@ func (fc *FileHandler) List(c echo.Context) error {
 // @Param containerUUID path string true "Container UUID"
 // @Param fileUUID path string true "File UUID"
 //
-// @Success 200 {object} responses.Response{content=resources.FileResponse} "File details"
+// @Success 200 {object} response.Response{content=file.Response} "File details"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
 //
 // @Router /containers/{containerUUID}/files/{fileUUID} [get]
-func (fc *FileHandler) Show(c echo.Context) error {
+func (fh *FileHandler) Show(c echo.Context) error {
 	var request dto.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
@@ -103,7 +103,7 @@ func (fc *FileHandler) Show(c echo.Context) error {
 		return response.BadRequestResponse(c, err.Error())
 	}
 
-	fetchedFile, err := fc.fileService.GetByUUID(fileUUID, containerUUID, authUser)
+	fetchedFile, err := fh.fileService.GetByUUID(fileUUID, containerUUID, authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
@@ -122,15 +122,15 @@ func (fc *FileHandler) Show(c echo.Context) error {
 //
 // @Param Authorization header string true "Bearer Token"
 // @Param containerUUID path string true "Container UUID"
-// @Param file body container_requests.CreateRequest true "File details"
+// @Param file body file.CreateRequest true "File details"
 //
-// @Success 201 {object} responses.Response{content=resources.FileResponse} "File details"
+// @Success 201 {object} response.Response{content=file.Response} "File details"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
 //
 // @Router /containers/{containerUUID}/files [post]
-func (fc *FileHandler) Store(c echo.Context) error {
+func (fh *FileHandler) Store(c echo.Context) error {
 	var request file.CreateRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
@@ -143,7 +143,7 @@ func (fc *FileHandler) Store(c echo.Context) error {
 		return response.BadRequestResponse(c, err.Error())
 	}
 
-	createdFile, err := fc.fileService.Create(containerUUID, file.ToCreateFileInput(&request), authUser)
+	createdFile, err := fh.fileService.Create(containerUUID, file.ToCreateFileInput(&request), authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
@@ -163,15 +163,15 @@ func (fc *FileHandler) Store(c echo.Context) error {
 // @Param Authorization header string true "Bearer Token"
 // @Param containerUUID path string true "Container UUID"
 // @Param fileUUID path string true "File UUID"
-// @Param file body container_requests.RenameRequest true "New file name"
+// @Param file body file.RenameRequest true "New file name"
 //
-// @Success 200 {object} responses.Response{content=resources.FileResponse} "File details"
+// @Success 200 {object} response.Response{content=file.Response} "File details"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
 //
 // @Router /containers/{containerUUID}/files/{fileUUID}/rename [put]
-func (fc *FileHandler) Rename(c echo.Context) error {
+func (fh *FileHandler) Rename(c echo.Context) error {
 	var request file.RenameRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
@@ -189,7 +189,7 @@ func (fc *FileHandler) Rename(c echo.Context) error {
 		return response.BadRequestResponse(c, err.Error())
 	}
 
-	updatedFile, err := fc.fileService.Rename(fileUUID, containerUUID, authUser, file.ToRenameFileInput(&request))
+	updatedFile, err := fh.fileService.Rename(fileUUID, containerUUID, authUser, file.ToRenameFileInput(&request))
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
@@ -216,7 +216,7 @@ func (fc *FileHandler) Rename(c echo.Context) error {
 // @Failure 500 "Internal server error"
 //
 // @Router /containers/{containerUUID}/files/{fileUUID} [delete]
-func (fc *FileHandler) Delete(c echo.Context) error {
+func (fh *FileHandler) Delete(c echo.Context) error {
 	var request dto.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
@@ -234,7 +234,7 @@ func (fc *FileHandler) Delete(c echo.Context) error {
 		return response.BadRequestResponse(c, err.Error())
 	}
 
-	if _, err := fc.fileService.Delete(fileUUID, containerUUID, authUser); err != nil {
+	if _, err := fh.fileService.Delete(fileUUID, containerUUID, authUser); err != nil {
 		return response.ErrorResponse(c, err)
 	}
 

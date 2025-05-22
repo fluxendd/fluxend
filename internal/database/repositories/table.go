@@ -13,7 +13,7 @@ import (
 
 type TableRepository struct {
 	connection       *sqlx.DB
-	columnRepository *ColumnRepository
+	columnRepository database.ColumnRepository
 }
 
 func NewTableRepository(connection *sqlx.DB) (database.TableRepository, error) {

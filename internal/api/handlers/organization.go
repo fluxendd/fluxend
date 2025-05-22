@@ -37,12 +37,12 @@ func NewOrganizationHandler(injector *do.Injector) (*OrganizationHandler, error)
 // @Param sort query string false "Field to sort by"
 // @Param order query string false "Sort order (asc or desc)"
 //
-// @Success 200 {object} responses.Response{content=[]organizationDto.Response} "List of organizations"
+// @Success 200 {object} response.Response{content=[]organization.Response} "List of organizations"
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
 //
 // @Router /organizations [get]
-func (oc *OrganizationHandler) List(c echo.Context) error {
+func (oh *OrganizationHandler) List(c echo.Context) error {
 	var request dto.DefaultRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
@@ -51,7 +51,7 @@ func (oc *OrganizationHandler) List(c echo.Context) error {
 	authUserId, _ := auth.NewAuth(c).Uuid()
 
 	paginationParams := request.ExtractPaginationParams(c)
-	organizations, err := oc.organizationService.List(paginationParams, authUserId)
+	organizations, err := oh.organizationService.List(paginationParams, authUserId)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
@@ -71,14 +71,14 @@ func (oc *OrganizationHandler) List(c echo.Context) error {
 // @Param Authorization header string true "Bearer Token"
 // @Param organization_id path string true "Organization ID"
 //
-// @Success 200 {object} responses.Response{content=organizationDto.Response} "Organization details"
+// @Success 200 {object} response.Response{content=organization.Response} "Organization details"
 // @Failure 422 "Unprocessable entity"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
 //
 // @Router /organizations/{organizationUUID} [get]
-func (oc *OrganizationHandler) Show(c echo.Context) error {
+func (oh *OrganizationHandler) Show(c echo.Context) error {
 	var request dto.DefaultRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
@@ -91,7 +91,7 @@ func (oc *OrganizationHandler) Show(c echo.Context) error {
 		return response.BadRequestResponse(c, err.Error())
 	}
 
-	organization, err := oc.organizationService.GetByID(organizationUUID, authUser)
+	organization, err := oh.organizationService.GetByID(organizationUUID, authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
@@ -109,16 +109,16 @@ func (oc *OrganizationHandler) Show(c echo.Context) error {
 // @Produce json
 //
 // @Param Authorization header string true "Bearer Token"
-// @Param organization body organization_requests.CreateRequest true "Organization name"
+// @Param organization body organization.CreateRequest true "Organization name"
 //
-// @Success 201 {object} responses.Response{content=organizationDto.Response} "Organization created"
+// @Success 201 {object} response.Response{content=organization.Response} "Organization created"
 // @Failure 422 "Unprocessable entity"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
 //
 // @Router /organizations [post]
-func (oc *OrganizationHandler) Store(c echo.Context) error {
+func (oh *OrganizationHandler) Store(c echo.Context) error {
 	var request organizationDto.CreateRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
@@ -129,7 +129,7 @@ func (oc *OrganizationHandler) Store(c echo.Context) error {
 		return response.UnauthorizedResponse(c, err.Error())
 	}
 
-	organization, err := oc.organizationService.Create(request.Name, authUser)
+	organization, err := oh.organizationService.Create(request.Name, authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
@@ -148,16 +148,16 @@ func (oc *OrganizationHandler) Store(c echo.Context) error {
 //
 // @Param Authorization header string true "Bearer Token"
 // @Param organization_id path string true "Organization ID"
-// @Param organization body organization_requests.CreateRequest true "Updated organization details"
+// @Param organization body organization.CreateRequest true "Updated organization details"
 //
-// @Success 200 {object} responses.Response{content=organizationDto.Response} "Organization updated"
+// @Success 200 {object} response.Response{content=organization.Response} "Organization updated"
 // @Failure 422 "Unprocessable entity"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
 //
 // @Router /organizations/{organizationUUID} [put]
-func (oc *OrganizationHandler) Update(c echo.Context) error {
+func (oh *OrganizationHandler) Update(c echo.Context) error {
 	var request organizationDto.CreateRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
@@ -170,7 +170,7 @@ func (oc *OrganizationHandler) Update(c echo.Context) error {
 		return response.BadRequestResponse(c, err.Error())
 	}
 
-	updatedOrganization, err := oc.organizationService.Update(request.Name, organizationUUID, authUser)
+	updatedOrganization, err := oh.organizationService.Update(request.Name, organizationUUID, authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
@@ -190,12 +190,12 @@ func (oc *OrganizationHandler) Update(c echo.Context) error {
 // @Param Authorization header string true "Bearer Token"
 // @Param organization_id path string true "Organization ID"
 //
-// @Success 204 {object} responses.Response{} "Organization deleted"
+// @Success 204 {object} response.Response{} "Organization deleted"
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
 //
 // @Router /organizations/{organizationUUID} [delete]
-func (oc *OrganizationHandler) Delete(c echo.Context) error {
+func (oh *OrganizationHandler) Delete(c echo.Context) error {
 	var request dto.DefaultRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
@@ -208,7 +208,7 @@ func (oc *OrganizationHandler) Delete(c echo.Context) error {
 		return response.BadRequestResponse(c, err.Error())
 	}
 
-	if _, err := oc.organizationService.Delete(organizationUUID, authUser); err != nil {
+	if _, err := oh.organizationService.Delete(organizationUUID, authUser); err != nil {
 		return response.ErrorResponse(c, err)
 	}
 

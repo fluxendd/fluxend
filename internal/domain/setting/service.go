@@ -10,8 +10,6 @@ import (
 	"time"
 )
 
-const settingsCacheKey = "settings"
-
 type Service interface {
 	List() ([]Setting, error)
 	Get(name string) Setting

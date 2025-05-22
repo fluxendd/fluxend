@@ -258,7 +258,7 @@ func (s *ColumnServiceImpl) getClientColumnRepo(dbName string, connection *sqlx.
 	if !ok {
 		connection.Close()
 
-		return nil, nil, errors.NewUnprocessableError("clientTableRepo is invalid")
+		return nil, nil, errors.NewUnprocessableError("clientColumnRepo is invalid")
 	}
 
 	return clientRepo, connection, nil

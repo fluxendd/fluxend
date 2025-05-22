@@ -33,13 +33,13 @@ func NewTableHandler(injector *do.Injector) (*TableHandler, error) {
 // @Param Authorization header string true "Bearer Token"
 // @param Header X-Project header string true "Project UUID"
 //
-// @Success 200 {object} responses.Response{content=[]resources.TableResponse} "List of tables"
+// @Success 200 {object} response.Response{content=[]database.TableResponse} "List of tables"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
 //
 // @Router /tables [get]
-func (tc *TableHandler) List(c echo.Context) error {
+func (th *TableHandler) List(c echo.Context) error {
 	var request dto.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
@@ -47,7 +47,7 @@ func (tc *TableHandler) List(c echo.Context) error {
 
 	authUser, _ := auth.NewAuth(c).User()
 
-	tables, err := tc.tableService.List(request.ProjectUUID, authUser)
+	tables, err := th.tableService.List(request.ProjectUUID, authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
@@ -69,14 +69,14 @@ func (tc *TableHandler) List(c echo.Context) error {
 //
 // @Param tableUUID path string true "Table UUID"
 //
-// @Success 200 {object} responses.Response{content=resources.TableResponse} "Table details"
+// @Success 200 {object} response.Response{content=database.TableResponse} "Table details"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
 // @Failure 404 "Table not found"
 // @Failure 500 "Internal server error"
 //
 // @Router /tables/{tableUUID} [get]
-func (tc *TableHandler) Show(c echo.Context) error {
+func (th *TableHandler) Show(c echo.Context) error {
 	var request dto.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
@@ -89,7 +89,7 @@ func (tc *TableHandler) Show(c echo.Context) error {
 		return response.BadRequestResponse(c, "Table name is required")
 	}
 
-	table, err := tc.tableService.GetByName(fullTableName, request.ProjectUUID, authUser)
+	table, err := th.tableService.GetByName(fullTableName, request.ProjectUUID, authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
@@ -109,16 +109,16 @@ func (tc *TableHandler) Show(c echo.Context) error {
 // @Param Authorization header string true "Bearer Token"
 // @param Header X-Project header string true "Project UUID"
 //
-// @Param table body table_requests.CreateRequest true "Table definition JSON"
+// @Param table body database.CreateTableRequest true "Table definition JSON"
 //
-// @Success 201 {object} responses.Response{content=resources.TableResponse} "Table created"
+// @Success 201 {object} response.Response{content=database.TableResponse} "Table created"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
 // @Failure 422 "Unprocessable entity"
 // @Failure 500 "Internal server error"
 //
 // @Router /tables [post]
-func (tc *TableHandler) Store(c echo.Context) error {
+func (th *TableHandler) Store(c echo.Context) error {
 	var request database.CreateTableRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
@@ -126,7 +126,7 @@ func (tc *TableHandler) Store(c echo.Context) error {
 
 	authUser, _ := auth.NewAuth(c).User()
 
-	table, err := tc.tableService.Create(database.ToCreateTableInput(request), authUser)
+	table, err := th.tableService.Create(database.ToCreateTableInput(request), authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
@@ -146,16 +146,16 @@ func (tc *TableHandler) Store(c echo.Context) error {
 // @Param Authorization header string true "Bearer Token"
 // @param Header X-Project header string true "Project UUID"
 //
-// @Param table body table_requests.UploadRequest true "Table definition multipart/form-data"
+// @Param table body database.UploadTableRequest true "Table definition multipart/form-data"
 //
-// @Success 201 {object} responses.Response{content=resources.TableResponse} "Table created"
+// @Success 201 {object} response.Response{content=database.TableResponse} "Table created"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
 // @Failure 422 "Unprocessable entity"
 // @Failure 500 "Internal server error"
 //
 // @Router /tables/upload [post]
-func (tc *TableHandler) Upload(c echo.Context) error {
+func (th *TableHandler) Upload(c echo.Context) error {
 	var request database.UploadTableRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
@@ -163,7 +163,7 @@ func (tc *TableHandler) Upload(c echo.Context) error {
 
 	authUser, _ := auth.NewAuth(c).User()
 
-	table, err := tc.tableService.Upload(database.ToUploadTableInput(request), authUser)
+	table, err := th.tableService.Upload(database.ToUploadTableInput(request), authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
@@ -184,16 +184,16 @@ func (tc *TableHandler) Upload(c echo.Context) error {
 // @param Header X-Project header string true "Project UUID"
 //
 // @Param tableUUID path string true "Table UUID"
-// @Param new_name body table_requests.RenameRequest true "Duplicate table name JSON"
+// @Param new_name body database.RenameTableRequest true "Duplicate table name JSON"
 //
-// @Success 201 {object} responses.Response{content=resources.TableResponse} "Table duplicated"
+// @Success 201 {object} response.Response{content=database.TableResponse} "Table duplicated"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
 // @Failure 422 "Unprocessable entity"
 // @Failure 500 "Internal server error"
 //
 // @Router /tables/{tableUUID}/duplicate [put]
-func (tc *TableHandler) Duplicate(c echo.Context) error {
+func (th *TableHandler) Duplicate(c echo.Context) error {
 	var request database.RenameTableRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
@@ -206,7 +206,7 @@ func (tc *TableHandler) Duplicate(c echo.Context) error {
 		return response.BadRequestResponse(c, "Table name is required")
 	}
 
-	duplicatedTable, err := tc.tableService.Duplicate(fullTableName, authUser, database.ToRenameTableInput(request))
+	duplicatedTable, err := th.tableService.Duplicate(fullTableName, authUser, database.ToRenameTableInput(request))
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
@@ -227,16 +227,16 @@ func (tc *TableHandler) Duplicate(c echo.Context) error {
 // @param Header X-Project header string true "Project UUID"
 //
 // @Param tableUUID path string true "Table UUID"
-// @Param new_name body table_requests.RenameRequest true "New table name JSON"
+// @Param new_name body database.RenameTableRequest true "New table name JSON"
 //
-// @Success 200 {object} responses.Response{content=resources.TableResponse} "Table renamed"
+// @Success 200 {object} response.Response{content=database.TableResponse} "Table renamed"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
 // @Failure 422 "Unprocessable entity"
 // @Failure 500 "Internal server error"
 //
 // @Router /tables/{tableUUID}/rename [put]
-func (tc *TableHandler) Rename(c echo.Context) error {
+func (th *TableHandler) Rename(c echo.Context) error {
 	var request database.RenameTableRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
@@ -249,7 +249,7 @@ func (tc *TableHandler) Rename(c echo.Context) error {
 		return response.BadRequestResponse(c, "Table name is required")
 	}
 
-	renamedTable, err := tc.tableService.Rename(fullTableName, authUser, database.ToRenameTableInput(request))
+	renamedTable, err := th.tableService.Rename(fullTableName, authUser, database.ToRenameTableInput(request))
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
@@ -278,7 +278,7 @@ func (tc *TableHandler) Rename(c echo.Context) error {
 // @Failure 500 "Internal server error"
 //
 // @Router /tables/{tableUUID} [delete]
-func (tc *TableHandler) Delete(c echo.Context) error {
+func (th *TableHandler) Delete(c echo.Context) error {
 	var request dto.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
@@ -291,7 +291,7 @@ func (tc *TableHandler) Delete(c echo.Context) error {
 		return response.BadRequestResponse(c, "Table name is required")
 	}
 
-	if _, err := tc.tableService.Delete(fullTableName, request.ProjectUUID, authUser); err != nil {
+	if _, err := th.tableService.Delete(fullTableName, request.ProjectUUID, authUser); err != nil {
 		return response.ErrorResponse(c, err)
 	}
 

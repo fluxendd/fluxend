@@ -34,13 +34,13 @@ func NewColumnHandler(injector *do.Injector) (*ColumnHandler, error) {
 // @Param Authorization header string true "Bearer Token"
 // @param Header X-Project header string true "Project UUID"
 //
-// @Success 200 {object} responses.Response{content=[]resources.ColumnResponse} "List of columns"
+// @Success 200 {object} response.Response{content=[]database.ColumnResponse} "List of columns"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
 //
 // @Router /tables/{fullTableName}/columns [get]
-func (cc *ColumnHandler) List(c echo.Context) error {
+func (ch *ColumnHandler) List(c echo.Context) error {
 	var request dto.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
@@ -53,7 +53,7 @@ func (cc *ColumnHandler) List(c echo.Context) error {
 		return response.BadRequestResponse(c, "Table name is required")
 	}
 
-	columns, err := cc.columnService.List(fullTableName, request.ProjectUUID, authUser)
+	columns, err := ch.columnService.List(fullTableName, request.ProjectUUID, authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
@@ -74,16 +74,16 @@ func (cc *ColumnHandler) List(c echo.Context) error {
 // @Param X-Project header string true "Project UUID"
 //
 // @Param fullTableName path string true "Full table name"
-// @Param columns body column_requests.CreateRequest true "Columns JSON"
+// @Param columns body database.CreateColumnRequest true "Columns JSON"
 //
-// @Success 201 {object} responses.Response{content=resources.TableResponse} "Columns created"
+// @Success 201 {object} response.Response{content=database.ColumnResponse} "Columns created"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
 // @Failure 422 "Unprocessable entity"
 // @Failure 500 "Internal server error"
 //
 // @Router /tables/{fullTableName}/columns [post]
-func (cc *ColumnHandler) Store(c echo.Context) error {
+func (ch *ColumnHandler) Store(c echo.Context) error {
 	var request database.CreateColumnRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
@@ -96,7 +96,7 @@ func (cc *ColumnHandler) Store(c echo.Context) error {
 		return response.BadRequestResponse(c, "Table name is required")
 	}
 
-	columns, err := cc.columnService.CreateMany(fullTableName, database.ToCreateColumnInput(request), authUser)
+	columns, err := ch.columnService.CreateMany(fullTableName, database.ToCreateColumnInput(request), authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
@@ -117,16 +117,16 @@ func (cc *ColumnHandler) Store(c echo.Context) error {
 // @Param X-Project header string true "Project UUID"
 //
 // @Param fullTableName path string true "Full table name"
-// @Param columns body column_requests.CreateRequest true "Updated column definitions"
+// @Param columns body database.CreateColumnRequest true "Updated column definitions"
 //
-// @Success 200 {object} responses.Response{content=resources.TableResponse} "Columns altered"
+// @Success 200 {object} response.Response{content=database.ColumnResponse} "Columns altered"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
 // @Failure 422 "Unprocessable entity"
 // @Failure 500 "Internal server error"
 //
 // @Router /tables/{fullTableName}/columns [put]
-func (cc *ColumnHandler) Alter(c echo.Context) error {
+func (ch *ColumnHandler) Alter(c echo.Context) error {
 	var request database.CreateColumnRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
@@ -139,7 +139,7 @@ func (cc *ColumnHandler) Alter(c echo.Context) error {
 		return response.BadRequestResponse(c, "Table name is required")
 	}
 
-	columns, err := cc.columnService.AlterMany(fullTableName, database.ToCreateColumnInput(request), authUser)
+	columns, err := ch.columnService.AlterMany(fullTableName, database.ToCreateColumnInput(request), authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
@@ -161,16 +161,16 @@ func (cc *ColumnHandler) Alter(c echo.Context) error {
 //
 // @Param fullTableName path string true "Full table name"
 // @Param column_name path string true "Existing Column Name"
-// @Param new_name body column_requests.RenameRequest true "New column name JSON"
+// @Param new_name body database.RenameColumnRequest true "New column name JSON"
 //
-// @Success 200 {object} responses.Response "Column renamed"
+// @Success 200 {object} response.Response "Column renamed"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
 // @Failure 422 "Unprocessable entity"
 // @Failure 500 "Internal server error"
 //
 // @Router /tables/{fullTableName}/columns/{columnName} [put]
-func (cc *ColumnHandler) Rename(c echo.Context) error {
+func (ch *ColumnHandler) Rename(c echo.Context) error {
 	var request database.RenameColumnRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
@@ -178,12 +178,12 @@ func (cc *ColumnHandler) Rename(c echo.Context) error {
 
 	authUser, _ := auth.NewAuth(c).User()
 
-	fullTableName, columnName, err := cc.parseRequest(c)
+	fullTableName, columnName, err := ch.parseRequest(c)
 	if err != nil {
 		return response.BadRequestResponse(c, err.Error())
 	}
 
-	columns, err := cc.columnService.Rename(columnName, fullTableName, database.ToRenameColumnInput(request), authUser)
+	columns, err := ch.columnService.Rename(columnName, fullTableName, database.ToRenameColumnInput(request), authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
@@ -213,7 +213,7 @@ func (cc *ColumnHandler) Rename(c echo.Context) error {
 // @Failure 500 "Internal server error"
 //
 // @Router /tables/{fullTableName}/columns/{columnName} [delete]
-func (cc *ColumnHandler) Delete(c echo.Context) error {
+func (ch *ColumnHandler) Delete(c echo.Context) error {
 	var request dto.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
@@ -221,19 +221,19 @@ func (cc *ColumnHandler) Delete(c echo.Context) error {
 
 	authUser, _ := auth.NewAuth(c).User()
 
-	fullTableName, columnName, err := cc.parseRequest(c)
+	fullTableName, columnName, err := ch.parseRequest(c)
 	if err != nil {
 		return response.BadRequestResponse(c, err.Error())
 	}
 
-	if _, err := cc.columnService.Delete(columnName, fullTableName, request.ProjectUUID, authUser); err != nil {
+	if _, err := ch.columnService.Delete(columnName, fullTableName, request.ProjectUUID, authUser); err != nil {
 		return response.ErrorResponse(c, err)
 	}
 
 	return response.DeletedResponse(c, nil)
 }
 
-func (cc *ColumnHandler) parseRequest(c echo.Context) (string, string, error) {
+func (ch *ColumnHandler) parseRequest(c echo.Context) (string, string, error) {
 	fullTableName := c.Param("fullTableName")
 	if fullTableName == "" {
 		return "", "", errors.NewBadRequestError("Table name is required")

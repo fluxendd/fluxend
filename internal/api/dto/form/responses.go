@@ -16,7 +16,7 @@ type Response struct {
 	UpdatedAt   string    `json:"updatedAt"`
 }
 
-type FieldResponse struct {
+type FieldResponseApi struct {
 	Uuid         uuid.UUID   `json:"uuid"`
 	FormUuid     uuid.UUID   `json:"formUuid"`
 	Label        string      `json:"label"`

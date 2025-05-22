@@ -18,7 +18,7 @@ func NewHealthHandler(injector *do.Injector) (*HealthHandler, error) {
 	return &HealthHandler{settingService: settingService}, nil
 }
 
-func (hc *HealthHandler) Pulse(c echo.Context) error {
+func (hh *HealthHandler) Pulse(c echo.Context) error {
 	_, err := auth.NewAuth(c).User()
 	if err != nil {
 		return response.UnauthorizedResponse(c, err.Error())

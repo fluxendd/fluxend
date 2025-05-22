@@ -36,13 +36,13 @@ func NewFunctionHandler(injector *do.Injector) (*FunctionHandler, error) {
 // @Param projectUUID path string true "Project UUID"
 // @Param schema path string true "Schema to search under"
 //
-// @Success 200 {array} responses.Response{content=[]resources.FunctionResponse} "List of functions"
+// @Success 200 {array} response.Response{content=[]database.FunctionResponse} "List of functions"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
 //
 // @Router /functions/{schema} [get]
-func (fc *FunctionHandler) List(c echo.Context) error {
+func (fh *FunctionHandler) List(c echo.Context) error {
 	var request dto.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
@@ -55,7 +55,7 @@ func (fc *FunctionHandler) List(c echo.Context) error {
 		return response.BadRequestResponse(c, "Schema is required")
 	}
 
-	functions, err := fc.functionService.List(schema, request.ProjectUUID, authUser)
+	functions, err := fh.functionService.List(schema, request.ProjectUUID, authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
@@ -78,13 +78,13 @@ func (fc *FunctionHandler) List(c echo.Context) error {
 // @Param schema path string true "Schema name"
 // @Param functionName path string true "Function name"
 //
-// @Success 200 {object} responses.Response{content=resources.FunctionResponse} "Function details"
+// @Success 200 {object} response.Response{content=database.FunctionResponse} "Function details"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
 //
 // @Router /functions/{schema}/{functionName} [get]
-func (fc *FunctionHandler) Show(c echo.Context) error {
+func (fh *FunctionHandler) Show(c echo.Context) error {
 	var request dto.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
@@ -102,7 +102,7 @@ func (fc *FunctionHandler) Show(c echo.Context) error {
 		return response.BadRequestResponse(c, "Function name is required")
 	}
 
-	fetchedFunction, err := fc.functionService.GetByName(functionName, schema, request.ProjectUUID, authUser)
+	fetchedFunction, err := fh.functionService.GetByName(functionName, schema, request.ProjectUUID, authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
@@ -122,16 +122,16 @@ func (fc *FunctionHandler) Show(c echo.Context) error {
 // @Param Authorization header string true "Bearer Token"
 // @Param Header X-Project header string true "Project UUID"
 //
-// @Param form body requests.CreateFunctionRequest true "Function details"
+// @Param function body database.CreateFunctionRequest true "Function details"
 //
-// @Success 201 {object} responses.Response{content=resources.FunctionResponse} "Function created"
+// @Success 201 {object} response.Response{content=database.FunctionResponse} "Function created"
 // @Failure 422 "Unprocessable entity"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
 //
 // @Router /functions/{schema} [post]
-func (fc *FunctionHandler) Store(c echo.Context) error {
+func (fh *FunctionHandler) Store(c echo.Context) error {
 	var request database.CreateFunctionRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
@@ -144,7 +144,7 @@ func (fc *FunctionHandler) Store(c echo.Context) error {
 		return response.BadRequestResponse(c, "Schema is required")
 	}
 
-	createdFunction, err := fc.functionService.Create(schema, database.ToCreateFunctionInput(request), authUser)
+	createdFunction, err := fh.functionService.Create(schema, database.ToCreateFunctionInput(request), authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
@@ -174,7 +174,7 @@ func (fc *FunctionHandler) Store(c echo.Context) error {
 // @Failure 500 "Internal server error"
 //
 // @Router /functions/{schema}/{functionName} [delete]
-func (fc *FunctionHandler) Delete(c echo.Context) error {
+func (fh *FunctionHandler) Delete(c echo.Context) error {
 	var request dto.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
@@ -192,7 +192,7 @@ func (fc *FunctionHandler) Delete(c echo.Context) error {
 		return response.BadRequestResponse(c, "Function name is required")
 	}
 
-	if _, err := fc.functionService.Delete(schema, functionName, request.ProjectUUID, authUser); err != nil {
+	if _, err := fh.functionService.Delete(schema, functionName, request.ProjectUUID, authUser); err != nil {
 		return response.ErrorResponse(c, err)
 	}
 

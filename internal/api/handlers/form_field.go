@@ -33,13 +33,13 @@ func NewFormFieldHandler(injector *do.Injector) (*FormFieldHandler, error) {
 // @Param Authorization header string true "Bearer Token"
 // @Param formUUID path string true "Form UUID"
 //
-// @Success 200 {array} responses.Response{content=[]resources.FieldResponse} "List of fields"
+// @Success 200 {array} response.Response{content=[]form.FieldResponseApi} "List of fields"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
 //
 // @Router /forms/{formUUID}/fields [get]
-func (ffc *FormFieldHandler) List(c echo.Context) error {
+func (ffh *FormFieldHandler) List(c echo.Context) error {
 	var request dto.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
@@ -52,7 +52,7 @@ func (ffc *FormFieldHandler) List(c echo.Context) error {
 		return response.BadRequestResponse(c, err.Error())
 	}
 
-	formFields, err := ffc.formFieldService.List(formUUID, authUser)
+	formFields, err := ffh.formFieldService.List(formUUID, authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
@@ -73,13 +73,13 @@ func (ffc *FormFieldHandler) List(c echo.Context) error {
 // @Param formUUID path string true "Form UUID"
 // @Param fieldUUID path string true "Field UUID"
 //
-// @Success 200 {object} responses.Response{content=resources.FieldResponse} "Field details"
+// @Success 200 {object} response.Response{content=form.FieldResponseApi} "Field details"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
 //
 // @Router /forms/{formUUID}/fields/{fieldUUID} [get]
-func (ffc *FormFieldHandler) Show(c echo.Context) error {
+func (ffh *FormFieldHandler) Show(c echo.Context) error {
 	var request dto.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
@@ -92,7 +92,7 @@ func (ffc *FormFieldHandler) Show(c echo.Context) error {
 		return response.BadRequestResponse(c, err.Error())
 	}
 
-	formField, err := ffc.formFieldService.GetByUUID(formUUID, authUser)
+	formField, err := ffh.formFieldService.GetByUUID(formUUID, authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
@@ -110,17 +110,17 @@ func (ffc *FormFieldHandler) Show(c echo.Context) error {
 // @Produce json
 //
 // @Param Authorization header string true "Bearer Token"
-// @Param field body form_requests.CreateFormFieldsRequest true "Field details"
+// @Param field body form.CreateFormFieldsRequest true "Field details"
 // @Param formUUID path string true "Form UUID"
 //
-// @Success 201 {object} responses.Response{content=resources.FieldResponse} "Field created"
+// @Success 201 {object} response.Response{content=form.FieldResponseApi} "Field created"
 // @Failure 422 "Unprocessable entity"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
 //
 // @Router /forms/{formUUID}/fields [post]
-func (ffc *FormFieldHandler) Store(c echo.Context) error {
+func (ffh *FormFieldHandler) Store(c echo.Context) error {
 	var request form.CreateFormFieldsRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
@@ -133,7 +133,7 @@ func (ffc *FormFieldHandler) Store(c echo.Context) error {
 		return response.BadRequestResponse(c, err.Error())
 	}
 
-	formFields, err := ffc.formFieldService.CreateMany(formUUID, form.ToCreateFormFieldInput(&request), authUser)
+	formFields, err := ffh.formFieldService.CreateMany(formUUID, form.ToCreateFormFieldInput(&request), authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
@@ -151,18 +151,18 @@ func (ffc *FormFieldHandler) Store(c echo.Context) error {
 // @Produce json
 //
 // @Param Authorization header string true "Bearer Token"
-// @Param field body form_requests.UpdateFormFieldRequest true "Field details"
+// @Param field body form.UpdateFormFieldRequest true "Field details"
 // @Param formUUID path string true "Form UUID"
 // @Param fieldUUID path string true "Field UUID"
 //
-// @Success 200 {object} responses.Response{content=resources.FieldResponse} "Field updated"
+// @Success 200 {object} response.Response{content=form.FieldResponseApi} "Field updated"
 // @Failure 422 "Unprocessable entity"
 // @Failure 400 "Invalid input"
 // @Failure 401 "Unauthorized"
 // @Failure 500 "Internal server error"
 //
 // @Router /forms/{formUUID}/fields/{fieldUUID} [put]
-func (ffc *FormFieldHandler) Update(c echo.Context) error {
+func (ffh *FormFieldHandler) Update(c echo.Context) error {
 	var request form.UpdateFormFieldRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
@@ -180,7 +180,7 @@ func (ffc *FormFieldHandler) Update(c echo.Context) error {
 		return response.BadRequestResponse(c, err.Error())
 	}
 
-	updatedFormField, err := ffc.formFieldService.Update(formUUID, fieldUUID, authUser, form.ToUpdateFormFieldInput(&request))
+	updatedFormField, err := ffh.formFieldService.Update(formUUID, fieldUUID, authUser, form.ToUpdateFormFieldInput(&request))
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
@@ -207,7 +207,7 @@ func (ffc *FormFieldHandler) Update(c echo.Context) error {
 // @Failure 500 "Internal server error"
 //
 // @Router /forms/{formUUID}/fields/{fieldUUID} [delete]
-func (ffc *FormFieldHandler) Delete(c echo.Context) error {
+func (ffh *FormFieldHandler) Delete(c echo.Context) error {
 	var request dto.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
@@ -225,7 +225,7 @@ func (ffc *FormFieldHandler) Delete(c echo.Context) error {
 		return response.BadRequestResponse(c, err.Error())
 	}
 
-	if _, err := ffc.formFieldService.Delete(formUUID, fieldUUID, authUser); err != nil {
+	if _, err := ffh.formFieldService.Delete(formUUID, fieldUUID, authUser); err != nil {
 		return response.ErrorResponse(c, err)
 	}
 

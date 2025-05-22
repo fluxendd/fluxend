@@ -23,8 +23,6 @@ func (r *UpdateRequest) BindAndValidate(c echo.Context) []string {
 		return []string{"Invalid request payload"}
 	}
 
-	r.SetContext(c)
-
 	// Check if Settings slice is present
 	if len(r.Settings) == 0 {
 		return []string{"Settings required"}

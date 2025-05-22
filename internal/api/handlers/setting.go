@@ -20,8 +20,8 @@ func NewSettingHandler(injector *do.Injector) (*SettingHandler, error) {
 	return &SettingHandler{settingService: settingService}, nil
 }
 
-func (sc *SettingHandler) List(c echo.Context) error {
-	settings, err := sc.settingService.List()
+func (sh *SettingHandler) List(c echo.Context) error {
+	settings, err := sh.settingService.List()
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
@@ -29,7 +29,7 @@ func (sc *SettingHandler) List(c echo.Context) error {
 	return response.SuccessResponse(c, settingMapper.ToResourceCollection(settings))
 }
 
-func (sc *SettingHandler) Update(c echo.Context) error {
+func (sh *SettingHandler) Update(c echo.Context) error {
 	var request setting.UpdateRequest
 	authUser, _ := auth.NewAuth(c).User()
 
@@ -37,7 +37,7 @@ func (sc *SettingHandler) Update(c echo.Context) error {
 		return response.UnprocessableResponse(c, err)
 	}
 
-	updatedSettings, err := sc.settingService.Update(authUser, &request)
+	updatedSettings, err := sh.settingService.Update(authUser, &request)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
@@ -45,10 +45,10 @@ func (sc *SettingHandler) Update(c echo.Context) error {
 	return response.SuccessResponse(c, settingMapper.ToResourceCollection(updatedSettings))
 }
 
-func (sc *SettingHandler) Reset(c echo.Context) error {
+func (sh *SettingHandler) Reset(c echo.Context) error {
 	authUser, _ := auth.NewAuth(c).User()
 
-	updatedSettings, err := sc.settingService.Reset(authUser)
+	updatedSettings, err := sh.settingService.Reset(authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
