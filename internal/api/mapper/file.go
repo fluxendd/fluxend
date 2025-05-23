@@ -1,11 +1,11 @@
-package file
+package mapper
 
 import (
 	fileDto "fluxton/internal/api/dto/storage/file"
 	fileDomain "fluxton/internal/domain/storage/file"
 )
 
-func ToResource(file *fileDomain.File) fileDto.Response {
+func ToFileResource(file *fileDomain.File) fileDto.Response {
 	return fileDto.Response{
 		Uuid:          file.Uuid,
 		ContainerUuid: file.ContainerUuid,
@@ -19,10 +19,10 @@ func ToResource(file *fileDomain.File) fileDto.Response {
 	}
 }
 
-func ToResourceCollection(files []fileDomain.File) []fileDto.Response {
+func ToFileResourceCollection(files []fileDomain.File) []fileDto.Response {
 	resourceContainers := make([]fileDto.Response, len(files))
 	for i, currentFile := range files {
-		resourceContainers[i] = ToResource(&currentFile)
+		resourceContainers[i] = ToFileResource(&currentFile)
 	}
 
 	return resourceContainers
