@@ -43,4 +43,4 @@ pgr.destroy: ## Destroy all postgrest containers
 	@docker rm -f $(shell docker ps -a -q --filter "name=postgrest_")
 
 docs.generate: ## Generate docs
-	swag init --dir . --output docs
+	swag init --dir cmd,internal --output docs
