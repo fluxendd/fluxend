@@ -58,14 +58,14 @@ func registerRoutes(e *echo.Echo, container *do.Injector) {
 	settingService := do.MustInvoke[setting.Service](container)
 	userRepo := do.MustInvoke[user.Repository](container)
 
-	authMiddleware := middlewares.AuthMiddleware(userRepo)
-	allowProjectMiddleware := middlewares.AllowProjectMiddleware(settingService)
-	allowFormMiddleware := middlewares.AllowFormMiddleware(settingService)
-	allowStorageMiddleware := middlewares.AllowStorageMiddleware(settingService)
-	allowBackupMiddleware := middlewares.AllowBackupMiddleware(settingService)
+	authMiddleware := middlewares.Authentication(userRepo)
+	allowProjectMiddleware := middlewares.AllowProject(settingService)
+	allowFormMiddleware := middlewares.AllowForm(settingService)
+	allowStorageMiddleware := middlewares.AllowStorage(settingService)
+	allowBackupMiddleware := middlewares.AllowBackup(settingService)
 
 	requestLogRepo := do.MustInvoke[logging.Repository](container)
-	requestLogMiddleware := middlewares.RequestLoggerMiddleware(requestLogRepo)
+	requestLogMiddleware := middlewares.RequestLogger(requestLogRepo)
 	e.Use(requestLogMiddleware)
 
 	routes.RegisterUserRoutes(e, container, authMiddleware)
