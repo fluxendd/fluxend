@@ -6,11 +6,11 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func AllowBackupMiddleware(settingService setting.Service) echo.MiddlewareFunc {
+func AllowStorage(settingService setting.Service) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
-			if !settingService.GetBool("allowBackup") {
-				return response.ForbiddenResponse(c, "backup.error.disabled")
+			if !settingService.GetBool("allowStorage") {
+				return response.ForbiddenResponse(c, "storage.error.disabled")
 			}
 
 			return next(c)

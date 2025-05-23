@@ -13,7 +13,7 @@ import (
 	"time"
 )
 
-func RequestLoggerMiddleware(requestLogRepo logging.Repository) echo.MiddlewareFunc {
+func RequestLogger(requestLogRepo logging.Repository) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			request := c.Request()
