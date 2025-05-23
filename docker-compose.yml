@@ -44,6 +44,7 @@ services:
   fluxton_app:
     build:
       context: .
+      dockerfile: Dockerfile
     container_name: fluxton_app
     environment:
       - APP_ENV=${APP_ENV:-development}
@@ -60,12 +61,33 @@ services:
       - fluxton_network
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.fluxton_app.rule=Host(`${APP_URL}`)"
+      - "traefik.http.routers.fluxton_app.rule=Host(`api.${APP_URL}`) || Host(`${APP_URL}`) && PathPrefix(`/api`)"
       - "traefik.http.routers.fluxton_app.entrypoints=web"
       - "traefik.http.services.fluxton_app.loadbalancer.server.port=8080"
       #- "traefik.http.routers.fluxton_app.tls.certresolver=le"
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock # still TODO: revisit for security
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  fluxton_frontend:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    container_name: fluxton_frontend
+    environment:
+      - NODE_ENV=${NODE_ENV:-production}
+      - VITE_FLX_API_BASE_URL=${VITE_FLX_API_BASE_URL:-http://fluxton_app:8080}
+      # Add other frontend environment variables here
+    depends_on:
+      - fluxton_app
+    networks:
+      - fluxton_network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.fluxton_frontend.rule=Host(`${APP_URL}`)"
+      - "traefik.http.routers.fluxton_frontend.entrypoints=web"
+      - "traefik.http.services.fluxton_frontend.loadbalancer.server.port=3000"
+      #- "traefik.http.routers.fluxton_frontend.tls.certresolver=le"
+
 networks:
   fluxton_network:
     name: fluxton_network
