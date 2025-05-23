@@ -36,7 +36,12 @@ func setupServer(container *do.Injector) *echo.Echo {
 
 	// Middleware
 	e.Use(middleware.Recover())
-	e.Use(middleware.CORS())
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins:     []string{"*"},
+		AllowMethods:     []string{echo.GET, echo.POST, echo.PUT, echo.DELETE, echo.OPTIONS},
+		AllowHeaders:     []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, echo.HeaderAuthorization},
+		AllowCredentials: true,
+	}))
 
 	if os.Getenv("SENTRY_DSN") != "" {
 		if err := sentry.Init(sentry.ClientOptions{
