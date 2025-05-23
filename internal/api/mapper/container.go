@@ -1,11 +1,11 @@
-package container
+package mapper
 
 import (
 	containerDto "fluxton/internal/api/dto/storage/container"
 	containerDomain "fluxton/internal/domain/storage/container"
 )
 
-func ToResource(container *containerDomain.Container) containerDto.Response {
+func ToContainerResource(container *containerDomain.Container) containerDto.Response {
 	return containerDto.Response{
 		Uuid:        container.Uuid,
 		ProjectUuid: container.ProjectUuid,
@@ -22,10 +22,10 @@ func ToResource(container *containerDomain.Container) containerDto.Response {
 	}
 }
 
-func ToResourceCollection(containers []containerDomain.Container) []containerDto.Response {
+func ToContainerResourceCollection(containers []containerDomain.Container) []containerDto.Response {
 	resourceContainers := make([]containerDto.Response, len(containers))
 	for i, currentContainer := range containers {
-		resourceContainers[i] = ToResource(&currentContainer)
+		resourceContainers[i] = ToContainerResource(&currentContainer)
 	}
 
 	return resourceContainers
