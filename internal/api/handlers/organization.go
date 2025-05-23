@@ -3,20 +3,20 @@ package handlers
 import (
 	"fluxton/internal/api/dto"
 	organizationDto "fluxton/internal/api/dto/organization"
-	organizationMapper "fluxton/internal/api/mapper/organization"
+	"fluxton/internal/api/mapper"
 	"fluxton/internal/api/response"
-	organizationDomain "fluxton/internal/domain/organization"
+	"fluxton/internal/domain/organization"
 	"fluxton/pkg/auth"
 	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
 )
 
 type OrganizationHandler struct {
-	organizationService organizationDomain.Service
+	organizationService organization.Service
 }
 
 func NewOrganizationHandler(injector *do.Injector) (*OrganizationHandler, error) {
-	organizationService := do.MustInvoke[organizationDomain.Service](injector)
+	organizationService := do.MustInvoke[organization.Service](injector)
 
 	return &OrganizationHandler{organizationService: organizationService}, nil
 }
@@ -56,7 +56,7 @@ func (oh *OrganizationHandler) List(c echo.Context) error {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.SuccessResponse(c, organizationMapper.ToResourceCollection(organizations))
+	return response.SuccessResponse(c, mapper.ToOrganizationResourceCollection(organizations))
 }
 
 // Show details of a single organization
@@ -91,12 +91,12 @@ func (oh *OrganizationHandler) Show(c echo.Context) error {
 		return response.BadRequestResponse(c, err.Error())
 	}
 
-	organization, err := oh.organizationService.GetByID(organizationUUID, authUser)
+	fetchedOrganization, err := oh.organizationService.GetByID(organizationUUID, authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.SuccessResponse(c, organizationMapper.ToResource(&organization))
+	return response.SuccessResponse(c, mapper.ToOrganizationResource(&fetchedOrganization))
 }
 
 // Store creates a new organization
@@ -129,12 +129,12 @@ func (oh *OrganizationHandler) Store(c echo.Context) error {
 		return response.UnauthorizedResponse(c, err.Error())
 	}
 
-	organization, err := oh.organizationService.Create(request.Name, authUser)
+	storedOrganization, err := oh.organizationService.Create(request.Name, authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.CreatedResponse(c, organizationMapper.ToResource(&organization))
+	return response.CreatedResponse(c, mapper.ToOrganizationResource(&storedOrganization))
 }
 
 // Update an organization
@@ -175,7 +175,7 @@ func (oh *OrganizationHandler) Update(c echo.Context) error {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.SuccessResponse(c, organizationMapper.ToResource(updatedOrganization))
+	return response.SuccessResponse(c, mapper.ToOrganizationResource(updatedOrganization))
 }
 
 // Delete an organization
