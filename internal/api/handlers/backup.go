@@ -2,20 +2,20 @@ package handlers
 
 import (
 	"fluxton/internal/api/dto"
-	backupMapper "fluxton/internal/api/mapper/backup"
+	"fluxton/internal/api/mapper"
 	"fluxton/internal/api/response"
-	backupDomain "fluxton/internal/domain/backup"
+	"fluxton/internal/domain/backup"
 	"fluxton/pkg/auth"
 	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
 )
 
 type BackupHandler struct {
-	backupService backupDomain.Service
+	backupService backup.Service
 }
 
 func NewBackupHandler(injector *do.Injector) (*BackupHandler, error) {
-	backupService := do.MustInvoke[backupDomain.Service](injector)
+	backupService := do.MustInvoke[backup.Service](injector)
 
 	return &BackupHandler{backupService: backupService}, nil
 }
@@ -49,7 +49,7 @@ func (bh *BackupHandler) List(c echo.Context) error {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.SuccessResponse(c, backupMapper.ToResourceCollection(backups))
+	return response.SuccessResponse(c, mapper.ToBackupResourceCollection(backups))
 }
 
 // Show retrieves details of a specific backup
@@ -85,12 +85,12 @@ func (bh *BackupHandler) Show(c echo.Context) error {
 		return response.BadRequestResponse(c, err.Error())
 	}
 
-	backup, err := bh.backupService.GetByUUID(backupUUID, authUser)
+	fetchedBackup, err := bh.backupService.GetByUUID(backupUUID, authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.SuccessResponse(c, backupMapper.ToResource(&backup))
+	return response.SuccessResponse(c, mapper.ToBackupResource(&fetchedBackup))
 }
 
 // Store creates a new backup
@@ -122,12 +122,12 @@ func (bh *BackupHandler) Store(c echo.Context) error {
 
 	authUser, _ := auth.NewAuth(c).User()
 
-	backup, err := bh.backupService.Create(request.ProjectUUID, authUser)
+	storedBackup, err := bh.backupService.Create(request.ProjectUUID, authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.CreatedResponse(c, backupMapper.ToResource(&backup))
+	return response.CreatedResponse(c, mapper.ToBackupResource(&storedBackup))
 }
 
 // Delete removes a backup
