@@ -9,7 +9,7 @@ import (
 	"os"
 )
 
-func SeedUsers(container *do.Injector) {
+func Users(container *do.Injector) {
 	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
 	userFactory := do.MustInvoke[*factories.UserFactory](container)
 

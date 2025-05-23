@@ -9,7 +9,7 @@ import (
 	"os"
 )
 
-func SeedSettings(container *do.Injector) {
+func Settings(container *do.Injector) {
 	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
 
 	settingsService := do.MustInvoke[setting.Repository](container)

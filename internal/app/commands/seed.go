@@ -26,8 +26,8 @@ func runSeeders() {
 	log.Info().Msg("Database seeding started")
 
 	seedersToRun := []func(*do.Injector){
-		seeders.SeedSettings,
-		seeders.SeedUsers,
+		seeders.Settings,
+		seeders.Users,
 	}
 
 	for _, seeder := range seedersToRun {
