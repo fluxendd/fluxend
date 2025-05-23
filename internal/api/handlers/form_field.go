@@ -2,21 +2,21 @@ package handlers
 
 import (
 	"fluxton/internal/api/dto"
-	"fluxton/internal/api/dto/form"
-	formMapper "fluxton/internal/api/mapper/form"
+	formDto "fluxton/internal/api/dto/form"
+	"fluxton/internal/api/mapper"
 	"fluxton/internal/api/response"
-	formDomain "fluxton/internal/domain/form"
+	"fluxton/internal/domain/form"
 	"fluxton/pkg/auth"
 	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
 )
 
 type FormFieldHandler struct {
-	formFieldService formDomain.FieldService
+	formFieldService form.FieldService
 }
 
 func NewFormFieldHandler(injector *do.Injector) (*FormFieldHandler, error) {
-	formFieldService := do.MustInvoke[formDomain.FieldService](injector)
+	formFieldService := do.MustInvoke[form.FieldService](injector)
 
 	return &FormFieldHandler{formFieldService: formFieldService}, nil
 }
@@ -57,7 +57,7 @@ func (ffh *FormFieldHandler) List(c echo.Context) error {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.SuccessResponse(c, formMapper.ToFieldResourceCollection(formFields))
+	return response.SuccessResponse(c, mapper.ToFieldResourceCollection(formFields))
 }
 
 // Show retrieves details of a specific field
@@ -97,7 +97,7 @@ func (ffh *FormFieldHandler) Show(c echo.Context) error {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.SuccessResponse(c, formMapper.ToFieldResource(&formField))
+	return response.SuccessResponse(c, mapper.ToFieldResource(&formField))
 }
 
 // Store creates a new field for a form
@@ -121,7 +121,7 @@ func (ffh *FormFieldHandler) Show(c echo.Context) error {
 //
 // @Router /forms/{formUUID}/fields [post]
 func (ffh *FormFieldHandler) Store(c echo.Context) error {
-	var request form.CreateFormFieldsRequest
+	var request formDto.CreateFormFieldsRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
 	}
@@ -133,12 +133,12 @@ func (ffh *FormFieldHandler) Store(c echo.Context) error {
 		return response.BadRequestResponse(c, err.Error())
 	}
 
-	formFields, err := ffh.formFieldService.CreateMany(formUUID, form.ToCreateFormFieldInput(&request), authUser)
+	formFields, err := ffh.formFieldService.CreateMany(formUUID, formDto.ToCreateFormFieldInput(&request), authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.CreatedResponse(c, formMapper.ToFieldResourceCollection(formFields))
+	return response.CreatedResponse(c, mapper.ToFieldResourceCollection(formFields))
 }
 
 // Update updates an existing field
@@ -163,7 +163,7 @@ func (ffh *FormFieldHandler) Store(c echo.Context) error {
 //
 // @Router /forms/{formUUID}/fields/{fieldUUID} [put]
 func (ffh *FormFieldHandler) Update(c echo.Context) error {
-	var request form.UpdateFormFieldRequest
+	var request formDto.UpdateFormFieldRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
 	}
@@ -180,12 +180,12 @@ func (ffh *FormFieldHandler) Update(c echo.Context) error {
 		return response.BadRequestResponse(c, err.Error())
 	}
 
-	updatedFormField, err := ffh.formFieldService.Update(formUUID, fieldUUID, authUser, form.ToUpdateFormFieldInput(&request))
+	updatedFormField, err := ffh.formFieldService.Update(formUUID, fieldUUID, authUser, formDto.ToUpdateFormFieldInput(&request))
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.SuccessResponse(c, formMapper.ToFieldResource(updatedFormField))
+	return response.SuccessResponse(c, mapper.ToFieldResource(updatedFormField))
 }
 
 // Delete deletes a field from a form

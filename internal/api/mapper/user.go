@@ -1,11 +1,11 @@
-package user
+package mapper
 
 import (
 	userDto "fluxton/internal/api/dto/user"
 	userDomain "fluxton/internal/domain/user"
 )
 
-func ToResponse(user *userDomain.User) userDto.Response {
+func ToUserResource(user *userDomain.User) userDto.Response {
 	return userDto.Response{
 		Uuid:      user.Uuid,
 		Username:  user.Username,
@@ -18,10 +18,10 @@ func ToResponse(user *userDomain.User) userDto.Response {
 	}
 }
 
-func ToResponseCollection(users []userDomain.User) []userDto.Response {
+func ToUserResourceCollection(users []userDomain.User) []userDto.Response {
 	resourceUsers := make([]userDto.Response, len(users))
 	for i, currentUser := range users {
-		resourceUsers[i] = ToResponse(&currentUser)
+		resourceUsers[i] = ToUserResource(&currentUser)
 	}
 
 	return resourceUsers

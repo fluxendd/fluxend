@@ -1,11 +1,11 @@
-package organization
+package mapper
 
 import (
 	organizationDto "fluxton/internal/api/dto/organization"
 	organizationDomain "fluxton/internal/domain/organization"
 )
 
-func ToResource(organization *organizationDomain.Organization) organizationDto.Response {
+func ToOrganizationResource(organization *organizationDomain.Organization) organizationDto.Response {
 	return organizationDto.Response{
 		Uuid:      organization.Uuid,
 		Name:      organization.Name,
@@ -16,10 +16,10 @@ func ToResource(organization *organizationDomain.Organization) organizationDto.R
 	}
 }
 
-func ToResourceCollection(organizations []organizationDomain.Organization) []organizationDto.Response {
+func ToOrganizationResourceCollection(organizations []organizationDomain.Organization) []organizationDto.Response {
 	resourceNotes := make([]organizationDto.Response, len(organizations))
 	for i, organization := range organizations {
-		resourceNotes[i] = ToResource(&organization)
+		resourceNotes[i] = ToOrganizationResource(&organization)
 	}
 
 	return resourceNotes

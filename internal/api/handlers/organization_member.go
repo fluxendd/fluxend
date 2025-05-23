@@ -3,7 +3,7 @@ package handlers
 import (
 	"fluxton/internal/api/dto"
 	organizationDto "fluxton/internal/api/dto/organization"
-	userMapper "fluxton/internal/api/mapper/user"
+	userMapper "fluxton/internal/api/mapper"
 	"fluxton/internal/api/response"
 	organizationDomain "fluxton/internal/domain/organization"
 	"fluxton/pkg/auth"
@@ -58,7 +58,7 @@ func (omh *OrganizationMemberHandler) List(c echo.Context) error {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.SuccessResponse(c, userMapper.ToResponseCollection(organizationUsers))
+	return response.SuccessResponse(c, userMapper.ToUserResourceCollection(organizationUsers))
 }
 
 // Store creates a user in an organization
@@ -99,7 +99,7 @@ func (omh *OrganizationMemberHandler) Store(c echo.Context) error {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.CreatedResponse(c, userMapper.ToResponse(&organizationUser))
+	return response.CreatedResponse(c, userMapper.ToUserResource(&organizationUser))
 }
 
 // Delete a user from an organization

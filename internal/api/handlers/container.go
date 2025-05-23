@@ -2,21 +2,21 @@ package handlers
 
 import (
 	"fluxton/internal/api/dto"
-	"fluxton/internal/api/dto/storage/container"
-	containerMapper "fluxton/internal/api/mapper/container"
+	containerDto "fluxton/internal/api/dto/storage/container"
+	"fluxton/internal/api/mapper"
 	"fluxton/internal/api/response"
-	containerDomain "fluxton/internal/domain/storage/container"
+	"fluxton/internal/domain/storage/container"
 	"fluxton/pkg/auth"
 	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
 )
 
 type ContainerHandler struct {
-	containerService containerDomain.Service
+	containerService container.Service
 }
 
 func NewContainerHandler(injector *do.Injector) (*ContainerHandler, error) {
-	containerService := do.MustInvoke[containerDomain.Service](injector)
+	containerService := do.MustInvoke[container.Service](injector)
 
 	return &ContainerHandler{containerService: containerService}, nil
 }
@@ -58,7 +58,7 @@ func (ch *ContainerHandler) List(c echo.Context) error {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.SuccessResponse(c, containerMapper.ToResourceCollection(containers))
+	return response.SuccessResponse(c, mapper.ToContainerResourceCollection(containers))
 }
 
 // Show retrieves details of a specific container.
@@ -97,7 +97,7 @@ func (ch *ContainerHandler) Show(c echo.Context) error {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.SuccessResponse(c, containerMapper.ToResource(&fetchedContainer))
+	return response.SuccessResponse(c, mapper.ToContainerResource(&fetchedContainer))
 }
 
 // Store creates a new container
@@ -121,19 +121,19 @@ func (ch *ContainerHandler) Show(c echo.Context) error {
 //
 // @Router /storage [post]
 func (ch *ContainerHandler) Store(c echo.Context) error {
-	var request container.CreateRequest
+	var request containerDto.CreateRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
 	}
 
 	authUser, _ := auth.NewAuth(c).User()
 
-	fetchedContainer, err := ch.containerService.Create(container.ToCreateContainerInput(&request), authUser)
+	fetchedContainer, err := ch.containerService.Create(containerDto.ToCreateContainerInput(&request), authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.CreatedResponse(c, containerMapper.ToResource(&fetchedContainer))
+	return response.CreatedResponse(c, mapper.ToContainerResource(&fetchedContainer))
 }
 
 // Update a container
@@ -159,7 +159,7 @@ func (ch *ContainerHandler) Store(c echo.Context) error {
 //
 // @Router /storage/containers/{containerUUID} [put]
 func (ch *ContainerHandler) Update(c echo.Context) error {
-	var request container.CreateRequest
+	var request containerDto.CreateRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
 	}
@@ -171,12 +171,12 @@ func (ch *ContainerHandler) Update(c echo.Context) error {
 		return response.BadRequestResponse(c, err.Error())
 	}
 
-	updatedContainer, err := ch.containerService.Update(containerUUID, authUser, container.ToCreateContainerInput(&request))
+	updatedContainer, err := ch.containerService.Update(containerUUID, authUser, containerDto.ToCreateContainerInput(&request))
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.SuccessResponse(c, containerMapper.ToResource(updatedContainer))
+	return response.SuccessResponse(c, mapper.ToContainerResource(updatedContainer))
 }
 
 // Delete a container

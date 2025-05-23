@@ -1,11 +1,11 @@
-package setting
+package mapper
 
 import (
 	settingDto "fluxton/internal/api/dto/setting"
 	settingDomain "fluxton/internal/domain/setting"
 )
 
-func ToResource(setting *settingDomain.Setting) settingDto.Response {
+func ToSettingResource(setting *settingDomain.Setting) settingDto.Response {
 	return settingDto.Response{
 		ID:           setting.ID,
 		Name:         setting.Name,
@@ -16,11 +16,11 @@ func ToResource(setting *settingDomain.Setting) settingDto.Response {
 	}
 }
 
-func ToResourceCollection(settings []settingDomain.Setting) []settingDto.Response {
-	resourcesettings := make([]settingDto.Response, len(settings))
+func ToSettingResourceCollection(settings []settingDomain.Setting) []settingDto.Response {
+	settingResource := make([]settingDto.Response, len(settings))
 	for i, currentSetting := range settings {
-		resourcesettings[i] = ToResource(&currentSetting)
+		settingResource[i] = ToSettingResource(&currentSetting)
 	}
 
-	return resourcesettings
+	return settingResource
 }

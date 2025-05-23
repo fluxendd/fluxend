@@ -2,21 +2,21 @@ package handlers
 
 import (
 	"fluxton/internal/api/dto"
-	"fluxton/internal/api/dto/storage/file"
-	fileMapper "fluxton/internal/api/mapper/file"
+	fileDto "fluxton/internal/api/dto/storage/file"
+	"fluxton/internal/api/mapper"
 	"fluxton/internal/api/response"
-	fileDomain "fluxton/internal/domain/storage/file"
+	"fluxton/internal/domain/storage/file"
 	"fluxton/pkg/auth"
 	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
 )
 
 type FileHandler struct {
-	fileService fileDomain.Service
+	fileService file.Service
 }
 
 func NewFileHandler(injector *do.Injector) (*FileHandler, error) {
-	fileService := do.MustInvoke[fileDomain.Service](injector)
+	fileService := do.MustInvoke[file.Service](injector)
 
 	return &FileHandler{fileService: fileService}, nil
 }
@@ -63,7 +63,7 @@ func (fh *FileHandler) List(c echo.Context) error {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.SuccessResponse(c, fileMapper.ToResourceCollection(files))
+	return response.SuccessResponse(c, mapper.ToFileResourceCollection(files))
 }
 
 // Show retrieves details of a specific file.
@@ -108,7 +108,7 @@ func (fh *FileHandler) Show(c echo.Context) error {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.SuccessResponse(c, fileMapper.ToResource(&fetchedFile))
+	return response.SuccessResponse(c, mapper.ToFileResource(&fetchedFile))
 }
 
 // Store creates a new file in a container
@@ -131,7 +131,7 @@ func (fh *FileHandler) Show(c echo.Context) error {
 //
 // @Router /containers/{containerUUID}/files [post]
 func (fh *FileHandler) Store(c echo.Context) error {
-	var request file.CreateRequest
+	var request fileDto.CreateRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
 	}
@@ -143,12 +143,12 @@ func (fh *FileHandler) Store(c echo.Context) error {
 		return response.BadRequestResponse(c, err.Error())
 	}
 
-	createdFile, err := fh.fileService.Create(containerUUID, file.ToCreateFileInput(&request), authUser)
+	createdFile, err := fh.fileService.Create(containerUUID, fileDto.ToCreateFileInput(&request), authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.CreatedResponse(c, fileMapper.ToResource(&createdFile))
+	return response.CreatedResponse(c, mapper.ToFileResource(&createdFile))
 }
 
 // Rename updates the name of a file
@@ -172,7 +172,7 @@ func (fh *FileHandler) Store(c echo.Context) error {
 //
 // @Router /containers/{containerUUID}/files/{fileUUID}/rename [put]
 func (fh *FileHandler) Rename(c echo.Context) error {
-	var request file.RenameRequest
+	var request fileDto.RenameRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
 	}
@@ -189,12 +189,12 @@ func (fh *FileHandler) Rename(c echo.Context) error {
 		return response.BadRequestResponse(c, err.Error())
 	}
 
-	updatedFile, err := fh.fileService.Rename(fileUUID, containerUUID, authUser, file.ToRenameFileInput(&request))
+	updatedFile, err := fh.fileService.Rename(fileUUID, containerUUID, authUser, fileDto.ToRenameFileInput(&request))
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.SuccessResponse(c, fileMapper.ToResource(updatedFile))
+	return response.SuccessResponse(c, mapper.ToFileResource(updatedFile))
 }
 
 // Delete removes a file from a container

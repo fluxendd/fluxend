@@ -2,10 +2,10 @@ package handlers
 
 import (
 	"fluxton/internal/api/dto"
-	"fluxton/internal/api/dto/form"
-	formMapper "fluxton/internal/api/mapper/form"
+	formDto "fluxton/internal/api/dto/form"
+	"fluxton/internal/api/mapper"
 	"fluxton/internal/api/response"
-	formDomain "fluxton/internal/domain/form"
+	"fluxton/internal/domain/form"
 	"fluxton/pkg/auth"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
@@ -13,11 +13,11 @@ import (
 )
 
 type FormResponseHandler struct {
-	formResponseService formDomain.FieldResponseService
+	formResponseService form.FieldResponseService
 }
 
 func NewFormResponseHandler(injector *do.Injector) (*FormResponseHandler, error) {
-	formResponseService := do.MustInvoke[formDomain.FieldResponseService](injector)
+	formResponseService := do.MustInvoke[form.FieldResponseService](injector)
 
 	return &FormResponseHandler{formResponseService: formResponseService}, nil
 }
@@ -59,7 +59,7 @@ func (ffh *FormResponseHandler) List(c echo.Context) error {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.SuccessResponse(c, formMapper.ToResponseResourceCollection(formResponses))
+	return response.SuccessResponse(c, mapper.ToResponseResourceCollection(formResponses))
 }
 
 // Show details of a single form response
@@ -101,7 +101,7 @@ func (ffh *FormResponseHandler) Show(c echo.Context) error {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.SuccessResponse(c, formMapper.ToResponseResource(formResponse))
+	return response.SuccessResponse(c, mapper.ToResponseResource(formResponse))
 }
 
 // Store a new form response
@@ -127,7 +127,7 @@ func (ffh *FormResponseHandler) Show(c echo.Context) error {
 //
 // @Router /forms/{formUUID}/responses [post]
 func (ffh *FormResponseHandler) Store(c echo.Context) error {
-	var request form.CreateResponseRequest
+	var request formDto.CreateResponseRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
 	}
@@ -139,12 +139,12 @@ func (ffh *FormResponseHandler) Store(c echo.Context) error {
 		return response.BadRequestResponse(c, err.Error())
 	}
 
-	formResponse, err := ffh.formResponseService.Create(formUUID, form.ToCreateFormResponseInput(&request), authUser)
+	formResponse, err := ffh.formResponseService.Create(formUUID, formDto.ToCreateFormResponseInput(&request), authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.CreatedResponse(c, formMapper.ToResponseResource(&formResponse))
+	return response.CreatedResponse(c, mapper.ToResponseResource(&formResponse))
 }
 
 // Delete a form response

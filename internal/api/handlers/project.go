@@ -2,21 +2,21 @@ package handlers
 
 import (
 	"fluxton/internal/api/dto"
-	"fluxton/internal/api/dto/project"
-	projectMapper "fluxton/internal/api/mapper/project"
+	projectDto "fluxton/internal/api/dto/project"
+	"fluxton/internal/api/mapper"
 	"fluxton/internal/api/response"
-	projectDomain "fluxton/internal/domain/project"
+	"fluxton/internal/domain/project"
 	"fluxton/pkg/auth"
 	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
 )
 
 type ProjectHandler struct {
-	projectService projectDomain.Service
+	projectService project.Service
 }
 
 func NewProjectHandler(injector *do.Injector) (*ProjectHandler, error) {
-	projectService := do.MustInvoke[projectDomain.Service](injector)
+	projectService := do.MustInvoke[project.Service](injector)
 
 	return &ProjectHandler{projectService: projectService}, nil
 }
@@ -63,7 +63,7 @@ func (ph *ProjectHandler) List(c echo.Context) error {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.SuccessResponse(c, projectMapper.ToResourceCollection(projects))
+	return response.SuccessResponse(c, mapper.ToProjectResourceCollection(projects))
 }
 
 // Show details of a single project
@@ -103,7 +103,7 @@ func (ph *ProjectHandler) Show(c echo.Context) error {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.SuccessResponse(c, projectMapper.ToResource(&fetchedProject))
+	return response.SuccessResponse(c, mapper.ToProjectResource(&fetchedProject))
 }
 
 // Store creates a new project
@@ -127,19 +127,19 @@ func (ph *ProjectHandler) Show(c echo.Context) error {
 //
 // @Router /projects [post]
 func (ph *ProjectHandler) Store(c echo.Context) error {
-	var request project.CreateRequest
+	var request projectDto.CreateRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
 	}
 
 	authUser, _ := auth.NewAuth(c).User()
 
-	updatedProject, err := ph.projectService.Create(project.ToCreateProjectInput(&request), authUser)
+	updatedProject, err := ph.projectService.Create(projectDto.ToCreateProjectInput(&request), authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.CreatedResponse(c, projectMapper.ToResource(&updatedProject))
+	return response.CreatedResponse(c, mapper.ToProjectResource(&updatedProject))
 }
 
 // Update a project
@@ -163,7 +163,7 @@ func (ph *ProjectHandler) Store(c echo.Context) error {
 //
 // @Router /projects/{projectUUID} [put]
 func (ph *ProjectHandler) Update(c echo.Context) error {
-	var request project.UpdateRequest
+	var request projectDto.UpdateRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
 	}
@@ -175,12 +175,12 @@ func (ph *ProjectHandler) Update(c echo.Context) error {
 		return response.BadRequestResponse(c, err.Error())
 	}
 
-	updatedOrganization, err := ph.projectService.Update(projectUUID, authUser, project.ToUpdateProjectInput(&request))
+	updatedOrganization, err := ph.projectService.Update(projectUUID, authUser, projectDto.ToUpdateProjectInput(&request))
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.SuccessResponse(c, projectMapper.ToResource(updatedOrganization))
+	return response.SuccessResponse(c, mapper.ToProjectResource(updatedOrganization))
 }
 
 // Delete a project

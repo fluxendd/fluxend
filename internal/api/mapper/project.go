@@ -1,11 +1,11 @@
-package project
+package mapper
 
 import (
 	projectDto "fluxton/internal/api/dto/project"
 	projectDomain "fluxton/internal/domain/project"
 )
 
-func ToResource(project *projectDomain.Project) projectDto.Response {
+func ToProjectResource(project *projectDomain.Project) projectDto.Response {
 	return projectDto.Response{
 		Uuid:             project.Uuid,
 		OrganizationUuid: project.OrganizationUuid,
@@ -20,10 +20,10 @@ func ToResource(project *projectDomain.Project) projectDto.Response {
 	}
 }
 
-func ToResourceCollection(projects []projectDomain.Project) []projectDto.Response {
+func ToProjectResourceCollection(projects []projectDomain.Project) []projectDto.Response {
 	resourceNotes := make([]projectDto.Response, len(projects))
 	for i, currentProject := range projects {
-		resourceNotes[i] = ToResource(&currentProject)
+		resourceNotes[i] = ToProjectResource(&currentProject)
 	}
 
 	return resourceNotes
