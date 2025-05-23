@@ -1,4 +1,4 @@
-package form
+package mapper
 
 import (
 	formDto "fluxton/internal/api/dto/form"

@@ -2,21 +2,21 @@ package handlers
 
 import (
 	"fluxton/internal/api/dto"
-	"fluxton/internal/api/dto/form"
-	formMapper "fluxton/internal/api/mapper/form"
+	formDto "fluxton/internal/api/dto/form"
+	"fluxton/internal/api/mapper"
 	"fluxton/internal/api/response"
-	formDomain "fluxton/internal/domain/form"
+	"fluxton/internal/domain/form"
 	"fluxton/pkg/auth"
 	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
 )
 
 type FormHandler struct {
-	formService formDomain.Service
+	formService form.Service
 }
 
 func NewFormHandler(injector *do.Injector) (*FormHandler, error) {
-	formService := do.MustInvoke[formDomain.Service](injector)
+	formService := do.MustInvoke[form.Service](injector)
 
 	return &FormHandler{formService: formService}, nil
 }
@@ -57,7 +57,7 @@ func (fh *FormHandler) List(c echo.Context) error {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.SuccessResponse(c, formMapper.ToFormResourceCollection(forms))
+	return response.SuccessResponse(c, mapper.ToFormResourceCollection(forms))
 }
 
 // Show retrieves details of a specific form
@@ -98,7 +98,7 @@ func (fh *FormHandler) Show(c echo.Context) error {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.SuccessResponse(c, formMapper.ToFormResource(&fetchedForm))
+	return response.SuccessResponse(c, mapper.ToFormResource(&fetchedForm))
 }
 
 // Store creates a new form
@@ -123,19 +123,19 @@ func (fh *FormHandler) Show(c echo.Context) error {
 //
 // @Router /forms [post]
 func (fh *FormHandler) Store(c echo.Context) error {
-	var request form.CreateRequest
+	var request formDto.CreateRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
 	}
 
 	authUser, _ := auth.NewAuth(c).User()
 
-	createdForm, err := fh.formService.Create(form.ToCreateFormInput(&request), authUser)
+	createdForm, err := fh.formService.Create(formDto.ToCreateFormInput(&request), authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.CreatedResponse(c, formMapper.ToFormResource(&createdForm))
+	return response.CreatedResponse(c, mapper.ToFormResource(&createdForm))
 }
 
 // Update updates an existing form
@@ -161,7 +161,7 @@ func (fh *FormHandler) Store(c echo.Context) error {
 //
 // @Router /forms/{formUUID} [put]
 func (fh *FormHandler) Update(c echo.Context) error {
-	var request form.CreateRequest
+	var request formDto.CreateRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
 	}
@@ -173,12 +173,12 @@ func (fh *FormHandler) Update(c echo.Context) error {
 		return response.BadRequestResponse(c, err.Error())
 	}
 
-	updatedForm, err := fh.formService.Update(formUUID, authUser, form.ToCreateFormInput(&request))
+	updatedForm, err := fh.formService.Update(formUUID, authUser, formDto.ToCreateFormInput(&request))
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.SuccessResponse(c, formMapper.ToFormResource(updatedForm))
+	return response.SuccessResponse(c, mapper.ToFormResource(updatedForm))
 }
 
 // Delete removes a form
