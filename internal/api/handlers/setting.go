@@ -1,21 +1,21 @@
 package handlers
 
 import (
-	"fluxton/internal/api/dto/setting"
-	settingMapper "fluxton/internal/api/mapper/setting"
+	settingDto "fluxton/internal/api/dto/setting"
+	"fluxton/internal/api/mapper"
 	"fluxton/internal/api/response"
-	settingDomain "fluxton/internal/domain/setting"
+	"fluxton/internal/domain/setting"
 	"fluxton/pkg/auth"
 	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
 )
 
 type SettingHandler struct {
-	settingService settingDomain.Service
+	settingService setting.Service
 }
 
 func NewSettingHandler(injector *do.Injector) (*SettingHandler, error) {
-	settingService := do.MustInvoke[settingDomain.Service](injector)
+	settingService := do.MustInvoke[setting.Service](injector)
 
 	return &SettingHandler{settingService: settingService}, nil
 }
@@ -26,11 +26,11 @@ func (sh *SettingHandler) List(c echo.Context) error {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.SuccessResponse(c, settingMapper.ToResourceCollection(settings))
+	return response.SuccessResponse(c, mapper.ToSettingResourceCollection(settings))
 }
 
 func (sh *SettingHandler) Update(c echo.Context) error {
-	var request setting.UpdateRequest
+	var request settingDto.UpdateRequest
 	authUser, _ := auth.NewAuth(c).User()
 
 	if err := request.BindAndValidate(c); err != nil {
@@ -42,7 +42,7 @@ func (sh *SettingHandler) Update(c echo.Context) error {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.SuccessResponse(c, settingMapper.ToResourceCollection(updatedSettings))
+	return response.SuccessResponse(c, mapper.ToSettingResourceCollection(updatedSettings))
 }
 
 func (sh *SettingHandler) Reset(c echo.Context) error {
@@ -53,5 +53,5 @@ func (sh *SettingHandler) Reset(c echo.Context) error {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.SuccessResponse(c, settingMapper.ToResourceCollection(updatedSettings))
+	return response.SuccessResponse(c, mapper.ToSettingResourceCollection(updatedSettings))
 }
