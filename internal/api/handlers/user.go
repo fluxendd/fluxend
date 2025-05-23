@@ -3,20 +3,20 @@ package handlers
 import (
 	"fluxton/internal/api/dto"
 	userDto "fluxton/internal/api/dto/user"
-	userMapper "fluxton/internal/api/mapper/user"
+	"fluxton/internal/api/mapper"
 	"fluxton/internal/api/response"
-	userDomain "fluxton/internal/domain/user"
+	"fluxton/internal/domain/user"
 	"fluxton/pkg/auth"
 	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
 )
 
 type UserHandler struct {
-	userService userDomain.Service
+	userService user.Service
 }
 
 func NewUserHandler(injector *do.Injector) (*UserHandler, error) {
-	userService := do.MustInvoke[userDomain.Service](injector)
+	userService := do.MustInvoke[user.Service](injector)
 
 	return &UserHandler{userService: userService}, nil
 }
@@ -50,12 +50,12 @@ func (uh *UserHandler) Show(c echo.Context) error {
 		return response.BadRequestResponse(c, err.Error())
 	}
 
-	user, err := uh.userService.GetByID(id)
+	fetchedUser, err := uh.userService.GetByID(id)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.SuccessResponse(c, userMapper.ToResponse(&user))
+	return response.SuccessResponse(c, mapper.ToUserResource(&fetchedUser))
 }
 
 // Login authenticates a user and returns a JWT token.
@@ -85,13 +85,13 @@ func (uh *UserHandler) Login(c echo.Context) error {
 		return response.UnprocessableResponse(c, err)
 	}
 
-	user, token, err := uh.userService.Login(userDto.ToLoginUserInput(&request))
+	loggedInUser, token, err := uh.userService.Login(userDto.ToLoginUserInput(&request))
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
 
 	return response.SuccessResponse(c, map[string]interface{}{
-		"user":  userMapper.ToResponse(&user),
+		"user":  mapper.ToUserResource(&loggedInUser),
 		"token": token,
 	})
 }
@@ -123,13 +123,13 @@ func (uh *UserHandler) Store(c echo.Context) error {
 		return response.UnprocessableResponse(c, err)
 	}
 
-	user, token, err := uh.userService.Create(c, userDto.ToCreateUserInput(&request))
+	storedUser, token, err := uh.userService.Create(c, userDto.ToCreateUserInput(&request))
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
 
 	return response.CreatedResponse(c, map[string]interface{}{
-		"user":  userMapper.ToResponse(&user),
+		"user":  mapper.ToUserResource(&storedUser),
 		"token": token,
 	})
 }
@@ -175,7 +175,7 @@ func (uh *UserHandler) Update(c echo.Context) error {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.SuccessResponse(c, userMapper.ToResponse(updatedUser))
+	return response.SuccessResponse(c, mapper.ToUserResource(updatedUser))
 }
 
 // Logout logs out a user by invalidating the JWT token.
