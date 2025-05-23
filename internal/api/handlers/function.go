@@ -2,21 +2,21 @@ package handlers
 
 import (
 	"fluxton/internal/api/dto"
-	"fluxton/internal/api/dto/database"
-	databaseMapper "fluxton/internal/api/mapper/database"
+	databaseDto "fluxton/internal/api/dto/database"
+	"fluxton/internal/api/mapper"
 	"fluxton/internal/api/response"
-	functionDomain "fluxton/internal/domain/database"
+	"fluxton/internal/domain/database"
 	"fluxton/pkg/auth"
 	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
 )
 
 type FunctionHandler struct {
-	functionService functionDomain.FunctionService
+	functionService database.FunctionService
 }
 
 func NewFunctionHandler(injector *do.Injector) (*FunctionHandler, error) {
-	functionService := do.MustInvoke[functionDomain.FunctionService](injector)
+	functionService := do.MustInvoke[database.FunctionService](injector)
 
 	return &FunctionHandler{functionService: functionService}, nil
 }
@@ -60,7 +60,7 @@ func (fh *FunctionHandler) List(c echo.Context) error {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.SuccessResponse(c, databaseMapper.ToFunctionResourceCollection(functions))
+	return response.SuccessResponse(c, mapper.ToFunctionResourceCollection(functions))
 }
 
 // Show retrieves details of a specific function
@@ -107,7 +107,7 @@ func (fh *FunctionHandler) Show(c echo.Context) error {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.SuccessResponse(c, databaseMapper.ToFunctionResource(&fetchedFunction))
+	return response.SuccessResponse(c, mapper.ToFunctionResource(&fetchedFunction))
 }
 
 // Store creates a new function
@@ -132,7 +132,7 @@ func (fh *FunctionHandler) Show(c echo.Context) error {
 //
 // @Router /functions/{schema} [post]
 func (fh *FunctionHandler) Store(c echo.Context) error {
-	var request database.CreateFunctionRequest
+	var request databaseDto.CreateFunctionRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
 	}
@@ -144,12 +144,12 @@ func (fh *FunctionHandler) Store(c echo.Context) error {
 		return response.BadRequestResponse(c, "Schema is required")
 	}
 
-	createdFunction, err := fh.functionService.Create(schema, database.ToCreateFunctionInput(request), authUser)
+	createdFunction, err := fh.functionService.Create(schema, databaseDto.ToCreateFunctionInput(request), authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.CreatedResponse(c, databaseMapper.ToFunctionResource(&createdFunction))
+	return response.CreatedResponse(c, mapper.ToFunctionResource(&createdFunction))
 }
 
 // Delete removes a function

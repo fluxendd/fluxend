@@ -1,4 +1,4 @@
-package database
+package mapper
 
 import (
 	databaseDto "fluxton/internal/api/dto/database"
