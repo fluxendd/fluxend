@@ -1,11 +1,11 @@
-package logging
+package mapper
 
 import (
 	logDto "fluxton/internal/api/dto/logging"
 	logDomain "fluxton/internal/domain/logging"
 )
 
-func ToResource(log *logDomain.RequestLog) logDto.Response {
+func ToLoggingResource(log *logDomain.RequestLog) logDto.Response {
 	return logDto.Response{
 		Uuid:      log.Uuid,
 		UserUuid:  log.UserUuid,
@@ -20,10 +20,10 @@ func ToResource(log *logDomain.RequestLog) logDto.Response {
 	}
 }
 
-func ToResourceCollection(files []logDomain.RequestLog) []logDto.Response {
+func ToLoggingResourceCollection(files []logDomain.RequestLog) []logDto.Response {
 	resourceContainers := make([]logDto.Response, len(files))
 	for i, currentFile := range files {
-		resourceContainers[i] = ToResource(&currentFile)
+		resourceContainers[i] = ToLoggingResource(&currentFile)
 	}
 
 	return resourceContainers

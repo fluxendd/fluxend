@@ -1,21 +1,21 @@
 package handlers
 
 import (
-	"fluxton/internal/api/dto/logging"
-	logMapper "fluxton/internal/api/mapper/logging"
+	loggingDto "fluxton/internal/api/dto/logging"
+	"fluxton/internal/api/mapper"
 	"fluxton/internal/api/response"
-	logDomain "fluxton/internal/domain/logging"
+	"fluxton/internal/domain/logging"
 	"fluxton/pkg/auth"
 	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
 )
 
 type LogHandler struct {
-	logService logDomain.Service
+	logService logging.Service
 }
 
 func NewLogHandler(injector *do.Injector) (*LogHandler, error) {
-	logService := do.MustInvoke[logDomain.Service](injector)
+	logService := do.MustInvoke[logging.Service](injector)
 
 	return &LogHandler{logService: logService}, nil
 }
@@ -43,7 +43,7 @@ func NewLogHandler(injector *do.Injector) (*LogHandler, error) {
 //
 // @Router /admin/logs [get]
 func (lh *LogHandler) List(c echo.Context) error {
-	var request logging.ListRequest
+	var request loggingDto.ListRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
 	}
@@ -56,5 +56,5 @@ func (lh *LogHandler) List(c echo.Context) error {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.SuccessResponse(c, logMapper.ToResourceCollection(logs))
+	return response.SuccessResponse(c, mapper.ToLoggingResourceCollection(logs))
 }
