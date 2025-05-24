@@ -4,3 +4,6 @@ lint: ## Run linter
 lint.fix: ## Run linter and fix
 	@golangci-lint run --fix
 
+test: ## Run tests
+	@go test -v ./... -coverprofile=coverage.out
+
