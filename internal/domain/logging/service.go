@@ -9,7 +9,7 @@ import (
 )
 
 type Service interface {
-	List(paginationParams shared.PaginationParams, authUser auth.User) ([]RequestLog, error)
+	List(listInput *ListInput, paginationParams shared.PaginationParams, authUser auth.User) ([]RequestLog, error)
 }
 
 type ServiceImpl struct {
@@ -27,10 +27,10 @@ func NewLogService(injector *do.Injector) (Service, error) {
 	}, nil
 }
 
-func (s *ServiceImpl) List(paginationParams shared.PaginationParams, authUser auth.User) ([]RequestLog, error) {
+func (s *ServiceImpl) List(listInput *ListInput, paginationParams shared.PaginationParams, authUser auth.User) ([]RequestLog, error) {
 	if !s.adminPolicy.CanAccess(authUser) {
 		return []RequestLog{}, errors.NewForbiddenError("log.error.listForbidden")
 	}
 
-	return s.logRepo.List(paginationParams)
+	return s.logRepo.List(listInput, paginationParams)
 }

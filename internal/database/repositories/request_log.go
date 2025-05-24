@@ -4,8 +4,10 @@ import (
 	"fluxton/internal/domain/logging"
 	"fluxton/internal/domain/shared"
 	"fluxton/pkg"
+	"fmt"
 	"github.com/jmoiron/sqlx"
 	"github.com/samber/do"
+	"strings"
 )
 
 type RequestLogRepository struct {
@@ -18,15 +20,56 @@ func NewRequestLogRepository(injector *do.Injector) (logging.Repository, error) 
 	return &RequestLogRepository{db: db}, nil
 }
 
-func (r *RequestLogRepository) List(paginationParams shared.PaginationParams) ([]logging.RequestLog, error) {
-	offset := (paginationParams.Page - 1) * paginationParams.Limit
-	query := `SELECT * FROM fluxton.api_logs ORDER BY :sort DESC LIMIT :limit OFFSET :offset;`
+func (r *RequestLogRepository) List(input *logging.ListInput, paginationParams shared.PaginationParams) ([]logging.RequestLog, error) {
+	var filters []string
 
+	offset := (paginationParams.Page - 1) * paginationParams.Limit
 	params := map[string]interface{}{
-		"sort":   paginationParams.Sort,
 		"limit":  paginationParams.Limit,
 		"offset": offset,
 	}
+
+	if input.UserUuid.Valid {
+		filters = append(filters, "user_uuid = :user_uuid")
+		params["user_uuid"] = input.UserUuid.UUID.String()
+	}
+
+	if input.Status.Valid {
+		filters = append(filters, "status = :status")
+		params["status"] = input.Status
+	}
+
+	if input.Method.Valid {
+		filters = append(filters, "method = :method")
+		params["method"] = input.Method
+	}
+
+	if input.Endpoint.Valid {
+		filters = append(filters, "endpoint = :endpoint")
+		params["endpoint"] = input.Endpoint
+	}
+
+	if input.IPAddress.Valid {
+		filters = append(filters, "ip_address = :ip_address")
+		params["ip_address"] = input.IPAddress
+	}
+
+	query := `SELECT * FROM fluxton.api_logs`
+	if len(filters) > 0 {
+		query += " WHERE " + strings.Join(filters, " AND ")
+	}
+
+	allowedSorts := map[string]bool{
+		"created_at": true,
+		"status":     true,
+		"method":     true,
+	}
+	sortColumn := "created_at" // default
+	if allowedSorts[paginationParams.Sort] {
+		sortColumn = paginationParams.Sort
+	}
+
+	query += fmt.Sprintf(" ORDER BY %s DESC LIMIT :limit OFFSET :offset", sortColumn)
 
 	rows, err := r.db.NamedQuery(query, params)
 	if err != nil {

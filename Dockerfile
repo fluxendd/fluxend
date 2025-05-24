@@ -6,10 +6,11 @@ RUN apk add --no-cache docker
 WORKDIR /app
 COPY . .
 
-# Install dependencies
+# Install dependencies for Go application
 RUN go mod tidy
 
-# Build the Go app using your specific build command
+# Build the Go app using your specific build command. This builds for Linux amd64 architecture.
+# We don't use CROSS platform binary to reduce overall size
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -trimpath -o bin/fluxton cmd/main.go
 
 # Expose the port Echo is running on (change if needed)

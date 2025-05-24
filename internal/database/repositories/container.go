@@ -39,7 +39,7 @@ func (r *ContainerRepository) ListForProject(paginationParams shared.PaginationP
 
 	`
 
-	query = fmt.Sprintf(query, pkg.GetColumns[container.Container]())
+	query = fmt.Sprintf(query, pkg.GetColumns[container.Container]()) // dynamically pulls columns from entity
 
 	params := map[string]interface{}{
 		"project_uuid": projectUUID,
