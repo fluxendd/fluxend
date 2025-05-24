@@ -23,6 +23,9 @@ build.app: ## Rebuild the app container only
 	@docker-compose build $${APP_CONTAINER_NAME}
 	@docker-compose up -d $${APP_CONTAINER_NAME}
 
+build.binary: ## Build the binary for the app
+	@CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -trimpath -o bin/fluxton cmd/main.go
+
 up: ## Start the project
 	@make down
 	@docker-compose up -d
