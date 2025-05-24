@@ -1,0 +1,19 @@
+all: false
+dir: 'tests/fixtures/mocks/{{.SrcPackageName}}'
+filename: '{{.InterfaceName}}Mock.go'
+force-file-write: true
+formatter: goimports
+log-level: info
+structname: '{{.Mock}}{{.InterfaceName}}'
+pkgname: '{{.SrcPackageName}}'
+recursive: false
+require-template-schema-exists: true
+template: testify
+template-schema: '{{.Template}}.schema.json'
+packages:
+  fluxton/internal/domain/project:
+    interfaces:
+      Repository:
+  fluxton/internal/domain/organization:
+    interfaces:
+      Repository:
