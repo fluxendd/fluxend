@@ -51,7 +51,7 @@ func (lh *LogHandler) List(c echo.Context) error {
 	authUser, _ := auth.NewAuth(c).User()
 
 	paginationParams := request.ExtractPaginationParams(c)
-	logs, err := lh.logService.List(paginationParams, authUser)
+	logs, err := lh.logService.List(loggingDto.ToLogListInput(&request), paginationParams, authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
