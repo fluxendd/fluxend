@@ -8,6 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 )
 
@@ -22,13 +23,7 @@ func TestCreateRequest_BindAndValidate_Suite(t *testing.T) {
 			"organization_uuid": validUUID.String(),
 		}
 
-		body, err := json.Marshal(payload)
-		assert.NoError(t, err, "Failed to marshal payload")
-
-		fakeRequest := httptest.NewRequest(http.MethodPost, "/", bytes.NewReader(body))
-		fakeRequest.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
-
-		ctx := e.NewContext(fakeRequest, httptest.NewRecorder())
+		ctx := createTestContext(t, e, payload)
 
 		var r CreateRequest
 		errs := r.BindAndValidate(ctx)
@@ -103,27 +98,13 @@ func TestCreateRequest_BindAndValidate_Suite(t *testing.T) {
 
 		for _, tc := range tests {
 			t.Run(tc.name, func(t *testing.T) {
-				body, err := json.Marshal(tc.payload)
-				assert.NoError(t, err, "Failed to marshal payload")
-
-				fakeRequest := httptest.NewRequest(http.MethodPost, "/", bytes.NewReader(body))
-				fakeRequest.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
-
-				ctx := e.NewContext(fakeRequest, httptest.NewRecorder())
+				ctx := createTestContext(t, e, tc.payload)
 
 				var r CreateRequest
 				errs := r.BindAndValidate(ctx)
 
 				for _, expected := range tc.expected {
-					found := false
-					for _, err := range errs {
-						if contains(err, expected) {
-							found = true
-							break
-						}
-					}
-
-					assert.True(t, found, "expected error to contain: "+expected)
+					assertErrorContains(t, errs, expected)
 				}
 			})
 		}
@@ -139,13 +120,7 @@ func TestUpdateRequest_BindAndValidate_Suite(t *testing.T) {
 			"description": "Updated desc",
 		}
 
-		body, err := json.Marshal(payload)
-		assert.NoError(t, err, "Failed to marshal payload")
-
-		fakeRequest := httptest.NewRequest(http.MethodPut, "/", bytes.NewReader(body))
-		fakeRequest.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
-
-		ctx := e.NewContext(fakeRequest, httptest.NewRecorder())
+		ctx := createTestContext(t, e, payload)
 
 		var r UpdateRequest
 		errs := r.BindAndValidate(ctx)
@@ -204,21 +179,31 @@ func TestUpdateRequest_BindAndValidate_Suite(t *testing.T) {
 				errs := r.BindAndValidate(ctx)
 
 				for _, expected := range tc.expected {
-					found := false
-					for _, err := range errs {
-						if contains(err, expected) {
-							found = true
-							break
-						}
-					}
-					assert.True(t, found, "expected error to contain: "+expected)
+					assertErrorContains(t, errs, expected)
 				}
 			})
 		}
 	})
 }
 
-// contains is a loose string matcher to account for dynamic error text (like length ranges).
-func contains(s, substr string) bool {
-	return s != "" && substr != "" && bytes.Contains([]byte(s), []byte(substr))
+func createTestContext(t *testing.T, e *echo.Echo, payload map[string]interface{}) echo.Context {
+	body, err := json.Marshal(payload)
+	assert.NoError(t, err, "Failed to marshal payload")
+
+	fakeRequest := httptest.NewRequest(http.MethodPost, "/", bytes.NewReader(body))
+	fakeRequest.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+
+	return e.NewContext(fakeRequest, httptest.NewRecorder())
+}
+
+func assertErrorContains(t *testing.T, errs []string, expectedSubstring string) {
+	t.Helper()
+
+	for _, err := range errs {
+		if strings.Contains(err, expectedSubstring) {
+			return
+		}
+	}
+
+	t.Errorf("Expected error containing '%s', but got errors: %v", expectedSubstring, errs)
 }
