@@ -36,6 +36,36 @@
                     },
                     {
                         "type": "string",
+                        "description": "Filter by user UUID",
+                        "name": "userUuid",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by status",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by HTTP method",
+                        "name": "method",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by endpoint",
+                        "name": "endpoint",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by IP address",
+                        "name": "ipAddress",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
                         "description": "Page number for pagination",
                         "name": "page",
                         "in": "query"

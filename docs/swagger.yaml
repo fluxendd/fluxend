@@ -561,6 +561,26 @@ paths:
         name: Authorization
         required: true
         type: string
+      - description: Filter by user UUID
+        in: query
+        name: userUuid
+        type: string
+      - description: Filter by status
+        in: query
+        name: status
+        type: string
+      - description: Filter by HTTP method
+        in: query
+        name: method
+        type: string
+      - description: Filter by endpoint
+        in: query
+        name: endpoint
+        type: string
+      - description: Filter by IP address
+        in: query
+        name: ipAddress
+        type: string
       - description: Page number for pagination
         in: query
         name: page

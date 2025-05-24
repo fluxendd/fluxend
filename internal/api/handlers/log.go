@@ -31,6 +31,12 @@ func NewLogHandler(injector *do.Injector) (*LogHandler, error) {
 //
 // @Param Authorization header string true "Bearer Token"
 //
+// @Param userUuid query string false "Filter by user UUID"
+// @Param status query string false "Filter by status"
+// @Param method query string false "Filter by HTTP method"
+// @Param endpoint query string false "Filter by endpoint"
+// @Param ipAddress query string false "Filter by IP address"
+//
 // @Param page query string false "Page number for pagination"
 // @Param limit query string false "Number of items per page"
 // @Param sort query string false "Field to sort by"
