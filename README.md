@@ -5,15 +5,15 @@ Fluxton is a fast, no BS backend server built with Go. It cuts the noise and giv
 - Built-in Org & Role Management
 - Instantly Generated Endpoints
 - Plug-and-Play Auth
-- Built-in Search Engine
 - Realtime Database
-- Zapier Integration
 - Row-Level Access Control
 - Import CSV/XLSX as APIs
 - DB Functions, Triggers & Hooks
 - Smart Forms with Validations & Triggers
 - Multi-Driver Storage (S3, Dropbox, BackBlaze, FS)
 - Detailed Audit Logs
+- Built-in Search Engine (upcoming)
+- Zapier Integration (upcoming)
 - And much much more
 
 ## How it works
