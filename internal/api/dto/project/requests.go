@@ -44,7 +44,17 @@ func (r *CreateRequest) BindAndValidate(c echo.Context) []string {
 			validation.Match(
 				regexp.MustCompile(constants.AlphanumericWithSpaceUnderScoreAndDashPattern),
 			).Error("Project name must be alphanumeric with underscores, spaces and dashes")),
-		validation.Field(&r.OrganizationUUID, validation.Required.Error("Organization UUID is required")),
+		validation.Field(
+			&r.OrganizationUUID,
+			validation.By(func(value interface{}) error {
+				if uuidValue, ok := value.(uuid.UUID); ok {
+					if uuidValue == uuid.Nil {
+						return fmt.Errorf("Organization UUID is required")
+					}
+				}
+				return nil
+			}),
+		),
 	)
 
 	return r.ExtractValidationErrors(err)
