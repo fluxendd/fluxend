@@ -2,6 +2,7 @@ package middlewares
 
 import (
 	"bytes"
+	"encoding/json"
 	"fluxton/internal/config/constants"
 	"fluxton/internal/domain/logging"
 	"fluxton/pkg/auth"
@@ -31,7 +32,7 @@ func RequestLogger(requestLogRepo logging.Repository) echo.MiddlewareFunc {
 				IPAddress: c.RealIP(),
 				UserAgent: request.UserAgent(),
 				Params:    request.URL.RawQuery,
-				Body:      requestBody,
+				Body:      sanitizeRequestBody(requestBody),
 				CreatedAt: time.Now(),
 			}
 
@@ -64,4 +65,22 @@ func readBody(r *http.Request) string {
 	r.Body = io.NopCloser(bytes.NewBuffer(body))
 
 	return string(body)
+}
+
+// make sure request body doesn't contain sensitive information
+func sanitizeRequestBody(body string) string {
+	var generic map[string]interface{}
+	if err := json.Unmarshal([]byte(body), &generic); err != nil {
+		return body
+	}
+
+	// If it has a "password" field, just mask it
+	if _, exists := generic["password"]; exists {
+		generic["password"] = "***"
+		sanitizedBody, _ := json.Marshal(generic)
+
+		return string(sanitizedBody)
+	}
+
+	return body
 }
