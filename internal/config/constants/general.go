@@ -10,4 +10,8 @@ const (
 	EmailDriverSMTP         = "SMTP"
 	EmailDriverSES          = "SES"
 	EmailDriverMailgun      = "MAILGUN"
+
+	AlphanumericWithUnderscorePattern             = "^[A-Za-z0-9_]+$"
+	AlphanumericWithUnderscoreAndDashPattern      = "^[A-Za-z0-9_-]+$"
+	AlphanumericWithSpaceUnderScoreAndDashPattern = "^[A-Za-z0-9 _-]+$"
 )

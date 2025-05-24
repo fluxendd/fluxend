@@ -6,7 +6,6 @@ import (
 	columnDomain "fluxton/internal/domain/database"
 	"strings"
 
-	"fluxton/pkg"
 	"fmt"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/labstack/echo/v4"
@@ -59,7 +58,7 @@ func (r *UploadTableRequest) validate() error {
 			&r.Name,
 			validation.Required.Error("Name is required"),
 			validation.Match(
-				regexp.MustCompile(pkg.AlphanumericWithUnderscorePattern()),
+				regexp.MustCompile(constants.AlphanumericWithUnderscorePattern),
 			).Error("Table name must be alphanumeric with underscores"),
 			validation.Length(
 				constants.MinTableNameLength, constants.MaxTableNameLength,
@@ -93,7 +92,7 @@ func (r *RenameTableRequest) BindAndValidate(c echo.Context) []string {
 		validation.Field(
 			&r.Name, validation.Required.Error("Name is required"),
 			validation.Match(
-				regexp.MustCompile(pkg.AlphanumericWithUnderscorePattern()),
+				regexp.MustCompile(constants.AlphanumericWithUnderscorePattern),
 			).Error("Table name must be alphanumeric with underscores"),
 			validation.Length(
 				constants.MinTableNameLength, constants.MaxTableNameLength,
@@ -146,7 +145,7 @@ func (r *CreateTableRequest) validate() error {
 			&r.Name,
 			validation.Required.Error("Name is required"),
 			validation.Match(
-				regexp.MustCompile(pkg.AlphanumericWithUnderscorePattern()),
+				regexp.MustCompile(constants.AlphanumericWithUnderscorePattern),
 			).Error("Table name must be alphanumeric with underscores"),
 			validation.Length(
 				constants.MinTableNameLength, constants.MaxTableNameLength,
