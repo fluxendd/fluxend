@@ -3,7 +3,6 @@ package project
 import (
 	"bytes"
 	"encoding/json"
-	"fluxton/pkg"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
@@ -23,7 +22,8 @@ func TestCreateRequest_BindAndValidate_Suite(t *testing.T) {
 			"organization_uuid": validUUID.String(),
 		}
 
-		body, _ := json.Marshal(payload)
+		body, err := json.Marshal(payload)
+		assert.NoError(t, err, "Failed to marshal payload")
 
 		fakeRequest := httptest.NewRequest(http.MethodPost, "/", bytes.NewReader(body))
 		fakeRequest.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
@@ -64,6 +64,22 @@ func TestCreateRequest_BindAndValidate_Suite(t *testing.T) {
 				},
 			},
 			{
+				name: "Empty name",
+				payload: map[string]interface{}{
+					"name":              "",
+					"organization_uuid": uuid.New().String(),
+				},
+				expected: []string{"Name is required"},
+			},
+			{
+				name: "Invalid UUID format",
+				payload: map[string]interface{}{
+					"name":              "ValidName",
+					"organization_uuid": "not-a-uuid",
+				},
+				expected: []string{"Invalid request payload"},
+			},
+			{
 				name: "Invalid characters in name",
 				payload: map[string]interface{}{
 					"name":              "!!!BAD$$$",
@@ -87,7 +103,8 @@ func TestCreateRequest_BindAndValidate_Suite(t *testing.T) {
 
 		for _, tc := range tests {
 			t.Run(tc.name, func(t *testing.T) {
-				body, _ := json.Marshal(tc.payload)
+				body, err := json.Marshal(tc.payload)
+				assert.NoError(t, err, "Failed to marshal payload")
 
 				fakeRequest := httptest.NewRequest(http.MethodPost, "/", bytes.NewReader(body))
 				fakeRequest.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
@@ -99,7 +116,6 @@ func TestCreateRequest_BindAndValidate_Suite(t *testing.T) {
 
 				for _, expected := range tc.expected {
 					found := false
-					pkg.DumpJSON(errs)
 					for _, err := range errs {
 						if contains(err, expected) {
 							found = true
@@ -123,7 +139,8 @@ func TestUpdateRequest_BindAndValidate_Suite(t *testing.T) {
 			"description": "Updated desc",
 		}
 
-		body, _ := json.Marshal(payload)
+		body, err := json.Marshal(payload)
+		assert.NoError(t, err, "Failed to marshal payload")
 
 		fakeRequest := httptest.NewRequest(http.MethodPut, "/", bytes.NewReader(body))
 		fakeRequest.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
@@ -175,7 +192,8 @@ func TestUpdateRequest_BindAndValidate_Suite(t *testing.T) {
 
 		for _, tc := range tests {
 			t.Run(tc.name, func(t *testing.T) {
-				body, _ := json.Marshal(tc.payload)
+				body, err := json.Marshal(tc.payload)
+				assert.NoError(t, err, "Failed to marshal payload")
 
 				fakeRequest := httptest.NewRequest(http.MethodPut, "/", bytes.NewReader(body))
 				fakeRequest.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
