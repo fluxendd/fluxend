@@ -3,7 +3,6 @@ package form
 import (
 	"fluxton/internal/api/dto"
 	"fluxton/internal/config/constants"
-	"fluxton/pkg"
 	"fmt"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/guregu/null/v6"
@@ -92,7 +91,7 @@ func (r *CreateRequest) BindAndValidate(c echo.Context) []string {
 				),
 			),
 			validation.Match(
-				regexp.MustCompile(pkg.AlphanumericWithSpaceUnderScoreAndDashPattern()),
+				regexp.MustCompile(constants.AlphanumericWithSpaceUnderScoreAndDashPattern),
 			).Error("Form name must be alphanumeric with underscores, spaces and dashes")),
 	)
 
@@ -139,7 +138,7 @@ func validateField(value interface{}) error {
 				),
 			),
 			validation.Match(
-				regexp.MustCompile(pkg.AlphanumericWithUnderscoreAndDashPattern()),
+				regexp.MustCompile(constants.AlphanumericWithUnderscoreAndDashPattern),
 			).Error("Label must be alphanumeric with underscores and dashes"),
 		),
 		validation.Field(

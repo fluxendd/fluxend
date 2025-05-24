@@ -3,7 +3,6 @@ package container
 import (
 	"fluxton/internal/api/dto"
 	"fluxton/internal/config/constants"
-	"fluxton/pkg"
 	"fmt"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/labstack/echo/v4"
@@ -42,7 +41,7 @@ func (r *CreateRequest) BindAndValidate(c echo.Context) []string {
 				),
 			),
 			validation.Match(
-				regexp.MustCompile(pkg.AlphanumericWithUnderscoreAndDashPattern()),
+				regexp.MustCompile(constants.AlphanumericWithUnderscoreAndDashPattern),
 			).Error("Container name must be alphanumeric with underscores and dashes")),
 		validation.Field(&r.IsPublic, validation.Required.Error("IsPublic is required")),
 		validation.Field(&r.MaxFileSize,

@@ -5,7 +5,6 @@ import (
 	"fluxton/internal/api/dto"
 	"fluxton/internal/config/constants"
 	columnDomain "fluxton/internal/domain/database"
-	"fluxton/pkg"
 	"fmt"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/labstack/echo/v4"
@@ -91,7 +90,7 @@ func Validate(column columnDomain.Column) error {
 				),
 			),
 			validation.Match(
-				regexp.MustCompile(pkg.AlphanumericWithUnderscoreAndDashPattern()),
+				regexp.MustCompile(constants.AlphanumericWithUnderscoreAndDashPattern),
 			).Error("Column name must be alphanumeric and start with a letter"),
 			validation.By(validateColumnName),
 		),

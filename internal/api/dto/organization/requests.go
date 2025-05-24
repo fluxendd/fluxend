@@ -3,7 +3,6 @@ package organization
 import (
 	"fluxton/internal/api/dto"
 	"fluxton/internal/config/constants"
-	"fluxton/pkg"
 	"fmt"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/google/uuid"
@@ -35,7 +34,7 @@ func (r *CreateRequest) BindAndValidate(c echo.Context) []string {
 				),
 			),
 			validation.Match(
-				regexp.MustCompile(pkg.AlphanumericWithSpaceUnderScoreAndDashPattern()),
+				regexp.MustCompile(constants.AlphanumericWithSpaceUnderScoreAndDashPattern),
 			).Error("Organization name must be alphanumeric with underscores, spaces and dashes"),
 		),
 	)

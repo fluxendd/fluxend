@@ -3,7 +3,6 @@ package database
 import (
 	"fluxton/internal/api/dto"
 	"fluxton/internal/config/constants"
-	"fluxton/pkg"
 	"fmt"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/labstack/echo/v4"
@@ -44,7 +43,7 @@ func (r *CreateIndexRequest) BindAndValidate(c echo.Context) []string {
 				),
 			),
 			validation.Match(
-				regexp.MustCompile(pkg.AlphanumericWithUnderscorePattern()),
+				regexp.MustCompile(constants.AlphanumericWithUnderscorePattern),
 			).Error("Index name must be alphanumeric with underscores"),
 		),
 		validation.Field(&r.Columns, validation.Required.Error("At least one column is required")),
