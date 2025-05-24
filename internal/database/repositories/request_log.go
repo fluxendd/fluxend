@@ -31,7 +31,7 @@ func (r *RequestLogRepository) List(input *logging.ListInput, paginationParams s
 
 	if input.UserUuid.Valid {
 		filters = append(filters, "user_uuid = :user_uuid")
-		params["user_uuid"] = input.UserUuid
+		params["user_uuid"] = input.UserUuid.UUID.String()
 	}
 
 	if input.Status.Valid {

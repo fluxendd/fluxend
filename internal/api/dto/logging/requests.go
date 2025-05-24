@@ -2,16 +2,18 @@ package logging
 
 import (
 	"fluxton/internal/api/dto"
+	"github.com/google/uuid"
+	"github.com/guregu/null/v6"
 	"github.com/labstack/echo/v4"
 )
 
 type ListRequest struct {
 	dto.BaseRequest
-	UserUuid  string `query:"userUuid"`
-	Status    string `query:"status"`
-	Method    string `query:"method"`
-	Endpoint  string `query:"endpoint"`
-	IPAddress string `query:"ipAddress"`
+	UserUuid  uuid.NullUUID `query:"userUuid"`
+	Status    null.String   `query:"status"`
+	Method    null.String   `query:"method"`
+	Endpoint  null.String   `query:"endpoint"`
+	IPAddress null.String   `query:"ipAddress"`
 
 	Limit int    `query:"limit"`
 	Page  int    `query:"page"`
