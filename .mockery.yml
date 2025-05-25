@@ -11,9 +11,9 @@ require-template-schema-exists: true
 template: testify
 template-schema: '{{.Template}}.schema.json'
 packages:
-  fluxton/internal/domain/project:
+  fluxend/internal/domain/project:
     interfaces:
       Repository:
-  fluxton/internal/domain/organization:
+  fluxend/internal/domain/organization:
     interfaces:
       Repository:

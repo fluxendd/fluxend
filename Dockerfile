@@ -17,4 +17,4 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -trimpath -o
 EXPOSE 8080
 
 # Run the Go binary
-CMD ["./bin/fluxton", "server"]
+CMD ["./bin/fluxend", "server"]

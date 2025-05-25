@@ -9,8 +9,8 @@ import { LoaderCircle, LogIn } from "lucide-react";
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "Frontend for Fluxton" },
-    { name: "description", content: "Login to Fluxton" },
+    { title: "Frontend for Fluxend" },
+    { name: "description", content: "Login to Fluxend" },
   ];
 }
 

@@ -19,21 +19,21 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       #- "./letsencrypt:/letsencrypt"
     networks:
-      - fluxton_network
+      - fluxend_network
 
-  fluxton_db:
+  fluxend_db:
     image: postgres:latest
-    container_name: fluxton_db
+    container_name: fluxend_db
     environment:
       - POSTGRES_USER=${DATABASE_USER:-postgres}
       - POSTGRES_PASSWORD=${DATABASE_PASSWORD:-yourpassword}
-      - POSTGRES_DB=${DATABASE_NAME:-fluxton_db}
+      - POSTGRES_DB=${DATABASE_NAME:-fluxend_db}
     volumes:
-      - fluxton_db_data:/var/lib/postgresql/data
+      - fluxend_db_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
     networks:
-      - fluxton_network
+      - fluxend_network
     healthcheck:
       test: [ "CMD", "pg_isready", "-U", "${DATABASE_USER:-postgres}" ]
       interval: 10s
@@ -41,57 +41,57 @@ services:
       start_period: 30s
       timeout: 5s
 
-  fluxton_app:
+  fluxend_app:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: fluxton_app
+    container_name: fluxend_app
     environment:
       - APP_ENV=${APP_ENV:-development}
-      - DATABASE_URL=postgres://${DATABASE_USER:-postgres}:${DATABASE_PASSWORD:-yourpassword}@fluxton_db:5432/${DATABASE_NAME:-fluxton_db}
-      - DATABASE_HOST=fluxton_db
+      - DATABASE_URL=postgres://${DATABASE_USER:-postgres}:${DATABASE_PASSWORD:-yourpassword}@fluxend_db:5432/${DATABASE_NAME:-fluxend_db}
+      - DATABASE_HOST=fluxend_db
       - DATABASE_USER=${DATABASE_USER:-postgres}
       - DATABASE_PASSWORD=${DATABASE_PASSWORD:-yourpassword}
-      - DATABASE_NAME=${DATABASE_NAME:-fluxton_db}
+      - DATABASE_NAME=${DATABASE_NAME:-fluxend_db}
       - DATABASE_SSL_MODE=disable
     depends_on:
-      fluxton_db:
+      fluxend_db:
         condition: service_healthy
     networks:
-      - fluxton_network
+      - fluxend_network
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.fluxton_app.rule=Host(`api.${APP_URL}`) || Host(`${APP_URL}`) && PathPrefix(`/api`)"
-      - "traefik.http.routers.fluxton_app.entrypoints=web"
-      - "traefik.http.services.fluxton_app.loadbalancer.server.port=8080"
-      #- "traefik.http.routers.fluxton_app.tls.certresolver=le"
+      - "traefik.http.routers.fluxend_app.rule=Host(`api.${APP_URL}`) || Host(`${APP_URL}`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.fluxend_app.entrypoints=web"
+      - "traefik.http.services.fluxend_app.loadbalancer.server.port=8080"
+      #- "traefik.http.routers.fluxend_app.tls.certresolver=le"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
 
-  fluxton_frontend:
+  fluxend_frontend:
     build:
       context: ./web
       dockerfile: Dockerfile
-    container_name: fluxton_frontend
+    container_name: fluxend_frontend
     environment:
       - NODE_ENV=${NODE_ENV:-production}
-      - VITE_FLX_API_BASE_URL=${VITE_FLX_API_BASE_URL:-http://fluxton_app:8080}
+      - VITE_FLX_API_BASE_URL=${VITE_FLX_API_BASE_URL:-http://fluxend_app:8080}
       # Add other frontend environment variables here
     depends_on:
-      - fluxton_app
+      - fluxend_app
     networks:
-      - fluxton_network
+      - fluxend_network
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.fluxton_frontend.rule=Host(`${APP_URL}`)"
-      - "traefik.http.routers.fluxton_frontend.entrypoints=web"
-      - "traefik.http.services.fluxton_frontend.loadbalancer.server.port=3000"
-      #- "traefik.http.routers.fluxton_frontend.tls.certresolver=le"
+      - "traefik.http.routers.fluxend_frontend.rule=Host(`${APP_URL}`)"
+      - "traefik.http.routers.fluxend_frontend.entrypoints=web"
+      - "traefik.http.services.fluxend_frontend.loadbalancer.server.port=3000"
+      #- "traefik.http.routers.fluxend_frontend.tls.certresolver=le"
 
 networks:
-  fluxton_network:
-    name: fluxton_network
+  fluxend_network:
+    name: fluxend_network
     driver: bridge
 
 volumes:
-  fluxton_db_data:
+  fluxend_db_data:

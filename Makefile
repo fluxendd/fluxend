@@ -24,7 +24,7 @@ build.app: ## Rebuild the app container only
 	@docker-compose up -d $${APP_CONTAINER_NAME}
 
 build.binary: ## Build the binary for the app
-	@CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -trimpath -o bin/fluxton cmd/main.go
+	@CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -trimpath -o bin/fluxend cmd/main.go
 
 up: ## Start the project
 	@make down
@@ -33,7 +33,7 @@ up: ## Start the project
 down: ## Stop the project
 	@docker-compose down
 
-login.app: ## Login to fluxton container
+login.app: ## Login to fluxend container
 	@docker exec -it $${APP_CONTAINER_NAME} /bin/sh
 
 login.db: ## Login to database container

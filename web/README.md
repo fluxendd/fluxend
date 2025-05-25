@@ -1,6 +1,6 @@
-# Fluxton Frontend
+# Fluxend Web
 
-Frontend awesomeness that makes Fluxton whole - built with React and React Router.
+Frontend awesomeness that makes Fluxend whole - built with React and React Router.
 
 ## Prerequisites
 
@@ -37,7 +37,7 @@ cp .env.sample .env
 The following environment variables are required:
 
 ```
-VITE_FLX_API_BASE_URL=http://fluxton.io/api
+VITE_FLX_API_BASE_URL=http://fluxend.app/api
 VITE_FLX_DEFAULT_ACCEPT_HEADER=application/json
 VITE_FLX_DEFAULT_CONTENT_TYPE=application/json
 ```
