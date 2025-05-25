@@ -16,7 +16,7 @@ func Users(container *do.Injector) {
 	_, err := userFactory.Create(
 		userFactory.WithUsername("superman"),
 		userFactory.WithRole(constants.UserRoleSuperman),
-		userFactory.WithEmail("superman@fluxend.io"),
+		userFactory.WithEmail("superman@fluxend.app"),
 	)
 	if err != nil {
 		log.Error().
