@@ -1,22 +1,49 @@
-## Fluxend
-Fluxend is a fast, no BS backend server built with Go. It cuts the noise and gives you raw power to build, scale, and own your backend — your way.
+# ⚡️ Fluxend
+**Fluxend** is a **blazing-fast, self-hosted BaaS** built with Go — no fluff, no bloat, no lock-in. Ship production-grade backends in minutes with full control over your data, logic, and storage. It's your backend. Done your way.
 
-## Features
-- Built-in Org & Role Management
-- Instantly Generated Endpoints
-- Plug-and-Play Auth
-- Realtime Database
-- Row-Level Access Control
-- Import CSV/XLSX as APIs
-- DB Functions, Triggers & Hooks
-- Smart Forms with Validations & Triggers
-- Multi-Driver Storage (S3, Dropbox, BackBlaze, FS)
-- Detailed Audit Logs
-- Built-in Search Engine (upcoming)
-- Zapier Integration (upcoming)
-- And much much more
+## 🚀 Why Fluxend?
+Tired of Firebase’s handcuffs? Supabase too slow or limited? Fluxend doesn’t babysit you — it gives you raw backend firepower out of the box:
 
-## How it works
+- ✅ Fully open-source
+- 🧠 Built with Go for max performance
+- 🔩 Dead-simple setup with Docker
+- 🧱 Modular & extendable
+- 🧨 Ready for production on Day 1
+
+## 🔥 Features
+| Feature | Description |
+|--------|-------------|
+| 🧑‍💼 Org & Role Management | Built-in multi-tenant support with fine-grained RBAC |
+| 🔐 Plug-and-Play Auth | OAuth, JWT, Magic Links — pick your poison |
+| 🔄 Realtime Database | Instant updates pushed to clients |
+| 🔥 Dynamic REST APIs | Define tables, get CRUD endpoints automagically |
+| 🧮 Row-Level Permissions | Control access down to the individual row |
+| 📥 Import CSV/XLSX as APIs | Upload a file → Get a full API. Done. |
+| ⚙️ DB Triggers & Hooks | Run server-side logic without extra services |
+| 🧾 Smart Forms | Auto-generated forms with validations and logic |
+| ☁️ Multi-Driver Storage | S3, Dropbox, Backblaze, or local FS — your call |
+| 🔍 Built-in Search Engine *(soon)* | Typesense/Sphinx powered indexing and search |
+| 🔁 Zapier Integration *(soon)* | Automate anything with Fluxend events |
+| 📜 Audit Logs | Every action tracked. No black boxes. |
+
+
+## ⚙️ Installation
+Clone the Fluxend repository:
+```bash
+git clone https://github.com/fluxend/fluxend.git fluxend
+cd fluxend
+make setup
+   ```
+This might take a while during first run. Once setup is done, the following containers will spin up:
+
+- 🐘 **Postgres** – stores your application data (`fluxend_db`)
+- 🧠 **Fluxend API Server** – backend engine (`fluxend_app`)
+- 🌐 **Fluxend Frontend** – admin panel (`fluxend_frontend`)
+- 🚦 **Traefik** – reverse proxy for routing requests (`fluxend_traefik`)
+
+Access the app via the `APP_URL` defined in your `.env` file. Swagger docs available at: `http://{APP_URL}/docs/index.html`
+
+## 📚 Learn How It Works
 You can refer to [Wiki](https://github.com/fluxend/fluxend/wiki) to understand how different Fluxend components work and how they can be integrated into your existing stack. These explain basic functionality and detailed inner workings backed by flowcharts. Some of the topics include:
 - [Dynamic REST endpoints](https://github.com/fluxend/fluxend/wiki/Dynamic-REST-Endpoints)
 - [Authentication](https://github.com/fluxend/fluxend/wiki/Authentication)
@@ -24,33 +51,10 @@ You can refer to [Wiki](https://github.com/fluxend/fluxend/wiki) to understand h
 - [Storage](https://github.com/fluxend/fluxend/wiki/Storage)
 - [Backup](https://github.com/fluxend/fluxend/wiki/Backups).
 
-## Installation
-
-### Method 1: Using Docker (Recommended for Easy Setup)
-To get up and running with Fluxend in just a few minutes, simply follow these steps:
-
-Clone the Fluxend repository:
-```bash
-git clone https://github.com/fluxend/fluxend.git fluxend
-cd fluxend
-make setup
-   ```
-This might take a while during first run. This will start two Docker containers:
-
-- **Database Container**: A Postgres database to store your data.
-- **Fluxend Server**: A backend server running on port 80.
-
-Once the server is up, you can access the API documentation at http://localhost/docs/index.html.
-
-### Method 2: Standalone Binary (For Self-Contained Deployments)
-Prefer a single binary to run without Docker? You can easily build Fluxend and run it as a standalone executable:
-
-Build with `make build` and then `./bin/fluxend` to start the server.
-
-## Commands
+## 🧠 Commands & CLI
 Fluxend has several commands to perform operations and make your experience smoother. Fluxend binary supports core commands which is further augmented by make commands
 
-### CLI commands
+### 🔧 CLI commands
 ```
 Fluxend CLI allows you to start the server, run seeders, and inspect routes.
 
@@ -73,7 +77,7 @@ Flags:
 Use "fluxend [command] --help" for more information about a command.
 ```
 
-### Make commands
+### 🛠 Make commands
 ```
 make help
 
@@ -113,5 +117,15 @@ migration.fresh                Rollback all migrations and run them again
 seed.fresh                     Seed the database with fresh data
 ```
 
-### Want to Contribute?
-Fluxend is open-source! If you're passionate about building a blazing-fast backend and want to make Fluxend even better, we welcome contributions. Please send PRs our way.
+## 🤝 Want to Contribute?
+We're building the most badass backend tool in the open. If you:
+
+- Hate boilerplate
+- Love Go
+- Want to build the next-gen BaaS engine
+- Want influence in an early-stage rocket
+
+Then you're in the right place.
+
+- 🛠 Check out [issues](https://github.com/fluxend/fluxend/issues)
+- 📬 Drop a PR. We'll review it FAST.
