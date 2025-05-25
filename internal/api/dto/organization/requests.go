@@ -1,8 +1,8 @@
 package organization
 
 import (
-	"fluxton/internal/api/dto"
-	"fluxton/internal/config/constants"
+	"fluxend/internal/api/dto"
+	"fluxend/internal/config/constants"
 	"fmt"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/google/uuid"

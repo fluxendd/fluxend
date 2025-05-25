@@ -1,8 +1,8 @@
 package project
 
 import (
-	"fluxton/internal/domain/auth"
-	"fluxton/internal/domain/organization"
+	"fluxend/internal/domain/auth"
+	"fluxend/internal/domain/organization"
 	"github.com/google/uuid"
 	"github.com/samber/do"
 )

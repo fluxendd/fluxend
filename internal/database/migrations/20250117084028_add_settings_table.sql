@@ -1,6 +1,6 @@
 -- +goose Up
 -- +goose StatementBegin
-CREATE TABLE fluxton.settings (
+CREATE TABLE fluxend.settings (
    id SERIAL PRIMARY KEY,
    name VARCHAR(255) NOT NULL UNIQUE,
    value VARCHAR(255) NOT NULL,
@@ -12,5 +12,5 @@ CREATE TABLE fluxton.settings (
 
 -- +goose Down
 -- +goose StatementBegin
-DROP TABLE fluxton.settings;
+DROP TABLE fluxend.settings;
 -- +goose StatementEnd

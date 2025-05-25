@@ -1,12 +1,12 @@
 package handlers
 
 import (
-	"fluxton/internal/api/dto"
-	formDto "fluxton/internal/api/dto/form"
-	"fluxton/internal/api/mapper"
-	"fluxton/internal/api/response"
-	"fluxton/internal/domain/form"
-	"fluxton/pkg/auth"
+	"fluxend/internal/api/dto"
+	formDto "fluxend/internal/api/dto/form"
+	"fluxend/internal/api/mapper"
+	"fluxend/internal/api/response"
+	"fluxend/internal/domain/form"
+	"fluxend/pkg/auth"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/samber/do"

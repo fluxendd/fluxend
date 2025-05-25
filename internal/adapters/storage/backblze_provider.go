@@ -3,7 +3,7 @@ package storage
 import (
 	"encoding/base64"
 	"encoding/json"
-	"fluxton/pkg/errors"
+	"fluxend/pkg/errors"
 	"fmt"
 	"github.com/samber/do"
 	"io"

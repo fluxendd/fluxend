@@ -1,8 +1,8 @@
 package mapper
 
 import (
-	organizationDto "fluxton/internal/api/dto/organization"
-	organizationDomain "fluxton/internal/domain/organization"
+	organizationDto "fluxend/internal/api/dto/organization"
+	organizationDomain "fluxend/internal/domain/organization"
 )
 
 func ToOrganizationResource(organization *organizationDomain.Organization) organizationDto.Response {

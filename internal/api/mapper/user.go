@@ -1,8 +1,8 @@
 package mapper
 
 import (
-	userDto "fluxton/internal/api/dto/user"
-	userDomain "fluxton/internal/domain/user"
+	userDto "fluxend/internal/api/dto/user"
+	userDomain "fluxend/internal/domain/user"
 )
 
 func ToUserResource(user *userDomain.User) userDto.Response {

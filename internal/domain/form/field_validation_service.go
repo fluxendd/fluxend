@@ -2,9 +2,9 @@ package form
 
 import (
 	"encoding/json"
-	"fluxton/internal/config/constants"
-	"fluxton/pkg"
-	"fluxton/pkg/errors"
+	"fluxend/internal/config/constants"
+	"fluxend/pkg"
+	"fluxend/pkg/errors"
 	"github.com/samber/do"
 )
 

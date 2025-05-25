@@ -1,7 +1,7 @@
 package setting
 
 import (
-	"fluxton/internal/api/dto"
+	"fluxend/internal/api/dto"
 	"fmt"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/labstack/echo/v4"

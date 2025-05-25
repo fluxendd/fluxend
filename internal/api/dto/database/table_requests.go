@@ -1,9 +1,9 @@
 package database
 
 import (
-	"fluxton/internal/api/dto"
-	"fluxton/internal/config/constants"
-	columnDomain "fluxton/internal/domain/database"
+	"fluxend/internal/api/dto"
+	"fluxend/internal/config/constants"
+	columnDomain "fluxend/internal/domain/database"
 	"strings"
 
 	"fmt"

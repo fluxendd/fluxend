@@ -1,10 +1,10 @@
 package setting
 
 import (
-	"fluxton/internal/api/dto/setting"
-	"fluxton/internal/domain/admin"
-	"fluxton/internal/domain/auth"
-	"fluxton/pkg/errors"
+	"fluxend/internal/api/dto/setting"
+	"fluxend/internal/domain/admin"
+	"fluxend/internal/domain/auth"
+	"fluxend/pkg/errors"
 	"github.com/rs/zerolog/log"
 	"github.com/samber/do"
 	"time"

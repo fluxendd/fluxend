@@ -3,9 +3,9 @@ package middlewares
 import (
 	"bytes"
 	"encoding/json"
-	"fluxton/internal/config/constants"
-	"fluxton/internal/domain/logging"
-	"fluxton/pkg/auth"
+	"fluxend/internal/config/constants"
+	"fluxend/internal/domain/logging"
+	"fluxend/pkg/auth"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/rs/zerolog/log"

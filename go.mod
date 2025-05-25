@@ -1,4 +1,4 @@
-module fluxton
+module fluxend
 
 go 1.23.4
 

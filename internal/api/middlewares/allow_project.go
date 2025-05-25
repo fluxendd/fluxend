@@ -1,8 +1,8 @@
 package middlewares
 
 import (
-	"fluxton/internal/api/response"
-	"fluxton/internal/domain/setting"
+	"fluxend/internal/api/response"
+	"fluxend/internal/domain/setting"
 	"github.com/labstack/echo/v4"
 )
 

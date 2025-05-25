@@ -3,9 +3,9 @@ package repositories
 import (
 	"database/sql"
 	"errors"
-	"fluxton/internal/domain/backup"
-	"fluxton/pkg"
-	flxErrs "fluxton/pkg/errors"
+	"fluxend/internal/domain/backup"
+	"fluxend/pkg"
+	flxErrs "fluxend/pkg/errors"
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"

@@ -1,7 +1,7 @@
 package organization
 
 import (
-	"fluxton/internal/domain/auth"
+	"fluxend/internal/domain/auth"
 	"github.com/google/uuid"
 	"github.com/samber/do"
 )

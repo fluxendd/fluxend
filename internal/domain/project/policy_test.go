@@ -2,9 +2,9 @@ package project
 
 import (
 	"errors"
-	"fluxton/internal/config/constants"
-	"fluxton/internal/domain/auth"
-	"fluxton/tests/fixtures/mocks/organization"
+	"fluxend/internal/config/constants"
+	"fluxend/internal/domain/auth"
+	"fluxend/tests/fixtures/mocks/organization"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"testing"

@@ -1,7 +1,7 @@
 package project
 
 import (
-	"fluxton/internal/domain/project"
+	"fluxend/internal/domain/project"
 )
 
 func ToCreateProjectInput(request *CreateRequest) *project.CreateProjectInput {

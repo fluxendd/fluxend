@@ -1,9 +1,9 @@
 package project
 
 import (
-	"fluxton/internal/domain/auth"
-	"fluxton/internal/domain/shared"
-	"fluxton/pkg/errors"
+	"fluxend/internal/domain/auth"
+	"fluxend/internal/domain/shared"
+	"fluxend/pkg/errors"
 	"github.com/google/uuid"
 	"github.com/samber/do"
 	"math/rand"

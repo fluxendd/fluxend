@@ -1,7 +1,7 @@
 package logging
 
 import (
-	"fluxton/internal/api/dto"
+	"fluxend/internal/api/dto"
 	"github.com/google/uuid"
 	"github.com/guregu/null/v6"
 	"github.com/labstack/echo/v4"

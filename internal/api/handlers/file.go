@@ -1,12 +1,12 @@
 package handlers
 
 import (
-	"fluxton/internal/api/dto"
-	fileDto "fluxton/internal/api/dto/storage/file"
-	"fluxton/internal/api/mapper"
-	"fluxton/internal/api/response"
-	"fluxton/internal/domain/storage/file"
-	"fluxton/pkg/auth"
+	"fluxend/internal/api/dto"
+	fileDto "fluxend/internal/api/dto/storage/file"
+	"fluxend/internal/api/mapper"
+	"fluxend/internal/api/response"
+	"fluxend/internal/domain/storage/file"
+	"fluxend/pkg/auth"
 	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
 )

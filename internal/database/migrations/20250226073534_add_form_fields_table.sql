@@ -2,7 +2,7 @@
 -- +goose StatementBegin
 CREATE TYPE field_type AS ENUM ('text', 'number', 'date', 'select', 'radio', 'checkbox');
 
-CREATE TABLE fluxton.form_fields (
+CREATE TABLE fluxend.form_fields (
     uuid UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     form_uuid UUID NOT NULL,
     label VARCHAR(255) NOT NULL,
@@ -22,7 +22,7 @@ CREATE TABLE fluxton.form_fields (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
 
-    CONSTRAINT fk_form_fields_form FOREIGN KEY (form_uuid) REFERENCES fluxton.forms(uuid) ON DELETE CASCADE,
+    CONSTRAINT fk_form_fields_form FOREIGN KEY (form_uuid) REFERENCES fluxend.forms(uuid) ON DELETE CASCADE,
     CONSTRAINT unique_form_label UNIQUE (form_uuid, label)
 );
 
@@ -30,6 +30,6 @@ CREATE TABLE fluxton.form_fields (
 
 -- +goose Down
 -- +goose StatementBegin
-DROP TABLE IF EXISTS fluxton.form_fields CASCADE;
+DROP TABLE IF EXISTS fluxend.form_fields CASCADE;
 DROP TYPE IF EXISTS field_type;
 -- +goose StatementEnd

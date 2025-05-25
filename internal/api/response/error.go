@@ -2,7 +2,7 @@ package response
 
 import (
 	"errors"
-	flxErrors "fluxton/pkg/errors"
+	flxErrors "fluxend/pkg/errors"
 	"github.com/labstack/echo/v4"
 )
 

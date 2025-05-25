@@ -1,8 +1,8 @@
 package mapper
 
 import (
-	databaseDto "fluxton/internal/api/dto/database"
-	databaseDomain "fluxton/internal/domain/database"
+	databaseDto "fluxend/internal/api/dto/database"
+	databaseDomain "fluxend/internal/domain/database"
 )
 
 func ToColumnResource(column *databaseDomain.Column) databaseDto.ColumnResponse {

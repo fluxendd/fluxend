@@ -1,7 +1,7 @@
 package email
 
 import (
-	"fluxton/internal/domain/setting"
+	"fluxend/internal/domain/setting"
 	"fmt"
 	"github.com/samber/do"
 	"github.com/sendgrid/sendgrid-go"

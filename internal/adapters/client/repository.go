@@ -1,8 +1,8 @@
 package client
 
 import (
-	"fluxton/internal/config/constants"
-	"fluxton/internal/domain/shared"
+	"fluxend/internal/config/constants"
+	"fluxend/internal/domain/shared"
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"

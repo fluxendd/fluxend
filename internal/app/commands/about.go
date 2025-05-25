@@ -1,8 +1,8 @@
 package commands
 
 import (
-	"fluxton/internal/config"
-	"fluxton/pkg"
+	"fluxend/internal/config"
+	"fluxend/pkg"
 	"github.com/spf13/cobra"
 )
 
@@ -11,10 +11,10 @@ var aboutCmd = &cobra.Command{
 	Use:   "about",
 	Short: "Prints information about the application",
 	Run: func(cmd *cobra.Command, args []string) {
-		aboutFluxton()
+		aboutFluxend()
 	},
 }
 
-func aboutFluxton() {
-	pkg.DumpJSON(config.AboutFluxton)
+func aboutFluxend() {
+	pkg.DumpJSON(config.AboutFluxend)
 }

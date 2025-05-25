@@ -6,9 +6,9 @@ import (
 )
 
 var RootCmd = &cobra.Command{
-	Use:   "fluxton",
-	Short: "Fluxton CLI for managing the BaaS platform",
-	Long:  `Fluxton CLI allows you to start the server, run seeders, and inspect routes.`,
+	Use:   "fluxend",
+	Short: "Fluxend CLI for managing the BaaS platform",
+	Long:  `Fluxend CLI allows you to start the server, run seeders, and inspect routes.`,
 }
 
 func Execute() {

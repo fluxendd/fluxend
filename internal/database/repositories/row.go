@@ -1,7 +1,7 @@
 package repositories
 
 import (
-	"fluxton/internal/domain/database"
+	"fluxend/internal/domain/database"
 	"github.com/jmoiron/sqlx"
 )
 

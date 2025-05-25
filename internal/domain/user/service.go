@@ -1,11 +1,11 @@
 package user
 
 import (
-	"fluxton/internal/config/constants"
-	"fluxton/internal/domain/setting"
-	"fluxton/internal/domain/shared"
-	"fluxton/pkg/auth"
-	"fluxton/pkg/errors"
+	"fluxend/internal/config/constants"
+	"fluxend/internal/domain/setting"
+	"fluxend/internal/domain/shared"
+	"fluxend/pkg/auth"
+	"fluxend/pkg/errors"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
@@ -181,7 +181,7 @@ func (s *ServiceImpl) generateToken(user *User, jwtVersion int) (string, error) 
 		"exp":     time.Now().Add(time.Hour * 24).Unix(),
 		"iat":     time.Now().Unix(),
 		"uuid":    user.Uuid.String(),
-		"role_id": user.RoleID,                                               // fluxton role
+		"role_id": user.RoleID,                                               // fluxend role
 		"role":    "usr_" + strings.ReplaceAll(user.Uuid.String(), "-", "_"), // postgrest role
 	}
 

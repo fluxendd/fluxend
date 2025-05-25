@@ -11,8 +11,8 @@ const docTemplate = `{
         "title": "{{.Title}}",
         "contact": {
             "name": "API Support",
-            "url": "http://github.com/fluxton-io/fluxton",
-            "email": "chief@fluxton.io"
+            "url": "http://github.com/fluxend/fluxend",
+            "email": "chief@fluxend.io"
         },
         "version": "{{.Version}}"
     },
@@ -5374,11 +5374,11 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "fluxton.io/api",
+	Host:             "fluxend.io/api",
 	BasePath:         "/v2",
 	Schemes:          []string{},
-	Title:            "Fluxton API",
-	Description:      "Fluxton is backend as-a-service platform that allows you to build, deploy, and scale applications without managing infrastructure.",
+	Title:            "Fluxend API",
+	Description:      "Fluxend is backend as-a-service platform that allows you to build, deploy, and scale applications without managing infrastructure.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

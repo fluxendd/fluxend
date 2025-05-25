@@ -1,8 +1,8 @@
 -- +goose Up
 -- +goose StatementBegin
-CREATE TABLE fluxton.user_email_templates (
+CREATE TABLE fluxend.user_email_templates (
     id SERIAL PRIMARY KEY,
-    template_id INT NOT NULL REFERENCES fluxton.email_templates(id),
+    template_id INT NOT NULL REFERENCES fluxend.email_templates(id),
     user_uuid UUID NOT NULL REFERENCES authentication.users(uuid),
     message TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -12,5 +12,5 @@ CREATE TABLE fluxton.user_email_templates (
 
 -- +goose Down
 -- +goose StatementBegin
-DROP TABLE fluxton.user_email_templates;
+DROP TABLE fluxend.user_email_templates;
 -- +goose StatementEnd

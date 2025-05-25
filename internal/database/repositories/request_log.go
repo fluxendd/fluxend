@@ -1,9 +1,9 @@
 package repositories
 
 import (
-	"fluxton/internal/domain/logging"
-	"fluxton/internal/domain/shared"
-	"fluxton/pkg"
+	"fluxend/internal/domain/logging"
+	"fluxend/internal/domain/shared"
+	"fluxend/pkg"
 	"fmt"
 	"github.com/jmoiron/sqlx"
 	"github.com/samber/do"
@@ -54,7 +54,7 @@ func (r *RequestLogRepository) List(input *logging.ListInput, paginationParams s
 		params["ip_address"] = input.IPAddress
 	}
 
-	query := `SELECT * FROM fluxton.api_logs`
+	query := `SELECT * FROM fluxend.api_logs`
 	if len(filters) > 0 {
 		query += " WHERE " + strings.Join(filters, " AND ")
 	}
@@ -100,7 +100,7 @@ func (r *RequestLogRepository) Create(requestLog *logging.RequestLog) (*logging.
 	}
 
 	query := `
-    INSERT INTO fluxton.api_logs (
+    INSERT INTO fluxend.api_logs (
         user_uuid, api_key, method, status, endpoint, ip_address, user_agent, params, body
     ) VALUES (
         $1, $2, $3, $4, $5, $6, $7, $8, $9

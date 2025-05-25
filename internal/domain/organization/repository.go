@@ -1,8 +1,8 @@
 package organization
 
 import (
-	"fluxton/internal/domain/shared"
-	"fluxton/internal/domain/user"
+	"fluxend/internal/domain/shared"
+	"fluxend/internal/domain/user"
 	"github.com/google/uuid"
 )
 

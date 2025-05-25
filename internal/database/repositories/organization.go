@@ -3,11 +3,11 @@ package repositories
 import (
 	"database/sql"
 	"errors"
-	"fluxton/internal/domain/organization"
-	"fluxton/internal/domain/shared"
-	"fluxton/internal/domain/user"
-	"fluxton/pkg"
-	flxErrs "fluxton/pkg/errors"
+	"fluxend/internal/domain/organization"
+	"fluxend/internal/domain/shared"
+	"fluxend/internal/domain/user"
+	"fluxend/pkg"
+	flxErrs "fluxend/pkg/errors"
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
@@ -30,9 +30,9 @@ func (r *OrganizationRepository) ListForUser(paginationParams shared.PaginationP
 		SELECT 
 			%s 
 		FROM 
-			fluxton.organizations organizations
+			fluxend.organizations organizations
 		JOIN 
-			fluxton.organization_members organization_members ON organizations.uuid = organization_members.organization_uuid
+			fluxend.organization_members organization_members ON organizations.uuid = organization_members.organization_uuid
 		WHERE 
 			organization_members.user_uuid = :user_uuid
 		ORDER BY 
@@ -82,7 +82,7 @@ func (r *OrganizationRepository) ListUsers(organizationUUID uuid.UUID) ([]user.U
 		FROM 
 			authentication.users users
 		JOIN 
-			fluxton.organization_members organization_members ON users.uuid = organization_members.user_uuid
+			fluxend.organization_members organization_members ON users.uuid = organization_members.user_uuid
 		WHERE 
 			organization_members.organization_uuid = $1
 	`
@@ -117,7 +117,7 @@ func (r *OrganizationRepository) GetUser(organizationUUID, userUUID uuid.UUID) (
 		FROM 
 			authentication.users users
 		JOIN 
-			fluxton.organization_members organization_members ON users.uuid = organization_members.user_uuid
+			fluxend.organization_members organization_members ON users.uuid = organization_members.user_uuid
 		WHERE 
 			organization_members.organization_uuid = $1 AND organization_members.user_uuid = $2
 	`
@@ -137,7 +137,7 @@ func (r *OrganizationRepository) GetUser(organizationUUID, userUUID uuid.UUID) (
 }
 
 func (r *OrganizationRepository) CreateUser(organizationUUID, userUUID uuid.UUID) error {
-	query := "INSERT INTO fluxton.organization_members (organization_uuid, user_uuid) VALUES ($1, $2)"
+	query := "INSERT INTO fluxend.organization_members (organization_uuid, user_uuid) VALUES ($1, $2)"
 	_, err := r.db.Exec(query, organizationUUID, userUUID)
 	if err != nil {
 		return fmt.Errorf("could not insert into pivot table: %v", err)
@@ -147,7 +147,7 @@ func (r *OrganizationRepository) CreateUser(organizationUUID, userUUID uuid.UUID
 }
 
 func (r *OrganizationRepository) DeleteUser(organizationUUID, userUUID uuid.UUID) error {
-	query := "DELETE FROM fluxton.organization_members WHERE organization_uuid = $1 AND user_uuid = $2"
+	query := "DELETE FROM fluxend.organization_members WHERE organization_uuid = $1 AND user_uuid = $2"
 	_, err := r.db.Exec(query, organizationUUID, userUUID)
 	if err != nil {
 		return pkg.FormatError(err, "delete", pkg.GetMethodName())
@@ -157,7 +157,7 @@ func (r *OrganizationRepository) DeleteUser(organizationUUID, userUUID uuid.UUID
 }
 
 func (r *OrganizationRepository) GetByUUID(organizationUUID uuid.UUID) (organization.Organization, error) {
-	query := "SELECT %s FROM fluxton.organizations WHERE uuid = $1"
+	query := "SELECT %s FROM fluxend.organizations WHERE uuid = $1"
 	query = fmt.Sprintf(query, pkg.GetColumns[organization.Organization]())
 
 	var fetchedOrganization organization.Organization
@@ -174,7 +174,7 @@ func (r *OrganizationRepository) GetByUUID(organizationUUID uuid.UUID) (organiza
 }
 
 func (r *OrganizationRepository) ExistsByID(organizationUUID uuid.UUID) (bool, error) {
-	query := "SELECT EXISTS(SELECT 1 FROM fluxton.organizations WHERE uuid = $1)"
+	query := "SELECT EXISTS(SELECT 1 FROM fluxend.organizations WHERE uuid = $1)"
 	var exists bool
 	err := r.db.Get(&exists, query, organizationUUID)
 	if err != nil {
@@ -191,7 +191,7 @@ func (r *OrganizationRepository) Create(organization *organization.Organization,
 	}
 
 	// Insert into organizations table
-	query := "INSERT INTO fluxton.organizations (name, created_by, updated_by) VALUES ($1, $2, $3) RETURNING uuid"
+	query := "INSERT INTO fluxend.organizations (name, created_by, updated_by) VALUES ($1, $2, $3) RETURNING uuid"
 	queryErr := tx.QueryRowx(query, organization.Name, organization.CreatedBy, organization.UpdatedBy).Scan(&organization.Uuid)
 	if queryErr != nil {
 		err := tx.Rollback()
@@ -223,7 +223,7 @@ func (r *OrganizationRepository) Create(organization *organization.Organization,
 
 func (r *OrganizationRepository) Update(organizationInput *organization.Organization) (*organization.Organization, error) {
 	query := `
-		UPDATE fluxton.organizations 
+		UPDATE fluxend.organizations 
 		SET name = :name, updated_at = :updated_at, updated_by = :updated_by 
 		WHERE uuid = :uuid`
 
@@ -241,7 +241,7 @@ func (r *OrganizationRepository) Update(organizationInput *organization.Organiza
 }
 
 func (r *OrganizationRepository) Delete(organizationUUID uuid.UUID) (bool, error) {
-	query := "DELETE FROM fluxton.organizations WHERE uuid = $1"
+	query := "DELETE FROM fluxend.organizations WHERE uuid = $1"
 	res, err := r.db.Exec(query, organizationUUID)
 	if err != nil {
 		return false, pkg.FormatError(err, "delete", pkg.GetMethodName())
@@ -256,7 +256,7 @@ func (r *OrganizationRepository) Delete(organizationUUID uuid.UUID) (bool, error
 }
 
 func (r *OrganizationRepository) IsOrganizationMember(organizationUUID, authUserID uuid.UUID) (bool, error) {
-	query := "SELECT EXISTS(SELECT 1 FROM fluxton.organization_members WHERE organization_uuid = $1 AND user_uuid = $2)"
+	query := "SELECT EXISTS(SELECT 1 FROM fluxend.organization_members WHERE organization_uuid = $1 AND user_uuid = $2)"
 
 	var exists bool
 	err := r.db.Get(&exists, query, organizationUUID, authUserID)
@@ -268,7 +268,7 @@ func (r *OrganizationRepository) IsOrganizationMember(organizationUUID, authUser
 }
 
 func (r *OrganizationRepository) createOrganizationUser(tx *sqlx.Tx, organizationUUID, userId uuid.UUID) error {
-	query := "INSERT INTO fluxton.organization_members (organization_uuid, user_uuid) VALUES ($1, $2)"
+	query := "INSERT INTO fluxend.organization_members (organization_uuid, user_uuid) VALUES ($1, $2)"
 	_, err := tx.Exec(query, organizationUUID, userId)
 	if err != nil {
 		return fmt.Errorf("could not insert into pivot table: %v", err)

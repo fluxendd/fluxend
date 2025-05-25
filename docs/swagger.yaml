@@ -539,15 +539,15 @@ definitions:
       projectUUID:
         type: string
     type: object
-host: fluxton.io/api
+host: fluxend.io/api
 info:
   contact:
-    email: chief@fluxton.io
+    email: chief@fluxend.io
     name: API Support
-    url: http://github.com/fluxton-io/fluxton
-  description: Fluxton is backend as-a-service platform that allows you to build,
+    url: http://github.com/fluxend/fluxend
+  description: Fluxend is backend as-a-service platform that allows you to build,
     deploy, and scale applications without managing infrastructure.
-  title: Fluxton API
+  title: Fluxend API
   version: "1.0"
 paths:
   /admin/logs:

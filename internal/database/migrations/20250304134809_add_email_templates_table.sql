@@ -1,6 +1,6 @@
 -- +goose Up
 -- +goose StatementBegin
-CREATE TABLE fluxton.email_templates (
+CREATE TABLE fluxend.email_templates (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     type VARCHAR(255) NOT NULL,
@@ -13,5 +13,5 @@ CREATE TABLE fluxton.email_templates (
 
 -- +goose Down
 -- +goose StatementBegin
-DROP TABLE fluxton.email_templates;
+DROP TABLE fluxend.email_templates;
 -- +goose StatementEnd

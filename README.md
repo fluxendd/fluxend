@@ -1,5 +1,5 @@
-## Fluxton
-Fluxton is a fast, no BS backend server built with Go. It cuts the noise and gives you raw power to build, scale, and own your backend — your way.
+## Fluxend
+Fluxend is a fast, no BS backend server built with Go. It cuts the noise and gives you raw power to build, scale, and own your backend — your way.
 
 ## Features
 - Built-in Org & Role Management
@@ -17,45 +17,45 @@ Fluxton is a fast, no BS backend server built with Go. It cuts the noise and giv
 - And much much more
 
 ## How it works
-You can refer to [Wiki](https://github.com/fluxton-io/fluxton/wiki) to understand how different Fluxton components work and how they can be integrated into your existing stack. These explain basic functionality and detailed inner workings backed by flowcharts. Some of the topics include:
-- [Dynamic REST endpoints](https://github.com/fluxton-io/fluxton/wiki/Dynamic-REST-Endpoints)
-- [Authentication](https://github.com/fluxton-io/fluxton/wiki/Authentication)
-- [Forms](https://github.com/fluxton-io/fluxton/wiki/Forms)
-- [Storage](https://github.com/fluxton-io/fluxton/wiki/Storage)
-- [Backup](https://github.com/fluxton-io/fluxton/wiki/Backups).
+You can refer to [Wiki](https://github.com/fluxend/fluxend/wiki) to understand how different Fluxend components work and how they can be integrated into your existing stack. These explain basic functionality and detailed inner workings backed by flowcharts. Some of the topics include:
+- [Dynamic REST endpoints](https://github.com/fluxend/fluxend/wiki/Dynamic-REST-Endpoints)
+- [Authentication](https://github.com/fluxend/fluxend/wiki/Authentication)
+- [Forms](https://github.com/fluxend/fluxend/wiki/Forms)
+- [Storage](https://github.com/fluxend/fluxend/wiki/Storage)
+- [Backup](https://github.com/fluxend/fluxend/wiki/Backups).
 
 ## Installation
 
 ### Method 1: Using Docker (Recommended for Easy Setup)
-To get up and running with Fluxton in just a few minutes, simply follow these steps:
+To get up and running with Fluxend in just a few minutes, simply follow these steps:
 
-Clone the Fluxton repository:
+Clone the Fluxend repository:
 ```bash
-git clone https://github.com/fluxton-io/fluxton.git fluxton
-cd fluxton
+git clone https://github.com/fluxend/fluxend.git fluxend
+cd fluxend
 make setup
    ```
 This might take a while during first run. This will start two Docker containers:
 
 - **Database Container**: A Postgres database to store your data.
-- **Fluxton Server**: A backend server running on port 80.
+- **Fluxend Server**: A backend server running on port 80.
 
 Once the server is up, you can access the API documentation at http://localhost/docs/index.html.
 
 ### Method 2: Standalone Binary (For Self-Contained Deployments)
-Prefer a single binary to run without Docker? You can easily build Fluxton and run it as a standalone executable:
+Prefer a single binary to run without Docker? You can easily build Fluxend and run it as a standalone executable:
 
-Build with `make build` and then `./bin/fluxton` to start the server.
+Build with `make build` and then `./bin/fluxend` to start the server.
 
 ## Commands
-Fluxton has several commands to perform operations and make your experience smoother. Fluxton binary supports core commands which is further augmented by make commands
+Fluxend has several commands to perform operations and make your experience smoother. Fluxend binary supports core commands which is further augmented by make commands
 
 ### CLI commands
 ```
-Fluxton CLI allows you to start the server, run seeders, and inspect routes.
+Fluxend CLI allows you to start the server, run seeders, and inspect routes.
 
 Usage:
-  fluxton [command]
+  fluxend [command]
 
 Available Commands:
   help        Help about any command
@@ -63,14 +63,14 @@ Available Commands:
   optimize    Flush all caches and optimize the application
   routes      List all registered API routes
   seed        Seed the database with initial data
-  server      Start the Fluxton API server
+  server      Start the Fluxend API server
   udb.stats   Pull stats from given database
   udb.restart Restart all PostGREST instances
 
 Flags:
-  -h, --help   help for fluxton
+  -h, --help   help for fluxend
 
-Use "fluxton [command] --help" for more information about a command.
+Use "fluxend [command] --help" for more information about a command.
 ```
 
 ### Make commands
@@ -83,7 +83,7 @@ build                          Build the project
 up                             Start the project
 down                           Stop the project
 
-login.app                      Login to fluxton container
+login.app                      Login to fluxend container
 login.db                       Login to database container
 
 pgr.list                       List all postgrest containers
@@ -114,4 +114,4 @@ seed.fresh                     Seed the database with fresh data
 ```
 
 ### Want to Contribute?
-Fluxton is open-source! If you're passionate about building a blazing-fast backend and want to make Fluxton even better, we welcome contributions. Please send PRs our way.
+Fluxend is open-source! If you're passionate about building a blazing-fast backend and want to make Fluxend even better, we welcome contributions. Please send PRs our way.

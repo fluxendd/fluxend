@@ -1,21 +1,21 @@
 package main
 
 import (
-	_ "fluxton/docs"
-	"fluxton/internal/app/commands"
+	_ "fluxend/docs"
+	"fluxend/internal/app/commands"
 	"github.com/joho/godotenv"
 	"github.com/labstack/gommon/log"
 )
 
-// @title Fluxton API
+// @title Fluxend API
 // @version 1.0
-// @description Fluxton is backend as-a-service platform that allows you to build, deploy, and scale applications without managing infrastructure.
+// @description Fluxend is backend as-a-service platform that allows you to build, deploy, and scale applications without managing infrastructure.
 
 // @contact.name API Support
-// @contact.url http://github.com/fluxton-io/fluxton
-// @contact.email chief@fluxton.io
+// @contact.url http://github.com/fluxend/fluxend
+// @contact.email hello@fluxend.app
 
-// @host fluxton.io/api
+// @host fluxend.app/api
 // @BasePath /v2
 func main() {
 	if err := godotenv.Load(); err != nil {

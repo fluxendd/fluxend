@@ -1,6 +1,6 @@
-# Fluxton Frontend
+# Fluxend Web
 
-Frontend awesomeness that makes Fluxton whole - built with React and React Router.
+Frontend awesomeness that makes Fluxend whole - built with React and React Router.
 
 ## Prerequisites
 
@@ -15,7 +15,7 @@ Follow these steps to set up the project on your local machine:
 
 ```bash
 git clone <repository-url>
-cd fluxton-frontend
+cd fluxend-frontend
 ```
 
 ### 2. Install dependencies
@@ -37,7 +37,7 @@ cp .env.sample .env
 The following environment variables are required:
 
 ```
-VITE_FLX_API_BASE_URL=http://fluxton.io/api
+VITE_FLX_API_BASE_URL=http://fluxend.app/api
 VITE_FLX_DEFAULT_ACCEPT_HEADER=application/json
 VITE_FLX_DEFAULT_CONTENT_TYPE=application/json
 ```
@@ -103,10 +103,10 @@ The project includes a multi-stage Dockerfile optimized for production:
 
 ```bash
 # Build the Docker image
-docker build -t fluxton-frontend .
+docker build -t fluxend-frontend .
 
 # Run the container
-docker run -p 3000:3000 fluxton-frontend
+docker run -p 3000:3000 fluxend-frontend
 ```
 
 ### Manual Deployment

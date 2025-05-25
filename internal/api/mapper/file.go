@@ -1,8 +1,8 @@
 package mapper
 
 import (
-	fileDto "fluxton/internal/api/dto/storage/file"
-	fileDomain "fluxton/internal/domain/storage/file"
+	fileDto "fluxend/internal/api/dto/storage/file"
+	fileDomain "fluxend/internal/domain/storage/file"
 )
 
 func ToFileResource(file *fileDomain.File) fileDto.Response {

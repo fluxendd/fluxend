@@ -1,6 +1,6 @@
 -- +goose Up
 -- +goose StatementBegin
-CREATE TABLE fluxton.api_logs (
+CREATE TABLE fluxend.api_logs (
     uuid UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_uuid UUID NULL,
     api_key UUID NULL,
@@ -17,5 +17,5 @@ CREATE TABLE fluxton.api_logs (
 
 -- +goose Down
 -- +goose StatementBegin
-DROP TABLE fluxton.api_logs;
+DROP TABLE fluxend.api_logs;
 -- +goose StatementEnd

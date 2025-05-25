@@ -1,12 +1,12 @@
 package container
 
 import (
-	"fluxton/internal/adapters/storage"
-	"fluxton/internal/domain/auth"
-	"fluxton/internal/domain/project"
-	"fluxton/internal/domain/setting"
-	"fluxton/internal/domain/shared"
-	"fluxton/pkg/errors"
+	"fluxend/internal/adapters/storage"
+	"fluxend/internal/domain/auth"
+	"fluxend/internal/domain/project"
+	"fluxend/internal/domain/setting"
+	"fluxend/internal/domain/shared"
+	"fluxend/pkg/errors"
 	"github.com/google/uuid"
 	"github.com/samber/do"
 	"strings"

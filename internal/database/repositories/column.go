@@ -1,7 +1,7 @@
 package repositories
 
 import (
-	"fluxton/internal/domain/database"
+	"fluxend/internal/domain/database"
 	"fmt"
 	"github.com/jmoiron/sqlx"
 	"github.com/lib/pq"

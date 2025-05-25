@@ -1,7 +1,7 @@
 package constants
 
 const (
-	BackupContainerName     = "fluxton-client-database-backups"
+	BackupContainerName     = "fluxend-client-database-backups"
 	StorageDriverFilesystem = "FILESYSTEM"
 	StorageDriverS3         = "S3"
 	StorageDriverDropbox    = "DROPBOX"

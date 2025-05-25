@@ -1,8 +1,8 @@
 package mapper
 
 import (
-	projectDto "fluxton/internal/api/dto/project"
-	projectDomain "fluxton/internal/domain/project"
+	projectDto "fluxend/internal/api/dto/project"
+	projectDomain "fluxend/internal/domain/project"
 )
 
 func ToProjectResource(project *projectDomain.Project) projectDto.Response {
