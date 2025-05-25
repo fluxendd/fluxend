@@ -67,7 +67,8 @@ services:
       - "traefik.http.routers.fluxend_app.rule=Host(`api.${APP_URL}`) || Host(`${APP_URL}`) && PathPrefix(`/api`)"
       - "traefik.http.routers.fluxend_app.entrypoints=web"
       - "traefik.http.services.fluxend_app.loadbalancer.server.port=8080"
-      #- "traefik.http.routers.fluxend_app.tls.certresolver=le"
+      - "traefik.http.routers.fluxend_app.tls=true"
+      - "traefik.http.routers.fluxend_app.tls.certresolver=le"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
 
@@ -89,7 +90,8 @@ services:
       - "traefik.http.routers.fluxend_frontend.rule=Host(`${APP_URL}`)"
       - "traefik.http.routers.fluxend_frontend.entrypoints=web"
       - "traefik.http.services.fluxend_frontend.loadbalancer.server.port=3000"
-      #- "traefik.http.routers.fluxend_frontend.tls.certresolver=le"
+      - "traefik.http.routers.fluxend_frontend.tls=true"
+      - "traefik.http.routers.fluxend_frontend.tls.certresolver=le"
 
 networks:
   fluxend_network:
