@@ -36,6 +36,9 @@ down: ## Stop the project
 login.app: ## Login to fluxend container
 	@docker exec -it $${APP_CONTAINER_NAME} /bin/sh
 
+login.frontend: ## Login to fluxend container
+	@docker exec -it $${FRONTEND_CONTAINER_NAME} /bin/sh
+
 login.db: ## Login to database container
 	@docker exec -it $${DATABASE_CONTAINER_NAME} /bin/bash
 
