@@ -1,7 +1,7 @@
 package user
 
 import (
-	"fluxton/internal/api/dto"
+	"fluxend/internal/api/dto"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/go-ozzo/ozzo-validation/v4/is"
 	"regexp"

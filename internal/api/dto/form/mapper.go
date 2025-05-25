@@ -1,7 +1,7 @@
 package form
 
 import (
-	"fluxton/internal/domain/form"
+	"fluxend/internal/domain/form"
 )
 
 func ToCreateFormInput(request *CreateRequest) *form.CreateFormInput {

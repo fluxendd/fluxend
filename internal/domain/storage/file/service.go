@@ -1,14 +1,14 @@
 package file
 
 import (
-	"fluxton/internal/adapters/storage"
-	"fluxton/internal/domain/auth"
-	"fluxton/internal/domain/project"
-	"fluxton/internal/domain/setting"
-	"fluxton/internal/domain/shared"
-	"fluxton/internal/domain/storage/container"
-	"fluxton/pkg"
-	"fluxton/pkg/errors"
+	"fluxend/internal/adapters/storage"
+	"fluxend/internal/domain/auth"
+	"fluxend/internal/domain/project"
+	"fluxend/internal/domain/setting"
+	"fluxend/internal/domain/shared"
+	"fluxend/internal/domain/storage/container"
+	"fluxend/pkg"
+	"fluxend/pkg/errors"
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/samber/do"

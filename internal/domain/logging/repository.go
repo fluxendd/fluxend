@@ -1,7 +1,7 @@
 package logging
 
 import (
-	"fluxton/internal/domain/shared"
+	"fluxend/internal/domain/shared"
 )
 
 type Repository interface {

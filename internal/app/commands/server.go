@@ -1,12 +1,12 @@
 package commands
 
 import (
-	"fluxton/internal/api/middlewares"
-	"fluxton/internal/api/routes"
-	"fluxton/internal/app"
-	"fluxton/internal/domain/logging"
-	"fluxton/internal/domain/setting"
-	"fluxton/internal/domain/user"
+	"fluxend/internal/api/middlewares"
+	"fluxend/internal/api/routes"
+	"fluxend/internal/app"
+	"fluxend/internal/domain/logging"
+	"fluxend/internal/domain/setting"
+	"fluxend/internal/domain/user"
 	"fmt"
 	"github.com/getsentry/sentry-go"
 	echoSentry "github.com/getsentry/sentry-go/echo"
@@ -20,7 +20,7 @@ import (
 
 var serverCmd = &cobra.Command{
 	Use:   "server",
-	Short: "Start the Fluxton API server",
+	Short: "Start the Fluxend API server",
 	Run: func(cmd *cobra.Command, args []string) {
 		startServer()
 	},

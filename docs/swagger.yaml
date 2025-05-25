@@ -542,7 +542,7 @@ definitions:
 host: fluxton.io/api
 info:
   contact:
-    email: chief@fluxton.io
+    email: chief@fluxend.io
     name: API Support
     url: http://github.com/fluxton-io/fluxton
   description: Fluxton is backend as-a-service platform that allows you to build,

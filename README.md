@@ -31,8 +31,8 @@ To get up and running with Fluxton in just a few minutes, simply follow these st
 
 Clone the Fluxton repository:
 ```bash
-git clone https://github.com/fluxton-io/fluxton.git fluxton
-cd fluxton
+git clone https://github.com/fluxton-io/fluxton.git fluxend
+cd fluxend
 make setup
    ```
 This might take a while during first run. This will start two Docker containers:

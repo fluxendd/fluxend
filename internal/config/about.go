@@ -1,9 +1,9 @@
 package config
 
-var AboutFluxton = map[string]string{
-	"author":      "Fluxton",
-	"email":       "chief@fluxton.io",
-	"website":     "https://fluxton.io",
+var AboutFluxend = map[string]string{
+	"author":      "Fluxend",
+	"email":       "hello@fluxend.app",
+	"website":     "https://fluxend.app",
 	"license":     "MIT",
 	"version":     "0.0.1",
 	"release":     "alpha",

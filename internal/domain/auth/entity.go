@@ -1,7 +1,7 @@
 package auth
 
 import (
-	"fluxton/internal/config/constants"
+	"fluxend/internal/config/constants"
 	"github.com/google/uuid"
 )
 

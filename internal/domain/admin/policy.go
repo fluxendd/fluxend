@@ -1,7 +1,7 @@
 package admin
 
 import (
-	"fluxton/internal/domain/auth"
+	"fluxend/internal/domain/auth"
 )
 
 type Policy struct {

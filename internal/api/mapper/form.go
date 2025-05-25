@@ -1,8 +1,8 @@
 package mapper
 
 import (
-	formDto "fluxton/internal/api/dto/form"
-	formDomain "fluxton/internal/domain/form"
+	formDto "fluxend/internal/api/dto/form"
+	formDomain "fluxend/internal/domain/form"
 )
 
 func ToFormResource(form *formDomain.Form) formDto.Response {

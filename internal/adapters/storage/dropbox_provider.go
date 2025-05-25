@@ -2,8 +2,8 @@ package storage
 
 import (
 	"encoding/json"
-	"fluxton/pkg"
-	"fluxton/pkg/errors"
+	"fluxend/pkg"
+	"fluxend/pkg/errors"
 	"fmt"
 	"github.com/samber/do"
 	"os"

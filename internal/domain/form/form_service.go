@@ -1,10 +1,10 @@
 package form
 
 import (
-	"fluxton/internal/domain/auth"
-	"fluxton/internal/domain/project"
-	"fluxton/internal/domain/shared"
-	"fluxton/pkg/errors"
+	"fluxend/internal/domain/auth"
+	"fluxend/internal/domain/project"
+	"fluxend/internal/domain/shared"
+	"fluxend/pkg/errors"
 	"github.com/google/uuid"
 	"github.com/samber/do"
 	"time"

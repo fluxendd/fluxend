@@ -5,8 +5,8 @@
 package project
 
 import (
-	"fluxton/internal/domain/project"
-	"fluxton/internal/domain/shared"
+	"fluxend/internal/domain/project"
+	"fluxend/internal/domain/shared"
 
 	"github.com/google/uuid"
 	mock "github.com/stretchr/testify/mock"

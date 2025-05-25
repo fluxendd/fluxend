@@ -2,8 +2,8 @@ package storage
 
 import (
 	"context"
-	"fluxton/pkg"
-	"fluxton/pkg/errors"
+	"fluxend/pkg"
+	"fluxend/pkg/errors"
 	"fmt"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"

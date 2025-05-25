@@ -1,11 +1,11 @@
 package middlewares
 
 import (
-	"fluxton/internal/api/response"
-	"fluxton/internal/config/constants"
-	"fluxton/internal/domain/auth"
-	"fluxton/internal/domain/user"
-	"fluxton/pkg/errors"
+	"fluxend/internal/api/response"
+	"fluxend/internal/config/constants"
+	"fluxend/internal/domain/auth"
+	"fluxend/internal/domain/user"
+	"fluxend/pkg/errors"
 	"fmt"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"

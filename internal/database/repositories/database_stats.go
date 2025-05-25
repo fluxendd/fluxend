@@ -1,7 +1,7 @@
 package repositories
 
 import (
-	"fluxton/internal/domain/stats"
+	"fluxend/internal/domain/stats"
 	"github.com/jmoiron/sqlx"
 )
 

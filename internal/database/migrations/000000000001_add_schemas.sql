@@ -7,7 +7,7 @@ DO $$
         END IF;
 
         IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'authenticator') THEN
-            CREATE ROLE authenticator NOINHERIT LOGIN PASSWORD 'fluxton';
+            CREATE ROLE authenticator NOINHERIT LOGIN PASSWORD 'fluxend';
             GRANT web_anon to authenticator;
         END IF;
     END $$;

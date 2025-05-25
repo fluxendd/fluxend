@@ -5,9 +5,9 @@
 package organization
 
 import (
-	"fluxton/internal/domain/organization"
-	"fluxton/internal/domain/shared"
-	"fluxton/internal/domain/user"
+	"fluxend/internal/domain/organization"
+	"fluxend/internal/domain/shared"
+	"fluxend/internal/domain/user"
 
 	"github.com/google/uuid"
 	mock "github.com/stretchr/testify/mock"

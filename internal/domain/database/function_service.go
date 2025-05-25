@@ -1,10 +1,10 @@
 package database
 
 import (
-	"fluxton/internal/domain/auth"
-	"fluxton/internal/domain/project"
-	"fluxton/internal/domain/shared"
-	"fluxton/pkg/errors"
+	"fluxend/internal/domain/auth"
+	"fluxend/internal/domain/project"
+	"fluxend/internal/domain/shared"
+	"fluxend/pkg/errors"
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"

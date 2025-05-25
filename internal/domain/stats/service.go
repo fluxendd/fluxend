@@ -1,11 +1,11 @@
 package stats
 
 import (
-	"fluxton/internal/domain/admin"
-	"fluxton/internal/domain/auth"
-	"fluxton/internal/domain/database"
-	"fluxton/internal/domain/shared"
-	"fluxton/pkg/errors"
+	"fluxend/internal/domain/admin"
+	"fluxend/internal/domain/auth"
+	"fluxend/internal/domain/database"
+	"fluxend/internal/domain/shared"
+	"fluxend/pkg/errors"
 	"github.com/jmoiron/sqlx"
 	"github.com/samber/do"
 	"time"

@@ -3,8 +3,8 @@ package repositories
 import (
 	"database/sql"
 	"errors"
-	"fluxton/internal/domain/database"
-	flxErrs "fluxton/pkg/errors"
+	"fluxend/internal/domain/database"
+	flxErrs "fluxend/pkg/errors"
 	"fmt"
 	"github.com/jmoiron/sqlx"
 	"github.com/lib/pq"

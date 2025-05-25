@@ -1,8 +1,8 @@
 package user
 
 import (
-	"fluxton/internal/config/constants"
-	"fluxton/internal/domain/shared"
+	"fluxend/internal/config/constants"
+	"fluxend/internal/domain/shared"
 	"github.com/google/uuid"
 	"time"
 )

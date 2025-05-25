@@ -15,7 +15,7 @@ Follow these steps to set up the project on your local machine:
 
 ```bash
 git clone <repository-url>
-cd fluxton-frontend
+cd fluxend-frontend
 ```
 
 ### 2. Install dependencies
@@ -103,10 +103,10 @@ The project includes a multi-stage Dockerfile optimized for production:
 
 ```bash
 # Build the Docker image
-docker build -t fluxton-frontend .
+docker build -t fluxend-frontend .
 
 # Run the container
-docker run -p 3000:3000 fluxton-frontend
+docker run -p 3000:3000 fluxend-frontend
 ```
 
 ### Manual Deployment

@@ -3,10 +3,10 @@ package repositories
 import (
 	"database/sql"
 	"errors"
-	"fluxton/internal/domain/form"
-	"fluxton/internal/domain/shared"
-	"fluxton/pkg"
-	flxErrs "fluxton/pkg/errors"
+	"fluxend/internal/domain/form"
+	"fluxend/internal/domain/shared"
+	"fluxend/pkg"
+	flxErrs "fluxend/pkg/errors"
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
@@ -29,7 +29,7 @@ func (r *FormRepository) ListForProject(paginationParams shared.PaginationParams
 		SELECT 
 			%s 
 		FROM 
-			fluxton.forms WHERE project_uuid = :project_uuid
+			fluxend.forms WHERE project_uuid = :project_uuid
 		ORDER BY 
 			:sort DESC
 		LIMIT 
@@ -71,7 +71,7 @@ func (r *FormRepository) ListForProject(paginationParams shared.PaginationParams
 }
 
 func (r *FormRepository) GetProjectUUIDByFormUUID(formUUID uuid.UUID) (uuid.UUID, error) {
-	query := "SELECT project_uuid FROM fluxton.forms WHERE uuid = $1"
+	query := "SELECT project_uuid FROM fluxend.forms WHERE uuid = $1"
 
 	var projectUUID uuid.UUID
 	err := r.db.Get(&projectUUID, query, formUUID)
@@ -87,7 +87,7 @@ func (r *FormRepository) GetProjectUUIDByFormUUID(formUUID uuid.UUID) (uuid.UUID
 }
 
 func (r *FormRepository) GetByUUID(formUUID uuid.UUID) (form.Form, error) {
-	query := "SELECT %s FROM fluxton.forms WHERE uuid = $1"
+	query := "SELECT %s FROM fluxend.forms WHERE uuid = $1"
 	query = fmt.Sprintf(query, pkg.GetColumns[form.Form]())
 
 	var fetchedForm form.Form
@@ -104,7 +104,7 @@ func (r *FormRepository) GetByUUID(formUUID uuid.UUID) (form.Form, error) {
 }
 
 func (r *FormRepository) ExistsByUUID(formUUID uuid.UUID) (bool, error) {
-	query := "SELECT EXISTS(SELECT 1 FROM fluxton.forms WHERE uuid = $1)"
+	query := "SELECT EXISTS(SELECT 1 FROM fluxend.forms WHERE uuid = $1)"
 
 	var exists bool
 	err := r.db.Get(&exists, query, formUUID)
@@ -116,7 +116,7 @@ func (r *FormRepository) ExistsByUUID(formUUID uuid.UUID) (bool, error) {
 }
 
 func (r *FormRepository) ExistsByNameForProject(name string, projectUUID uuid.UUID) (bool, error) {
-	query := "SELECT EXISTS(SELECT 1 FROM fluxton.forms WHERE name = $1 AND project_uuid = $2)"
+	query := "SELECT EXISTS(SELECT 1 FROM fluxend.forms WHERE name = $1 AND project_uuid = $2)"
 
 	var exists bool
 	err := r.db.Get(&exists, query, name, projectUUID)
@@ -134,7 +134,7 @@ func (r *FormRepository) Create(form *form.Form) (*form.Form, error) {
 	}
 
 	query := `
-    INSERT INTO fluxton.forms (
+    INSERT INTO fluxend.forms (
         project_uuid, name, description, created_by, updated_by
     ) VALUES (
         $1, $2, $3, $4, $5
@@ -164,7 +164,7 @@ func (r *FormRepository) Create(form *form.Form) (*form.Form, error) {
 
 func (r *FormRepository) Update(formInput *form.Form) (*form.Form, error) {
 	query := `
-		UPDATE fluxton.forms 
+		UPDATE fluxend.forms 
 		SET name = :name, description = :description, updated_at = :updated_at, updated_by = :updated_by
 		WHERE uuid = :uuid`
 
@@ -182,7 +182,7 @@ func (r *FormRepository) Update(formInput *form.Form) (*form.Form, error) {
 }
 
 func (r *FormRepository) Delete(projectUUID uuid.UUID) (bool, error) {
-	query := "DELETE FROM fluxton.forms WHERE uuid = $1"
+	query := "DELETE FROM fluxend.forms WHERE uuid = $1"
 	res, err := r.db.Exec(query, projectUUID)
 	if err != nil {
 		return false, pkg.FormatError(err, "delete", pkg.GetMethodName())

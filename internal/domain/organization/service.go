@@ -1,10 +1,10 @@
 package organization
 
 import (
-	"fluxton/internal/domain/auth"
-	"fluxton/internal/domain/shared"
-	"fluxton/internal/domain/user"
-	"fluxton/pkg/errors"
+	"fluxend/internal/domain/auth"
+	"fluxend/internal/domain/shared"
+	"fluxend/internal/domain/user"
+	"fluxend/pkg/errors"
 	"github.com/google/uuid"
 	"github.com/samber/do"
 	"time"

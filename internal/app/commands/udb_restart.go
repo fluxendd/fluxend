@@ -1,9 +1,9 @@
 package commands
 
 import (
-	"fluxton/internal/app"
-	"fluxton/internal/database/repositories"
-	"fluxton/internal/domain/shared"
+	"fluxend/internal/app"
+	"fluxend/internal/database/repositories"
+	"fluxend/internal/domain/shared"
 	"fmt"
 	"github.com/samber/do"
 	"github.com/spf13/cobra"

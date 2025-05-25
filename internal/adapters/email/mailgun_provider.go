@@ -2,7 +2,7 @@ package email
 
 import (
 	"context"
-	"fluxton/internal/domain/setting"
+	"fluxend/internal/domain/setting"
 	"fmt"
 	"github.com/samber/do"
 	"time"

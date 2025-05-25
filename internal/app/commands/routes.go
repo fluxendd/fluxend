@@ -1,7 +1,7 @@
 package commands
 
 import (
-	"fluxton/internal/app"
+	"fluxend/internal/app"
 	"fmt"
 	"github.com/spf13/cobra"
 	"strings"

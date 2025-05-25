@@ -1,8 +1,8 @@
 package mapper
 
 import (
-	backupDto "fluxton/internal/api/dto/backup"
-	"fluxton/internal/domain/backup"
+	backupDto "fluxend/internal/api/dto/backup"
+	"fluxend/internal/domain/backup"
 )
 
 func ToBackupResource(backup *backup.Backup) backupDto.Response {

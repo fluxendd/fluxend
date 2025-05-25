@@ -1,10 +1,10 @@
 package backup
 
 import (
-	"fluxton/internal/adapters/storage"
-	"fluxton/internal/config/constants"
-	"fluxton/internal/domain/setting"
-	"fluxton/pkg"
+	"fluxend/internal/adapters/storage"
+	"fluxend/internal/config/constants"
+	"fluxend/internal/domain/setting"
+	"fluxend/pkg"
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/rs/zerolog/log"
@@ -94,7 +94,7 @@ func (s *WorkflowServiceImpl) Create(databaseName string, backupUUID uuid.UUID) 
 			Str("db", databaseName).
 			Str("backup_uuid", backupUUID.String()).
 			Str("error", err.Error()).
-			Msg("failed to remove backup file from fluxton_app container")
+			Msg("failed to remove backup file from fluxend_app container")
 	}
 }
 
@@ -173,7 +173,7 @@ func (s *WorkflowServiceImpl) copyBackupToAppContainer(backupFilePath string, ba
 		log.Error().
 			Str("action", constants.ActionBackup).
 			Str("backup_uuid", backupUUID.String()).
-			Msg("failed to copy backup file from fluxton_db to fluxton_app container")
+			Msg("failed to copy backup file from fluxend_db to fluxend_app container")
 	}
 
 	return err
@@ -214,7 +214,7 @@ func (s *WorkflowServiceImpl) readBackupFile(backupUUID uuid.UUID) ([]byte, erro
 			Str("action", constants.ActionBackup).
 			Str("backup_uuid", backupUUID.String()).
 			Str("error", err.Error()).
-			Msg("failed to read backup file from fluxton_app container")
+			Msg("failed to read backup file from fluxend_app container")
 
 		return nil, err
 	}

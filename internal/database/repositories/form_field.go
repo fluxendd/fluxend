@@ -3,9 +3,9 @@ package repositories
 import (
 	"database/sql"
 	"errors"
-	"fluxton/internal/domain/form"
-	"fluxton/pkg"
-	flxErrs "fluxton/pkg/errors"
+	"fluxend/internal/domain/form"
+	"fluxend/pkg"
+	flxErrs "fluxend/pkg/errors"
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
@@ -24,7 +24,7 @@ func NewFormFieldRepository(injector *do.Injector) (form.FieldRepository, error)
 }
 
 func (r *FormFieldRepository) ListForForm(formUUID uuid.UUID) ([]form.Field, error) {
-	query := "SELECT * FROM fluxton.form_fields WHERE form_uuid = $1;"
+	query := "SELECT * FROM fluxend.form_fields WHERE form_uuid = $1;"
 
 	rows, err := r.db.Queryx(query, formUUID)
 	if err != nil {
@@ -49,7 +49,7 @@ func (r *FormFieldRepository) ListForForm(formUUID uuid.UUID) ([]form.Field, err
 }
 
 func (r *FormFieldRepository) GetByUUID(formUUID uuid.UUID) (form.Field, error) {
-	query := "SELECT %s FROM fluxton.form_fields WHERE uuid = $1"
+	query := "SELECT %s FROM fluxend.form_fields WHERE uuid = $1"
 	query = fmt.Sprintf(query, pkg.GetColumns[form.Field]())
 
 	var fetchedField form.Field
@@ -66,7 +66,7 @@ func (r *FormFieldRepository) GetByUUID(formUUID uuid.UUID) (form.Field, error) 
 }
 
 func (r *FormFieldRepository) ExistsByUUID(formFieldUUID uuid.UUID) (bool, error) {
-	query := "SELECT EXISTS(SELECT 1 FROM fluxton.form_fields WHERE uuid = $1)"
+	query := "SELECT EXISTS(SELECT 1 FROM fluxend.form_fields WHERE uuid = $1)"
 
 	var exists bool
 	err := r.db.Get(&exists, query, formFieldUUID)
@@ -78,7 +78,7 @@ func (r *FormFieldRepository) ExistsByUUID(formFieldUUID uuid.UUID) (bool, error
 }
 
 func (r *FormFieldRepository) ExistsByAnyLabelForForm(labels []string, formUUID uuid.UUID) (bool, error) {
-	query := "SELECT EXISTS(SELECT 1 FROM fluxton.form_fields WHERE label = ANY($1) AND form_uuid = $2)"
+	query := "SELECT EXISTS(SELECT 1 FROM fluxend.form_fields WHERE label = ANY($1) AND form_uuid = $2)"
 
 	var exists bool
 	err := r.db.Get(&exists, query, pq.Array(labels), formUUID)
@@ -90,7 +90,7 @@ func (r *FormFieldRepository) ExistsByAnyLabelForForm(labels []string, formUUID 
 }
 
 func (r *FormFieldRepository) ExistsByLabelForForm(label string, formUUID uuid.UUID) (bool, error) {
-	query := "SELECT EXISTS(SELECT 1 FROM fluxton.form_fields WHERE label = $1 AND form_uuid = $2)"
+	query := "SELECT EXISTS(SELECT 1 FROM fluxend.form_fields WHERE label = $1 AND form_uuid = $2)"
 
 	var exists bool
 	err := r.db.Get(&exists, query, label, formUUID)
@@ -108,7 +108,7 @@ func (r *FormFieldRepository) Create(formField *form.Field) (*form.Field, error)
 	}
 
 	query := `
-    INSERT INTO fluxton.form_fields (
+    INSERT INTO fluxend.form_fields (
         form_uuid,
         label,
         type,
@@ -182,7 +182,7 @@ func (r *FormFieldRepository) CreateMany(formFields []form.Field, formUUID uuid.
 
 func (r *FormFieldRepository) Update(formField *form.Field) (*form.Field, error) {
 	query := `
-		UPDATE fluxton.form_fields 
+		UPDATE fluxend.form_fields 
 		SET 
 		    label = :label, 
 		    description = :description, 
@@ -206,7 +206,7 @@ func (r *FormFieldRepository) Update(formField *form.Field) (*form.Field, error)
 }
 
 func (r *FormFieldRepository) Delete(formFieldUUID uuid.UUID) (bool, error) {
-	query := "DELETE FROM fluxton.form_fields WHERE uuid = $1"
+	query := "DELETE FROM fluxend.form_fields WHERE uuid = $1"
 	res, err := r.db.Exec(query, formFieldUUID)
 	if err != nil {
 		return false, pkg.FormatError(err, "delete", pkg.GetMethodName())

@@ -2,7 +2,7 @@ package auth
 
 import (
 	"errors"
-	"fluxton/internal/domain/auth"
+	"fluxend/internal/domain/auth"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )

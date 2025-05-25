@@ -2,9 +2,9 @@ package database
 
 import (
 	"errors"
-	"fluxton/internal/api/dto"
-	"fluxton/internal/config/constants"
-	columnDomain "fluxton/internal/domain/database"
+	"fluxend/internal/api/dto"
+	"fluxend/internal/config/constants"
+	columnDomain "fluxend/internal/domain/database"
 	"fmt"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/labstack/echo/v4"

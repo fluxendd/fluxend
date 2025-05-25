@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"fluxton/internal/api/handlers"
+	"fluxend/internal/api/handlers"
 	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
 )

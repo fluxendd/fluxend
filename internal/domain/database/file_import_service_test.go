@@ -3,7 +3,7 @@ package database
 import (
 	"bytes"
 	"encoding/csv"
-	"fluxton/internal/config/constants"
+	"fluxend/internal/config/constants"
 	"mime/multipart"
 	"testing"
 

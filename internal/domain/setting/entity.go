@@ -1,7 +1,7 @@
 package setting
 
 import (
-	"fluxton/internal/domain/shared"
+	"fluxend/internal/domain/shared"
 	"time"
 )
 

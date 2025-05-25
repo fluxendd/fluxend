@@ -1,8 +1,8 @@
 package commands
 
 import (
-	"fluxton/internal/app"
-	"fluxton/internal/database/seeders"
+	"fluxend/internal/app"
+	"fluxend/internal/database/seeders"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/samber/do"

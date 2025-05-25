@@ -2,8 +2,8 @@ package dto
 
 import (
 	"errors"
-	"fluxton/internal/config/constants"
-	"fluxton/internal/domain/shared"
+	"fluxend/internal/config/constants"
+	"fluxend/internal/domain/shared"
 	"fmt"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/google/uuid"

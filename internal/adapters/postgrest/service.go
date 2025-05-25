@@ -1,10 +1,10 @@
 package postgrest
 
 import (
-	"fluxton/internal/config/constants"
-	"fluxton/internal/domain/project"
-	"fluxton/internal/domain/shared"
-	"fluxton/pkg"
+	"fluxend/internal/config/constants"
+	"fluxend/internal/domain/project"
+	"fluxend/internal/domain/shared"
+	"fluxend/pkg"
 	"fmt"
 	"github.com/rs/zerolog/log"
 	"github.com/samber/do"
@@ -139,7 +139,7 @@ func (s *ServiceImpl) HasContainer(dbName string) bool {
 func (s *ServiceImpl) buildStartCommand(dbName string) []string {
 	return []string{
 		"docker", "run", "-d", "--name", s.getContainerName(dbName),
-		"--network", "fluxton_network",
+		"--network", "fluxend_network",
 		"-e", fmt.Sprintf("PGRST_DB_URI=postgres://%s:%s@%s/%s", s.config.DBUser, s.config.DBPassword, s.config.DBHost, dbName),
 		"-e", "PGRST_DB_ANON_ROLE=" + s.config.DBRole,
 		"-e", "PGRST_DB_SCHEMA=" + s.config.DBSchema,

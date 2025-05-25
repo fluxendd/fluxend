@@ -1,8 +1,8 @@
 package seeders
 
 import (
-	"fluxton/internal/config/constants"
-	"fluxton/internal/domain/setting"
+	"fluxend/internal/config/constants"
+	"fluxend/internal/domain/setting"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/samber/do"

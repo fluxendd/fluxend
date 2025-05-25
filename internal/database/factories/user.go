@@ -1,9 +1,9 @@
 package factories
 
 import (
-	"fluxton/internal/config/constants"
-	"fluxton/internal/domain/user"
-	"fluxton/pkg"
+	"fluxend/internal/config/constants"
+	"fluxend/internal/domain/user"
+	"fluxend/pkg"
 	"github.com/samber/do"
 	"time"
 )

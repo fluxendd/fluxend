@@ -1,9 +1,9 @@
 package client
 
 import (
-	"fluxton/internal/database/repositories"
-	"fluxton/internal/domain/database"
-	"fluxton/internal/domain/shared"
+	"fluxend/internal/database/repositories"
+	"fluxend/internal/domain/database"
+	"fluxend/internal/domain/shared"
 	"github.com/jmoiron/sqlx"
 	"github.com/samber/do"
 )

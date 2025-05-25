@@ -3,10 +3,10 @@ package repositories
 import (
 	"database/sql"
 	"errors"
-	"fluxton/internal/domain/project"
-	"fluxton/internal/domain/shared"
-	"fluxton/pkg"
-	flxErrs "fluxton/pkg/errors"
+	"fluxend/internal/domain/project"
+	"fluxend/internal/domain/shared"
+	"fluxend/pkg"
+	flxErrs "fluxend/pkg/errors"
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
@@ -29,9 +29,9 @@ func (r *ProjectRepository) ListForUser(paginationParams shared.PaginationParams
 		SELECT 
 			%s 
 		FROM 
-			fluxton.projects projects
+			fluxend.projects projects
 		JOIN 
-			fluxton.organization_members organization_members ON projects.organization_uuid = organization_members.organization_uuid
+			fluxend.organization_members organization_members ON projects.organization_uuid = organization_members.organization_uuid
 		WHERE 
 			organization_members.user_uuid = :user_uuid
 		ORDER BY 
@@ -76,7 +76,7 @@ func (r *ProjectRepository) ListForUser(paginationParams shared.PaginationParams
 
 func (r *ProjectRepository) List(paginationParams shared.PaginationParams) ([]project.Project, error) {
 	offset := (paginationParams.Page - 1) * paginationParams.Limit
-	query := `SELECT %s FROM fluxton.projects ORDER BY :sort DESC LIMIT :limit OFFSET :offset;`
+	query := `SELECT %s FROM fluxend.projects ORDER BY :sort DESC LIMIT :limit OFFSET :offset;`
 
 	query = fmt.Sprintf(query, pkg.GetColumns[project.Project]())
 
@@ -109,7 +109,7 @@ func (r *ProjectRepository) List(paginationParams shared.PaginationParams) ([]pr
 }
 
 func (r *ProjectRepository) GetByUUID(projectUUID uuid.UUID) (project.Project, error) {
-	query := "SELECT %s FROM fluxton.projects WHERE uuid = $1"
+	query := "SELECT %s FROM fluxend.projects WHERE uuid = $1"
 	query = fmt.Sprintf(query, pkg.GetColumns[project.Project]())
 
 	var fetchedProject project.Project
@@ -126,7 +126,7 @@ func (r *ProjectRepository) GetByUUID(projectUUID uuid.UUID) (project.Project, e
 }
 
 func (r *ProjectRepository) GetDatabaseNameByUUID(projectUUID uuid.UUID) (string, error) {
-	query := "SELECT db_name FROM fluxton.projects WHERE uuid = $1"
+	query := "SELECT db_name FROM fluxend.projects WHERE uuid = $1"
 
 	var dbName string
 	err := r.db.Get(&dbName, query, projectUUID)
@@ -142,7 +142,7 @@ func (r *ProjectRepository) GetDatabaseNameByUUID(projectUUID uuid.UUID) (string
 }
 
 func (r *ProjectRepository) GetUUIDByDatabaseName(dbName string) (uuid.UUID, error) {
-	query := "SELECT uuid FROM fluxton.projects WHERE db_name = $1"
+	query := "SELECT uuid FROM fluxend.projects WHERE db_name = $1"
 
 	var projectUUID uuid.UUID
 	err := r.db.Get(&projectUUID, query, dbName)
@@ -158,7 +158,7 @@ func (r *ProjectRepository) GetUUIDByDatabaseName(dbName string) (uuid.UUID, err
 }
 
 func (r *ProjectRepository) GetOrganizationUUIDByProjectUUID(id uuid.UUID) (uuid.UUID, error) {
-	query := "SELECT organization_uuid FROM fluxton.projects WHERE uuid = $1"
+	query := "SELECT organization_uuid FROM fluxend.projects WHERE uuid = $1"
 
 	var organizationUUID uuid.UUID
 	err := r.db.Get(&organizationUUID, query, id)
@@ -174,7 +174,7 @@ func (r *ProjectRepository) GetOrganizationUUIDByProjectUUID(id uuid.UUID) (uuid
 }
 
 func (r *ProjectRepository) ExistsByUUID(id uuid.UUID) (bool, error) {
-	query := "SELECT EXISTS(SELECT 1 FROM fluxton.projects WHERE uuid = $1)"
+	query := "SELECT EXISTS(SELECT 1 FROM fluxend.projects WHERE uuid = $1)"
 
 	var exists bool
 	err := r.db.Get(&exists, query, id)
@@ -186,7 +186,7 @@ func (r *ProjectRepository) ExistsByUUID(id uuid.UUID) (bool, error) {
 }
 
 func (r *ProjectRepository) ExistsByNameForOrganization(name string, organizationUUID uuid.UUID) (bool, error) {
-	query := "SELECT EXISTS(SELECT 1 FROM fluxton.projects WHERE name = $1 AND organization_uuid = $2)"
+	query := "SELECT EXISTS(SELECT 1 FROM fluxend.projects WHERE name = $1 AND organization_uuid = $2)"
 
 	var exists bool
 	err := r.db.Get(&exists, query, name, organizationUUID)
@@ -204,7 +204,7 @@ func (r *ProjectRepository) Create(project *project.Project) (*project.Project, 
 	}
 
 	query := `
-		INSERT INTO fluxton.projects (
+		INSERT INTO fluxend.projects (
 			name, db_name, description, db_port, 
 			organization_uuid, created_by, updated_by
 		) 
@@ -242,7 +242,7 @@ func (r *ProjectRepository) Create(project *project.Project) (*project.Project, 
 
 func (r *ProjectRepository) Update(projectInput *project.Project) (*project.Project, error) {
 	query := `
-		UPDATE fluxton.projects 
+		UPDATE fluxend.projects 
 		SET name = :name, description = :description, updated_at = :updated_at, updated_by = :updated_by
 		WHERE uuid = :uuid`
 
@@ -260,7 +260,7 @@ func (r *ProjectRepository) Update(projectInput *project.Project) (*project.Proj
 }
 
 func (r *ProjectRepository) UpdateStatusByDatabaseName(databaseName, status string) (bool, error) {
-	query := "UPDATE fluxton.projects SET status = $1 WHERE db_name = $2"
+	query := "UPDATE fluxend.projects SET status = $1 WHERE db_name = $2"
 	res, err := r.db.Exec(query, status, databaseName)
 	if err != nil {
 		return false, pkg.FormatError(err, "update", pkg.GetMethodName())
@@ -275,7 +275,7 @@ func (r *ProjectRepository) UpdateStatusByDatabaseName(databaseName, status stri
 }
 
 func (r *ProjectRepository) Delete(projectUUID uuid.UUID) (bool, error) {
-	query := "DELETE FROM fluxton.projects WHERE uuid = $1"
+	query := "DELETE FROM fluxend.projects WHERE uuid = $1"
 	res, err := r.db.Exec(query, projectUUID)
 	if err != nil {
 		return false, pkg.FormatError(err, "delete", pkg.GetMethodName())

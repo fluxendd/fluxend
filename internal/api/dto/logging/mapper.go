@@ -1,7 +1,7 @@
 package logging
 
 import (
-	"fluxton/internal/domain/logging"
+	"fluxend/internal/domain/logging"
 )
 
 func ToLogListInput(request *ListRequest) *logging.ListInput {

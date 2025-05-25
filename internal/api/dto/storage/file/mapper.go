@@ -1,7 +1,7 @@
 package file
 
 import (
-	"fluxton/internal/domain/storage/file"
+	"fluxend/internal/domain/storage/file"
 )
 
 func ToCreateFileInput(request *CreateRequest) *file.CreateFileInput {

@@ -1,8 +1,8 @@
 package mapper
 
 import (
-	containerDto "fluxton/internal/api/dto/storage/container"
-	containerDomain "fluxton/internal/domain/storage/container"
+	containerDto "fluxend/internal/api/dto/storage/container"
+	containerDomain "fluxend/internal/domain/storage/container"
 )
 
 func ToContainerResource(container *containerDomain.Container) containerDto.Response {

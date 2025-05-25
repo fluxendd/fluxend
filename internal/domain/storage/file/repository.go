@@ -1,7 +1,7 @@
 package file
 
 import (
-	"fluxton/internal/domain/shared"
+	"fluxend/internal/domain/shared"
 	"github.com/google/uuid"
 )
 

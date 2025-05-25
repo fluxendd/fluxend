@@ -1,9 +1,9 @@
 package form
 
 import (
-	"fluxton/internal/domain/auth"
-	"fluxton/internal/domain/project"
-	"fluxton/pkg/errors"
+	"fluxend/internal/domain/auth"
+	"fluxend/internal/domain/project"
+	"fluxend/pkg/errors"
 	"github.com/google/uuid"
 	"github.com/samber/do"
 )

@@ -1,7 +1,7 @@
 package storage
 
 import (
-	"fluxton/internal/config/constants"
+	"fluxend/internal/config/constants"
 	"fmt"
 	"github.com/samber/do"
 )

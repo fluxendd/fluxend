@@ -1,7 +1,7 @@
 package container
 
 import (
-	"fluxton/internal/domain/storage/container"
+	"fluxend/internal/domain/storage/container"
 )
 
 func ToCreateContainerInput(request *CreateRequest) *container.CreateContainerInput {

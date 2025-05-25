@@ -1,8 +1,8 @@
 package mapper
 
 import (
-	logDto "fluxton/internal/api/dto/logging"
-	logDomain "fluxton/internal/domain/logging"
+	logDto "fluxend/internal/api/dto/logging"
+	logDomain "fluxend/internal/domain/logging"
 )
 
 func ToLoggingResource(log *logDomain.RequestLog) logDto.Response {

@@ -1,11 +1,11 @@
 package health
 
 import (
-	"fluxton/internal/domain/admin"
-	"fluxton/internal/domain/auth"
-	"fluxton/internal/domain/setting"
-	"fluxton/internal/domain/shared"
-	"fluxton/pkg/errors"
+	"fluxend/internal/domain/admin"
+	"fluxend/internal/domain/auth"
+	"fluxend/internal/domain/setting"
+	"fluxend/internal/domain/shared"
+	"fluxend/pkg/errors"
 	"github.com/samber/do"
 )
 

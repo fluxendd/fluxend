@@ -1,7 +1,7 @@
 package database
 
 import (
-	"fluxton/internal/domain/database"
+	"fluxend/internal/domain/database"
 )
 
 func ToCreateIndexInput(request CreateIndexRequest) database.CreateIndexInput {

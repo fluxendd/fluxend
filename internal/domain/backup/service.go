@@ -1,10 +1,10 @@
 package backup
 
 import (
-	"fluxton/internal/config/constants"
-	"fluxton/internal/domain/auth"
-	"fluxton/internal/domain/project"
-	"fluxton/pkg/errors"
+	"fluxend/internal/config/constants"
+	"fluxend/internal/domain/auth"
+	"fluxend/internal/domain/project"
+	"fluxend/pkg/errors"
 	"github.com/google/uuid"
 	"github.com/samber/do"
 	"time"

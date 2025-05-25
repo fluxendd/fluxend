@@ -1,10 +1,10 @@
 package commands
 
 import (
-	"fluxton/internal/app"
-	"fluxton/internal/domain/auth"
-	"fluxton/internal/domain/stats"
-	"fluxton/pkg"
+	"fluxend/internal/app"
+	"fluxend/internal/domain/auth"
+	"fluxend/internal/domain/stats"
+	"fluxend/pkg"
 	"github.com/google/uuid"
 	"github.com/samber/do"
 	"github.com/spf13/cobra"

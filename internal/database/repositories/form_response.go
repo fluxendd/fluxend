@@ -1,9 +1,9 @@
 package repositories
 
 import (
-	"fluxton/internal/domain/form"
-	"fluxton/pkg"
-	flxErrs "fluxton/pkg/errors"
+	"fluxend/internal/domain/form"
+	"fluxend/pkg"
+	flxErrs "fluxend/pkg/errors"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 	"github.com/samber/do"
@@ -33,8 +33,8 @@ func (r *FormResponseRepository) ListForForm(formUUID uuid.UUID) ([]form.FormRes
 			ffr.value, 
 			ffr.created_at AS form_field_response_created_at, 
 			ffr.updated_at AS form_field_response_updated_at
-		FROM fluxton.form_responses fr
-		LEFT JOIN fluxton.form_field_responses ffr 
+		FROM fluxend.form_responses fr
+		LEFT JOIN fluxend.form_field_responses ffr 
 			ON fr.uuid = ffr.form_response_uuid
 		WHERE fr.form_uuid = $1
 		ORDER BY fr.created_at, ffr.created_at;
@@ -111,8 +111,8 @@ func (r *FormResponseRepository) GetByUUID(formResponseUUID uuid.UUID) (*form.Fo
 			ffr.value, 
 			ffr.created_at AS form_field_response_created_at, 
 			ffr.updated_at AS form_field_response_updated_at
-		FROM fluxton.form_responses fr
-		LEFT JOIN fluxton.form_field_responses ffr 
+		FROM fluxend.form_responses fr
+		LEFT JOIN fluxend.form_field_responses ffr 
 			ON fr.uuid = ffr.form_response_uuid
 		WHERE fr.uuid = $1
 		ORDER BY fr.created_at, ffr.created_at;
@@ -186,7 +186,7 @@ func (r *FormResponseRepository) Create(
 		return nil, pkg.FormatError(err, "transactionBegin", pkg.GetMethodName())
 	}
 
-	query := `INSERT INTO fluxton.form_responses (form_uuid) VALUES ($1) RETURNING uuid`
+	query := `INSERT INTO fluxend.form_responses (form_uuid) VALUES ($1) RETURNING uuid`
 
 	queryErr := tx.QueryRowx(
 		query,
@@ -200,7 +200,7 @@ func (r *FormResponseRepository) Create(
 	}
 
 	for _, ffr := range *formFieldResponse {
-		query = `INSERT INTO fluxton.form_field_responses (form_response_uuid, form_field_uuid, value) VALUES ($1, $2, $3) RETURNING uuid`
+		query = `INSERT INTO fluxend.form_field_responses (form_response_uuid, form_field_uuid, value) VALUES ($1, $2, $3) RETURNING uuid`
 		queryErr = tx.QueryRowx(
 			query,
 			formResponse.Uuid,
@@ -230,7 +230,7 @@ func (r *FormResponseRepository) Delete(formResponseUUID uuid.UUID) error {
 		return pkg.FormatError(err, "transactionBegin", pkg.GetMethodName())
 	}
 
-	query := `DELETE FROM fluxton.form_field_responses WHERE form_response_uuid = $1`
+	query := `DELETE FROM fluxend.form_field_responses WHERE form_response_uuid = $1`
 	_, err = tx.Exec(query, formResponseUUID)
 	if err != nil {
 		if err := tx.Rollback(); err != nil {
@@ -239,7 +239,7 @@ func (r *FormResponseRepository) Delete(formResponseUUID uuid.UUID) error {
 		return pkg.FormatError(err, "delete", pkg.GetMethodName())
 	}
 
-	query = `DELETE FROM fluxton.form_responses WHERE uuid = $1`
+	query = `DELETE FROM fluxend.form_responses WHERE uuid = $1`
 	_, err = tx.Exec(query, formResponseUUID)
 	if err != nil {
 		if err := tx.Rollback(); err != nil {

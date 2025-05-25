@@ -1,7 +1,7 @@
 package user
 
 import (
-	"fluxton/internal/domain/user"
+	"fluxend/internal/domain/user"
 )
 
 func ToCreateUserInput(request *CreateRequest) *user.CreateUserInput {

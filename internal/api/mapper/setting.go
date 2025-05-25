@@ -1,8 +1,8 @@
 package mapper
 
 import (
-	settingDto "fluxton/internal/api/dto/setting"
-	settingDomain "fluxton/internal/domain/setting"
+	settingDto "fluxend/internal/api/dto/setting"
+	settingDomain "fluxend/internal/domain/setting"
 )
 
 func ToSettingResource(setting *settingDomain.Setting) settingDto.Response {
