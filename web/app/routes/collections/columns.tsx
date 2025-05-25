@@ -430,7 +430,7 @@ export const rowsQuery = (
             offset,
             ...filters,
           },
-          baseUrl: `http://${dbId}.fluxend.io/`,
+          baseUrl: `http://${dbId}.fluxend.app/`,
         },
         projectId,
         collectionName
