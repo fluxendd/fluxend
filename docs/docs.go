@@ -12,7 +12,7 @@ const docTemplate = `{
         "contact": {
             "name": "API Support",
             "url": "http://github.com/fluxend/fluxend",
-            "email": "chief@fluxend.io"
+            "email": "hello@fluxend.app"
         },
         "version": "{{.Version}}"
     },
@@ -5374,7 +5374,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "fluxend.io/api",
+	Host:             "fluxend.app/api",
 	BasePath:         "/v2",
 	Schemes:          []string{},
 	Title:            "Fluxend API",

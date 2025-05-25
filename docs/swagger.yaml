@@ -539,10 +539,10 @@ definitions:
       projectUUID:
         type: string
     type: object
-host: fluxend.io/api
+host: fluxend.app/api
 info:
   contact:
-    email: chief@fluxend.io
+    email: hello@fluxend.app
     name: API Support
     url: http://github.com/fluxend/fluxend
   description: Fluxend is backend as-a-service platform that allows you to build,

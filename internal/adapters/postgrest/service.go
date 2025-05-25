@@ -147,6 +147,8 @@ func (s *ServiceImpl) buildStartCommand(dbName string) []string {
 		"--label", "traefik.enable=true",
 		"--label", fmt.Sprintf("traefik.http.routers.%s.rule=Host(`%s.%s`)", dbName, dbName, s.config.AppURL),
 		"--label", fmt.Sprintf("traefik.http.services.%s.loadbalancer.server.port=3000", dbName),
+		"--label", fmt.Sprintf("traefik.http.routers.%s.entrypoints=websecure", dbName),
+		"--label", fmt.Sprintf("traefik.http.routers.%s.tls.certresolver=le", dbName),
 		ImageName,
 	}
 }

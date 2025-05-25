@@ -6,11 +6,11 @@
         "contact": {
             "name": "API Support",
             "url": "http://github.com/fluxend/fluxend",
-            "email": "chief@fluxend.io"
+            "email": "hello@fluxend.app"
         },
         "version": "1.0"
     },
-    "host": "fluxend.io/api",
+    "host": "fluxend.app/api",
     "basePath": "/v2",
     "paths": {
         "/admin/logs": {
