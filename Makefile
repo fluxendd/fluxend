@@ -39,6 +39,14 @@ login.app: ## Login to fluxend container
 login.db: ## Login to database container
 	@docker exec -it $${DATABASE_CONTAINER_NAME} /bin/bash
 
+inspect-labels:
+	@docker ps --format '{{.Names}}' | \
+	while read -r name; do \
+		echo "Container: $$name"; \
+		docker inspect "$$name" --format '{{json .Config.Labels}}' | jq .; \
+		echo ""; \
+	done
+
 pgr.list: ## List all postgrest containers
 	@docker ps --filter "name=postgrest_" --format "table {{.ID}}\t{{.Names}}\t{{.Ports}}\t{{.CreatedAt}}\t{{.Status}}"
 
