@@ -16,7 +16,7 @@ import { getUserOrganizations, getUserProjects } from "~/services/user";
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "Frontend for Fluxend" },
+    { title: "Fluxend - The only backend you'll ever need" },
     { name: "description", content: "Login to Fluxend" },
   ];
 }
