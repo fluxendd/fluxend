@@ -39,7 +39,7 @@ login.app: ## Login to fluxend container
 login.db: ## Login to database container
 	@docker exec -it $${DATABASE_CONTAINER_NAME} /bin/bash
 
-inspect-labels:
+inspect.labels:
 	@docker ps --format '{{.Names}}' | \
 	while read -r name; do \
 		echo "Container: $$name"; \
