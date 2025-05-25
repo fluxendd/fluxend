@@ -1,6 +1,6 @@
 -- +goose Up
 -- +goose StatementBegin
-CREATE TABLE fluxton.organizations (
+CREATE TABLE fluxend.organizations (
     uuid UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(255) NOT NULL,
     created_by UUID NOT NULL REFERENCES authentication.users(uuid),
@@ -12,5 +12,5 @@ CREATE TABLE fluxton.organizations (
 
 -- +goose Down
 -- +goose StatementBegin
-DROP TABLE fluxton.organizations;
+DROP TABLE fluxend.organizations;
 -- +goose StatementEnd

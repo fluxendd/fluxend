@@ -8,7 +8,7 @@ CREATE TABLE authentication.roles (
 );
 
 INSERT INTO authentication.roles (name) VALUES
-/* Fluxton superuser with admin area access */
+/* fluxend superuser with admin area access */
   ('superman'),
 /* Can do everything with created orgs, project and users */
   ('owner'),

@@ -1,8 +1,8 @@
 -- +goose Up
 -- +goose StatementBegin
-CREATE TABLE fluxton.organization_members (
+CREATE TABLE fluxend.organization_members (
     id SERIAL PRIMARY KEY,
-    organization_uuid UUID NOT NULL REFERENCES fluxton.organizations (uuid) ON DELETE CASCADE,
+    organization_uuid UUID NOT NULL REFERENCES fluxend.organizations (uuid) ON DELETE CASCADE,
     user_uuid UUID NOT NULL REFERENCES authentication.users (uuid),
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -11,5 +11,5 @@ CREATE TABLE fluxton.organization_members (
 
 -- +goose Down
 -- +goose StatementBegin
-DROP TABLE fluxton.organization_members;
+DROP TABLE fluxend.organization_members;
 -- +goose StatementEnd

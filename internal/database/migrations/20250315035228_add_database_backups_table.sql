@@ -2,7 +2,7 @@
 -- +goose StatementBegin
 CREATE TABLE storage.backups (
      uuid UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-     project_uuid UUID NOT NULL REFERENCES fluxton.projects(uuid) ON DELETE CASCADE,
+     project_uuid UUID NOT NULL REFERENCES fluxend.projects(uuid) ON DELETE CASCADE,
      status VARCHAR NOT NULL,
      error TEXT,
      started_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
