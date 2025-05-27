@@ -16,6 +16,7 @@ import (
 	"github.com/spf13/cobra"
 	echoSwagger "github.com/swaggo/echo-swagger"
 	"os"
+	"strings"
 )
 
 var serverCmd = &cobra.Command{
@@ -37,7 +38,13 @@ func setupServer(container *do.Injector) *echo.Echo {
 	// Middleware
 	e.Use(middleware.Recover())
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins:     []string{"*"},
+		AllowOriginFunc: func(origin string) (bool, error) {
+			if strings.HasSuffix(origin, os.Getenv("APP_URL")) || strings.HasSuffix(origin, os.Getenv("BASE_URL")) {
+				return true, nil
+			}
+
+			return false, nil
+		},
 		AllowMethods:     []string{echo.GET, echo.POST, echo.PUT, echo.DELETE, echo.OPTIONS},
 		AllowHeaders:     []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, echo.HeaderAuthorization},
 		AllowCredentials: true,
