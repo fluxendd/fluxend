@@ -2,29 +2,32 @@ package handlers
 
 import (
 	"fluxend/internal/api/response"
-	"fluxend/internal/domain/setting"
+	"fluxend/internal/domain/health"
 	"fluxend/pkg/auth"
 	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
 )
 
 type HealthHandler struct {
-	settingService setting.Service
+	healthService health.Service
 }
 
 func NewHealthHandler(injector *do.Injector) (*HealthHandler, error) {
-	settingService := do.MustInvoke[setting.Service](injector)
+	healthService := do.MustInvoke[health.Service](injector)
 
-	return &HealthHandler{settingService: settingService}, nil
+	return &HealthHandler{healthService: healthService}, nil
 }
 
 func (hh *HealthHandler) Pulse(c echo.Context) error {
-	_, err := auth.NewAuth(c).User()
+	authUser, err := auth.NewAuth(c).User()
 	if err != nil {
 		return response.UnauthorizedResponse(c, err.Error())
 	}
 
-	// TODO: add logic for health check
+	status, err := hh.healthService.Pulse(authUser)
+	if err != nil {
+		return response.ErrorResponse(c, err)
+	}
 
-	return response.SuccessResponse(c, nil)
+	return response.SuccessResponse(c, status)
 }

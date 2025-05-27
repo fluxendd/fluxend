@@ -3,31 +3,34 @@ package health
 import (
 	"fluxend/internal/domain/admin"
 	"fluxend/internal/domain/auth"
+	"fluxend/internal/domain/project"
 	"fluxend/internal/domain/setting"
 	"fluxend/internal/domain/shared"
 	"fluxend/pkg/errors"
 	"github.com/samber/do"
 )
 
+const statusOk = "OK"
+const statusError = "ERROR"
+
 type Service interface {
 	Pulse(authUser auth.User) (Health, error)
 }
 
 type ServiceImpl struct {
-	adminPolicy  *admin.Policy
-	databaseRepo *shared.DatabaseService
-	settingRepo  *setting.Repository
+	adminPolicy      *admin.Policy
+	settingRepo      setting.Repository
+	projectRepo      project.Repository
+	postgrestService shared.PostgrestService
 }
 
 func NewHealthService(injector *do.Injector) (Service, error) {
 	policy := admin.NewAdminPolicy()
-	databaseRepo := do.MustInvoke[*shared.DatabaseService](injector)
-	settingRepo := do.MustInvoke[*setting.Repository](injector)
+	settingRepo := do.MustInvoke[setting.Repository](injector)
 
 	return &ServiceImpl{
-		adminPolicy:  policy,
-		databaseRepo: databaseRepo,
-		settingRepo:  settingRepo,
+		adminPolicy: policy,
+		settingRepo: settingRepo,
 	}, nil
 }
 
@@ -36,5 +39,24 @@ func (s *ServiceImpl) Pulse(authUser auth.User) (Health, error) {
 		return Health{}, errors.NewForbiddenError("setting.error.listForbidden")
 	}
 
-	return Health{}, nil
+	response := Health{
+		DatabaseStatus:  statusOk,
+		AppStatus:       statusOk,
+		PostgrestStatus: statusOk,
+	}
+
+	allProjects, err := s.projectRepo.List(shared.PaginationParams{})
+	if err != nil {
+		return Health{}, err
+	}
+
+	for _, currentProject := range allProjects {
+		if !s.postgrestService.HasContainer(currentProject.DBName) {
+			response.PostgrestStatus = statusError
+
+			break
+		}
+	}
+
+	return response, nil
 }
