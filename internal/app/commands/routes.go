@@ -42,7 +42,7 @@ func printRoutes() {
 func getRoutePrefix(path string) string {
 	segments := strings.Split(path, "/")
 	if len(segments) > 1 {
-		return "/" + segments[2]
+		return "/" + segments[1]
 	}
 	return path
 }
