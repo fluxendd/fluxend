@@ -15,7 +15,7 @@ import (
 // @contact.url http://github.com/fluxend/fluxend
 // @contact.email hello@fluxend.app
 
-// @host fluxend.app/api
+// @host api.fluxend.app
 // @BasePath /v2
 func main() {
 	if err := godotenv.Load(); err != nil {
