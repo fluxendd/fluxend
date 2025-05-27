@@ -16,7 +16,7 @@ func RegisterFormRoutes(
 	formFieldController := do.MustInvoke[*handlers.FormFieldHandler](container)
 	formResponseController := do.MustInvoke[*handlers.FormResponseHandler](container)
 
-	formsGroup := e.Group("api/forms", authMiddleware, formEnabledMiddleware)
+	formsGroup := e.Group("forms", authMiddleware, formEnabledMiddleware)
 
 	formsGroup.POST("", formController.Store)
 	formsGroup.GET("", formController.List)

@@ -11,7 +11,7 @@ func RegisterAdminRoutes(e *echo.Echo, container *do.Injector, authMiddleware ec
 	healthHandler := do.MustInvoke[*handlers.HealthHandler](container)
 	logHandler := do.MustInvoke[*handlers.LogHandler](container)
 
-	adminGroup := e.Group("api/admin", authMiddleware)
+	adminGroup := e.Group("admin", authMiddleware)
 
 	// settings
 	adminGroup.GET("/settings", settingHandler.List)
