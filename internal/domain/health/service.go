@@ -27,10 +27,14 @@ type ServiceImpl struct {
 func NewHealthService(injector *do.Injector) (Service, error) {
 	policy := admin.NewAdminPolicy()
 	settingRepo := do.MustInvoke[setting.Repository](injector)
+	projectRepo := do.MustInvoke[project.Repository](injector)
+	postgrestService := do.MustInvoke[shared.PostgrestService](injector)
 
 	return &ServiceImpl{
-		adminPolicy: policy,
-		settingRepo: settingRepo,
+		adminPolicy:      policy,
+		settingRepo:      settingRepo,
+		projectRepo:      projectRepo,
+		postgrestService: postgrestService,
 	}, nil
 }
 
