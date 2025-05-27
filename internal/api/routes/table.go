@@ -11,7 +11,7 @@ func RegisterTableRoutes(e *echo.Echo, container *do.Injector, authMiddleware ec
 	columnController := do.MustInvoke[*handlers.ColumnHandler](container)
 	indexController := do.MustInvoke[*handlers.IndexHandler](container)
 
-	tablesGroup := e.Group("api/tables", authMiddleware)
+	tablesGroup := e.Group("tables", authMiddleware)
 
 	// table routes
 	tablesGroup.POST("", tableController.Store)         // Create a new table (standard way)

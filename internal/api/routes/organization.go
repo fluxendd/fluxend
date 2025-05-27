@@ -10,7 +10,7 @@ func RegisterOrganizationRoutes(e *echo.Echo, container *do.Injector, authMiddle
 	organizationController := do.MustInvoke[*handlers.OrganizationHandler](container)
 	organizationMemberController := do.MustInvoke[*handlers.OrganizationMemberHandler](container)
 
-	organizationsGroup := e.Group("api/organizations", authMiddleware)
+	organizationsGroup := e.Group("organizations", authMiddleware)
 
 	organizationsGroup.POST("", organizationController.Store)
 	organizationsGroup.GET("", organizationController.List)

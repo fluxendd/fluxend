@@ -94,11 +94,11 @@ func (r *ProjectRepository) List(paginationParams shared.PaginationParams) ([]pr
 
 	var projects []project.Project
 	for rows.Next() {
-		var project project.Project
-		if err := rows.StructScan(&project); err != nil {
+		var fetchedProject project.Project
+		if err := rows.StructScan(&fetchedProject); err != nil {
 			return nil, pkg.FormatError(err, "scan", pkg.GetMethodName())
 		}
-		projects = append(projects, project)
+		projects = append(projects, fetchedProject)
 	}
 
 	if err := rows.Err(); err != nil {

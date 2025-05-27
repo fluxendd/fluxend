@@ -16,7 +16,7 @@ func RegisterFormRoutes(
 	formFieldController := do.MustInvoke[*handlers.FormFieldHandler](container)
 	formResponseController := do.MustInvoke[*handlers.FormResponseHandler](container)
 
-	formsGroup := e.Group("api/forms", authMiddleware, formEnabledMiddleware)
+	formsGroup := e.Group("forms", authMiddleware, formEnabledMiddleware)
 
 	formsGroup.POST("", formController.Store)
 	formsGroup.GET("", formController.List)
@@ -25,7 +25,7 @@ func RegisterFormRoutes(
 	formsGroup.DELETE("/:formUUID", formController.Delete)
 
 	// Form Field routes
-	formFieldsGroup := e.Group("api/forms/:formUUID/fields", authMiddleware, formEnabledMiddleware)
+	formFieldsGroup := e.Group("forms/:formUUID/fields", authMiddleware, formEnabledMiddleware)
 
 	formFieldsGroup.POST("", formFieldController.Store)
 	formFieldsGroup.GET("", formFieldController.List)
@@ -34,7 +34,7 @@ func RegisterFormRoutes(
 	formFieldsGroup.DELETE("/:fieldUUID", formFieldController.Delete)
 
 	// Form Response routes
-	formResponsesGroup := e.Group("api/forms/:formUUID/responses", authMiddleware, formEnabledMiddleware)
+	formResponsesGroup := e.Group("forms/:formUUID/responses", authMiddleware, formEnabledMiddleware)
 
 	formResponsesGroup.GET("", formResponseController.List)
 	formResponsesGroup.POST("", formResponseController.Store)

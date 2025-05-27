@@ -6,12 +6,12 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function isServer() {
-  return typeof window === "undefined";
-}
-
 export function isClient() {
   return typeof window !== "undefined";
+}
+
+export function isServer() {
+  return !isClient();
 }
 
 export function getDbIdFromCookies(cookies: string): Promise<string> {

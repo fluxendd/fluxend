@@ -9,7 +9,7 @@ import (
 func RegisterProjectRoutes(e *echo.Echo, container *do.Injector, authMiddleware echo.MiddlewareFunc, allowProjectMiddleware echo.MiddlewareFunc) {
 	projectController := do.MustInvoke[*handlers.ProjectHandler](container)
 
-	projectsGroup := e.Group("api/projects", authMiddleware, allowProjectMiddleware)
+	projectsGroup := e.Group("projects", authMiddleware, allowProjectMiddleware)
 
 	projectsGroup.POST("", projectController.Store)
 	projectsGroup.GET("", projectController.List)

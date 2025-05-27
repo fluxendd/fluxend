@@ -9,7 +9,7 @@ import (
 func RegisterBackup(e *echo.Echo, container *do.Injector, authMiddleware echo.MiddlewareFunc, allowBackupMiddleware echo.MiddlewareFunc) {
 	backupController := do.MustInvoke[*handlers.BackupHandler](container)
 
-	formsGroup := e.Group("api/backups", authMiddleware, allowBackupMiddleware)
+	formsGroup := e.Group("backups", authMiddleware, allowBackupMiddleware)
 
 	formsGroup.POST("", backupController.Store)
 	formsGroup.GET("", backupController.List)

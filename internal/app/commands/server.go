@@ -16,6 +16,7 @@ import (
 	"github.com/spf13/cobra"
 	echoSwagger "github.com/swaggo/echo-swagger"
 	"os"
+	"strings"
 )
 
 var serverCmd = &cobra.Command{
@@ -37,7 +38,13 @@ func setupServer(container *do.Injector) *echo.Echo {
 	// Middleware
 	e.Use(middleware.Recover())
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins:     []string{"*"},
+		AllowOriginFunc: func(origin string) (bool, error) {
+			if isOriginAllowed(origin) {
+				return true, nil
+			}
+
+			return false, nil
+		},
 		AllowMethods:     []string{echo.GET, echo.POST, echo.PUT, echo.DELETE, echo.OPTIONS},
 		AllowHeaders:     []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, echo.HeaderAuthorization},
 		AllowCredentials: true,
@@ -84,4 +91,20 @@ func registerRoutes(e *echo.Echo, container *do.Injector) {
 	routes.RegisterBackup(e, container, authMiddleware, allowBackupMiddleware)
 
 	e.GET("/docs/*", echoSwagger.WrapHandler)
+}
+
+func isOriginAllowed(origin string) bool {
+	allowedOrigins := []string{
+		os.Getenv("APP_URL"),
+		os.Getenv("BASE_URL"),
+		os.Getenv("CUSTOM_ORIGIN"),
+	}
+
+	for _, allowedOrigin := range allowedOrigins {
+		if origin == allowedOrigin || strings.HasSuffix(origin, allowedOrigin) {
+			return true
+		}
+	}
+
+	return false
 }
