@@ -39,7 +39,7 @@ func setupServer(container *do.Injector) *echo.Echo {
 	e.Use(middleware.Recover())
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOriginFunc: func(origin string) (bool, error) {
-			if strings.HasSuffix(origin, os.Getenv("APP_URL")) || strings.HasSuffix(origin, os.Getenv("BASE_URL")) {
+			if isOriginAllowed(origin) {
 				return true, nil
 			}
 
@@ -91,4 +91,20 @@ func registerRoutes(e *echo.Echo, container *do.Injector) {
 	routes.RegisterBackup(e, container, authMiddleware, allowBackupMiddleware)
 
 	e.GET("/docs/*", echoSwagger.WrapHandler)
+}
+
+func isOriginAllowed(origin string) bool {
+	allowedOrigins := []string{
+		os.Getenv("APP_URL"),
+		os.Getenv("BASE_URL"),
+		os.Getenv("CUSTOM_ORIGIN"),
+	}
+
+	for _, allowedOrigin := range allowedOrigins {
+		if origin == allowedOrigin || strings.HasSuffix(origin, allowedOrigin) {
+			return true
+		}
+	}
+
+	return false
 }
