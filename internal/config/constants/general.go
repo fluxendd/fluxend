@@ -1,6 +1,7 @@
 package constants
 
 const (
+	XProjectHeaderName      = "X-Project"
 	BackupContainerName     = "fluxend-client-database-backups"
 	StorageDriverFilesystem = "FILESYSTEM"
 	StorageDriverS3         = "S3"

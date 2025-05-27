@@ -51,7 +51,6 @@ const clientFetch = async <T>(
     fetchOptions.body = JSON.stringify(data);
   }
 
-  console.log('CLIENT Fetching URL:', fullUrl);
   return fetch(fullUrl, fetchOptions);
 };
 
@@ -72,10 +71,6 @@ const serverFetch = async <T>(
     ...restOptions
   } = options;
   const baseUrl = customBaseUrl ? customBaseUrl : getBaseUrl();
-
-  console.log('Custom Base URL:', customBaseUrl);
-  console.log('Base URL:', baseUrl);
-  console.log('getBaseUrl:', getBaseUrl());
 
   let fullUrl = `${baseUrl}${url}`;
 
@@ -107,7 +102,6 @@ const serverFetch = async <T>(
     fetchOptions.body = JSON.stringify(data);
   }
 
-  console.log('SERVER Fetching URL:', fullUrl);
   return fetch(fullUrl, fetchOptions);
 };
 

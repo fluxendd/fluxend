@@ -4,6 +4,7 @@ import (
 	"fluxend/internal/api/middlewares"
 	"fluxend/internal/api/routes"
 	"fluxend/internal/app"
+	"fluxend/internal/config/constants"
 	"fluxend/internal/domain/logging"
 	"fluxend/internal/domain/setting"
 	"fluxend/internal/domain/user"
@@ -42,11 +43,21 @@ func setupServer(container *do.Injector) *echo.Echo {
 			if isOriginAllowed(origin) {
 				return true, nil
 			}
-
 			return false, nil
 		},
-		AllowMethods:     []string{echo.GET, echo.POST, echo.PUT, echo.DELETE, echo.OPTIONS},
-		AllowHeaders:     []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, echo.HeaderAuthorization},
+		AllowMethods: []string{
+			echo.GET, echo.POST, echo.PUT, echo.DELETE, echo.OPTIONS,
+		},
+		AllowHeaders: []string{
+			echo.HeaderOrigin,
+			echo.HeaderContentType,
+			echo.HeaderAccept,
+			echo.HeaderAuthorization,
+			constants.XProjectHeaderName,
+		},
+		ExposeHeaders: []string{
+			echo.HeaderContentLength, echo.HeaderContentType,
+		},
 		AllowCredentials: true,
 	}))
 
