@@ -64,7 +64,7 @@ services:
       - fluxend_network
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.fluxend_app.rule=Host(`api.${APP_URL}`) || (Host(`${APP_URL}`) && (PathPrefix(`/api`) || PathPrefix(`/docs`)))"
+      - "traefik.http.routers.fluxend_app.rule=Host(`${API_URL}`) || (Host(`${APP_URL}`) && PathPrefix(`/docs`))"
       - "traefik.http.routers.fluxend_app.entrypoints=websecure"
       - "traefik.http.services.fluxend_app.loadbalancer.server.port=8080"
       - "traefik.http.routers.fluxend_app.tls=true"
@@ -79,7 +79,8 @@ services:
     container_name: fluxend_frontend
     environment:
       - NODE_ENV=${NODE_ENV:-production}
-      - VITE_FLX_API_BASE_URL=${VITE_FLX_API_BASE_URL:-http://fluxend_app:8080}
+      - VITE_FLX_API_BASE_URL=${VITE_FLX_API_SERVER_BASE_URL:-http://api.fluxend_app:8080}
+      - VITE_FLX_API_BASE_URL=${VITE_FLX_API_CLIENT_BASE_URL:-http://api.fulxend.localhost}
       # Add other frontend environment variables here
     depends_on:
       - fluxend_app
