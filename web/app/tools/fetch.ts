@@ -12,9 +12,9 @@ export type APIRequestOptions = {
 const getBaseUrl = () => {
   if (isServer()) {
     return process.env.VITE_FLX_API_SERVER_BASE_URL || "";
-  } else {
-    return import.meta.env.VITE_FLX_API_CLIENT_BASE_URL || "";
   }
+
+  return import.meta.env.VITE_FLX_API_CLIENT_BASE_URL || "";
 };
 
 /**
@@ -51,6 +51,7 @@ const clientFetch = async <T>(
     fetchOptions.body = JSON.stringify(data);
   }
 
+  console.log('CLIENT Fetching URL:', fullUrl);
   return fetch(fullUrl, fetchOptions);
 };
 
@@ -71,6 +72,10 @@ const serverFetch = async <T>(
     ...restOptions
   } = options;
   const baseUrl = customBaseUrl ? customBaseUrl : getBaseUrl();
+
+  console.log('Custom Base URL:', customBaseUrl);
+  console.log('Base URL:', baseUrl);
+  console.log('getBaseUrl:', getBaseUrl());
 
   let fullUrl = `${baseUrl}${url}`;
 
@@ -102,6 +107,7 @@ const serverFetch = async <T>(
     fetchOptions.body = JSON.stringify(data);
   }
 
+  console.log('SERVER Fetching URL:', fullUrl);
   return fetch(fullUrl, fetchOptions);
 };
 
