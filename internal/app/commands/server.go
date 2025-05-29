@@ -105,13 +105,21 @@ func registerRoutes(e *echo.Echo, container *do.Injector) {
 }
 
 func isOriginAllowed(origin string) bool {
+	customOrigins := strings.Split(os.Getenv("CUSTOM_ORIGINS"), ",")
+
 	allowedOrigins := []string{
 		os.Getenv("APP_URL"),
 		os.Getenv("BASE_URL"),
-		os.Getenv("CUSTOM_ORIGIN"),
 	}
 
+	allowedOrigins = append(allowedOrigins, customOrigins...)
+
 	for _, allowedOrigin := range allowedOrigins {
+		allowedOrigin = strings.TrimSpace(allowedOrigin)
+		if allowedOrigin == "" {
+			continue
+		}
+
 		if origin == allowedOrigin || strings.HasSuffix(origin, allowedOrigin) {
 			return true
 		}
