@@ -51,7 +51,6 @@ const clientFetch = async <T>(
     fetchOptions.body = JSON.stringify(data);
   }
 
-  console.log(`Fetching CLIENT URL: ${fullUrl}`)
   return fetch(fullUrl, fetchOptions);
 };
 
@@ -102,8 +101,6 @@ const serverFetch = async <T>(
   if (data && ["POST", "PUT", "PATCH"].includes(method)) {
     fetchOptions.body = JSON.stringify(data);
   }
-
-  console.log(`Fetching SERVER URL: ${fullUrl}`)
 
   return fetch(fullUrl, fetchOptions);
 };
