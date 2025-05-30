@@ -11,10 +11,10 @@ export type APIRequestOptions = {
 // Get the base URL from the appropriate environment variable
 const getBaseUrl = () => {
   if (isServer()) {
-    return process.env.VITE_FLX_API_SERVER_BASE_URL || "";
+    return process.env.VITE_FLX_API_BASE_URL || "";
   }
 
-  return import.meta.env.VITE_FLX_API_CLIENT_BASE_URL || "";
+  return import.meta.env.VITE_FLX_API_BASE_URL || "";
 };
 
 /**
@@ -51,6 +51,7 @@ const clientFetch = async <T>(
     fetchOptions.body = JSON.stringify(data);
   }
 
+  console.log(`Fetching CLIENT URL: ${fullUrl}`)
   return fetch(fullUrl, fetchOptions);
 };
 
@@ -101,6 +102,8 @@ const serverFetch = async <T>(
   if (data && ["POST", "PUT", "PATCH"].includes(method)) {
     fetchOptions.body = JSON.stringify(data);
   }
+
+  console.log(`Fetching SERVER URL: ${fullUrl}`)
 
   return fetch(fullUrl, fetchOptions);
 };
