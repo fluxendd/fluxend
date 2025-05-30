@@ -159,7 +159,7 @@ func (s *ServiceImpl) Delete(projectUUID uuid.UUID, authUser auth.User) (bool, e
 }
 
 func (s *ServiceImpl) generateDBName() string {
-	return "udb_" + strings.ReplaceAll(strings.ToLower(uuid.New().String()), "-", "")
+	return "udb" + strings.ReplaceAll(strings.ToLower(uuid.New().String()), "-", "")
 }
 
 func (s *ServiceImpl) generateDBPort() int {

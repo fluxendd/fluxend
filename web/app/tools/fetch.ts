@@ -11,10 +11,10 @@ export type APIRequestOptions = {
 // Get the base URL from the appropriate environment variable
 const getBaseUrl = () => {
   if (isServer()) {
-    return process.env.VITE_FLX_API_SERVER_BASE_URL || "";
+    return process.env.VITE_FLX_API_BASE_URL || "";
   }
 
-  return import.meta.env.VITE_FLX_API_CLIENT_BASE_URL || "";
+  return import.meta.env.VITE_FLX_API_BASE_URL || "";
 };
 
 /**

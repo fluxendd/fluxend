@@ -19,10 +19,10 @@ func ExecuteCommand(command []string) error {
 	}
 
 	// Uncomment for debugging purposes
-	//log.Info().
-	//	Str("command", cmd.String()).
-	//	Str("output", string(output)).
-	//	Msg("Command successful")
+	log.Info().
+		Str("command", cmd.String()).
+		Str("output", string(output)).
+		Msg("Command successful")
 
 	return nil
 }
