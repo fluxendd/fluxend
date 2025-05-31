@@ -79,8 +79,7 @@ services:
     container_name: fluxend_frontend
     environment:
       - NODE_ENV=${NODE_ENV:-production}
-      - VITE_FLX_API_BASE_URL=${VITE_FLX_API_SERVER_BASE_URL:-http://api.fluxend_app:8080}
-      - VITE_FLX_API_BASE_URL=${VITE_FLX_API_CLIENT_BASE_URL:-http://api.fulxend.localhost}
+      - VITE_FLX_API_BASE_URL=${VITE_FLX_API_BASE_URL:-http://api.fulxend.localhost}
       # Add other frontend environment variables here
     depends_on:
       - fluxend_app
