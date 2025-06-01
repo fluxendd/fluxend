@@ -1,4 +1,7 @@
 {
+    "schemes": [
+        "https"
+    ],
     "swagger": "2.0",
     "info": {
         "description": "Fluxend is backend as-a-service platform that allows you to build, deploy, and scale applications without managing infrastructure.",
@@ -11,6 +14,7 @@
         "version": "1.0"
     },
     "host": "api.fluxend.app",
+    "basePath": "/",
     "paths": {
         "/admin/health": {
             "get": {

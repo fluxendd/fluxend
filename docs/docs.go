@@ -5649,8 +5649,8 @@ const docTemplate = `{
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
 	Host:             "api.fluxend.app",
-	BasePath:         "",
-	Schemes:          []string{},
+	BasePath:         "/",
+	Schemes:          []string{"https"},
 	Title:            "Fluxend API",
 	Description:      "Fluxend is backend as-a-service platform that allows you to build, deploy, and scale applications without managing infrastructure.",
 	InfoInstanceName: "swagger",

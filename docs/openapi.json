@@ -5000,7 +5000,7 @@
     },
     "servers": [
         {
-            "url": "//api.fluxend.app"
+            "url": "https://api.fluxend.app"
         }
     ],
     "components": {

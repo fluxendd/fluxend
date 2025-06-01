@@ -1,3 +1,4 @@
+basePath: /
 definitions:
   backup.Response:
     properties:
@@ -3604,4 +3605,6 @@ paths:
       summary: Logout user
       tags:
       - Users
+schemes:
+- https
 swagger: "2.0"
