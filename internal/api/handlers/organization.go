@@ -23,7 +23,7 @@ func NewOrganizationHandler(injector *do.Injector) (*OrganizationHandler, error)
 
 // List all organizations
 //
-// @Summary List all organizations
+// @Summary List
 // @Description Get all organizations
 // @Tags Organizations
 //
@@ -61,7 +61,7 @@ func (oh *OrganizationHandler) List(c echo.Context) error {
 
 // Show details of a single organization
 //
-// @Summary Show details of a single organization
+// @Summary Retrieve
 // @Description Get details of a specific organization
 // @Tags Organizations
 //
@@ -101,7 +101,7 @@ func (oh *OrganizationHandler) Show(c echo.Context) error {
 
 // Store creates a new organization
 //
-// @Summary Create a new organization
+// @Summary Create
 // @Description Add a new organization
 // @Tags Organizations
 //
@@ -139,7 +139,7 @@ func (oh *OrganizationHandler) Store(c echo.Context) error {
 
 // Update an organization
 //
-// @Summary Update an organization
+// @Summary Update
 // @Description Modify an existing organization's details
 // @Tags Organizations
 //
@@ -180,7 +180,7 @@ func (oh *OrganizationHandler) Update(c echo.Context) error {
 
 // Delete an organization
 //
-// @Summary Delete an organization
+// @Summary Delete
 // @Description Remove an organization
 // @Tags Organizations
 //

@@ -17,7 +17,7 @@
                 "tags": [
                     "Logs"
                 ],
-                "summary": "List all logs",
+                "summary": "List",
                 "parameters": [
                     {
                         "description": "Bearer Token",
@@ -148,7 +148,7 @@
                 "tags": [
                     "Backups"
                 ],
-                "summary": "List all backups",
+                "summary": "List",
                 "parameters": [
                     {
                         "description": "Bearer Token",
@@ -207,11 +207,11 @@
                 }
             },
             "post": {
-                "description": "Add a new backup",
+                "description": "Create a new backup",
                 "tags": [
                     "Backups"
                 ],
-                "summary": "Create a new backup",
+                "summary": "Create",
                 "parameters": [
                     {
                         "description": "Bearer Token",
@@ -287,7 +287,7 @@
                 "tags": [
                     "Backups"
                 ],
-                "summary": "Show details of a single backup",
+                "summary": "Retrieve",
                 "parameters": [
                     {
                         "description": "Bearer Token",
@@ -356,7 +356,7 @@
                 "tags": [
                     "Backups"
                 ],
-                "summary": "Delete a backup",
+                "summary": "Delete",
                 "parameters": [
                     {
                         "description": "Bearer Token",
@@ -408,7 +408,7 @@
                 "tags": [
                     "Files"
                 ],
-                "summary": "List all files in a container",
+                "summary": "List",
                 "parameters": [
                     {
                         "description": "Bearer Token",
@@ -506,7 +506,7 @@
                 "tags": [
                     "Files"
                 ],
-                "summary": "Create a new file",
+                "summary": "Create",
                 "parameters": [
                     {
                         "description": "Bearer Token",
@@ -579,7 +579,7 @@
                 "tags": [
                     "Files"
                 ],
-                "summary": "Show details of a single file",
+                "summary": "Retrieve",
                 "parameters": [
                     {
                         "description": "Bearer Token",
@@ -648,7 +648,7 @@
                 "tags": [
                     "Files"
                 ],
-                "summary": "Delete a file",
+                "summary": "Delete",
                 "parameters": [
                     {
                         "description": "Bearer Token",
@@ -700,7 +700,7 @@
                 "tags": [
                     "Files"
                 ],
-                "summary": "Rename a file",
+                "summary": "Rename",
                 "parameters": [
                     {
                         "description": "Bearer Token",
@@ -782,7 +782,7 @@
                 "tags": [
                     "Forms"
                 ],
-                "summary": "List all forms",
+                "summary": "List",
                 "parameters": [
                     {
                         "description": "Bearer Token",
@@ -880,7 +880,7 @@
                 "tags": [
                     "Forms"
                 ],
-                "summary": "Create a new form",
+                "summary": "Create",
                 "parameters": [
                     {
                         "description": "Bearer Token",
@@ -948,7 +948,7 @@
                 "tags": [
                     "Forms"
                 ],
-                "summary": "Show details of a single form",
+                "summary": "Retrieve",
                 "parameters": [
                     {
                         "description": "Bearer Token",
@@ -1017,7 +1017,7 @@
                 "tags": [
                     "Forms"
                 ],
-                "summary": "Update an existing form",
+                "summary": "Update",
                 "parameters": [
                     {
                         "description": "Bearer Token",
@@ -1092,7 +1092,7 @@
                 "tags": [
                     "Forms"
                 ],
-                "summary": "Delete a form",
+                "summary": "Delete",
                 "parameters": [
                     {
                         "description": "Bearer Token",
@@ -1144,7 +1144,7 @@
                 "tags": [
                     "Form Fields"
                 ],
-                "summary": "List all fields for a form",
+                "summary": "List",
                 "parameters": [
                     {
                         "description": "Bearer Token",
@@ -1210,7 +1210,7 @@
                 "tags": [
                     "Form Fields"
                 ],
-                "summary": "Create a new field for a form",
+                "summary": "Create",
                 "parameters": [
                     {
                         "description": "Bearer Token",
@@ -1286,7 +1286,7 @@
                 "tags": [
                     "Form Fields"
                 ],
-                "summary": "Show details of a single field",
+                "summary": "Retrieve",
                 "parameters": [
                     {
                         "description": "Bearer Token",
@@ -1355,7 +1355,7 @@
                 "tags": [
                     "Form Fields"
                 ],
-                "summary": "Update an existing field",
+                "summary": "Update",
                 "parameters": [
                     {
                         "description": "Bearer Token",
@@ -1438,7 +1438,7 @@
                 "tags": [
                     "Form Fields"
                 ],
-                "summary": "Delete a field from a form",
+                "summary": "Delete",
                 "parameters": [
                     {
                         "description": "Bearer Token",
@@ -1490,7 +1490,7 @@
                 "tags": [
                     "Form Responses"
                 ],
-                "summary": "List all form responses for a form",
+                "summary": "List",
                 "parameters": [
                     {
                         "description": "Bearer Token",
@@ -1562,7 +1562,7 @@
                 "tags": [
                     "Form Responses"
                 ],
-                "summary": "Store a new form response",
+                "summary": "Create",
                 "parameters": [
                     {
                         "description": "Bearer Token",
@@ -1647,7 +1647,7 @@
                 "tags": [
                     "Form Responses"
                 ],
-                "summary": "Show details of a single form response",
+                "summary": "Retrieve",
                 "parameters": [
                     {
                         "description": "Bearer Token",
@@ -1725,7 +1725,7 @@
                 "tags": [
                     "Form Responses"
                 ],
-                "summary": "Delete a form response",
+                "summary": "Delete",
                 "parameters": [
                     {
                         "description": "Bearer Token",
@@ -1786,7 +1786,7 @@
                 "tags": [
                     "Functions"
                 ],
-                "summary": "List all functions",
+                "summary": "List",
                 "parameters": [
                     {
                         "description": "Bearer Token",
@@ -1870,7 +1870,7 @@
                 "tags": [
                     "Functions"
                 ],
-                "summary": "Create a new function",
+                "summary": "Create",
                 "parameters": [
                     {
                         "description": "Bearer Token",
@@ -1946,7 +1946,7 @@
                 "tags": [
                     "Functions"
                 ],
-                "summary": "Show details of a single function",
+                "summary": "Retrieve",
                 "parameters": [
                     {
                         "description": "Bearer Token",
@@ -2024,7 +2024,7 @@
                 "tags": [
                     "Functions"
                 ],
-                "summary": "Delete a function",
+                "summary": "Delete",
                 "parameters": [
                     {
                         "description": "Bearer Token",
@@ -2094,7 +2094,7 @@
                 "tags": [
                     "Organizations"
                 ],
-                "summary": "List all organizations",
+                "summary": "List",
                 "parameters": [
                     {
                         "description": "Bearer Token",
@@ -2177,7 +2177,7 @@
                 "tags": [
                     "Organizations"
                 ],
-                "summary": "Create a new organization",
+                "summary": "Create",
                 "parameters": [
                     {
                         "description": "Bearer Token",
@@ -2244,7 +2244,7 @@
                 "tags": [
                     "Organizations"
                 ],
-                "summary": "Show details of a single organization",
+                "summary": "Retrieve",
                 "parameters": [
                     {
                         "description": "Bearer Token",
@@ -2307,7 +2307,7 @@
                 "tags": [
                     "Organizations"
                 ],
-                "summary": "Update an organization",
+                "summary": "Update",
                 "parameters": [
                     {
                         "description": "Bearer Token",
@@ -2381,7 +2381,7 @@
                 "tags": [
                     "Organizations"
                 ],
-                "summary": "Delete an organization",
+                "summary": "Delete",
                 "parameters": [
                     {
                         "description": "Bearer Token",
@@ -2428,7 +2428,7 @@
                 "tags": [
                     "Organization Members"
                 ],
-                "summary": "List all users in an organization",
+                "summary": "List",
                 "parameters": [
                     {
                         "description": "Bearer Token",
@@ -2494,7 +2494,7 @@
                 "tags": [
                     "Organization Members"
                 ],
-                "summary": "Create a user in an organization",
+                "summary": "Create",
                 "parameters": [
                     {
                         "description": "Bearer Token",
@@ -2570,7 +2570,7 @@
                 "tags": [
                     "Organization Members"
                 ],
-                "summary": "Delete a user from an organization",
+                "summary": "Delete",
                 "parameters": [
                     {
                         "description": "Bearer Token",
@@ -2625,7 +2625,7 @@
                 "tags": [
                     "Projects"
                 ],
-                "summary": "List all projects",
+                "summary": "List",
                 "parameters": [
                     {
                         "description": "Bearer Token",
@@ -2720,7 +2720,7 @@
                 "tags": [
                     "Projects"
                 ],
-                "summary": "Create a new project",
+                "summary": "Create",
                 "parameters": [
                     {
                         "description": "Bearer Token",
@@ -2796,7 +2796,7 @@
                 "tags": [
                     "Projects"
                 ],
-                "summary": "Show details of a single project",
+                "summary": "Retrieve",
                 "parameters": [
                     {
                         "description": "Bearer Token",
@@ -2859,7 +2859,7 @@
                 "tags": [
                     "Projects"
                 ],
-                "summary": "Update a project",
+                "summary": "Update",
                 "parameters": [
                     {
                         "description": "Bearer Token",
@@ -2933,7 +2933,7 @@
                 "tags": [
                     "Projects"
                 ],
-                "summary": "Delete a project",
+                "summary": "Delete",
                 "parameters": [
                     {
                         "description": "Bearer Token",
@@ -2983,7 +2983,7 @@
                 "tags": [
                     "Containers"
                 ],
-                "summary": "List all container",
+                "summary": "List",
                 "parameters": [
                     {
                         "description": "Bearer Token",
@@ -3078,7 +3078,7 @@
                 "tags": [
                     "Containers"
                 ],
-                "summary": "Create a new container",
+                "summary": "Create",
                 "parameters": [
                     {
                         "description": "Bearer Token",
@@ -3146,7 +3146,7 @@
                 "tags": [
                     "Containers"
                 ],
-                "summary": "Show details of a single container",
+                "summary": "Retrieve",
                 "parameters": [
                     {
                         "description": "Bearer Token",
@@ -3218,7 +3218,7 @@
                 "tags": [
                     "Containers"
                 ],
-                "summary": "Update a container",
+                "summary": "Update",
                 "parameters": [
                     {
                         "description": "Bearer Token",
@@ -3293,7 +3293,7 @@
                 "tags": [
                     "Containers"
                 ],
-                "summary": "Delete a container",
+                "summary": "Delete",
                 "parameters": [
                     {
                         "description": "Bearer Token",
@@ -3345,7 +3345,7 @@
                 "tags": [
                     "Tables"
                 ],
-                "summary": "List all tables",
+                "summary": "List",
                 "parameters": [
                     {
                         "description": "Bearer Token",
@@ -3408,7 +3408,7 @@
                 "tags": [
                     "Tables"
                 ],
-                "summary": "Create a new table",
+                "summary": "Create",
                 "parameters": [
                     {
                         "description": "Bearer Token",
@@ -3484,7 +3484,7 @@
                 "tags": [
                     "Tables"
                 ],
-                "summary": "Create a new table",
+                "summary": "Upload",
                 "parameters": [
                     {
                         "description": "Bearer Token",
@@ -3560,7 +3560,7 @@
                 "tags": [
                     "Columns"
                 ],
-                "summary": "List all columns",
+                "summary": "List",
                 "parameters": [
                     {
                         "description": "Bearer Token",
@@ -3623,7 +3623,7 @@
                 "tags": [
                     "Columns"
                 ],
-                "summary": "Modify column types in a table",
+                "summary": "Modify",
                 "parameters": [
                     {
                         "description": "Bearer Token",
@@ -3706,7 +3706,7 @@
                 "tags": [
                     "Columns"
                 ],
-                "summary": "Add new columns to a table",
+                "summary": "Create",
                 "parameters": [
                     {
                         "description": "Bearer Token",
@@ -3791,7 +3791,7 @@
                 "tags": [
                     "Columns"
                 ],
-                "summary": "Rename a column in a table",
+                "summary": "Rename",
                 "parameters": [
                     {
                         "description": "Bearer Token",
@@ -3871,7 +3871,7 @@
                 "tags": [
                     "Columns"
                 ],
-                "summary": "Delete a column from a table",
+                "summary": "Delete",
                 "parameters": [
                     {
                         "description": "Bearer Token",
@@ -3935,7 +3935,7 @@
                 "tags": [
                     "Tables"
                 ],
-                "summary": "Get table details",
+                "summary": "Retrieve",
                 "parameters": [
                     {
                         "description": "Bearer Token",
@@ -4007,7 +4007,7 @@
                 "tags": [
                     "Tables"
                 ],
-                "summary": "Delete a table",
+                "summary": "Delete",
                 "parameters": [
                     {
                         "description": "Bearer Token",
@@ -4062,7 +4062,7 @@
                 "tags": [
                     "Tables"
                 ],
-                "summary": "Duplicate a table",
+                "summary": "Duplicate",
                 "parameters": [
                     {
                         "description": "Bearer Token",
@@ -4147,7 +4147,7 @@
                 "tags": [
                     "Indexes"
                 ],
-                "summary": "List indexes for a table",
+                "summary": "List",
                 "parameters": [
                     {
                         "description": "Bearer Token",
@@ -4208,7 +4208,7 @@
                 "tags": [
                     "Indexes"
                 ],
-                "summary": "Create a new index",
+                "summary": "Create",
                 "parameters": [
                     {
                         "description": "Bearer Token",
@@ -4282,7 +4282,7 @@
                 "tags": [
                     "Indexes"
                 ],
-                "summary": "Show details of a specific index",
+                "summary": "Retrieve",
                 "parameters": [
                     {
                         "description": "Bearer Token",
@@ -4352,7 +4352,7 @@
                 "tags": [
                     "Indexes"
                 ],
-                "summary": "Delete an index from a table",
+                "summary": "Delete",
                 "parameters": [
                     {
                         "description": "Bearer Token",
@@ -4407,7 +4407,7 @@
                 "tags": [
                     "Tables"
                 ],
-                "summary": "Rename a table",
+                "summary": "Rename",
                 "parameters": [
                     {
                         "description": "Bearer Token",
@@ -4492,7 +4492,7 @@
                 "tags": [
                     "Users"
                 ],
-                "summary": "Create a new user",
+                "summary": "Create",
                 "requestBody": {
                     "content": {
                         "application/json": {
@@ -4545,7 +4545,7 @@
                 "tags": [
                     "Users"
                 ],
-                "summary": "Authenticate a user",
+                "summary": "Authenticate",
                 "requestBody": {
                     "content": {
                         "application/json": {
@@ -4598,7 +4598,7 @@
                 "tags": [
                     "Users"
                 ],
-                "summary": "Logout a user",
+                "summary": "Logout",
                 "parameters": [
                     {
                         "description": "Bearer Token",
@@ -4639,7 +4639,7 @@
                 "tags": [
                     "Users"
                 ],
-                "summary": "Show details of a single user",
+                "summary": "Retrieve",
                 "parameters": [
                     {
                         "description": "Bearer Token",
@@ -4699,7 +4699,7 @@
                 "tags": [
                     "Users"
                 ],
-                "summary": "Update a user",
+                "summary": "Update",
                 "parameters": [
                     {
                         "description": "Bearer Token",

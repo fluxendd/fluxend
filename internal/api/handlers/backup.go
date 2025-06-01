@@ -22,7 +22,7 @@ func NewBackupHandler(injector *do.Injector) (*BackupHandler, error) {
 
 // List retrieves all backups for a project
 //
-// @Summary List all backups
+// @Summary List
 // @Description Retrieve a list of all backups for the specified project
 // @Tags Backups
 //
@@ -54,7 +54,7 @@ func (bh *BackupHandler) List(c echo.Context) error {
 
 // Show retrieves details of a specific backup
 //
-// @Summary Show details of a single backup
+// @Summary Retrieve
 // @Description Get details of a specific backup
 // @Tags Backups
 //
@@ -95,8 +95,8 @@ func (bh *BackupHandler) Show(c echo.Context) error {
 
 // Store creates a new backup
 //
-// @Summary Create a new backup
-// @Description Add a new backup
+// @Summary Create
+// @Description Create a new backup
 // @Tags Backups
 //
 // @Accept json
@@ -132,7 +132,7 @@ func (bh *BackupHandler) Store(c echo.Context) error {
 
 // Delete removes a backup
 //
-// @Summary Delete a backup
+// @Summary Delete
 // @Description Remove a backup from the project
 // @Tags Backups
 //

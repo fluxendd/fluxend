@@ -22,7 +22,7 @@ func NewIndexHandler(injector *do.Injector) (*IndexHandler, error) {
 
 // List Indexes
 //
-// @Summary List indexes for a table
+// @Summary List
 // @Description Retrieve a list of indexes for a given table.
 // @Tags Indexes
 //
@@ -61,7 +61,7 @@ func (ih *IndexHandler) List(c echo.Context) error {
 
 // Show Index
 //
-// @Summary Show details of a specific index
+// @Summary Retrieve
 // @Description Retrieve details for a specific index in a table.
 // @Tags Indexes
 //
@@ -104,7 +104,7 @@ func (ih *IndexHandler) Show(c echo.Context) error {
 
 // Store Index
 //
-// @Summary Create a new index
+// @Summary Create
 // @Description Add an index to a specified table within a project.
 // @Tags Indexes
 //
@@ -145,7 +145,7 @@ func (ih *IndexHandler) Store(c echo.Context) error {
 
 // Delete Index
 //
-// @Summary Delete an index from a table
+// @Summary Delete
 // @Description Remove an existing index from a given table.
 // @Tags Indexes
 //

@@ -23,7 +23,7 @@ func NewOrganizationMemberHandler(injector *do.Injector) (*OrganizationMemberHan
 
 // List all users in an organization
 //
-// @Summary List all users in an organization
+// @Summary List
 // @Description Get all users in an organization
 // @Tags Organization Members
 //
@@ -63,7 +63,7 @@ func (omh *OrganizationMemberHandler) List(c echo.Context) error {
 
 // Store creates a user in an organization
 //
-// @Summary Create a user in an organization
+// @Summary Create
 // @Description Add a new user to an organization
 // @Tags Organization Members
 //
@@ -104,7 +104,7 @@ func (omh *OrganizationMemberHandler) Store(c echo.Context) error {
 
 // Delete a user from an organization
 //
-// @Summary Delete a user from an organization
+// @Summary Delete
 // @Description Remove a user from an organization
 // @Tags Organization Members
 //

@@ -23,7 +23,7 @@ func NewFormHandler(injector *do.Injector) (*FormHandler, error) {
 
 // List retrieves all forms for a project
 //
-// @Summary List all forms
+// @Summary List
 // @Description Retrieve a list of all forms for the specified project
 // @Tags Forms
 //
@@ -62,7 +62,7 @@ func (fh *FormHandler) List(c echo.Context) error {
 
 // Show retrieves details of a specific form
 //
-// @Summary Show details of a single form
+// @Summary Retrieve
 // @Description Get details of a specific form
 // @Tags Forms
 //
@@ -103,7 +103,7 @@ func (fh *FormHandler) Show(c echo.Context) error {
 
 // Store creates a new form
 //
-// @Summary Create a new form
+// @Summary Create
 // @Description Add a new form with a name and description
 // @Tags Forms
 //
@@ -140,7 +140,7 @@ func (fh *FormHandler) Store(c echo.Context) error {
 
 // Update updates an existing form
 //
-// @Summary Update an existing form
+// @Summary Update
 // @Description Update form details such as name and description
 // @Tags Forms
 //
@@ -183,7 +183,7 @@ func (fh *FormHandler) Update(c echo.Context) error {
 
 // Delete removes a form
 //
-// @Summary Delete a form
+// @Summary Delete
 // @Description Remove a form from the project
 // @Tags Forms
 //

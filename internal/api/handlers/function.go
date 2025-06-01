@@ -23,7 +23,7 @@ func NewFunctionHandler(injector *do.Injector) (*FunctionHandler, error) {
 
 // List retrieves all functions for a schema
 //
-// @Summary List all functions
+// @Summary List
 // @Description Retrieve a list of all functions for the specified schema
 // @Tags Functions
 //
@@ -65,7 +65,7 @@ func (fh *FunctionHandler) List(c echo.Context) error {
 
 // Show retrieves details of a specific function
 //
-// @Summary Show details of a single function
+// @Summary Retrieve
 // @Description Get details of a specific function
 // @Tags Functions
 //
@@ -112,7 +112,7 @@ func (fh *FunctionHandler) Show(c echo.Context) error {
 
 // Store creates a new function
 //
-// @Summary Create a new function
+// @Summary Create
 // @Description Add a new function for specific schema
 // @Tags Functions
 //
@@ -154,7 +154,7 @@ func (fh *FunctionHandler) Store(c echo.Context) error {
 
 // Delete removes a function
 //
-// @Summary Delete a function
+// @Summary Delete
 // @Description Remove a function from the schema
 // @Tags Functions
 //

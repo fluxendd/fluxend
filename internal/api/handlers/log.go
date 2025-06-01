@@ -22,7 +22,7 @@ func NewLogHandler(injector *do.Injector) (*LogHandler, error) {
 
 // List all logs
 //
-// @Summary List all logs
+// @Summary List
 // @Description Get all logs
 // @Tags Logs
 //
