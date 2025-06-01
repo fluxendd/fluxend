@@ -58,3 +58,6 @@ pgr.destroy: ## Destroy all postgrest containers
 
 docs.generate: ## Generate docs
 	swag init --dir cmd,internal --output docs
+
+docs.toOpenAPI: ## Convert docs to OpenAPI format
+	swagger2openapi docs/swagger.json -o docs/openapi.json
