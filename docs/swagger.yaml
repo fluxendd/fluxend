@@ -490,6 +490,37 @@ definitions:
       success:
         type: boolean
     type: object
+  setting.IndividualSetting:
+    properties:
+      name:
+        type: string
+      value:
+        type: string
+    type: object
+  setting.Response:
+    properties:
+      createdAt:
+        type: string
+      defaultValue:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      updatedAt:
+        type: string
+      value:
+        type: string
+    type: object
+  setting.UpdateRequest:
+    properties:
+      projectUUID:
+        type: string
+      settings:
+        items:
+          $ref: '#/definitions/setting.IndividualSetting'
+        type: array
+    type: object
   user.CreateRequest:
     properties:
       bio:
@@ -549,6 +580,33 @@ info:
   title: Fluxend API
   version: "1.0"
 paths:
+  /admin/health:
+    get:
+      consumes:
+      - application/json
+      description: Check the health status of the system
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Health status
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                content: {}
+              type: object
+        "401":
+          description: Unauthorized
+      summary: Check system health
+      tags:
+      - Admin
   /admin/logs:
     get:
       consumes:
@@ -621,6 +679,117 @@ paths:
       summary: List logs
       tags:
       - Logs
+  /admin/settings:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve all settings for the application
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of indexes
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                content:
+                  items:
+                    $ref: '#/definitions/setting.Response'
+                  type: array
+              type: object
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal server error
+      summary: List settings
+      tags:
+      - Admin
+    put:
+      consumes:
+      - application/json
+      description: Update application settings
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Settings update request
+        in: body
+        name: form
+        required: true
+        schema:
+          $ref: '#/definitions/setting.UpdateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Form updated
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                content:
+                  items:
+                    $ref: '#/definitions/setting.Response'
+                  type: array
+              type: object
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "422":
+          description: Unprocessable entity
+        "500":
+          description: Internal server error
+      summary: Update settings
+      tags:
+      - Admin
+  /admin/settings/reset:
+    put:
+      consumes:
+      - application/json
+      description: Reset application settings
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Settings reset
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                content:
+                  items:
+                    $ref: '#/definitions/setting.Response'
+                  type: array
+              type: object
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "422":
+          description: Unprocessable entity
+        "500":
+          description: Internal server error
+      summary: Reset settings
+      tags:
+      - Admin
   /backups:
     get:
       consumes:

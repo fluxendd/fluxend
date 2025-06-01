@@ -20,6 +20,23 @@ func NewSettingHandler(injector *do.Injector) (*SettingHandler, error) {
 	return &SettingHandler{settingService: settingService}, nil
 }
 
+// List Settings
+//
+// @Summary List settings
+// @Description Retrieve all settings for the application
+// @Tags Admin
+//
+// @Accept json
+// @Produce json
+//
+// @Param Authorization header string true "Bearer Token"
+//
+// @Success 200 {object} response.Response{content=[]setting.Response} "List of indexes"
+// @Failure 400 "Invalid input"
+// @Failure 401 "Unauthorized"
+// @Failure 500 "Internal server error"
+//
+// @Router /admin/settings [get]
 func (sh *SettingHandler) List(c echo.Context) error {
 	settings, err := sh.settingService.List()
 	if err != nil {
@@ -29,6 +46,26 @@ func (sh *SettingHandler) List(c echo.Context) error {
 	return response.SuccessResponse(c, mapper.ToSettingResourceCollection(settings))
 }
 
+// Update Settings
+//
+// @Summary Update settings
+// @Description Update application settings
+// @Tags Admin
+//
+// @Accept json
+// @Produce json
+//
+// @Param Authorization header string true "Bearer Token"
+//
+// @Param form body setting.UpdateRequest true "Settings update request"
+//
+// @Success 200 {object} response.Response{content=[]setting.Response} "Form updated"
+// @Failure 422 "Unprocessable entity"
+// @Failure 400 "Invalid input"
+// @Failure 401 "Unauthorized"
+// @Failure 500 "Internal server error"
+//
+// @Router /admin/settings [put]
 func (sh *SettingHandler) Update(c echo.Context) error {
 	var request settingDto.UpdateRequest
 	authUser, _ := auth.NewAuth(c).User()
@@ -45,6 +82,24 @@ func (sh *SettingHandler) Update(c echo.Context) error {
 	return response.SuccessResponse(c, mapper.ToSettingResourceCollection(updatedSettings))
 }
 
+// Reset Settings
+//
+// @Summary Reset settings
+// @Description Reset application settings
+// @Tags Admin
+//
+// @Accept json
+// @Produce json
+//
+// @Param Authorization header string true "Bearer Token"
+//
+// @Success 200 {object} response.Response{content=[]setting.Response} "Settings reset"
+// @Failure 422 "Unprocessable entity"
+// @Failure 400 "Invalid input"
+// @Failure 401 "Unauthorized"
+// @Failure 500 "Internal server error"
+//
+// @Router /admin/settings/reset [put]
 func (sh *SettingHandler) Reset(c echo.Context) error {
 	authUser, _ := auth.NewAuth(c).User()
 

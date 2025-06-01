@@ -18,6 +18,21 @@ func NewHealthHandler(injector *do.Injector) (*HealthHandler, error) {
 	return &HealthHandler{healthService: healthService}, nil
 }
 
+// Pulse Health check endpoint
+//
+// @Summary Check system health
+// @Description Check the health status of the system
+// @Tags Admin
+//
+// @Accept json
+// @Produce json
+//
+// @Param Authorization header string true "Bearer Token"
+//
+// @Success 200 {object} response.Response{content=dto.GenericResponse} "Health status"
+// @Failure 401 "Unauthorized"
+//
+// @Router /admin/health [get]
 func (hh *HealthHandler) Pulse(c echo.Context) error {
 	authUser, err := auth.NewAuth(c).User()
 	if err != nil {

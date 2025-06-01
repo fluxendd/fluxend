@@ -11,6 +11,51 @@
         "version": "1.0"
     },
     "paths": {
+        "/admin/health": {
+            "get": {
+                "description": "Check the health status of the system",
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Check system health",
+                "parameters": [
+                    {
+                        "description": "Bearer Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Health status",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/response.Response"
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "content": {}
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                }
+            }
+        },
         "/admin/logs": {
             "get": {
                 "description": "Get all logs",
@@ -135,6 +180,189 @@
                     },
                     "401": {
                         "description": "Unauthorized"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/admin/settings": {
+            "get": {
+                "description": "Retrieve all settings for the application",
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "List settings",
+                "parameters": [
+                    {
+                        "description": "Bearer Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of indexes",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/response.Response"
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "content": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/components/schemas/setting.Response"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            },
+            "put": {
+                "description": "Update application settings",
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Update settings",
+                "parameters": [
+                    {
+                        "description": "Bearer Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/setting.UpdateRequest"
+                            }
+                        }
+                    },
+                    "description": "Settings update request",
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Form updated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/response.Response"
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "content": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/components/schemas/setting.Response"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "422": {
+                        "description": "Unprocessable entity"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/admin/settings/reset": {
+            "put": {
+                "description": "Reset application settings",
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Reset settings",
+                "parameters": [
+                    {
+                        "description": "Bearer Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Settings reset",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/response.Response"
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "content": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/components/schemas/setting.Response"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "422": {
+                        "description": "Unprocessable entity"
                     },
                     "500": {
                         "description": "Internal server error"
@@ -5543,6 +5771,54 @@
                     },
                     "success": {
                         "type": "boolean"
+                    }
+                }
+            },
+            "setting.IndividualSetting": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "value": {
+                        "type": "string"
+                    }
+                }
+            },
+            "setting.Response": {
+                "type": "object",
+                "properties": {
+                    "createdAt": {
+                        "type": "string"
+                    },
+                    "defaultValue": {
+                        "type": "string"
+                    },
+                    "id": {
+                        "type": "integer"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "updatedAt": {
+                        "type": "string"
+                    },
+                    "value": {
+                        "type": "string"
+                    }
+                }
+            },
+            "setting.UpdateRequest": {
+                "type": "object",
+                "properties": {
+                    "projectUUID": {
+                        "type": "string"
+                    },
+                    "settings": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/setting.IndividualSetting"
+                        }
                     }
                 }
             },
