@@ -23,7 +23,7 @@ func NewTableHandler(injector *do.Injector) (*TableHandler, error) {
 
 // List retrieves all tables within a project.
 //
-// @Summary List
+// @Summary List tables
 // @Description Retrieve a list of tables in a specified project.
 // @Tags Tables
 //
@@ -57,7 +57,7 @@ func (th *TableHandler) List(c echo.Context) error {
 
 // Show retrieves details of a specific table.
 //
-// @Summary Retrieve
+// @Summary Retrieve table
 // @Description Retrieve details of a specific table within a project.
 // @Tags Tables
 //
@@ -99,7 +99,7 @@ func (th *TableHandler) Show(c echo.Context) error {
 
 // Store creates a new table within a project.
 //
-// @Summary Create
+// @Summary Create table
 // @Description Define and create a new table within a specified project.
 // @Tags Tables
 //
@@ -136,7 +136,7 @@ func (th *TableHandler) Store(c echo.Context) error {
 
 // Upload creates a new table within a project using uploaded file
 //
-// @Summary Upload
+// @Summary Upload table
 // @Description Define and create a new table within a specified project.
 // @Tags Tables
 //
@@ -173,7 +173,7 @@ func (th *TableHandler) Upload(c echo.Context) error {
 
 // Duplicate creates a duplicate of an existing table.
 //
-// @Summary Duplicate
+// @Summary Duplicate table
 // @Description Create a copy of a specified table within a project.
 // @Tags Tables
 //
@@ -216,7 +216,7 @@ func (th *TableHandler) Duplicate(c echo.Context) error {
 
 // Rename updates the name of an existing table.
 //
-// @Summary Rename
+// @Summary Rename table
 // @Description Change the name of a specific table within a project.
 // @Tags Tables
 //
@@ -259,7 +259,7 @@ func (th *TableHandler) Rename(c echo.Context) error {
 
 // Delete removes a table permanently from a project.
 //
-// @Summary Delete
+// @Summary Delete table
 // @Description Permanently delete a specific table from a given project.
 // @Tags Tables
 //

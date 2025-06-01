@@ -23,7 +23,7 @@ func NewFileHandler(injector *do.Injector) (*FileHandler, error) {
 
 // List retrieves all files in a container
 //
-// @Summary List
+// @Summary List files
 // @Description Retrieve a list of all files in a specific container
 // @Tags Files
 //
@@ -68,7 +68,7 @@ func (fh *FileHandler) List(c echo.Context) error {
 
 // Show retrieves details of a specific file.
 //
-// @Summary Retrieve
+// @Summary Retrieve file
 // @Description Get details of a specific file
 // @Tags Files
 //
@@ -113,7 +113,7 @@ func (fh *FileHandler) Show(c echo.Context) error {
 
 // Store creates a new file in a container
 //
-// @Summary Create
+// @Summary Create file
 // @Description Create a new file in a specific container
 // @Tags Files
 //
@@ -153,7 +153,7 @@ func (fh *FileHandler) Store(c echo.Context) error {
 
 // Rename updates the name of a file
 //
-// @Summary Rename
+// @Summary Rename file
 // @Description Update the name of a specific file. In other words, moves the file to a new location.
 // @Tags Files
 //
@@ -199,7 +199,7 @@ func (fh *FileHandler) Rename(c echo.Context) error {
 
 // Delete removes a file from a container
 //
-// @Summary Delete
+// @Summary Delete file
 // @Description Permanently remove a specific file from a container
 // @Tags Files
 //

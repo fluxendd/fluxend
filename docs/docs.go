@@ -31,7 +31,7 @@ const docTemplate = `{
                 "tags": [
                     "Logs"
                 ],
-                "summary": "List",
+                "summary": "List logs",
                 "parameters": [
                     {
                         "type": "string",
@@ -144,7 +144,7 @@ const docTemplate = `{
                 "tags": [
                     "Backups"
                 ],
-                "summary": "List",
+                "summary": "List backups",
                 "parameters": [
                     {
                         "type": "string",
@@ -205,7 +205,7 @@ const docTemplate = `{
                 "tags": [
                     "Backups"
                 ],
-                "summary": "Create",
+                "summary": "Create backup",
                 "parameters": [
                     {
                         "type": "string",
@@ -277,7 +277,7 @@ const docTemplate = `{
                 "tags": [
                     "Backups"
                 ],
-                "summary": "Retrieve",
+                "summary": "Retrieve backup",
                 "parameters": [
                     {
                         "type": "string",
@@ -342,7 +342,7 @@ const docTemplate = `{
                 "tags": [
                     "Backups"
                 ],
-                "summary": "Delete",
+                "summary": "Delete backup",
                 "parameters": [
                     {
                         "type": "string",
@@ -394,7 +394,7 @@ const docTemplate = `{
                 "tags": [
                     "Files"
                 ],
-                "summary": "List",
+                "summary": "List files",
                 "parameters": [
                     {
                         "type": "string",
@@ -482,7 +482,7 @@ const docTemplate = `{
                 "tags": [
                     "Files"
                 ],
-                "summary": "Create",
+                "summary": "Create file",
                 "parameters": [
                     {
                         "type": "string",
@@ -551,7 +551,7 @@ const docTemplate = `{
                 "tags": [
                     "Files"
                 ],
-                "summary": "Retrieve",
+                "summary": "Retrieve file",
                 "parameters": [
                     {
                         "type": "string",
@@ -616,7 +616,7 @@ const docTemplate = `{
                 "tags": [
                     "Files"
                 ],
-                "summary": "Delete",
+                "summary": "Delete file",
                 "parameters": [
                     {
                         "type": "string",
@@ -668,7 +668,7 @@ const docTemplate = `{
                 "tags": [
                     "Files"
                 ],
-                "summary": "Rename",
+                "summary": "Rename file",
                 "parameters": [
                     {
                         "type": "string",
@@ -744,7 +744,7 @@ const docTemplate = `{
                 "tags": [
                     "Forms"
                 ],
-                "summary": "List",
+                "summary": "List forms",
                 "parameters": [
                     {
                         "type": "string",
@@ -832,7 +832,7 @@ const docTemplate = `{
                 "tags": [
                     "Forms"
                 ],
-                "summary": "Create",
+                "summary": "Create form",
                 "parameters": [
                     {
                         "type": "string",
@@ -904,7 +904,7 @@ const docTemplate = `{
                 "tags": [
                     "Forms"
                 ],
-                "summary": "Retrieve",
+                "summary": "Retrieve form",
                 "parameters": [
                     {
                         "type": "string",
@@ -969,7 +969,7 @@ const docTemplate = `{
                 "tags": [
                     "Forms"
                 ],
-                "summary": "Update",
+                "summary": "Update form",
                 "parameters": [
                     {
                         "type": "string",
@@ -1046,7 +1046,7 @@ const docTemplate = `{
                 "tags": [
                     "Forms"
                 ],
-                "summary": "Delete",
+                "summary": "Delete form",
                 "parameters": [
                     {
                         "type": "string",
@@ -1098,7 +1098,7 @@ const docTemplate = `{
                 "tags": [
                     "Form Fields"
                 ],
-                "summary": "List",
+                "summary": "List fields",
                 "parameters": [
                     {
                         "type": "string",
@@ -1162,7 +1162,7 @@ const docTemplate = `{
                 "tags": [
                     "Form Fields"
                 ],
-                "summary": "Create",
+                "summary": "Create field",
                 "parameters": [
                     {
                         "type": "string",
@@ -1234,7 +1234,7 @@ const docTemplate = `{
                 "tags": [
                     "Form Fields"
                 ],
-                "summary": "Retrieve",
+                "summary": "Retrieve field",
                 "parameters": [
                     {
                         "type": "string",
@@ -1299,7 +1299,7 @@ const docTemplate = `{
                 "tags": [
                     "Form Fields"
                 ],
-                "summary": "Update",
+                "summary": "Update field",
                 "parameters": [
                     {
                         "type": "string",
@@ -1376,7 +1376,7 @@ const docTemplate = `{
                 "tags": [
                     "Form Fields"
                 ],
-                "summary": "Delete",
+                "summary": "Delete field",
                 "parameters": [
                     {
                         "type": "string",
@@ -1428,7 +1428,7 @@ const docTemplate = `{
                 "tags": [
                     "Form Responses"
                 ],
-                "summary": "List",
+                "summary": "List form responses",
                 "parameters": [
                     {
                         "type": "string",
@@ -1496,7 +1496,7 @@ const docTemplate = `{
                 "tags": [
                     "Form Responses"
                 ],
-                "summary": "Create",
+                "summary": "Create form response",
                 "parameters": [
                     {
                         "type": "string",
@@ -1575,7 +1575,7 @@ const docTemplate = `{
                 "tags": [
                     "Form Responses"
                 ],
-                "summary": "Retrieve",
+                "summary": "Retrieve form response",
                 "parameters": [
                     {
                         "type": "string",
@@ -1647,7 +1647,7 @@ const docTemplate = `{
                 "tags": [
                     "Form Responses"
                 ],
-                "summary": "Delete",
+                "summary": "Delete form response",
                 "parameters": [
                     {
                         "type": "string",
@@ -1706,7 +1706,7 @@ const docTemplate = `{
                 "tags": [
                     "Functions"
                 ],
-                "summary": "List",
+                "summary": "List functions",
                 "parameters": [
                     {
                         "type": "string",
@@ -1784,7 +1784,7 @@ const docTemplate = `{
                 "tags": [
                     "Functions"
                 ],
-                "summary": "Create",
+                "summary": "Create function",
                 "parameters": [
                     {
                         "type": "string",
@@ -1856,7 +1856,7 @@ const docTemplate = `{
                 "tags": [
                     "Functions"
                 ],
-                "summary": "Retrieve",
+                "summary": "Retrieve function",
                 "parameters": [
                     {
                         "type": "string",
@@ -1928,7 +1928,7 @@ const docTemplate = `{
                 "tags": [
                     "Functions"
                 ],
-                "summary": "Delete",
+                "summary": "Delete function",
                 "parameters": [
                     {
                         "type": "string",
@@ -1994,7 +1994,7 @@ const docTemplate = `{
                 "tags": [
                     "Organizations"
                 ],
-                "summary": "List",
+                "summary": "List organizations",
                 "parameters": [
                     {
                         "type": "string",
@@ -2069,7 +2069,7 @@ const docTemplate = `{
                 "tags": [
                     "Organizations"
                 ],
-                "summary": "Create",
+                "summary": "Create organization",
                 "parameters": [
                     {
                         "type": "string",
@@ -2134,7 +2134,7 @@ const docTemplate = `{
                 "tags": [
                     "Organizations"
                 ],
-                "summary": "Retrieve",
+                "summary": "Retrieve organization",
                 "parameters": [
                     {
                         "type": "string",
@@ -2195,7 +2195,7 @@ const docTemplate = `{
                 "tags": [
                     "Organizations"
                 ],
-                "summary": "Update",
+                "summary": "Update organization",
                 "parameters": [
                     {
                         "type": "string",
@@ -2265,7 +2265,7 @@ const docTemplate = `{
                 "tags": [
                     "Organizations"
                 ],
-                "summary": "Delete",
+                "summary": "Delete organization",
                 "parameters": [
                     {
                         "type": "string",
@@ -2310,7 +2310,7 @@ const docTemplate = `{
                 "tags": [
                     "Organization Members"
                 ],
-                "summary": "List",
+                "summary": "List organization members",
                 "parameters": [
                     {
                         "type": "string",
@@ -2374,7 +2374,7 @@ const docTemplate = `{
                 "tags": [
                     "Organization Members"
                 ],
-                "summary": "Create",
+                "summary": "Create organization member",
                 "parameters": [
                     {
                         "type": "string",
@@ -2446,7 +2446,7 @@ const docTemplate = `{
                 "tags": [
                     "Organization Members"
                 ],
-                "summary": "Delete",
+                "summary": "Delete organization member",
                 "parameters": [
                     {
                         "type": "string",
@@ -2501,7 +2501,7 @@ const docTemplate = `{
                 "tags": [
                     "Projects"
                 ],
-                "summary": "List",
+                "summary": "List projects",
                 "parameters": [
                     {
                         "type": "string",
@@ -2586,7 +2586,7 @@ const docTemplate = `{
                 "tags": [
                     "Projects"
                 ],
-                "summary": "Create",
+                "summary": "Create project",
                 "parameters": [
                     {
                         "type": "string",
@@ -2658,7 +2658,7 @@ const docTemplate = `{
                 "tags": [
                     "Projects"
                 ],
-                "summary": "Retrieve",
+                "summary": "Retrieve project",
                 "parameters": [
                     {
                         "type": "string",
@@ -2719,7 +2719,7 @@ const docTemplate = `{
                 "tags": [
                     "Projects"
                 ],
-                "summary": "Update",
+                "summary": "Update project",
                 "parameters": [
                     {
                         "type": "string",
@@ -2789,7 +2789,7 @@ const docTemplate = `{
                 "tags": [
                     "Projects"
                 ],
-                "summary": "Delete",
+                "summary": "Delete project",
                 "parameters": [
                     {
                         "type": "string",
@@ -2837,7 +2837,7 @@ const docTemplate = `{
                 "tags": [
                     "Containers"
                 ],
-                "summary": "List",
+                "summary": "List containers",
                 "parameters": [
                     {
                         "type": "string",
@@ -2922,7 +2922,7 @@ const docTemplate = `{
                 "tags": [
                     "Containers"
                 ],
-                "summary": "Create",
+                "summary": "Create container",
                 "parameters": [
                     {
                         "type": "string",
@@ -2994,7 +2994,7 @@ const docTemplate = `{
                 "tags": [
                     "Containers"
                 ],
-                "summary": "Retrieve",
+                "summary": "Retrieve container",
                 "parameters": [
                     {
                         "type": "string",
@@ -3062,7 +3062,7 @@ const docTemplate = `{
                 "tags": [
                     "Containers"
                 ],
-                "summary": "Update",
+                "summary": "Update container",
                 "parameters": [
                     {
                         "type": "string",
@@ -3139,7 +3139,7 @@ const docTemplate = `{
                 "tags": [
                     "Containers"
                 ],
-                "summary": "Delete",
+                "summary": "Delete container",
                 "parameters": [
                     {
                         "type": "string",
@@ -3191,7 +3191,7 @@ const docTemplate = `{
                 "tags": [
                     "Tables"
                 ],
-                "summary": "List",
+                "summary": "List tables",
                 "parameters": [
                     {
                         "type": "string",
@@ -3252,7 +3252,7 @@ const docTemplate = `{
                 "tags": [
                     "Tables"
                 ],
-                "summary": "Create",
+                "summary": "Create table",
                 "parameters": [
                     {
                         "type": "string",
@@ -3324,7 +3324,7 @@ const docTemplate = `{
                 "tags": [
                     "Tables"
                 ],
-                "summary": "Upload",
+                "summary": "Upload table",
                 "parameters": [
                     {
                         "type": "string",
@@ -3396,7 +3396,7 @@ const docTemplate = `{
                 "tags": [
                     "Columns"
                 ],
-                "summary": "List",
+                "summary": "List columns",
                 "parameters": [
                     {
                         "type": "string",
@@ -3457,7 +3457,7 @@ const docTemplate = `{
                 "tags": [
                     "Columns"
                 ],
-                "summary": "Modify",
+                "summary": "Modify columns",
                 "parameters": [
                     {
                         "type": "string",
@@ -3534,7 +3534,7 @@ const docTemplate = `{
                 "tags": [
                     "Columns"
                 ],
-                "summary": "Create",
+                "summary": "Create column",
                 "parameters": [
                     {
                         "type": "string",
@@ -3613,7 +3613,7 @@ const docTemplate = `{
                 "tags": [
                     "Columns"
                 ],
-                "summary": "Rename",
+                "summary": "Rename column",
                 "parameters": [
                     {
                         "type": "string",
@@ -3685,7 +3685,7 @@ const docTemplate = `{
                 "tags": [
                     "Columns"
                 ],
-                "summary": "Delete",
+                "summary": "Delete column",
                 "parameters": [
                     {
                         "type": "string",
@@ -3747,7 +3747,7 @@ const docTemplate = `{
                 "tags": [
                     "Tables"
                 ],
-                "summary": "Retrieve",
+                "summary": "Retrieve table",
                 "parameters": [
                     {
                         "type": "string",
@@ -3815,7 +3815,7 @@ const docTemplate = `{
                 "tags": [
                     "Tables"
                 ],
-                "summary": "Delete",
+                "summary": "Delete table",
                 "parameters": [
                     {
                         "type": "string",
@@ -3870,7 +3870,7 @@ const docTemplate = `{
                 "tags": [
                     "Tables"
                 ],
-                "summary": "Duplicate",
+                "summary": "Duplicate table",
                 "parameters": [
                     {
                         "type": "string",
@@ -3949,7 +3949,7 @@ const docTemplate = `{
                 "tags": [
                     "Indexes"
                 ],
-                "summary": "List",
+                "summary": "List indexes",
                 "parameters": [
                     {
                         "type": "string",
@@ -4008,7 +4008,7 @@ const docTemplate = `{
                 "tags": [
                     "Indexes"
                 ],
-                "summary": "Create",
+                "summary": "Create index",
                 "parameters": [
                     {
                         "type": "string",
@@ -4078,7 +4078,7 @@ const docTemplate = `{
                 "tags": [
                     "Indexes"
                 ],
-                "summary": "Retrieve",
+                "summary": "Retrieve index",
                 "parameters": [
                     {
                         "type": "string",
@@ -4144,7 +4144,7 @@ const docTemplate = `{
                 "tags": [
                     "Indexes"
                 ],
-                "summary": "Delete",
+                "summary": "Delete index",
                 "parameters": [
                     {
                         "type": "string",
@@ -4199,7 +4199,7 @@ const docTemplate = `{
                 "tags": [
                     "Tables"
                 ],
-                "summary": "Rename",
+                "summary": "Rename table",
                 "parameters": [
                     {
                         "type": "string",
@@ -4278,7 +4278,7 @@ const docTemplate = `{
                 "tags": [
                     "Users"
                 ],
-                "summary": "Create",
+                "summary": "Create user",
                 "parameters": [
                     {
                         "description": "User details",
@@ -4333,7 +4333,7 @@ const docTemplate = `{
                 "tags": [
                     "Users"
                 ],
-                "summary": "Authenticate",
+                "summary": "Authenticate user",
                 "parameters": [
                     {
                         "description": "Login request",
@@ -4388,7 +4388,7 @@ const docTemplate = `{
                 "tags": [
                     "Users"
                 ],
-                "summary": "Logout",
+                "summary": "Logout user",
                 "parameters": [
                     {
                         "type": "string",
@@ -4429,7 +4429,7 @@ const docTemplate = `{
                 "tags": [
                     "Users"
                 ],
-                "summary": "Retrieve",
+                "summary": "Retrieve user",
                 "parameters": [
                     {
                         "type": "string",
@@ -4487,7 +4487,7 @@ const docTemplate = `{
                 "tags": [
                     "Users"
                 ],
-                "summary": "Update",
+                "summary": "Update user",
                 "parameters": [
                     {
                         "type": "string",

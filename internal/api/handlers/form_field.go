@@ -23,7 +23,7 @@ func NewFormFieldHandler(injector *do.Injector) (*FormFieldHandler, error) {
 
 // List retrieves all fields for a specific form
 //
-// @Summary List
+// @Summary List fields
 // @Description Retrieve a list of all fields in a specific form
 // @Tags Form Fields
 //
@@ -62,7 +62,7 @@ func (ffh *FormFieldHandler) List(c echo.Context) error {
 
 // Show retrieves details of a specific field
 //
-// @Summary Retrieve
+// @Summary Retrieve field
 // @Description Get details of a specific field
 // @Tags Form Fields
 //
@@ -102,7 +102,7 @@ func (ffh *FormFieldHandler) Show(c echo.Context) error {
 
 // Store creates a new field for a form
 //
-// @Summary Create
+// @Summary Create field
 // @Description Add a new field to a form
 // @Tags Form Fields
 //
@@ -143,7 +143,7 @@ func (ffh *FormFieldHandler) Store(c echo.Context) error {
 
 // Update updates an existing field
 //
-// @Summary Update
+// @Summary Update field
 // @Description Update the details of an existing field
 // @Tags Form Fields
 //
@@ -190,7 +190,7 @@ func (ffh *FormFieldHandler) Update(c echo.Context) error {
 
 // Delete deletes a field from a form
 //
-// @Summary Delete
+// @Summary Delete field
 // @Description Remove a specific field from the form
 // @Tags Form Fields
 //

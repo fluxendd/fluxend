@@ -23,7 +23,7 @@ func NewProjectHandler(injector *do.Injector) (*ProjectHandler, error) {
 
 // List all projects
 //
-// @Summary List
+// @Summary List projects
 // @Description Get all projects for a specific organization
 // @Tags Projects
 //
@@ -68,7 +68,7 @@ func (ph *ProjectHandler) List(c echo.Context) error {
 
 // Show details of a single project
 //
-// @Summary Retrieve
+// @Summary Retrieve project
 // @Description Get details of a specific project
 // @Tags Projects
 //
@@ -108,7 +108,7 @@ func (ph *ProjectHandler) Show(c echo.Context) error {
 
 // Store creates a new project
 //
-// @Summary Create
+// @Summary Create project
 // @Description Create a new project for a specific organization
 // @Tags Projects
 //
@@ -144,7 +144,7 @@ func (ph *ProjectHandler) Store(c echo.Context) error {
 
 // Update a project
 //
-// @Summary Update
+// @Summary Update project
 // @Description Update a project for a specific organization
 // @Tags Projects
 //
@@ -185,7 +185,7 @@ func (ph *ProjectHandler) Update(c echo.Context) error {
 
 // Delete a project
 //
-// @Summary Delete
+// @Summary Delete project
 // @Description Remove a project from the organization
 // @Tags Projects
 //

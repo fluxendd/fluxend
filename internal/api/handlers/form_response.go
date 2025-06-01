@@ -24,7 +24,7 @@ func NewFormResponseHandler(injector *do.Injector) (*FormResponseHandler, error)
 
 // List all form responses for a form
 //
-// @Summary List
+// @Summary List form responses
 // @Description Get all form responses for a specific form
 // @Tags Form Responses
 //
@@ -64,7 +64,7 @@ func (ffh *FormResponseHandler) List(c echo.Context) error {
 
 // Show details of a single form response
 //
-// @Summary Retrieve
+// @Summary Retrieve form response
 // @Description Get details of a specific form response
 // @Tags Form Responses
 //
@@ -106,7 +106,7 @@ func (ffh *FormResponseHandler) Show(c echo.Context) error {
 
 // Store a new form response
 //
-// @Summary Create
+// @Summary Create form response
 // @Description Store a new form response for a specific form
 // @Tags Form Responses
 //
@@ -149,7 +149,7 @@ func (ffh *FormResponseHandler) Store(c echo.Context) error {
 
 // Delete a form response
 //
-// @Summary Delete
+// @Summary Delete form response
 // @Description Delete a specific form response
 // @Tags Form Responses
 //

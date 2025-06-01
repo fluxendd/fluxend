@@ -23,7 +23,7 @@ func NewUserHandler(injector *do.Injector) (*UserHandler, error) {
 
 // Show retrieves details of a specific user.
 //
-// @Summary Retrieve
+// @Summary Retrieve user
 // @Description Get details of a specific user
 // @Tags Users
 //
@@ -60,7 +60,7 @@ func (uh *UserHandler) Show(c echo.Context) error {
 
 // Login authenticates a user and returns a JWT token.
 //
-// @Summary Authenticate
+// @Summary Authenticate user
 // @Description Authenticate a user and return a JWT token
 // @Tags Users
 //
@@ -98,7 +98,7 @@ func (uh *UserHandler) Login(c echo.Context) error {
 
 // Store creates a new user.
 //
-// @Summary Create
+// @Summary Create user
 // @Description Add a new user with a name, email, and password
 // @Tags Users
 //
@@ -136,7 +136,7 @@ func (uh *UserHandler) Store(c echo.Context) error {
 
 // Update updates a user.
 //
-// @Summary Update
+// @Summary Update user
 // @Description Update a user's details such as name, email, and password
 // @Tags Users
 //
@@ -180,7 +180,7 @@ func (uh *UserHandler) Update(c echo.Context) error {
 
 // Logout logs out a user by invalidating the JWT token.
 //
-// @Summary Logout
+// @Summary Logout user
 // @Description Invalidate the JWT token to log out a user
 // @Tags Users
 //

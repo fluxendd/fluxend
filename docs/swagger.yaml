@@ -618,7 +618,7 @@ paths:
           description: Unauthorized
         "500":
           description: Internal server error
-      summary: List
+      summary: List logs
       tags:
       - Logs
   /backups:
@@ -657,7 +657,7 @@ paths:
           description: Unauthorized
         "500":
           description: Internal server error
-      summary: List
+      summary: List backups
       tags:
       - Backups
     post:
@@ -701,7 +701,7 @@ paths:
           description: Unprocessable entity
         "500":
           description: Internal server error
-      summary: Create
+      summary: Create backup
       tags:
       - Backups
   /backups/{backupUUID}:
@@ -736,7 +736,7 @@ paths:
           description: Unauthorized
         "500":
           description: Internal server error
-      summary: Delete
+      summary: Delete backup
       tags:
       - Backups
     get:
@@ -777,7 +777,7 @@ paths:
           description: Unauthorized
         "500":
           description: Internal server error
-      summary: Retrieve
+      summary: Retrieve backup
       tags:
       - Backups
   /containers/{containerUUID}/files:
@@ -834,7 +834,7 @@ paths:
           description: Unauthorized
         "500":
           description: Internal server error
-      summary: List
+      summary: List files
       tags:
       - Files
     post:
@@ -876,7 +876,7 @@ paths:
           description: Unauthorized
         "500":
           description: Internal server error
-      summary: Create
+      summary: Create file
       tags:
       - Files
   /containers/{containerUUID}/files/{fileUUID}:
@@ -911,7 +911,7 @@ paths:
           description: Unauthorized
         "500":
           description: Internal server error
-      summary: Delete
+      summary: Delete file
       tags:
       - Files
     get:
@@ -952,7 +952,7 @@ paths:
           description: Unauthorized
         "500":
           description: Internal server error
-      summary: Retrieve
+      summary: Retrieve file
       tags:
       - Files
   /containers/{containerUUID}/files/{fileUUID}/rename:
@@ -1001,7 +1001,7 @@ paths:
           description: Unauthorized
         "500":
           description: Internal server error
-      summary: Rename
+      summary: Rename file
       tags:
       - Files
   /forms:
@@ -1058,7 +1058,7 @@ paths:
           description: Unauthorized
         "500":
           description: Internal server error
-      summary: List
+      summary: List forms
       tags:
       - Forms
     post:
@@ -1102,7 +1102,7 @@ paths:
           description: Unprocessable entity
         "500":
           description: Internal server error
-      summary: Create
+      summary: Create form
       tags:
       - Forms
   /forms/{formUUID}:
@@ -1137,7 +1137,7 @@ paths:
           description: Unauthorized
         "500":
           description: Internal server error
-      summary: Delete
+      summary: Delete form
       tags:
       - Forms
     get:
@@ -1178,7 +1178,7 @@ paths:
           description: Unauthorized
         "500":
           description: Internal server error
-      summary: Retrieve
+      summary: Retrieve form
       tags:
       - Forms
     put:
@@ -1227,7 +1227,7 @@ paths:
           description: Unprocessable entity
         "500":
           description: Internal server error
-      summary: Update
+      summary: Update form
       tags:
       - Forms
   /forms/{formUUID}/fields:
@@ -1268,7 +1268,7 @@ paths:
           description: Unauthorized
         "500":
           description: Internal server error
-      summary: List
+      summary: List fields
       tags:
       - Form Fields
     post:
@@ -1312,7 +1312,7 @@ paths:
           description: Unprocessable entity
         "500":
           description: Internal server error
-      summary: Create
+      summary: Create field
       tags:
       - Form Fields
   /forms/{formUUID}/fields/{fieldUUID}:
@@ -1347,7 +1347,7 @@ paths:
           description: Unauthorized
         "500":
           description: Internal server error
-      summary: Delete
+      summary: Delete field
       tags:
       - Form Fields
     get:
@@ -1388,7 +1388,7 @@ paths:
           description: Unauthorized
         "500":
           description: Internal server error
-      summary: Retrieve
+      summary: Retrieve field
       tags:
       - Form Fields
     put:
@@ -1437,7 +1437,7 @@ paths:
           description: Unprocessable entity
         "500":
           description: Internal server error
-      summary: Update
+      summary: Update field
       tags:
       - Form Fields
   /forms/{formUUID}/responses:
@@ -1481,7 +1481,7 @@ paths:
           description: Unauthorized
         "500":
           description: Internal server error
-      summary: List
+      summary: List form responses
       tags:
       - Form Responses
     post:
@@ -1530,7 +1530,7 @@ paths:
           description: Unprocessable entity
         "500":
           description: Internal server error
-      summary: Create
+      summary: Create form response
       tags:
       - Form Responses
   /forms/{formUUID}/responses/{formResponseUUID}:
@@ -1570,7 +1570,7 @@ paths:
           description: Unauthorized
         "500":
           description: Internal server error
-      summary: Delete
+      summary: Delete form response
       tags:
       - Form Responses
     get:
@@ -1616,7 +1616,7 @@ paths:
           description: Unauthorized
         "500":
           description: Internal server error
-      summary: Retrieve
+      summary: Retrieve form response
       tags:
       - Form Responses
   /functions/{schema}:
@@ -1667,7 +1667,7 @@ paths:
           description: Unauthorized
         "500":
           description: Internal server error
-      summary: List
+      summary: List functions
       tags:
       - Functions
     post:
@@ -1711,7 +1711,7 @@ paths:
           description: Unprocessable entity
         "500":
           description: Internal server error
-      summary: Create
+      summary: Create function
       tags:
       - Functions
   /functions/{schema}/{functionName}:
@@ -1756,7 +1756,7 @@ paths:
           description: Unauthorized
         "500":
           description: Internal server error
-      summary: Delete
+      summary: Delete function
       tags:
       - Functions
     get:
@@ -1802,7 +1802,7 @@ paths:
           description: Unauthorized
         "500":
           description: Internal server error
-      summary: Retrieve
+      summary: Retrieve function
       tags:
       - Functions
   /organizations:
@@ -1850,7 +1850,7 @@ paths:
           description: Unauthorized
         "500":
           description: Internal server error
-      summary: List
+      summary: List organizations
       tags:
       - Organizations
     post:
@@ -1889,7 +1889,7 @@ paths:
           description: Unprocessable entity
         "500":
           description: Internal server error
-      summary: Create
+      summary: Create organization
       tags:
       - Organizations
   /organizations/{organizationUUID}:
@@ -1919,7 +1919,7 @@ paths:
           description: Unauthorized
         "500":
           description: Internal server error
-      summary: Delete
+      summary: Delete organization
       tags:
       - Organizations
     get:
@@ -1957,7 +1957,7 @@ paths:
           description: Unprocessable entity
         "500":
           description: Internal server error
-      summary: Retrieve
+      summary: Retrieve organization
       tags:
       - Organizations
     put:
@@ -2001,7 +2001,7 @@ paths:
           description: Unprocessable entity
         "500":
           description: Internal server error
-      summary: Update
+      summary: Update organization
       tags:
       - Organizations
   /organizations/{organizationUUID}/users:
@@ -2042,7 +2042,7 @@ paths:
           description: Unprocessable entity
         "500":
           description: Internal server error
-      summary: List
+      summary: List organization members
       tags:
       - Organization Members
     post:
@@ -2086,7 +2086,7 @@ paths:
           description: Unprocessable entity
         "500":
           description: Internal server error
-      summary: Create
+      summary: Create organization member
       tags:
       - Organization Members
   /organizations/{organizationUUID}/users/{userUUID}:
@@ -2123,7 +2123,7 @@ paths:
           description: Unprocessable entity
         "500":
           description: Internal server error
-      summary: Delete
+      summary: Delete organization member
       tags:
       - Organization Members
   /projects:
@@ -2178,7 +2178,7 @@ paths:
           description: Unauthorized
         "500":
           description: Internal server error
-      summary: List
+      summary: List projects
       tags:
       - Projects
     post:
@@ -2222,7 +2222,7 @@ paths:
           description: Unprocessable entity
         "500":
           description: Internal server error
-      summary: Create
+      summary: Create project
       tags:
       - Projects
   /projects/{projectUUID}:
@@ -2254,7 +2254,7 @@ paths:
           description: Unauthorized
         "500":
           description: Internal server error
-      summary: Delete
+      summary: Delete project
       tags:
       - Projects
     get:
@@ -2292,7 +2292,7 @@ paths:
           description: Unprocessable entity
         "500":
           description: Internal server error
-      summary: Retrieve
+      summary: Retrieve project
       tags:
       - Projects
     put:
@@ -2336,7 +2336,7 @@ paths:
           description: Unprocessable entity
         "500":
           description: Internal server error
-      summary: Update
+      summary: Update project
       tags:
       - Projects
   /storage:
@@ -2391,7 +2391,7 @@ paths:
           description: Unauthorized
         "500":
           description: Internal server error
-      summary: List
+      summary: List containers
       tags:
       - Containers
     post:
@@ -2435,7 +2435,7 @@ paths:
           description: Unprocessable entity
         "500":
           description: Internal server error
-      summary: Create
+      summary: Create container
       tags:
       - Containers
   /storage/containers/{containerUUID}:
@@ -2470,7 +2470,7 @@ paths:
           description: Unauthorized
         "500":
           description: Internal server error
-      summary: Delete
+      summary: Delete container
       tags:
       - Containers
     get:
@@ -2513,7 +2513,7 @@ paths:
           description: Unprocessable entity
         "500":
           description: Internal server error
-      summary: Retrieve
+      summary: Retrieve container
       tags:
       - Containers
     put:
@@ -2562,7 +2562,7 @@ paths:
           description: Unprocessable entity
         "500":
           description: Internal server error
-      summary: Update
+      summary: Update container
       tags:
       - Containers
   /tables:
@@ -2601,7 +2601,7 @@ paths:
           description: Unauthorized
         "500":
           description: Internal server error
-      summary: List
+      summary: List tables
       tags:
       - Tables
     post:
@@ -2645,7 +2645,7 @@ paths:
           description: Unprocessable entity
         "500":
           description: Internal server error
-      summary: Create
+      summary: Create table
       tags:
       - Tables
   /tables/{fullTableName}/columns:
@@ -2684,7 +2684,7 @@ paths:
           description: Unauthorized
         "500":
           description: Internal server error
-      summary: List
+      summary: List columns
       tags:
       - Columns
     post:
@@ -2733,7 +2733,7 @@ paths:
           description: Unprocessable entity
         "500":
           description: Internal server error
-      summary: Create
+      summary: Create column
       tags:
       - Columns
     put:
@@ -2782,7 +2782,7 @@ paths:
           description: Unprocessable entity
         "500":
           description: Internal server error
-      summary: Modify
+      summary: Modify columns
       tags:
       - Columns
   /tables/{fullTableName}/columns/{columnName}:
@@ -2824,7 +2824,7 @@ paths:
           description: Column not found
         "500":
           description: Internal server error
-      summary: Delete
+      summary: Delete column
       tags:
       - Columns
     put:
@@ -2873,7 +2873,7 @@ paths:
           description: Unprocessable entity
         "500":
           description: Internal server error
-      summary: Rename
+      summary: Rename column
       tags:
       - Columns
   /tables/{tableUUID}:
@@ -2910,7 +2910,7 @@ paths:
           description: Table not found
         "500":
           description: Internal server error
-      summary: Delete
+      summary: Delete table
       tags:
       - Tables
     get:
@@ -2953,7 +2953,7 @@ paths:
           description: Table not found
         "500":
           description: Internal server error
-      summary: Retrieve
+      summary: Retrieve table
       tags:
       - Tables
   /tables/{tableUUID}/duplicate:
@@ -3003,7 +3003,7 @@ paths:
           description: Unprocessable entity
         "500":
           description: Internal server error
-      summary: Duplicate
+      summary: Duplicate table
       tags:
       - Tables
   /tables/{tableUUID}/indexes:
@@ -3041,7 +3041,7 @@ paths:
           description: Unauthorized
         "500":
           description: Internal server error
-      summary: List
+      summary: List indexes
       tags:
       - Indexes
     post:
@@ -3084,7 +3084,7 @@ paths:
           description: Unprocessable entity
         "500":
           description: Internal server error
-      summary: Create
+      summary: Create index
       tags:
       - Indexes
   /tables/{tableUUID}/indexes/{indexName}:
@@ -3121,7 +3121,7 @@ paths:
           description: Index not found
         "500":
           description: Internal server error
-      summary: Delete
+      summary: Delete index
       tags:
       - Indexes
     get:
@@ -3163,7 +3163,7 @@ paths:
           description: Index not found
         "500":
           description: Internal server error
-      summary: Retrieve
+      summary: Retrieve index
       tags:
       - Indexes
   /tables/{tableUUID}/rename:
@@ -3213,7 +3213,7 @@ paths:
           description: Unprocessable entity
         "500":
           description: Internal server error
-      summary: Rename
+      summary: Rename table
       tags:
       - Tables
   /tables/upload:
@@ -3258,7 +3258,7 @@ paths:
           description: Unprocessable entity
         "500":
           description: Internal server error
-      summary: Upload
+      summary: Upload table
       tags:
       - Tables
   /users:
@@ -3291,7 +3291,7 @@ paths:
           description: Unprocessable entity
         "500":
           description: Internal server error
-      summary: Create
+      summary: Create user
       tags:
       - Users
   /users/{userUUID}:
@@ -3328,7 +3328,7 @@ paths:
           description: Unauthorized
         "500":
           description: Internal server error
-      summary: Retrieve
+      summary: Retrieve user
       tags:
       - Users
     put:
@@ -3372,7 +3372,7 @@ paths:
           description: Unprocessable entity
         "500":
           description: Internal server error
-      summary: Update
+      summary: Update user
       tags:
       - Users
   /users/login:
@@ -3405,7 +3405,7 @@ paths:
           description: Unauthorized
         "500":
           description: Internal server error
-      summary: Authenticate
+      summary: Authenticate user
       tags:
       - Users
   /users/logout:
@@ -3432,7 +3432,7 @@ paths:
           description: Unauthorized
         "500":
           description: Internal server error
-      summary: Logout
+      summary: Logout user
       tags:
       - Users
 swagger: "2.0"

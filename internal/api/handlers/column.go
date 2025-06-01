@@ -24,7 +24,7 @@ func NewColumnHandler(injector *do.Injector) (*ColumnHandler, error) {
 
 // List retrieves all columns within a project.
 //
-// @Summary List
+// @Summary List columns
 // @Description Retrieve a list of columns in a specified table.
 // @Tags Columns
 //
@@ -63,7 +63,7 @@ func (ch *ColumnHandler) List(c echo.Context) error {
 
 // Store adds new columns to a table.
 //
-// @Summary Create
+// @Summary Create column
 // @Description Create new columns in a specified table within a project.
 // @Tags Columns
 //
@@ -106,7 +106,7 @@ func (ch *ColumnHandler) Store(c echo.Context) error {
 
 // Alter modifies column types in a table.
 //
-// @Summary Modify
+// @Summary Modify columns
 // @Description Alter the data type of existing columns in a specified table.
 // @Tags Columns
 //
@@ -149,7 +149,7 @@ func (ch *ColumnHandler) Alter(c echo.Context) error {
 
 // Rename updates the name of an existing column.
 //
-// @Summary Rename
+// @Summary Rename column
 // @Description Change the name of a specific column in a given table.
 // @Tags Columns
 //
@@ -193,7 +193,7 @@ func (ch *ColumnHandler) Rename(c echo.Context) error {
 
 // Delete removes a column from a table.
 //
-// @Summary Delete
+// @Summary Delete column
 // @Description Permanently delete a specific column from a given table.
 // @Tags Columns
 //
