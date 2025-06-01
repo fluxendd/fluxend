@@ -11,7 +11,6 @@
         "version": "1.0"
     },
     "host": "api.fluxend.app",
-    "basePath": "/v2",
     "paths": {
         "/admin/logs": {
             "get": {

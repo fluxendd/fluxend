@@ -1,4 +1,3 @@
-basePath: /v2
 definitions:
   backup.Response:
     properties:

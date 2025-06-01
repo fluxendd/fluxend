@@ -16,7 +16,6 @@ import (
 // @contact.email hello@fluxend.app
 
 // @host api.fluxend.app
-// @BasePath /v2
 func main() {
 	if err := godotenv.Load(); err != nil {
 		log.Fatalf("Error loading .env file: %v", err)
