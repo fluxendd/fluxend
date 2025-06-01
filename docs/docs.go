@@ -5374,7 +5374,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "fluxend.app/api",
+	Host:             "api.fluxend.app",
 	BasePath:         "/v2",
 	Schemes:          []string{},
 	Title:            "Fluxend API",

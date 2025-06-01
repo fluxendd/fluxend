@@ -539,7 +539,7 @@ definitions:
       projectUUID:
         type: string
     type: object
-host: fluxend.app/api
+host: api.fluxend.app
 info:
   contact:
     email: hello@fluxend.app
