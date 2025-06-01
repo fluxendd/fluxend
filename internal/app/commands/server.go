@@ -13,6 +13,7 @@ import (
 	echoSentry "github.com/getsentry/sentry-go/echo"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/rs/zerolog/log"
 	"github.com/samber/do"
 	"github.com/spf13/cobra"
 	echoSwagger "github.com/swaggo/echo-swagger"
@@ -30,6 +31,8 @@ var serverCmd = &cobra.Command{
 
 func startServer() {
 	e := setupServer(app.InitializeContainer())
+	validateEnvVariables()
+
 	e.Logger.Fatal(e.Start("0.0.0.0:8080"))
 }
 
@@ -102,6 +105,42 @@ func registerRoutes(e *echo.Echo, container *do.Injector) {
 	routes.RegisterBackup(e, container, authMiddleware, allowBackupMiddleware)
 
 	e.GET("/docs/*", echoSwagger.WrapHandler)
+}
+
+func validateEnvVariables() {
+	requiredVars := []string{
+		"APP_ENV",
+		"BASE_URL",
+		"APP_URL",
+		"API_URL",
+		"VITE_FLX_API_BASE_URL",
+		"VITE_FLX_DEFAULT_ACCEPT_HEADER",
+		"VITE_FLX_DEFAULT_CONTENT_TYPE",
+		"APP_CONTAINER_NAME",
+		"DATABASE_CONTAINER_NAME",
+		"FRONTEND_CONTAINER_NAME",
+		"DATABASE_HOST",
+		"DATABASE_USER",
+		"DATABASE_PASSWORD",
+		"DATABASE_NAME",
+		"JWT_SECRET",
+		"STORAGE_DRIVER",
+		"POSTGREST_DB_HOST",
+		"POSTGREST_DB_USER",
+		"POSTGREST_DB_PASSWORD",
+		"POSTGREST_DEFAULT_SCHEMA",
+		"POSTGREST_DEFAULT_ROLE",
+	}
+
+	for _, envVar := range requiredVars {
+		if os.Getenv(envVar) == "" {
+			log.Fatal().Msg(fmt.Sprintf("Environment variable %s is required but not set", envVar))
+		}
+	}
+
+	if len(os.Getenv("JWT_SECRET")) < constants.JWTSecretMinLength {
+		log.Fatal().Msg(fmt.Sprintf("JWT_SECRET must be at least %d characters long", constants.JWTSecretMinLength))
+	}
 }
 
 func isOriginAllowed(origin string) bool {
