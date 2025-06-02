@@ -2,17 +2,19 @@ package repositories
 
 import (
 	"fluxend/internal/domain/database"
+	"fluxend/internal/domain/shared"
 	"fmt"
-	"github.com/jmoiron/sqlx"
 	"github.com/lib/pq"
+	"github.com/samber/do"
 )
 
 type ColumnRepository struct {
-	connection *sqlx.DB
+	db shared.DB
 }
 
-func NewColumnRepository(connection *sqlx.DB) (database.ColumnRepository, error) {
-	return &ColumnRepository{connection: connection}, nil
+func NewColumnRepository(injector *do.Injector) (database.ColumnRepository, error) {
+	db := do.MustInvoke[shared.DB](injector)
+	return &ColumnRepository{db: db}, nil
 }
 
 func (r *ColumnRepository) List(tableName string) ([]database.Column, error) {
@@ -42,29 +44,12 @@ func (r *ColumnRepository) List(tableName string) ([]database.Column, error) {
 		  AND a.attnum > 0
 		  AND NOT a.attisdropped
 		ORDER BY a.attnum;
-
 	`
-	err := r.connection.Select(&columns, query, tableName)
-	if err != nil {
-		return nil, err
-	}
-
-	return columns, nil
+	return columns, r.db.SelectList(&columns, query, tableName)
 }
 
 func (r *ColumnRepository) Has(tableName, columnName string) (bool, error) {
-	var count int
-	query := `
-		SELECT COUNT(*)
-		FROM information_schema.columns
-		WHERE table_name = $1 AND column_name = $2
-	`
-	err := r.connection.Get(&count, query, tableName, columnName)
-	if err != nil {
-		return false, err
-	}
-
-	return count > 0, nil
+	return r.db.Exists("information_schema.columns", "table_name = $1 AND column_name = $2", tableName, columnName)
 }
 
 func (r *ColumnRepository) HasAny(tableName string, columns []database.Column) (bool, error) {
@@ -77,7 +62,7 @@ func (r *ColumnRepository) HasAny(tableName string, columns []database.Column) (
 		AND column_name = ANY($2)
 	`
 
-	err := r.connection.Get(&count, query, tableName, pq.Array(columnNames))
+	err := r.db.Get(&count, query, tableName, pq.Array(columnNames))
 	if err != nil {
 		return false, err
 	}
@@ -95,7 +80,7 @@ func (r *ColumnRepository) HasAll(tableName string, columns []database.Column) (
 		AND column_name = ANY($2)
 	`
 
-	err := r.connection.Get(&count, query, tableName, pq.Array(columnNames))
+	err := r.db.Get(&count, query, tableName, pq.Array(columnNames))
 	if err != nil {
 		return false, err
 	}
@@ -104,26 +89,27 @@ func (r *ColumnRepository) HasAll(tableName string, columns []database.Column) (
 }
 
 func (r *ColumnRepository) CreateOne(tableName string, column database.Column) error {
-	def := r.BuildColumnDefinition(column)
-	addColumnQuery := fmt.Sprintf("ALTER TABLE %s ADD COLUMN %s;", tableName, def)
+	return r.db.WithTransaction(func(tx shared.Tx) error {
+		def := r.BuildColumnDefinition(column)
+		addColumnQuery := fmt.Sprintf("ALTER TABLE %s ADD COLUMN %s;", tableName, def)
 
-	if _, err := r.connection.Exec(addColumnQuery); err != nil {
-		return fmt.Errorf("failed to add column: %w", err)
-	}
-
-	if fkQuery, ok := r.BuildForeignKeyConstraint(tableName, column); ok {
-		if _, err := r.connection.Exec(fkQuery); err != nil {
-			return fmt.Errorf("failed to add foreign key constraint: %w", err)
+		if _, err := tx.Exec(addColumnQuery); err != nil {
+			return fmt.Errorf("failed to add column: %w", err)
 		}
-	}
 
-	return nil
+		if fkQuery, ok := r.BuildForeignKeyConstraint(tableName, column); ok {
+			if _, err := tx.Exec(fkQuery); err != nil {
+				return fmt.Errorf("failed to add foreign key constraint: %w", err)
+			}
+		}
+
+		return nil
+	})
 }
 
 func (r *ColumnRepository) CreateMany(tableName string, fields []database.Column) error {
 	for _, field := range fields {
-		err := r.CreateOne(tableName, field)
-		if err != nil {
+		if err := r.CreateOne(tableName, field); err != nil {
 			return err
 		}
 	}
@@ -132,26 +118,25 @@ func (r *ColumnRepository) CreateMany(tableName string, fields []database.Column
 }
 
 func (r *ColumnRepository) AlterOne(tableName string, columns []database.Column) error {
-	for _, column := range columns {
-		query := fmt.Sprintf(
-			"ALTER TABLE %s ALTER COLUMN %s TYPE %s",
-			tableName,
-			pq.QuoteIdentifier(column.Name),
-			pq.QuoteIdentifier(column.Type),
-		)
-		_, err := r.connection.Exec(query)
-		if err != nil {
-			return err
+	return r.db.WithTransaction(func(tx shared.Tx) error {
+		for _, column := range columns {
+			query := fmt.Sprintf(
+				"ALTER TABLE %s ALTER COLUMN %s TYPE %s",
+				tableName,
+				pq.QuoteIdentifier(column.Name),
+				pq.QuoteIdentifier(column.Type),
+			)
+			if _, err := tx.Exec(query); err != nil {
+				return err
+			}
 		}
-	}
-
-	return nil
+		return nil
+	})
 }
 
 func (r *ColumnRepository) AlterMany(tableName string, fields []database.Column) error {
 	for _, field := range fields {
-		err := r.AlterOne(tableName, []database.Column{field})
-		if err != nil {
+		if err := r.AlterOne(tableName, []database.Column{field}); err != nil {
 			return err
 		}
 	}
@@ -166,22 +151,14 @@ func (r *ColumnRepository) Rename(tableName, oldColumnName, newColumnName string
 		pq.QuoteIdentifier(oldColumnName),
 		pq.QuoteIdentifier(newColumnName),
 	)
-	_, err := r.connection.Exec(query)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	_, err := r.db.ExecWithRowsAffected(query)
+	return err
 }
 
 func (r *ColumnRepository) Drop(tableName, columnName string) error {
 	query := fmt.Sprintf("ALTER TABLE %s DROP COLUMN %s", tableName, pq.QuoteIdentifier(columnName))
-	_, err := r.connection.Exec(query)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	_, err := r.db.ExecWithRowsAffected(query)
+	return err
 }
 
 func (r *ColumnRepository) mapColumnsToNames(columns []database.Column) []string {
