@@ -3048,6 +3048,63 @@
                 }
             }
         },
+        "/projects/{projectUUID}/stats": {
+            "get": {
+                "description": "Get statistics for project",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "Retrieve project statistics",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Project UUID",
+                        "name": "projectUUID",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Stats for project",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "content": {
+                                            "$ref": "#/definitions/stat.Response"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
         "/storage": {
             "get": {
                 "description": "Retrieve a list of container in a specified project.",
@@ -5562,6 +5619,83 @@
                     "items": {
                         "$ref": "#/definitions/setting.IndividualSetting"
                     }
+                }
+            }
+        },
+        "stat.Response": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "databaseName": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "indexSize": {
+                    "type": "string"
+                },
+                "tableCount": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/stats.TableRowCount"
+                    }
+                },
+                "tableSize": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/stats.TableSize"
+                    }
+                },
+                "totalSize": {
+                    "type": "string"
+                },
+                "unusedIndex": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/stats.UnusedIndex"
+                    }
+                }
+            }
+        },
+        "stats.TableRowCount": {
+            "type": "object",
+            "properties": {
+                "estimatedRowCount": {
+                    "type": "integer"
+                },
+                "tableName": {
+                    "type": "string"
+                }
+            }
+        },
+        "stats.TableSize": {
+            "type": "object",
+            "properties": {
+                "tableName": {
+                    "type": "string"
+                },
+                "totalSize": {
+                    "type": "string"
+                }
+            }
+        },
+        "stats.UnusedIndex": {
+            "type": "object",
+            "properties": {
+                "indexName": {
+                    "type": "string"
+                },
+                "indexScans": {
+                    "type": "integer"
+                },
+                "indexSize": {
+                    "type": "string"
+                },
+                "tableName": {
+                    "type": "string"
                 }
             }
         },
