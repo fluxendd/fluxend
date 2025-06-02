@@ -10,16 +10,15 @@ import (
 	flxErrs "fluxend/pkg/errors"
 	"fmt"
 	"github.com/google/uuid"
-	"github.com/jmoiron/sqlx"
 	"github.com/samber/do"
 )
 
 type OrganizationRepository struct {
-	db *sqlx.DB
+	db shared.DB
 }
 
 func NewOrganizationRepository(injector *do.Injector) (organization.Repository, error) {
-	db := do.MustInvoke[*sqlx.DB](injector)
+	db := do.MustInvoke[shared.DB](injector)
 	return &OrganizationRepository{db: db}, nil
 }
 
@@ -88,7 +87,7 @@ func (r *OrganizationRepository) ListUsers(organizationUUID uuid.UUID) ([]user.U
 	`
 
 	query = fmt.Sprintf(query, pkg.GetColumnsWithAlias[user.User]("users"))
-	rows, err := r.db.Queryx(query, organizationUUID)
+	rows, err := r.db.Query(query, organizationUUID)
 	if err != nil {
 		return nil, pkg.FormatError(err, "select", pkg.GetMethodName())
 	}
@@ -97,7 +96,7 @@ func (r *OrganizationRepository) ListUsers(organizationUUID uuid.UUID) ([]user.U
 	var users []user.User
 	for rows.Next() {
 		var currentUser user.User
-		if err := rows.StructScan(&currentUser); err != nil {
+		if err := rows.Scan(&currentUser); err != nil {
 			return nil, pkg.FormatError(err, "scan", pkg.GetMethodName())
 		}
 		users = append(users, currentUser)
@@ -267,7 +266,7 @@ func (r *OrganizationRepository) IsOrganizationMember(organizationUUID, authUser
 	return exists, nil
 }
 
-func (r *OrganizationRepository) createOrganizationUser(tx *sqlx.Tx, organizationUUID, userId uuid.UUID) error {
+func (r *OrganizationRepository) createOrganizationUser(tx shared.Tx, organizationUUID, userId uuid.UUID) error {
 	query := "INSERT INTO fluxend.organization_members (organization_uuid, user_uuid) VALUES ($1, $2)"
 	_, err := tx.Exec(query, organizationUUID, userId)
 	if err != nil {
