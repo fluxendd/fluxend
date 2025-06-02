@@ -1,6 +1,7 @@
 package client
 
 import (
+	sqlxAdapter "fluxend/internal/adapters/sqlx"
 	"fluxend/internal/database/repositories"
 	"fluxend/internal/domain/database"
 	"fluxend/internal/domain/shared"
@@ -30,7 +31,19 @@ func (s *ServiceImpl) GetDatabaseStatsRepo(databaseName string, connection *sqlx
 		return nil, nil, err
 	}
 
-	clientDatabaseStatsRepo, err := repositories.NewDatabaseStatsRepository(clientDatabaseConnection)
+	// Create a new injector with the client database connection
+	clientInjector := do.New()
+
+	// Register the raw sqlx.DB connection
+	do.ProvideValue(clientInjector, clientDatabaseConnection)
+
+	// Register the database adapter
+	do.Provide(clientInjector, func(i *do.Injector) (shared.DB, error) {
+		sqlxDB := do.MustInvoke[*sqlx.DB](i)
+		return sqlxAdapter.NewAdapter(sqlxDB), nil
+	})
+
+	clientDatabaseStatsRepo, err := repositories.NewDatabaseStatsRepository(clientInjector)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -44,7 +57,9 @@ func (s *ServiceImpl) GetTableRepo(databaseName string, connection *sqlx.DB) (in
 		return nil, nil, err
 	}
 
-	clientTableRepo, err := repositories.NewTableRepository(clientDatabaseConnection)
+	clientInjector := s.createClientInjector(clientDatabaseConnection)
+
+	clientTableRepo, err := repositories.NewTableRepository(clientInjector)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -58,7 +73,9 @@ func (s *ServiceImpl) GetFunctionRepo(databaseName string, connection *sqlx.DB) 
 		return nil, nil, err
 	}
 
-	clientFunctionRepo, err := repositories.NewFunctionRepository(clientDatabaseConnection)
+	clientInjector := s.createClientInjector(clientDatabaseConnection)
+
+	clientFunctionRepo, err := repositories.NewFunctionRepository(clientInjector)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -72,7 +89,9 @@ func (s *ServiceImpl) GetColumnRepo(databaseName string, connection *sqlx.DB) (i
 		return nil, nil, err
 	}
 
-	clientColumnRepo, err := repositories.NewColumnRepository(clientDatabaseConnection)
+	clientInjector := s.createClientInjector(clientDatabaseConnection)
+
+	clientColumnRepo, err := repositories.NewColumnRepository(clientInjector)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -86,7 +105,9 @@ func (s *ServiceImpl) GetIndexRepo(databaseName string, connection *sqlx.DB) (in
 		return nil, nil, err
 	}
 
-	clientIndexRepo, err := repositories.NewIndexRepository(clientDatabaseConnection)
+	clientInjector := s.createClientInjector(clientDatabaseConnection)
+
+	clientIndexRepo, err := repositories.NewIndexRepository(clientInjector)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -100,12 +121,14 @@ func (s *ServiceImpl) GetRowRepo(databaseName string, connection *sqlx.DB) (inte
 		return nil, nil, err
 	}
 
-	clientIndexRepo, err := repositories.NewRowRepository(clientDatabaseConnection)
+	clientInjector := s.createClientInjector(clientDatabaseConnection)
+
+	clientRowRepo, err := repositories.NewRowRepository(clientInjector)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	return clientIndexRepo, clientDatabaseConnection, nil
+	return clientRowRepo, clientDatabaseConnection, nil
 }
 
 func (s *ServiceImpl) getOrCreateConnection(databaseName string, connection *sqlx.DB) (*sqlx.DB, error) {
@@ -114,4 +137,18 @@ func (s *ServiceImpl) getOrCreateConnection(databaseName string, connection *sql
 	}
 
 	return s.databaseRepo.Connect(databaseName)
+}
+
+// Helper method to create a dependency injector for client database connections
+func (s *ServiceImpl) createClientInjector(clientConnection *sqlx.DB) *do.Injector {
+	clientInjector := do.New()
+
+	do.ProvideValue(clientInjector, clientConnection)
+
+	do.Provide(clientInjector, func(i *do.Injector) (shared.DB, error) {
+		sqlxDB := do.MustInvoke[*sqlx.DB](i)
+		return sqlxAdapter.NewAdapter(sqlxDB), nil
+	})
+
+	return clientInjector
 }
