@@ -166,6 +166,16 @@ func (a *Adapter) ExecWithRowsAffected(query string, args ...interface{}) (int64
 	return rowsAffected, nil
 }
 
+// ExecWithErr executes a query and returns only if error occurs
+func (a *Adapter) ExecWithErr(query string, args ...interface{}) error {
+	_, err := a.db.Exec(query, args...)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // NamedExecWithRowsAffected executes a named query and returns the number of rows affected
 func (a *Adapter) NamedExecWithRowsAffected(query string, arg interface{}) (int64, error) {
 	res, err := a.db.NamedExec(query, arg)

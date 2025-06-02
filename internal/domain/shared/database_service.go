@@ -44,6 +44,7 @@ type DB interface {
 	SelectNamedList(dest interface{}, query string, arg interface{}) error
 	GetWithNotFound(dest interface{}, notFoundMsg string, query string, args ...interface{}) error
 	Exists(table, condition string, args ...interface{}) (bool, error)
+	ExecWithErr(query string, args ...interface{}) error
 	ExecWithRowsAffected(query string, args ...interface{}) (int64, error)
 	NamedExecWithRowsAffected(query string, arg interface{}) (int64, error)
 	WithTransaction(fn func(tx Tx) error) error
