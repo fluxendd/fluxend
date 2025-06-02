@@ -1,25 +1,21 @@
 package repositories
 
 import (
-	"database/sql"
-	"errors"
 	"fluxend/internal/domain/organization"
 	"fluxend/internal/domain/shared"
 	"fluxend/internal/domain/user"
 	"fluxend/pkg"
-	flxErrs "fluxend/pkg/errors"
 	"fmt"
 	"github.com/google/uuid"
-	"github.com/jmoiron/sqlx"
 	"github.com/samber/do"
 )
 
 type OrganizationRepository struct {
-	db *sqlx.DB
+	db shared.DB
 }
 
 func NewOrganizationRepository(injector *do.Injector) (organization.Repository, error) {
-	db := do.MustInvoke[*sqlx.DB](injector)
+	db := do.MustInvoke[shared.DB](injector)
 	return &OrganizationRepository{db: db}, nil
 }
 
@@ -41,7 +37,6 @@ func (r *OrganizationRepository) ListForUser(paginationParams shared.PaginationP
 			:limit 
 		OFFSET 
 			:offset;
-
 	`
 
 	query = fmt.Sprintf(query, pkg.GetColumnsWithAlias[organization.Organization]("organizations"))
@@ -53,26 +48,8 @@ func (r *OrganizationRepository) ListForUser(paginationParams shared.PaginationP
 		"offset":    offset,
 	}
 
-	rows, err := r.db.NamedQuery(query, params)
-	if err != nil {
-		return nil, pkg.FormatError(err, "select", pkg.GetMethodName())
-	}
-	defer rows.Close()
-
 	var organizations []organization.Organization
-	for rows.Next() {
-		var currentOrganization organization.Organization
-		if err := rows.StructScan(&currentOrganization); err != nil {
-			return nil, pkg.FormatError(err, "scan", pkg.GetMethodName())
-		}
-		organizations = append(organizations, currentOrganization)
-	}
-
-	if err := rows.Err(); err != nil {
-		return nil, pkg.FormatError(err, "iterate", pkg.GetMethodName())
-	}
-
-	return organizations, nil
+	return organizations, r.db.SelectNamedList(&organizations, query, params)
 }
 
 func (r *OrganizationRepository) ListUsers(organizationUUID uuid.UUID) ([]user.User, error) {
@@ -88,26 +65,9 @@ func (r *OrganizationRepository) ListUsers(organizationUUID uuid.UUID) ([]user.U
 	`
 
 	query = fmt.Sprintf(query, pkg.GetColumnsWithAlias[user.User]("users"))
-	rows, err := r.db.Queryx(query, organizationUUID)
-	if err != nil {
-		return nil, pkg.FormatError(err, "select", pkg.GetMethodName())
-	}
-	defer rows.Close()
 
 	var users []user.User
-	for rows.Next() {
-		var currentUser user.User
-		if err := rows.StructScan(&currentUser); err != nil {
-			return nil, pkg.FormatError(err, "scan", pkg.GetMethodName())
-		}
-		users = append(users, currentUser)
-	}
-
-	if err := rows.Err(); err != nil {
-		return nil, pkg.FormatError(err, "iterate", pkg.GetMethodName())
-	}
-
-	return users, nil
+	return users, r.db.SelectList(&users, query, organizationUUID)
 }
 
 func (r *OrganizationRepository) GetUser(organizationUUID, userUUID uuid.UUID) (user.User, error) {
@@ -124,16 +84,7 @@ func (r *OrganizationRepository) GetUser(organizationUUID, userUUID uuid.UUID) (
 	query = fmt.Sprintf(query, pkg.GetColumnsWithAlias[user.User]("users"))
 
 	var currentUser user.User
-	err := r.db.Get(&currentUser, query, organizationUUID, userUUID)
-	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return user.User{}, flxErrs.NewNotFoundError("organization.error.userNotFound")
-		}
-
-		return user.User{}, pkg.FormatError(err, "fetch", pkg.GetMethodName())
-	}
-
-	return currentUser, nil
+	return currentUser, r.db.GetWithNotFound(&currentUser, "organization.error.userNotFound", query, organizationUUID, userUUID)
 }
 
 func (r *OrganizationRepository) CreateUser(organizationUUID, userUUID uuid.UUID) error {
@@ -147,13 +98,7 @@ func (r *OrganizationRepository) CreateUser(organizationUUID, userUUID uuid.UUID
 }
 
 func (r *OrganizationRepository) DeleteUser(organizationUUID, userUUID uuid.UUID) error {
-	query := "DELETE FROM fluxend.organization_members WHERE organization_uuid = $1 AND user_uuid = $2"
-	_, err := r.db.Exec(query, organizationUUID, userUUID)
-	if err != nil {
-		return pkg.FormatError(err, "delete", pkg.GetMethodName())
-	}
-
-	return nil
+	return r.db.ExecWithErr("DELETE FROM fluxend.organization_members WHERE organization_uuid = $1 AND user_uuid = $2", organizationUUID, userUUID)
 }
 
 func (r *OrganizationRepository) GetByUUID(organizationUUID uuid.UUID) (organization.Organization, error) {
@@ -161,64 +106,28 @@ func (r *OrganizationRepository) GetByUUID(organizationUUID uuid.UUID) (organiza
 	query = fmt.Sprintf(query, pkg.GetColumns[organization.Organization]())
 
 	var fetchedOrganization organization.Organization
-	err := r.db.Get(&fetchedOrganization, query, organizationUUID)
-	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return organization.Organization{}, flxErrs.NewNotFoundError("organization.error.notFound")
-		}
-
-		return organization.Organization{}, pkg.FormatError(err, "fetch", pkg.GetMethodName())
-	}
-
-	return fetchedOrganization, nil
+	return fetchedOrganization, r.db.GetWithNotFound(&fetchedOrganization, "organization.error.notFound", query, organizationUUID)
 }
 
 func (r *OrganizationRepository) ExistsByID(organizationUUID uuid.UUID) (bool, error) {
-	query := "SELECT EXISTS(SELECT 1 FROM fluxend.organizations WHERE uuid = $1)"
-	var exists bool
-	err := r.db.Get(&exists, query, organizationUUID)
-	if err != nil {
-		return false, pkg.FormatError(err, "fetch", pkg.GetMethodName())
-	}
-
-	return exists, nil
+	return r.db.Exists("fluxend.organizations", "uuid = $1", organizationUUID)
 }
 
 func (r *OrganizationRepository) Create(organization *organization.Organization, authUserID uuid.UUID) (*organization.Organization, error) {
-	tx, err := r.db.Beginx()
-	if err != nil {
-		return nil, pkg.FormatError(err, "transactionBegin", pkg.GetMethodName())
-	}
-
-	// Insert into organizations table
-	query := "INSERT INTO fluxend.organizations (name, created_by, updated_by) VALUES ($1, $2, $3) RETURNING uuid"
-	queryErr := tx.QueryRowx(query, organization.Name, organization.CreatedBy, organization.UpdatedBy).Scan(&organization.Uuid)
-	if queryErr != nil {
-		err := tx.Rollback()
-		if err != nil {
-			return nil, err
+	return organization, r.db.WithTransaction(func(tx shared.Tx) error {
+		// Insert into organizations table
+		query := "INSERT INTO fluxend.organizations (name, created_by, updated_by) VALUES ($1, $2, $3) RETURNING uuid"
+		if err := tx.QueryRowx(query, organization.Name, organization.CreatedBy, organization.UpdatedBy).Scan(&organization.Uuid); err != nil {
+			return fmt.Errorf("could not create organization: %v", err)
 		}
 
-		return nil, fmt.Errorf("could not create organization: %v", queryErr)
-	}
-
-	// Insert into organization_members pivot table
-	queryErr = r.createOrganizationUser(tx, organization.Uuid, authUserID)
-	if queryErr != nil {
-		err := tx.Rollback()
-		if err != nil {
-			return nil, err
+		// Insert into organization_members pivot table
+		if err := r.createOrganizationUser(tx, organization.Uuid, authUserID); err != nil {
+			return fmt.Errorf("could not insert into pivot table: %v", err)
 		}
 
-		return nil, fmt.Errorf("could not insert into pivot table: %v", queryErr)
-	}
-
-	// Commit transaction
-	if err = tx.Commit(); err != nil {
-		return nil, pkg.FormatError(err, "transactionCommit", pkg.GetMethodName())
-	}
-
-	return organization, nil
+		return nil
+	})
 }
 
 func (r *OrganizationRepository) Update(organizationInput *organization.Organization) (*organization.Organization, error) {
@@ -227,47 +136,26 @@ func (r *OrganizationRepository) Update(organizationInput *organization.Organiza
 		SET name = :name, updated_at = :updated_at, updated_by = :updated_by 
 		WHERE uuid = :uuid`
 
-	res, err := r.db.NamedExec(query, organizationInput)
-	if err != nil {
-		return &organization.Organization{}, pkg.FormatError(err, "update", pkg.GetMethodName())
-	}
+	err := r.db.ExecWithErr(query, organizationInput)
 
-	_, err = res.RowsAffected()
-	if err != nil {
-		return &organization.Organization{}, pkg.FormatError(err, "affectedRows", pkg.GetMethodName())
-	}
-
-	return organizationInput, nil
+	return organizationInput, err
 }
 
 func (r *OrganizationRepository) Delete(organizationUUID uuid.UUID) (bool, error) {
-	query := "DELETE FROM fluxend.organizations WHERE uuid = $1"
-	res, err := r.db.Exec(query, organizationUUID)
+	rowsAffected, err := r.db.ExecWithRowsAffected("DELETE FROM fluxend.organizations WHERE uuid = $1", organizationUUID)
 	if err != nil {
-		return false, pkg.FormatError(err, "delete", pkg.GetMethodName())
-	}
-
-	rowsAffected, err := res.RowsAffected()
-	if err != nil {
-		return false, pkg.FormatError(err, "affectedRows", pkg.GetMethodName())
+		return false, err
 	}
 
 	return rowsAffected == 1, nil
 }
 
 func (r *OrganizationRepository) IsOrganizationMember(organizationUUID, authUserID uuid.UUID) (bool, error) {
-	query := "SELECT EXISTS(SELECT 1 FROM fluxend.organization_members WHERE organization_uuid = $1 AND user_uuid = $2)"
-
-	var exists bool
-	err := r.db.Get(&exists, query, organizationUUID, authUserID)
-	if err != nil {
-		return false, pkg.FormatError(err, "fetch", pkg.GetMethodName())
-	}
-
-	return exists, nil
+	condition := "organization_uuid = $1 AND user_uuid = $2"
+	return r.db.Exists("fluxend.organization_members", condition, organizationUUID, authUserID)
 }
 
-func (r *OrganizationRepository) createOrganizationUser(tx *sqlx.Tx, organizationUUID, userId uuid.UUID) error {
+func (r *OrganizationRepository) createOrganizationUser(tx shared.Tx, organizationUUID, userId uuid.UUID) error {
 	query := "INSERT INTO fluxend.organization_members (organization_uuid, user_uuid) VALUES ($1, $2)"
 	_, err := tx.Exec(query, organizationUUID, userId)
 	if err != nil {

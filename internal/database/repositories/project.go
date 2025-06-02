@@ -1,25 +1,20 @@
 package repositories
 
 import (
-	"database/sql"
-	"errors"
 	"fluxend/internal/domain/project"
 	"fluxend/internal/domain/shared"
 	"fluxend/pkg"
-	flxErrs "fluxend/pkg/errors"
 	"fmt"
 	"github.com/google/uuid"
-	"github.com/jmoiron/sqlx"
 	"github.com/samber/do"
 )
 
 type ProjectRepository struct {
-	db *sqlx.DB
+	db shared.DB
 }
 
 func NewProjectRepository(injector *do.Injector) (project.Repository, error) {
-	db := do.MustInvoke[*sqlx.DB](injector)
-
+	db := do.MustInvoke[shared.DB](injector)
 	return &ProjectRepository{db: db}, nil
 }
 
@@ -40,7 +35,6 @@ func (r *ProjectRepository) ListForUser(paginationParams shared.PaginationParams
 			:limit 
 		OFFSET 
 			:offset;
-
 	`
 
 	query = fmt.Sprintf(query, pkg.GetColumnsWithAlias[project.Project]("projects"))
@@ -52,26 +46,8 @@ func (r *ProjectRepository) ListForUser(paginationParams shared.PaginationParams
 		"offset":    offset,
 	}
 
-	rows, err := r.db.NamedQuery(query, params)
-	if err != nil {
-		return nil, pkg.FormatError(err, "select", pkg.GetMethodName())
-	}
-	defer rows.Close()
-
 	var projects []project.Project
-	for rows.Next() {
-		var organization project.Project
-		if err := rows.StructScan(&organization); err != nil {
-			return nil, pkg.FormatError(err, "scan", pkg.GetMethodName())
-		}
-		projects = append(projects, organization)
-	}
-
-	if err := rows.Err(); err != nil {
-		return nil, pkg.FormatError(err, "iterate", pkg.GetMethodName())
-	}
-
-	return projects, nil
+	return projects, r.db.SelectNamedList(&projects, query, params)
 }
 
 func (r *ProjectRepository) List(paginationParams shared.PaginationParams) ([]project.Project, error) {
@@ -86,26 +62,8 @@ func (r *ProjectRepository) List(paginationParams shared.PaginationParams) ([]pr
 		"offset": offset,
 	}
 
-	rows, err := r.db.NamedQuery(query, params)
-	if err != nil {
-		return nil, pkg.FormatError(err, "select", pkg.GetMethodName())
-	}
-	defer rows.Close()
-
 	var projects []project.Project
-	for rows.Next() {
-		var fetchedProject project.Project
-		if err := rows.StructScan(&fetchedProject); err != nil {
-			return nil, pkg.FormatError(err, "scan", pkg.GetMethodName())
-		}
-		projects = append(projects, fetchedProject)
-	}
-
-	if err := rows.Err(); err != nil {
-		return nil, pkg.FormatError(err, "iterate", pkg.GetMethodName())
-	}
-
-	return projects, nil
+	return projects, r.db.SelectNamedList(&projects, query, params)
 }
 
 func (r *ProjectRepository) GetByUUID(projectUUID uuid.UUID) (project.Project, error) {
@@ -113,131 +71,60 @@ func (r *ProjectRepository) GetByUUID(projectUUID uuid.UUID) (project.Project, e
 	query = fmt.Sprintf(query, pkg.GetColumns[project.Project]())
 
 	var fetchedProject project.Project
-	err := r.db.Get(&fetchedProject, query, projectUUID)
-	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return project.Project{}, flxErrs.NewNotFoundError("project.error.notFound")
-		}
-
-		return project.Project{}, pkg.FormatError(err, "fetch", pkg.GetMethodName())
-	}
-
-	return fetchedProject, nil
+	return fetchedProject, r.db.GetWithNotFound(&fetchedProject, "project.error.notFound", query, projectUUID)
 }
 
 func (r *ProjectRepository) GetDatabaseNameByUUID(projectUUID uuid.UUID) (string, error) {
 	query := "SELECT db_name FROM fluxend.projects WHERE uuid = $1"
 
 	var dbName string
-	err := r.db.Get(&dbName, query, projectUUID)
-	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return "", flxErrs.NewNotFoundError("project.error.notFound")
-		}
-
-		return "", pkg.FormatError(err, "fetch", pkg.GetMethodName())
-	}
-
-	return dbName, nil
+	return dbName, r.db.GetWithNotFound(&dbName, "project.error.notFound", query, projectUUID)
 }
 
 func (r *ProjectRepository) GetUUIDByDatabaseName(dbName string) (uuid.UUID, error) {
 	query := "SELECT uuid FROM fluxend.projects WHERE db_name = $1"
 
 	var projectUUID uuid.UUID
-	err := r.db.Get(&projectUUID, query, dbName)
-	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return uuid.UUID{}, flxErrs.NewNotFoundError("project.error.notFound")
-		}
-
-		return uuid.UUID{}, pkg.FormatError(err, "fetch", pkg.GetMethodName())
-	}
-
-	return projectUUID, nil
+	return projectUUID, r.db.GetWithNotFound(&projectUUID, "project.error.notFound", query, dbName)
 }
 
 func (r *ProjectRepository) GetOrganizationUUIDByProjectUUID(id uuid.UUID) (uuid.UUID, error) {
 	query := "SELECT organization_uuid FROM fluxend.projects WHERE uuid = $1"
 
 	var organizationUUID uuid.UUID
-	err := r.db.Get(&organizationUUID, query, id)
-	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return uuid.UUID{}, flxErrs.NewNotFoundError("project.error.notFound")
-		}
-
-		return uuid.UUID{}, pkg.FormatError(err, "fetch", pkg.GetMethodName())
-	}
-
-	return organizationUUID, nil
+	return organizationUUID, r.db.GetWithNotFound(&organizationUUID, "project.error.notFound", query, id)
 }
 
 func (r *ProjectRepository) ExistsByUUID(id uuid.UUID) (bool, error) {
-	query := "SELECT EXISTS(SELECT 1 FROM fluxend.projects WHERE uuid = $1)"
-
-	var exists bool
-	err := r.db.Get(&exists, query, id)
-	if err != nil {
-		return false, pkg.FormatError(err, "fetch", pkg.GetMethodName())
-	}
-
-	return exists, nil
+	return r.db.Exists("fluxend.projects", "uuid = $1", id)
 }
 
 func (r *ProjectRepository) ExistsByNameForOrganization(name string, organizationUUID uuid.UUID) (bool, error) {
-	query := "SELECT EXISTS(SELECT 1 FROM fluxend.projects WHERE name = $1 AND organization_uuid = $2)"
-
-	var exists bool
-	err := r.db.Get(&exists, query, name, organizationUUID)
-	if err != nil {
-		return false, pkg.FormatError(err, "fetch", pkg.GetMethodName())
-	}
-
-	return exists, nil
+	return r.db.Exists("fluxend.projects", "name = $1 AND organization_uuid = $2", name, organizationUUID)
 }
 
 func (r *ProjectRepository) Create(project *project.Project) (*project.Project, error) {
-	tx, err := r.db.Beginx()
-	if err != nil {
-		return nil, pkg.FormatError(err, "transactionBegin", pkg.GetMethodName())
-	}
+	return project, r.db.WithTransaction(func(tx shared.Tx) error {
+		query := `
+			INSERT INTO fluxend.projects (
+				name, db_name, description, db_port, 
+				organization_uuid, created_by, updated_by
+			) 
+			VALUES ($1, $2, $3, $4, $5, $6, $7) 
+			RETURNING uuid
+		`
 
-	query := `
-		INSERT INTO fluxend.projects (
-			name, db_name, description, db_port, 
-			organization_uuid, created_by, updated_by
-		) 
-		VALUES ($1, $2, $3, $4, $5, $6, $7) 
-		RETURNING uuid
-	`
-
-	queryErr := tx.QueryRowx(
-		query,
-		project.Name,
-		project.DBName,
-		project.Description,
-		project.DBPort,
-		project.OrganizationUuid,
-		project.CreatedBy,
-		project.UpdatedBy,
-	).Scan(&project.Uuid)
-
-	if queryErr != nil {
-		err := tx.Rollback()
-		if err != nil {
-			return nil, err
-		}
-
-		return nil, pkg.FormatError(queryErr, "insert", pkg.GetMethodName())
-	}
-
-	// Commit transaction
-	if err = tx.Commit(); err != nil {
-		return nil, pkg.FormatError(err, "transactionCommit", pkg.GetMethodName())
-	}
-
-	return project, nil
+		return tx.QueryRowx(
+			query,
+			project.Name,
+			project.DBName,
+			project.Description,
+			project.DBPort,
+			project.OrganizationUuid,
+			project.CreatedBy,
+			project.UpdatedBy,
+		).Scan(&project.Uuid)
+	})
 }
 
 func (r *ProjectRepository) Update(projectInput *project.Project) (*project.Project, error) {
@@ -246,45 +133,23 @@ func (r *ProjectRepository) Update(projectInput *project.Project) (*project.Proj
 		SET name = :name, description = :description, updated_at = :updated_at, updated_by = :updated_by
 		WHERE uuid = :uuid`
 
-	res, err := r.db.NamedExec(query, projectInput)
-	if err != nil {
-		return &project.Project{}, pkg.FormatError(err, "update", pkg.GetMethodName())
-	}
+	err := r.db.ExecWithErr(query, projectInput)
 
-	_, err = res.RowsAffected()
-	if err != nil {
-		return &project.Project{}, pkg.FormatError(err, "affectedRows", pkg.GetMethodName())
-	}
-
-	return projectInput, nil
+	return projectInput, err
 }
 
 func (r *ProjectRepository) UpdateStatusByDatabaseName(databaseName, status string) (bool, error) {
-	query := "UPDATE fluxend.projects SET status = $1 WHERE db_name = $2"
-	res, err := r.db.Exec(query, status, databaseName)
+	rowsAffected, err := r.db.ExecWithRowsAffected("UPDATE fluxend.projects SET status = $1 WHERE db_name = $2", status, databaseName)
 	if err != nil {
-		return false, pkg.FormatError(err, "update", pkg.GetMethodName())
+		return false, err
 	}
-
-	rowsAffected, err := res.RowsAffected()
-	if err != nil {
-		return false, pkg.FormatError(err, "affectedRows", pkg.GetMethodName())
-	}
-
 	return rowsAffected == 1, nil
 }
 
 func (r *ProjectRepository) Delete(projectUUID uuid.UUID) (bool, error) {
-	query := "DELETE FROM fluxend.projects WHERE uuid = $1"
-	res, err := r.db.Exec(query, projectUUID)
+	rowsAffected, err := r.db.ExecWithRowsAffected("DELETE FROM fluxend.projects WHERE uuid = $1", projectUUID)
 	if err != nil {
-		return false, pkg.FormatError(err, "delete", pkg.GetMethodName())
+		return false, err
 	}
-
-	rowsAffected, err := res.RowsAffected()
-	if err != nil {
-		return false, pkg.FormatError(err, "affectedRows", pkg.GetMethodName())
-	}
-
 	return rowsAffected == 1, nil
 }

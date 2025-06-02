@@ -17,17 +17,16 @@ import (
 const seedDirectory = "internal/database/seeders/client"
 
 type Repository struct {
-	db *sqlx.DB
+	db shared.DB
 }
 
 func NewDatabaseRepository(injector *do.Injector) (shared.DatabaseService, error) {
-	db := do.MustInvoke[*sqlx.DB](injector)
-
+	db := do.MustInvoke[shared.DB](injector)
 	return &Repository{db: db}, nil
 }
 
 func (r *Repository) Create(name string, userUUID uuid.NullUUID) error {
-	_, err := r.db.Exec(fmt.Sprintf(`CREATE DATABASE "%s"`, name))
+	_, err := r.db.ExecWithRowsAffected(fmt.Sprintf(`CREATE DATABASE "%s"`, name))
 	if err != nil {
 		log.Error().
 			Str("action", constants.ActionClientDatabaseCreate).
@@ -46,46 +45,25 @@ func (r *Repository) Create(name string, userUUID uuid.NullUUID) error {
 }
 
 func (r *Repository) DropIfExists(name string) error {
-	_, err := r.db.Exec(fmt.Sprintf(`DROP DATABASE IF EXISTS "%s"`, name))
-	if err != nil {
-		return err
-	}
-
-	return nil
+	_, err := r.db.ExecWithRowsAffected(fmt.Sprintf(`DROP DATABASE IF EXISTS "%s"`, name))
+	return err
 }
 
 func (r *Repository) Recreate(name string) error {
-	err := r.DropIfExists(name)
-	if err != nil {
+	if err := r.DropIfExists(name); err != nil {
 		return err
 	}
 
-	err = r.Create(name, uuid.NullUUID{})
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return r.Create(name, uuid.NullUUID{})
 }
 
 func (r *Repository) List() ([]string, error) {
 	var databases []string
-	err := r.db.Select(&databases, "SELECT datname FROM pg_database WHERE datistemplate = false")
-	if err != nil {
-		return []string{}, err
-	}
-
-	return databases, nil
+	return databases, r.db.SelectList(&databases, "SELECT datname FROM pg_database WHERE datistemplate = false")
 }
 
 func (r *Repository) Exists(name string) (bool, error) {
-	var count int
-	err := r.db.Get(&count, "SELECT COUNT(*) FROM pg_database WHERE datname = $1", name)
-	if err != nil {
-		return false, err
-	}
-
-	return count > 0, nil
+	return r.db.Exists("pg_database", "datname = $1", name)
 }
 
 // Connect TODO: create actual user for using here

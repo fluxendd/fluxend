@@ -4,6 +4,7 @@ import (
 	"fluxend/internal/adapters/client"
 	"fluxend/internal/adapters/email"
 	"fluxend/internal/adapters/postgrest"
+	sqlxAdapter "fluxend/internal/adapters/sqlx"
 	"fluxend/internal/adapters/storage"
 	"fluxend/internal/api/handlers"
 	"fluxend/internal/database"
@@ -17,6 +18,7 @@ import (
 	"fluxend/internal/domain/organization"
 	"fluxend/internal/domain/project"
 	"fluxend/internal/domain/setting"
+	"fluxend/internal/domain/shared"
 	"fluxend/internal/domain/stats"
 	"fluxend/internal/domain/storage/container"
 	"fluxend/internal/domain/storage/file"
@@ -32,6 +34,9 @@ func InitializeContainer() *do.Injector {
 	database.InitDB()
 	do.Provide(injector, func(i *do.Injector) (*sqlx.DB, error) {
 		return database.GetDB(), nil
+	})
+	do.Provide(injector, func(i *do.Injector) (shared.DB, error) {
+		return sqlxAdapter.NewAdapter(do.MustInvoke[*sqlx.DB](i)), nil
 	})
 
 	// --- Logging ---

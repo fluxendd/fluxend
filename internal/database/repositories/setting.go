@@ -2,19 +2,18 @@ package repositories
 
 import (
 	"fluxend/internal/domain/setting"
-	"fluxend/pkg"
+	"fluxend/internal/domain/shared"
 	"fmt"
-	"github.com/jmoiron/sqlx"
 	"github.com/samber/do"
 	"strings"
 )
 
 type SettingRepository struct {
-	db *sqlx.DB
+	db shared.DB
 }
 
 func NewSettingRepository(injector *do.Injector) (setting.Repository, error) {
-	db := do.MustInvoke[*sqlx.DB](injector)
+	db := do.MustInvoke[shared.DB](injector)
 	return &SettingRepository{db: db}, nil
 }
 
@@ -22,23 +21,14 @@ func (r *SettingRepository) List() ([]setting.Setting, error) {
 	query := "SELECT * FROM fluxend.settings;"
 
 	var settings []setting.Setting
-	err := r.db.Select(&settings, query)
-	if err != nil {
-		return nil, pkg.FormatError(err, "select", pkg.GetMethodName())
-	}
-
-	return settings, nil
+	return settings, r.db.SelectList(&settings, query)
 }
 
 func (r *SettingRepository) Get(name string) (setting.Setting, error) {
 	query := "SELECT * FROM fluxend.settings WHERE name = $1;"
-	var settingItem setting.Setting
-	err := r.db.Get(&settingItem, query, name)
-	if err != nil {
-		return setting.Setting{}, pkg.FormatError(err, "select", pkg.GetMethodName())
-	}
 
-	return settingItem, nil
+	var settingItem setting.Setting
+	return settingItem, r.db.Get(&settingItem, query, name)
 }
 
 func (r *SettingRepository) CreateMany(settings []setting.Setting) (bool, error) {
@@ -54,33 +44,20 @@ func (r *SettingRepository) CreateMany(settings []setting.Setting) (bool, error)
 	query := fmt.Sprintf("INSERT INTO fluxend.settings (name, value, default_value) VALUES %s;",
 		strings.Join(valuePlaceholders, ", "))
 
-	_, err := r.db.Exec(query, args...)
-	if err != nil {
-		return false, fmt.Errorf("could not create settings: %v", err)
-	}
-
-	return true, nil
+	_, err := r.db.ExecWithRowsAffected(query, args...)
+	return err == nil, err
 }
 
 func (r *SettingRepository) Update(settings []setting.Setting) (bool, error) {
-	tx, err := r.db.Beginx()
-	if err != nil {
-		return false, pkg.FormatError(err, "transactionBegin", pkg.GetMethodName())
-	}
-	defer tx.Rollback()
-
-	for _, currentSetting := range settings {
-		query := "UPDATE fluxend.settings SET value = $1, default_value = $2, updated_at = NOW() WHERE name = $3;"
-		_, err := tx.Exec(query, currentSetting.Value, currentSetting.DefaultValue, currentSetting.Name)
-		if err != nil {
-			return false, fmt.Errorf("could not update setting: %v", err)
+	err := r.db.WithTransaction(func(tx shared.Tx) error {
+		for _, currentSetting := range settings {
+			query := "UPDATE fluxend.settings SET value = $1, default_value = $2, updated_at = NOW() WHERE name = $3;"
+			if _, err := tx.Exec(query, currentSetting.Value, currentSetting.DefaultValue, currentSetting.Name); err != nil {
+				return fmt.Errorf("could not update setting: %v", err)
+			}
 		}
-	}
+		return nil
+	})
 
-	err = tx.Commit()
-	if err != nil {
-		return false, pkg.FormatError(err, "transactionCommit", pkg.GetMethodName())
-	}
-
-	return true, nil
+	return err == nil, err
 }
