@@ -3,20 +3,17 @@ package repositories
 import (
 	"fluxend/internal/domain/logging"
 	"fluxend/internal/domain/shared"
-	"fluxend/pkg"
 	"fmt"
-	"github.com/jmoiron/sqlx"
 	"github.com/samber/do"
 	"strings"
 )
 
 type RequestLogRepository struct {
-	db *sqlx.DB
+	db shared.DB
 }
 
 func NewRequestLogRepository(injector *do.Injector) (logging.Repository, error) {
-	db := do.MustInvoke[*sqlx.DB](injector)
-
+	db := do.MustInvoke[shared.DB](injector)
 	return &RequestLogRepository{db: db}, nil
 }
 
@@ -71,67 +68,32 @@ func (r *RequestLogRepository) List(input *logging.ListInput, paginationParams s
 
 	query += fmt.Sprintf(" ORDER BY %s DESC LIMIT :limit OFFSET :offset", sortColumn)
 
-	rows, err := r.db.NamedQuery(query, params)
-	if err != nil {
-		return nil, pkg.FormatError(err, "select", pkg.GetMethodName())
-	}
-	defer rows.Close()
-
 	var requestLogs []logging.RequestLog
-	for rows.Next() {
-		var form logging.RequestLog
-		if err := rows.StructScan(&form); err != nil {
-			return nil, pkg.FormatError(err, "scan", pkg.GetMethodName())
-		}
-		requestLogs = append(requestLogs, form)
-	}
-
-	if err := rows.Err(); err != nil {
-		return nil, pkg.FormatError(err, "iterate", pkg.GetMethodName())
-	}
-
-	return requestLogs, nil
+	return requestLogs, r.db.SelectNamedList(&requestLogs, query, params)
 }
 
 func (r *RequestLogRepository) Create(requestLog *logging.RequestLog) (*logging.RequestLog, error) {
-	tx, err := r.db.Beginx()
-	if err != nil {
-		return nil, pkg.FormatError(err, "transactionBegin", pkg.GetMethodName())
-	}
+	return requestLog, r.db.WithTransaction(func(tx shared.Tx) error {
+		query := `
+        INSERT INTO fluxend.api_logs (
+            user_uuid, api_key, method, status, endpoint, ip_address, user_agent, params, body
+        ) VALUES (
+            $1, $2, $3, $4, $5, $6, $7, $8, $9
+        )
+        RETURNING uuid
+        `
 
-	query := `
-    INSERT INTO fluxend.api_logs (
-        user_uuid, api_key, method, status, endpoint, ip_address, user_agent, params, body
-    ) VALUES (
-        $1, $2, $3, $4, $5, $6, $7, $8, $9
-    )
-    RETURNING uuid
-`
-
-	queryErr := tx.QueryRowx(
-		query,
-		requestLog.UserUuid,
-		requestLog.APIKey,
-		requestLog.Method,
-		requestLog.Status,
-		requestLog.Endpoint,
-		requestLog.IPAddress,
-		requestLog.UserAgent,
-		requestLog.Params,
-		requestLog.Body,
-	).Scan(&requestLog.Uuid)
-
-	if queryErr != nil {
-		if err := tx.Rollback(); err != nil {
-			return nil, err
-		}
-		return nil, pkg.FormatError(queryErr, "insert", pkg.GetMethodName())
-	}
-
-	// Commit transaction
-	if err = tx.Commit(); err != nil {
-		return nil, pkg.FormatError(err, "transactionCommit", pkg.GetMethodName())
-	}
-
-	return requestLog, nil
+		return tx.QueryRowx(
+			query,
+			requestLog.UserUuid,
+			requestLog.APIKey,
+			requestLog.Method,
+			requestLog.Status,
+			requestLog.Endpoint,
+			requestLog.IPAddress,
+			requestLog.UserAgent,
+			requestLog.Params,
+			requestLog.Body,
+		).Scan(&requestLog.Uuid)
+	})
 }
