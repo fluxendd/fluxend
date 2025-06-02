@@ -93,8 +93,7 @@ func (r *FormRepository) Update(formInput *form.Form) (*form.Form, error) {
 		SET name = :name, description = :description, updated_at = :updated_at, updated_by = :updated_by
 		WHERE uuid = :uuid`
 
-	_, err := r.db.NamedExecWithRowsAffected(query, formInput)
-	return formInput, err
+	return formInput, r.db.ExecWithErr(query, formInput)
 }
 
 func (r *FormRepository) Delete(projectUUID uuid.UUID) (bool, error) {

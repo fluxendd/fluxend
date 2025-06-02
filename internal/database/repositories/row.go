@@ -41,6 +41,5 @@ func (r *RowRepository) CreateMany(tableName string, columns []database.Column, 
 		}
 	}
 
-	_, err := r.db.ExecWithRowsAffected(query)
-	return err
+	return r.db.ExecWithErr(query)
 }

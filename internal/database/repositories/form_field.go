@@ -123,7 +123,8 @@ func (r *FormFieldRepository) Update(formField *form.Field) (*form.Field, error)
 		    updated_at = :updated_at
 		WHERE uuid = :uuid`
 
-	_, err := r.db.NamedExecWithRowsAffected(query, formField)
+	err := r.db.ExecWithErr(query, formField)
+
 	return formField, err
 }
 

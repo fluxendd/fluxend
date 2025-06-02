@@ -126,16 +126,7 @@ func (r *FormResponseRepository) Delete(formResponseUUID uuid.UUID) error {
 
 // Helper method to scan form response rows with complex join logic
 func (r *FormResponseRepository) scanFormResponseRows(rows interface{}) ([]form.FormResponse, error) {
-	// This method contains the complex scanning logic that was duplicated
-	// Note: You'll need to adjust this based on your actual row scanning needs
-	// The exact implementation depends on how you want to handle the sql.Rows interface
-
 	formResponseMap := make(map[uuid.UUID]*form.FormResponse)
-
-	// Since we can't directly use StructScan with sql.Rows through our interface,
-	// you might need to implement custom scanning or adjust the adapter to support this use case
-	// For now, returning empty slice - you'll need to implement the actual scanning logic
-	// based on your specific needs
 
 	formResponses := make([]form.FormResponse, 0, len(formResponseMap))
 	for _, formResponse := range formResponseMap {

@@ -17,7 +17,6 @@ type TableRepository struct {
 func NewTableRepository(injector *do.Injector) (database.TableRepository, error) {
 	db := do.MustInvoke[shared.DB](injector)
 
-	// Note: You'll need to update ColumnRepository constructor too
 	columnRepository, err := NewColumnRepository(injector)
 	if err != nil {
 		return nil, err
@@ -64,8 +63,8 @@ func (r *TableRepository) Create(name string, columns []database.Column) error {
 
 func (r *TableRepository) Duplicate(existingTable string, newTable string) error {
 	query := fmt.Sprintf("CREATE TABLE %s AS TABLE %s", pq.QuoteIdentifier(newTable), pq.QuoteIdentifier(existingTable))
-	_, err := r.db.ExecWithRowsAffected(query)
-	return err
+
+	return r.db.ExecWithErr(query)
 }
 
 func (r *TableRepository) List() ([]database.Table, error) {
@@ -112,6 +111,6 @@ func (r *TableRepository) DropIfExists(name string) error {
 
 func (r *TableRepository) Rename(oldName string, newName string) error {
 	query := fmt.Sprintf("ALTER TABLE %s RENAME TO %s", pq.QuoteIdentifier(oldName), pq.QuoteIdentifier(newName))
-	_, err := r.db.ExecWithRowsAffected(query)
-	return err
+
+	return r.db.ExecWithErr(query)
 }

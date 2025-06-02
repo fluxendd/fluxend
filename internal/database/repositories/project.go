@@ -133,7 +133,8 @@ func (r *ProjectRepository) Update(projectInput *project.Project) (*project.Proj
 		SET name = :name, description = :description, updated_at = :updated_at, updated_by = :updated_by
 		WHERE uuid = :uuid`
 
-	_, err := r.db.NamedExecWithRowsAffected(query, projectInput)
+	err := r.db.ExecWithErr(query, projectInput)
+
 	return projectInput, err
 }
 

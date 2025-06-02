@@ -126,10 +126,12 @@ func (r *ColumnRepository) AlterOne(tableName string, columns []database.Column)
 				pq.QuoteIdentifier(column.Name),
 				pq.QuoteIdentifier(column.Type),
 			)
+
 			if _, err := tx.Exec(query); err != nil {
 				return err
 			}
 		}
+
 		return nil
 	})
 }
@@ -151,8 +153,8 @@ func (r *ColumnRepository) Rename(tableName, oldColumnName, newColumnName string
 		pq.QuoteIdentifier(oldColumnName),
 		pq.QuoteIdentifier(newColumnName),
 	)
-	_, err := r.db.ExecWithRowsAffected(query)
-	return err
+
+	return r.db.ExecWithErr(query)
 }
 
 func (r *ColumnRepository) Drop(tableName, columnName string) error {

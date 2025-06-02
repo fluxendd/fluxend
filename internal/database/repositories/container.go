@@ -101,18 +101,15 @@ func (r *ContainerRepository) Update(containerInput *container.Container) (*cont
 		    updated_by = :updated_by
 		WHERE uuid = :uuid`
 
-	_, err := r.db.NamedExecWithRowsAffected(query, containerInput)
-	return containerInput, err
+	return containerInput, r.db.ExecWithErr(query, containerInput)
 }
 
 func (r *ContainerRepository) IncrementTotalFiles(containerUUID uuid.UUID) error {
-	_, err := r.db.ExecWithRowsAffected("UPDATE storage.containers SET total_files = total_files + 1 WHERE uuid = $1", containerUUID)
-	return err
+	return r.db.ExecWithErr("UPDATE storage.containers SET total_files = total_files + 1 WHERE uuid = $1", containerUUID)
 }
 
 func (r *ContainerRepository) DecrementTotalFiles(containerUUID uuid.UUID) error {
-	_, err := r.db.ExecWithRowsAffected("UPDATE storage.containers SET total_files = total_files - 1 WHERE uuid = $1", containerUUID)
-	return err
+	return r.db.ExecWithErr("UPDATE storage.containers SET total_files = total_files - 1 WHERE uuid = $1", containerUUID)
 }
 
 func (r *ContainerRepository) Delete(containerUUID uuid.UUID) (bool, error) {
@@ -120,5 +117,6 @@ func (r *ContainerRepository) Delete(containerUUID uuid.UUID) (bool, error) {
 	if err != nil {
 		return false, err
 	}
+
 	return rowsAffected == 1, nil
 }

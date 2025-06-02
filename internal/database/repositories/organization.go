@@ -98,8 +98,7 @@ func (r *OrganizationRepository) CreateUser(organizationUUID, userUUID uuid.UUID
 }
 
 func (r *OrganizationRepository) DeleteUser(organizationUUID, userUUID uuid.UUID) error {
-	_, err := r.db.ExecWithRowsAffected("DELETE FROM fluxend.organization_members WHERE organization_uuid = $1 AND user_uuid = $2", organizationUUID, userUUID)
-	return err
+	return r.db.ExecWithErr("DELETE FROM fluxend.organization_members WHERE organization_uuid = $1 AND user_uuid = $2", organizationUUID, userUUID)
 }
 
 func (r *OrganizationRepository) GetByUUID(organizationUUID uuid.UUID) (organization.Organization, error) {
@@ -137,7 +136,7 @@ func (r *OrganizationRepository) Update(organizationInput *organization.Organiza
 		SET name = :name, updated_at = :updated_at, updated_by = :updated_by 
 		WHERE uuid = :uuid`
 
-	_, err := r.db.NamedExecWithRowsAffected(query, organizationInput)
+	err := r.db.ExecWithErr(query, organizationInput)
 
 	return organizationInput, err
 }

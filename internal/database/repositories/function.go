@@ -53,6 +53,6 @@ func (r *FunctionRepository) GetByName(schema, functionName string) (database.Fu
 
 func (r *FunctionRepository) Delete(schema, functionName string) error {
 	query := fmt.Sprintf(`DROP FUNCTION IF EXISTS %s.%s CASCADE`, pq.QuoteIdentifier(schema), pq.QuoteIdentifier(functionName))
-	_, err := r.db.ExecWithRowsAffected(query)
-	return err
+
+	return r.db.ExecWithErr(query)
 }

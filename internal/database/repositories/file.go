@@ -87,14 +87,15 @@ func (r *FileRepository) Create(file *file.File) (*file.File, error) {
 	})
 }
 
-func (r *FileRepository) Rename(container *file.File) (*file.File, error) {
+func (r *FileRepository) Rename(inputFile *file.File) (*file.File, error) {
 	query := `
 		UPDATE storage.files 
 		SET full_file_name = :full_file_name, updated_at = :updated_at, updated_by = :updated_by
 		WHERE uuid = :uuid`
 
-	_, err := r.db.NamedExecWithRowsAffected(query, container)
-	return container, err
+	err := r.db.ExecWithErr(query, inputFile)
+
+	return inputFile, err
 }
 
 func (r *FileRepository) Delete(fileUUID uuid.UUID) (bool, error) {
