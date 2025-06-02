@@ -15,15 +15,19 @@ var udbStats = &cobra.Command{
 	Short: "Pull stats from given database",
 	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		databaseName := args[0]
+		projectUUIDInput := args[0]
+		projectUUID, err := uuid.Parse(projectUUIDInput)
+		if err != nil {
+			cmd.Printf("Invalid project UUID: %s\n", projectUUIDInput)
+		}
 
-		stats, err := getDatabaseStats(databaseName)
+		stats, err := getDatabaseStats(projectUUID)
 		if err != nil {
 			return err
 		}
 
 		if stats.DatabaseName == "" {
-			cmd.Printf("Database %s not found", databaseName)
+			cmd.Printf("Database %s not found", projectUUID)
 
 			return nil
 		}
@@ -34,7 +38,7 @@ var udbStats = &cobra.Command{
 	},
 }
 
-func getDatabaseStats(databaseName string) (stats.Stat, error) {
+func getDatabaseStats(projectUUID uuid.UUID) (stats.Stat, error) {
 	container := app.InitializeContainer()
 
 	authUser := auth.User{
@@ -44,7 +48,7 @@ func getDatabaseStats(databaseName string) (stats.Stat, error) {
 
 	databaseStatsService := do.MustInvoke[stats.Service](container)
 
-	pulledStats, err := databaseStatsService.GetAll(databaseName, authUser)
+	pulledStats, err := databaseStatsService.GetAll(projectUUID, authUser)
 	if err != nil {
 		return stats.Stat{}, err
 	}

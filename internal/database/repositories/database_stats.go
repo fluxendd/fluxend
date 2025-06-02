@@ -27,17 +27,21 @@ func (r *DatabaseStatsRepository) GetTotalIndexSize() (string, error) {
 
 func (r *DatabaseStatsRepository) GetUnusedIndexes() ([]stats.UnusedIndex, error) {
 	var unusedIndexes []stats.UnusedIndex
-	query := `
-       SELECT 
-          relname AS table_name, 
-          indexrelname AS index_name, 
-          idx_scan AS index_scans,
-          pg_size_pretty(pg_relation_size(indexrelid)) AS index_size
-       FROM pg_stat_user_indexes
-       WHERE idx_scan < 50
-       ORDER BY idx_scan;
-    `
-	return unusedIndexes, r.db.SelectList(&unusedIndexes, query)
+	err := r.db.Select(&unusedIndexes, `
+		SELECT 
+			relname AS table_name, 
+			indexrelname AS index_name, 
+			idx_scan AS index_scans,
+			pg_size_pretty(pg_relation_size(indexrelid)) AS index_size
+		FROM pg_stat_user_indexes
+		WHERE idx_scan < 50
+		ORDER BY idx_scan;
+	`)
+	if err != nil {
+		return nil, err
+	}
+
+	return unusedIndexes, nil
 }
 
 func (r *DatabaseStatsRepository) GetSlowQueries() ([]stats.SlowQuery, error) {
@@ -48,7 +52,7 @@ func (r *DatabaseStatsRepository) GetSlowQueries() ([]stats.SlowQuery, error) {
        ORDER BY total_time DESC
        LIMIT 5;
     `
-	return slowQueries, r.db.SelectList(&slowQueries, query)
+	return slowQueries, r.db.Select(&slowQueries, query)
 }
 
 func (r *DatabaseStatsRepository) GetIndexScansPerTable() ([]stats.IndexScan, error) {
@@ -58,7 +62,7 @@ func (r *DatabaseStatsRepository) GetIndexScansPerTable() ([]stats.IndexScan, er
        FROM pg_stat_user_tables
        ORDER BY idx_scan DESC;
     `
-	return indexScans, r.db.SelectList(&indexScans, query)
+	return indexScans, r.db.Select(&indexScans, query)
 }
 
 func (r *DatabaseStatsRepository) GetSizePerTable() ([]stats.TableSize, error) {
@@ -70,7 +74,7 @@ func (r *DatabaseStatsRepository) GetSizePerTable() ([]stats.TableSize, error) {
        FROM pg_catalog.pg_statio_user_tables
        ORDER BY pg_total_relation_size(relid) DESC;
     `
-	return tableSizes, r.db.SelectList(&tableSizes, query)
+	return tableSizes, r.db.Select(&tableSizes, query)
 }
 
 func (r *DatabaseStatsRepository) GetRowCountPerTable() ([]stats.TableRowCount, error) {
@@ -82,5 +86,5 @@ func (r *DatabaseStatsRepository) GetRowCountPerTable() ([]stats.TableRowCount, 
        FROM pg_stat_user_tables
        ORDER BY estimated_row_count DESC;
     `
-	return rowCounts, r.db.SelectList(&rowCounts, query)
+	return rowCounts, r.db.Select(&rowCounts, query)
 }
