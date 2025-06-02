@@ -4,30 +4,30 @@ import (
 	"database/sql"
 	"errors"
 	"fluxend/internal/domain/backup"
+	"fluxend/internal/domain/shared"
 	"fluxend/pkg"
 	flxErrs "fluxend/pkg/errors"
 	"fmt"
 	"github.com/google/uuid"
-	"github.com/jmoiron/sqlx"
 	"github.com/samber/do"
 	"time"
 )
 
 type BackupRepository struct {
-	db *sqlx.DB
+	db shared.DB
 }
 
 func NewBackupRepository(injector *do.Injector) (backup.Repository, error) {
-	db := do.MustInvoke[*sqlx.DB](injector)
+	db := do.MustInvoke[shared.DB](injector)
 
 	return &BackupRepository{db: db}, nil
 }
 
 func (r *BackupRepository) ListForProject(projectUUID uuid.UUID) ([]backup.Backup, error) {
 	query := `
-		SELECT %s FROM storage.backups WHERE project_uuid = :project_uuid
-		ORDER BY started_at DESC
-	`
+       SELECT %s FROM storage.backups WHERE project_uuid = :project_uuid
+       ORDER BY started_at DESC
+    `
 
 	query = fmt.Sprintf(query, pkg.GetColumns[backup.Backup]())
 
