@@ -36,8 +36,7 @@ func InitializeContainer() *do.Injector {
 		return database.GetDB(), nil
 	})
 	do.Provide(injector, func(i *do.Injector) (shared.DB, error) {
-		sqlxDB := do.MustInvoke[*sqlx.DB](i)
-		return sqlxAdapter.NewAdapter(sqlxDB), nil
+		return sqlxAdapter.NewAdapter(do.MustInvoke[*sqlx.DB](i)), nil
 	})
 
 	// --- Logging ---
