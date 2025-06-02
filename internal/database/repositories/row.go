@@ -2,15 +2,17 @@ package repositories
 
 import (
 	"fluxend/internal/domain/database"
-	"github.com/jmoiron/sqlx"
+	"fluxend/internal/domain/shared"
+	"github.com/samber/do"
 )
 
 type RowRepository struct {
-	connection *sqlx.DB
+	db shared.DB
 }
 
-func NewRowRepository(connection *sqlx.DB) (database.RowRepository, error) {
-	return &RowRepository{connection: connection}, nil
+func NewRowRepository(injector *do.Injector) (database.RowRepository, error) {
+	db := do.MustInvoke[shared.DB](injector)
+	return &RowRepository{db: db}, nil
 }
 
 func (r *RowRepository) CreateMany(tableName string, columns []database.Column, values [][]string) error {
@@ -39,7 +41,6 @@ func (r *RowRepository) CreateMany(tableName string, columns []database.Column, 
 		}
 	}
 
-	_, err := r.connection.Exec(query)
-
+	_, err := r.db.ExecWithRowsAffected(query)
 	return err
 }
