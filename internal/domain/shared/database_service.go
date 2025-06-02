@@ -38,6 +38,15 @@ type DB interface {
 
 	BeginTx(ctx context.Context, opts *sql.TxOptions) (Tx, error)
 	Beginx() (Tx, error)
+
+	// Custom convenience methods
+	SelectList(dest interface{}, query string, args ...interface{}) error
+	SelectNamedList(dest interface{}, query string, arg interface{}) error
+	GetWithNotFound(dest interface{}, notFoundMsg string, query string, args ...interface{}) error
+	Exists(table, condition string, args ...interface{}) (bool, error)
+	ExecWithRowsAffected(query string, args ...interface{}) (int64, error)
+	NamedExecWithRowsAffected(query string, arg interface{}) (int64, error)
+	WithTransaction(fn func(tx Tx) error) error
 }
 
 type Tx interface {
