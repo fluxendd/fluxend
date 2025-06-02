@@ -1,12 +1,9 @@
 package repositories
 
 import (
-	"database/sql"
-	"errors"
 	"fluxend/internal/domain/backup"
 	"fluxend/internal/domain/shared"
 	"fluxend/pkg"
-	flxErrs "fluxend/pkg/errors"
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/samber/do"
@@ -19,7 +16,6 @@ type BackupRepository struct {
 
 func NewBackupRepository(injector *do.Injector) (backup.Repository, error) {
 	db := do.MustInvoke[shared.DB](injector)
-
 	return &BackupRepository{db: db}, nil
 }
 
@@ -35,26 +31,8 @@ func (r *BackupRepository) ListForProject(projectUUID uuid.UUID) ([]backup.Backu
 		"project_uuid": projectUUID,
 	}
 
-	rows, err := r.db.NamedQuery(query, params)
-	if err != nil {
-		return nil, pkg.FormatError(err, "select", pkg.GetMethodName())
-	}
-	defer rows.Close()
-
 	var backups []backup.Backup
-	for rows.Next() {
-		var form backup.Backup
-		if err := rows.StructScan(&form); err != nil {
-			return nil, pkg.FormatError(err, "scan", pkg.GetMethodName())
-		}
-		backups = append(backups, form)
-	}
-
-	if err := rows.Err(); err != nil {
-		return nil, pkg.FormatError(err, "iterate", pkg.GetMethodName())
-	}
-
-	return backups, nil
+	return backups, r.db.SelectNamedList(&backups, query, params)
 }
 
 func (r *BackupRepository) GetByUUID(backupUUID uuid.UUID) (backup.Backup, error) {
@@ -62,86 +40,40 @@ func (r *BackupRepository) GetByUUID(backupUUID uuid.UUID) (backup.Backup, error
 	query = fmt.Sprintf(query, pkg.GetColumns[backup.Backup]())
 
 	var form backup.Backup
-	err := r.db.Get(&form, query, backupUUID)
-	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return backup.Backup{}, flxErrs.NewNotFoundError("backup.error.notFound")
-		}
-
-		return backup.Backup{}, pkg.FormatError(err, "fetch", pkg.GetMethodName())
-	}
-
-	return form, nil
+	return form, r.db.GetWithNotFound(&form, "backup.error.notFound", query, backupUUID)
 }
 
 func (r *BackupRepository) ExistsByUUID(backupUUID uuid.UUID) (bool, error) {
-	query := "SELECT EXISTS(SELECT 1 FROM storage.backups WHERE uuid = $1)"
-
-	var exists bool
-	err := r.db.Get(&exists, query, backupUUID)
-	if err != nil {
-		return false, pkg.FormatError(err, "fetch", pkg.GetMethodName())
-	}
-
-	return exists, nil
+	return r.db.Exists("storage.backups", "uuid = $1", backupUUID)
 }
 
 func (r *BackupRepository) Create(backup *backup.Backup) (*backup.Backup, error) {
-	tx, err := r.db.Beginx()
-	if err != nil {
-		return nil, pkg.FormatError(err, "transactionBegin", pkg.GetMethodName())
-	}
+	return backup, r.db.WithTransaction(func(tx shared.Tx) error {
+		query := `
+        INSERT INTO storage.backups (
+            project_uuid, status, error, started_at
+        ) VALUES (
+            $1, $2, $3, $4
+        )
+        RETURNING uuid
+        `
 
-	query := `
-    INSERT INTO storage.backups (
-        project_uuid, status, error, started_at
-    ) VALUES (
-        $1, $2, $3, $4
-    )
-    RETURNING uuid
-`
-
-	queryErr := tx.QueryRowx(
-		query,
-		backup.ProjectUuid, backup.Status, backup.Error, backup.StartedAt,
-	).Scan(&backup.Uuid)
-
-	if queryErr != nil {
-		if err := tx.Rollback(); err != nil {
-			return nil, err
-		}
-		return nil, pkg.FormatError(queryErr, "insert", pkg.GetMethodName())
-	}
-
-	// Commit transaction
-	if err = tx.Commit(); err != nil {
-		return nil, pkg.FormatError(err, "transactionCommit", pkg.GetMethodName())
-	}
-
-	return backup, nil
+		return tx.QueryRowx(
+			query,
+			backup.ProjectUuid, backup.Status, backup.Error, backup.StartedAt,
+		).Scan(&backup.Uuid)
+	})
 }
 
 func (r *BackupRepository) UpdateStatus(backupUUID uuid.UUID, status, error string, completedAt time.Time) error {
-	query := "UPDATE storage.backups SET status = $1, error = $2, completed_at = $3 WHERE uuid = $4"
-	_, err := r.db.Exec(query, status, error, completedAt, backupUUID)
-	if err != nil {
-		return pkg.FormatError(err, "update", pkg.GetMethodName())
-	}
-
-	return nil
+	_, err := r.db.ExecWithRowsAffected("UPDATE storage.backups SET status = $1, error = $2, completed_at = $3 WHERE uuid = $4", status, error, completedAt, backupUUID)
+	return err
 }
 
 func (r *BackupRepository) Delete(backupUUID uuid.UUID) (bool, error) {
-	query := "DELETE FROM storage.backups WHERE uuid = $1"
-	res, err := r.db.Exec(query, backupUUID)
+	rowsAffected, err := r.db.ExecWithRowsAffected("DELETE FROM storage.backups WHERE uuid = $1", backupUUID)
 	if err != nil {
-		return false, pkg.FormatError(err, "delete", pkg.GetMethodName())
+		return false, err
 	}
-
-	rowsAffected, err := res.RowsAffected()
-	if err != nil {
-		return false, pkg.FormatError(err, "affectedRows", pkg.GetMethodName())
-	}
-
 	return rowsAffected == 1, nil
 }
