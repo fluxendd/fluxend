@@ -1,0 +1,17 @@
+package stat
+
+import (
+	statsDomain "fluxend/internal/domain/stats"
+	"time"
+)
+
+type Response struct {
+	Id           int                         `db:"id" json:"id"`
+	DatabaseName string                      `db:"database_name" json:"databaseName"`
+	TotalSize    string                      `db:"total_size" json:"totalSize"`
+	IndexSize    string                      `db:"index_size" json:"indexSize"`
+	UnusedIndex  []statsDomain.UnusedIndex   `db:"unused_index" json:"unusedIndex"`
+	TableCount   []statsDomain.TableRowCount `db:"table_count" json:"tableCount"`
+	TableSize    []statsDomain.TableSize     `db:"table_size" json:"tableSize"`
+	CreatedAt    time.Time                   `db:"created_at" json:"createdAt"`
+}
