@@ -1,50 +1,43 @@
 package stats
 
 import (
-	"fluxend/internal/domain/admin"
 	"fluxend/internal/domain/auth"
 	"fluxend/internal/domain/database"
+	"fluxend/internal/domain/project"
 	"fluxend/internal/domain/shared"
 	"fluxend/pkg/errors"
+	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 	"github.com/samber/do"
 	"time"
 )
 
 type Service interface {
-	GetTotalDatabaseSize(databaseName string, authUser auth.User) (string, error)
-	GetTotalIndexSize(databaseName string, authUser auth.User) (string, error)
-	GetUnusedIndexes(databaseName string, authUser auth.User) ([]UnusedIndex, error)
-	GetSlowQueries(databaseName string, authUser auth.User) ([]SlowQuery, error)
-	GetIndexScansPerTable(databaseName string, authUser auth.User) ([]IndexScan, error)
-	GetSizePerTable(databaseName string, authUser auth.User) ([]TableSize, error)
-	GetRowCountPerTable(databaseName string, authUser auth.User) ([]TableRowCount, error)
-	GetAll(databaseName string, authUser auth.User) (Stat, error)
+	GetAll(projectUUID uuid.UUID, authUser auth.User) (Stat, error)
 }
 
 type ServiceImpl struct {
 	connectionService database.ConnectionService
-	adminPolicy       *admin.Policy
-	databaseRepo      *shared.DatabaseService
+	projectPolicy     *project.Policy
+	databaseRepo      shared.DatabaseService
+	projectRepo       project.Repository
 }
 
 func NewDatabaseStatsService(injector *do.Injector) (Service, error) {
 	connectionService := do.MustInvoke[database.ConnectionService](injector)
-	policy := admin.NewAdminPolicy()
-	databaseRepo := do.MustInvoke[*shared.DatabaseService](injector)
+	databaseRepo := do.MustInvoke[shared.DatabaseService](injector)
+	policy := do.MustInvoke[*project.Policy](injector)
+	projectRepo := do.MustInvoke[project.Repository](injector)
 
 	return &ServiceImpl{
 		connectionService: connectionService,
-		adminPolicy:       policy,
+		projectPolicy:     policy,
 		databaseRepo:      databaseRepo,
+		projectRepo:       projectRepo,
 	}, nil
 }
 
-func (s *ServiceImpl) GetTotalDatabaseSize(databaseName string, authUser auth.User) (string, error) {
-	if !s.adminPolicy.CanAccess(authUser) {
-		return "", errors.NewForbiddenError("database_stats.error.forbidden")
-	}
-
+func (s *ServiceImpl) getTotalDatabaseSize(databaseName string) (string, error) {
 	dbStatsRepo, _, err := s.getClientStatsRepo(databaseName)
 	if err != nil {
 		return "", err
@@ -53,11 +46,7 @@ func (s *ServiceImpl) GetTotalDatabaseSize(databaseName string, authUser auth.Us
 	return dbStatsRepo.GetTotalDatabaseSize()
 }
 
-func (s *ServiceImpl) GetTotalIndexSize(databaseName string, authUser auth.User) (string, error) {
-	if !s.adminPolicy.CanAccess(authUser) {
-		return "", errors.NewForbiddenError("database_stats.error.forbidden")
-	}
-
+func (s *ServiceImpl) getTotalIndexSize(databaseName string) (string, error) {
 	dbStatsRepo, _, err := s.getClientStatsRepo(databaseName)
 	if err != nil {
 		return "", err
@@ -66,11 +55,7 @@ func (s *ServiceImpl) GetTotalIndexSize(databaseName string, authUser auth.User)
 	return dbStatsRepo.GetTotalIndexSize()
 }
 
-func (s *ServiceImpl) GetUnusedIndexes(databaseName string, authUser auth.User) ([]UnusedIndex, error) {
-	if !s.adminPolicy.CanAccess(authUser) {
-		return []UnusedIndex{}, errors.NewForbiddenError("database_stats.error.forbidden")
-	}
-
+func (s *ServiceImpl) getUnusedIndexes(databaseName string) ([]UnusedIndex, error) {
 	dbStatsRepo, _, err := s.getClientStatsRepo(databaseName)
 	if err != nil {
 		return []UnusedIndex{}, err
@@ -79,11 +64,7 @@ func (s *ServiceImpl) GetUnusedIndexes(databaseName string, authUser auth.User) 
 	return dbStatsRepo.GetUnusedIndexes()
 }
 
-func (s *ServiceImpl) GetSlowQueries(databaseName string, authUser auth.User) ([]SlowQuery, error) {
-	if !s.adminPolicy.CanAccess(authUser) {
-		return []SlowQuery{}, errors.NewForbiddenError("database_stats.error.forbidden")
-	}
-
+func (s *ServiceImpl) getSlowQueries(databaseName string) ([]SlowQuery, error) {
 	dbStatsRepo, _, err := s.getClientStatsRepo(databaseName)
 	if err != nil {
 		return []SlowQuery{}, err
@@ -92,11 +73,7 @@ func (s *ServiceImpl) GetSlowQueries(databaseName string, authUser auth.User) ([
 	return dbStatsRepo.GetSlowQueries()
 }
 
-func (s *ServiceImpl) GetIndexScansPerTable(databaseName string, authUser auth.User) ([]IndexScan, error) {
-	if !s.adminPolicy.CanAccess(authUser) {
-		return []IndexScan{}, errors.NewForbiddenError("database_stats.error.forbidden")
-	}
-
+func (s *ServiceImpl) getIndexScansPerTable(databaseName string) ([]IndexScan, error) {
 	dbStatsRepo, _, err := s.getClientStatsRepo(databaseName)
 	if err != nil {
 		return []IndexScan{}, err
@@ -105,11 +82,7 @@ func (s *ServiceImpl) GetIndexScansPerTable(databaseName string, authUser auth.U
 	return dbStatsRepo.GetIndexScansPerTable()
 }
 
-func (s *ServiceImpl) GetSizePerTable(databaseName string, authUser auth.User) ([]TableSize, error) {
-	if !s.adminPolicy.CanAccess(authUser) {
-		return []TableSize{}, errors.NewForbiddenError("database_stats.error.forbidden")
-	}
-
+func (s *ServiceImpl) getSizePerTable(databaseName string) ([]TableSize, error) {
 	dbStatsRepo, _, err := s.getClientStatsRepo(databaseName)
 	if err != nil {
 		return []TableSize{}, err
@@ -118,11 +91,7 @@ func (s *ServiceImpl) GetSizePerTable(databaseName string, authUser auth.User) (
 	return dbStatsRepo.GetSizePerTable()
 }
 
-func (s *ServiceImpl) GetRowCountPerTable(databaseName string, authUser auth.User) ([]TableRowCount, error) {
-	if !s.adminPolicy.CanAccess(authUser) {
-		return []TableRowCount{}, errors.NewForbiddenError("database_stats.error.forbidden")
-	}
-
+func (s *ServiceImpl) getRowCountPerTable(databaseName string) ([]TableRowCount, error) {
 	dbStatsRepo, _, err := s.getClientStatsRepo(databaseName)
 	if err != nil {
 		return []TableRowCount{}, err
@@ -131,38 +100,44 @@ func (s *ServiceImpl) GetRowCountPerTable(databaseName string, authUser auth.Use
 	return dbStatsRepo.GetRowCountPerTable()
 }
 
-func (s *ServiceImpl) GetAll(databaseName string, authUser auth.User) (Stat, error) {
-	if !s.adminPolicy.CanAccess(authUser) {
+func (s *ServiceImpl) GetAll(projectUUID uuid.UUID, authUser auth.User) (Stat, error) {
+	fetchedProject, err := s.projectRepo.GetByUUID(projectUUID)
+	if err != nil {
+		return Stat{}, err
+	}
+
+	if !s.projectPolicy.CanAccess(fetchedProject.OrganizationUuid, authUser) {
 		return Stat{}, errors.NewForbiddenError("database_stats.error.forbidden")
 	}
 
-	totalDatabaseSize, err := s.GetTotalDatabaseSize(databaseName, authUser)
+	databaseName := fetchedProject.DBName
+	totalDatabaseSize, err := s.getTotalDatabaseSize(databaseName)
 	if err != nil {
 		return Stat{}, err
 	}
 
-	totalIndexSize, err := s.GetTotalIndexSize(databaseName, authUser)
+	totalIndexSize, err := s.getTotalIndexSize(databaseName)
 	if err != nil {
 		return Stat{}, err
 	}
 
-	unusedIndexes, err := s.GetUnusedIndexes(databaseName, authUser)
+	unusedIndexes, err := s.getUnusedIndexes(databaseName)
 	if err != nil {
 		return Stat{}, err
 	}
 
-	tableCounts, err := s.GetRowCountPerTable(databaseName, authUser)
+	tableCounts, err := s.getRowCountPerTable(databaseName)
 	if err != nil {
 		return Stat{}, err
 	}
 
-	tableSizes, err := s.GetSizePerTable(databaseName, authUser)
+	tableSizes, err := s.getSizePerTable(databaseName)
 	if err != nil {
 		return Stat{}, err
 	}
 
 	return Stat{
-		DatabaseName: databaseName,
+		DatabaseName: fetchedProject.DBName,
 		TotalSize:    totalDatabaseSize,
 		IndexSize:    totalIndexSize,
 		UnusedIndex:  unusedIndexes,
