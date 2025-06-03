@@ -5,7 +5,6 @@ import (
 	"fluxend/internal/domain/admin"
 	"fluxend/internal/domain/auth"
 	"fluxend/internal/domain/project"
-	"fluxend/internal/domain/setting"
 	"fluxend/internal/domain/shared"
 	"fluxend/pkg"
 	"fluxend/pkg/errors"
@@ -30,20 +29,17 @@ type Service interface {
 
 type ServiceImpl struct {
 	adminPolicy      *admin.Policy
-	settingRepo      setting.Repository
 	projectRepo      project.Repository
 	postgrestService shared.PostgrestService
 }
 
 func NewHealthService(injector *do.Injector) (Service, error) {
 	policy := admin.NewAdminPolicy()
-	settingRepo := do.MustInvoke[setting.Repository](injector)
 	projectRepo := do.MustInvoke[project.Repository](injector)
 	postgrestService := do.MustInvoke[shared.PostgrestService](injector)
 
 	return &ServiceImpl{
 		adminPolicy:      policy,
-		settingRepo:      settingRepo,
 		projectRepo:      projectRepo,
 		postgrestService: postgrestService,
 	}, nil
