@@ -59,7 +59,7 @@ func (r *Repository) Recreate(name string) error {
 
 func (r *Repository) List() ([]string, error) {
 	var databases []string
-	return databases, r.db.SelectList(&databases, "SELECT datname FROM pg_database WHERE datistemplate = false")
+	return databases, r.db.Select(&databases, "SELECT datname FROM pg_database WHERE datistemplate = false")
 }
 
 func (r *Repository) Exists(name string) (bool, error) {

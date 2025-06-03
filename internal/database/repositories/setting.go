@@ -21,7 +21,7 @@ func (r *SettingRepository) List() ([]setting.Setting, error) {
 	query := "SELECT * FROM fluxend.settings;"
 
 	var settings []setting.Setting
-	return settings, r.db.SelectList(&settings, query)
+	return settings, r.db.Select(&settings, query)
 }
 
 func (r *SettingRepository) Get(name string) (setting.Setting, error) {

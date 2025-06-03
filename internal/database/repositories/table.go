@@ -82,7 +82,7 @@ func (r *TableRepository) List() ([]database.Table, error) {
          AND c.relkind = 'r'  -- 'r' means regular table (excludes views, indexes, etc.)
        ORDER BY c.relname;
     `
-	return tables, r.db.SelectList(&tables, query)
+	return tables, r.db.Select(&tables, query)
 }
 
 func (r *TableRepository) GetByNameInSchema(schema, name string) (database.Table, error) {
@@ -105,8 +105,7 @@ func (r *TableRepository) GetByNameInSchema(schema, name string) (database.Table
 }
 
 func (r *TableRepository) DropIfExists(name string) error {
-	_, err := r.db.ExecWithRowsAffected("DROP TABLE IF EXISTS " + pq.QuoteIdentifier(name))
-	return err
+	return r.db.ExecWithErr(fmt.Sprintf("DROP TABLE IF EXISTS %s", name))
 }
 
 func (r *TableRepository) Rename(oldName string, newName string) error {
