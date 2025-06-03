@@ -105,8 +105,7 @@ func (r *TableRepository) GetByNameInSchema(schema, name string) (database.Table
 }
 
 func (r *TableRepository) DropIfExists(name string) error {
-	_, err := r.db.ExecWithRowsAffected("DROP TABLE IF EXISTS " + pq.QuoteIdentifier(name))
-	return err
+	return r.db.ExecWithErr(fmt.Sprintf("DROP TABLE IF EXISTS %s", name))
 }
 
 func (r *TableRepository) Rename(oldName string, newName string) error {
