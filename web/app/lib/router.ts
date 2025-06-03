@@ -1,4 +1,4 @@
-import { index, type RouteConfigEntry } from "@react-router/dev/routes";
+import { index, route, type RouteConfigEntry } from "@react-router/dev/routes";
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";

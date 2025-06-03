@@ -1,5 +1,5 @@
 import { getAuthToken } from "~/lib/auth";
-import fetch, { get, type APIRequestOptions } from "~/tools/fetch";
+import fetch, { get, post, del, type APIRequestOptions } from "~/tools/fetch";
 
 export const getAllCollections = async (request: any, projectId: string) => {
   const authToken = await getAuthToken(request.headers);
@@ -62,6 +62,46 @@ export const getCollectionRows = async (
   };
 
   const response = get<any>(collectionName, fetchOptions);
+
+  return response;
+};
+
+export const createCollection = async (
+  request: any,
+  projectId: string,
+  data: any
+) => {
+  const authToken = await getAuthToken(request.headers);
+
+  const fetchOptions: RequestInit = {
+    headers: {
+      "X-Project": projectId,
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${authToken}`,
+    },
+  };
+
+  const response = post<any>("/tables", data, fetchOptions);
+
+  return response;
+};
+
+export const deleteCollection = async (
+  request: any,
+  projectId: string,
+  tableName: string
+) => {
+  const authToken = await getAuthToken(request.headers);
+
+  const fetchOptions: RequestInit = {
+    headers: {
+      "X-Project": projectId,
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${authToken}`,
+    },
+  };
+
+  const response = del<any>(`/tables/public.${tableName}`, fetchOptions);
 
   return response;
 };

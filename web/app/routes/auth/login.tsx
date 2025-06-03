@@ -33,7 +33,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 
     if (projectIdValue) {
       // Redirect to the specific project
-      return redirect(`/projects/${projectIdValue}`);
+      return redirect(`/projects/${projectIdValue}/dashboard`);
     } else {
       // If project cookie is missing, throw an error
       throw new Response("Project ID is missing", { status: 400 });
@@ -128,7 +128,7 @@ export async function action({ request }: Route.ActionArgs) {
     const projectIdCookie = await projectCookie.serialize(projectId);
     const dbIdCookie = await dbCookie.serialize(dbId);
 
-    return redirect(`/projects/${projectId}`, {
+    return redirect(`/projects/${projectId}/dashboard`, {
       headers: {
         "Set-Cookie": [
           sessionTokenCookie,

@@ -2,7 +2,14 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { cn } from "~/lib/utils";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
-import { Search, X, ArrowRight, Filter, ChevronsUpDown } from "lucide-react";
+import {
+  Search,
+  X,
+  ArrowRight,
+  Filter,
+  ChevronsUpDown,
+  Info,
+} from "lucide-react";
 import { ScrollArea } from "~/components/ui/scroll-area";
 import { Badge } from "~/components/ui/badge";
 import {
@@ -16,6 +23,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "~/components/ui/popover";
+import { motion } from "motion/react";
 
 interface QuerySearchBoxProps {
   columns: any[];
@@ -34,7 +42,12 @@ export function QuerySearchBox({
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isColumnPickerOpen, setIsColumnPickerOpen] = useState(false);
   const [columnSuggestions, setColumnSuggestions] = useState<string[]>([]);
-  const [suggestionPosition, setSuggestionPosition] = useState<{top: number, left: number, width: number, maxHeight: number}>({top: 0, left: 0, width: 0, maxHeight: 200});
+  const [suggestionPosition, setSuggestionPosition] = useState<{
+    top: number;
+    left: number;
+    width: number;
+    maxHeight: number;
+  }>({ top: 0, left: 0, width: 0, maxHeight: 200 });
   const inputRef = useRef<HTMLInputElement>(null);
   const suggestionsRef = useRef<HTMLDivElement>(null);
 
@@ -45,12 +58,12 @@ export function QuerySearchBox({
       const windowHeight = window.innerHeight;
       const spaceBelow = windowHeight - inputRect.bottom;
       const maxHeight = Math.min(200, spaceBelow - 10); // Leave 10px padding
-      
+
       setSuggestionPosition({
         top: inputRect.bottom + window.scrollY + 2, // Add small gap
         left: inputRect.left + window.scrollX,
         width: inputRect.width,
-        maxHeight: maxHeight
+        maxHeight: maxHeight,
       });
     }
   }, []);
@@ -60,11 +73,11 @@ export function QuerySearchBox({
     if (inputRef.current) {
       inputRef.current.focus();
     }
-    
+
     // Add click outside listener to close suggestions
     const handleClickOutside = (event: MouseEvent) => {
       if (
-        suggestionsRef.current && 
+        suggestionsRef.current &&
         !suggestionsRef.current.contains(event.target as Node) &&
         inputRef.current &&
         !inputRef.current.contains(event.target as Node)
@@ -72,22 +85,22 @@ export function QuerySearchBox({
         setIsColumnPickerOpen(false);
       }
     };
-    
+
     // Handle window resize to update dropdown position
     const handleResize = () => {
       if (isColumnPickerOpen) {
         updateSuggestionPosition();
       }
     };
-    
-    document.addEventListener('mousedown', handleClickOutside);
-    window.addEventListener('resize', handleResize);
-    window.addEventListener('scroll', handleResize);
-    
+
+    document.addEventListener("mousedown", handleClickOutside);
+    window.addEventListener("resize", handleResize);
+    window.addEventListener("scroll", handleResize);
+
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      window.removeEventListener('resize', handleResize);
-      window.removeEventListener('scroll', handleResize);
+      document.removeEventListener("mousedown", handleClickOutside);
+      window.removeEventListener("resize", handleResize);
+      window.removeEventListener("scroll", handleResize);
     };
   }, [isColumnPickerOpen, updateSuggestionPosition]);
 
@@ -115,7 +128,7 @@ export function QuerySearchBox({
         );
 
       setColumnSuggestions(matchingColumns);
-      
+
       // Only open the picker if we have suggestions and the user has typed something
       if (matchingColumns.length > 0 && currentToken.length > 0) {
         // Get input position for dropdown positioning
@@ -225,7 +238,10 @@ export function QuerySearchBox({
 
           // Handle 'in' operator
           if (pgOperator === "in") {
-            if (processedValue.startsWith("(") && processedValue.endsWith(")")) {
+            if (
+              processedValue.startsWith("(") &&
+              processedValue.endsWith(")")
+            ) {
               // Already in correct format
             } else {
               processedValue = `(${processedValue})`;
@@ -239,8 +255,13 @@ export function QuerySearchBox({
 
           // Handle array operators (cs, cd, ov)
           if (["cs", "cd", "ov"].includes(pgOperator)) {
-            if (!(processedValue.startsWith("{") && processedValue.endsWith("}"))) {
-              if (processedValue.startsWith("(") && processedValue.endsWith(")")) {
+            if (
+              !(processedValue.startsWith("{") && processedValue.endsWith("}"))
+            ) {
+              if (
+                processedValue.startsWith("(") &&
+                processedValue.endsWith(")")
+              ) {
                 processedValue = processedValue.substring(
                   1,
                   processedValue.length - 1
@@ -265,8 +286,8 @@ export function QuerySearchBox({
         }
 
         // Create the filter param with logical operator
-        const filterParam = { 
-          [logicalOp]: `(${conditions.join(",")})` 
+        const filterParam = {
+          [logicalOp]: `(${conditions.join(",")})`,
         };
 
         // Apply the filter
@@ -365,10 +386,15 @@ export function QuerySearchBox({
         // Handle array operators (cs, cd, ov)
         if (["cs", "cd", "ov"].includes(pgOperator)) {
           // If the value is already in curly braces format
-          if (!(processedValue.startsWith("{") && processedValue.endsWith("}"))) {
+          if (
+            !(processedValue.startsWith("{") && processedValue.endsWith("}"))
+          ) {
             // Convert comma-separated values to curly brace format
             // Check if it's already in parentheses
-            if (processedValue.startsWith("(") && processedValue.endsWith(")")) {
+            if (
+              processedValue.startsWith("(") &&
+              processedValue.endsWith(")")
+            ) {
               // Extract the content within parentheses
               processedValue = processedValue.substring(
                 1,
@@ -472,7 +498,7 @@ export function QuerySearchBox({
               value={query}
               onChange={handleQueryChange}
               onKeyDown={handleKeyDown}
-              placeholder="Write query: column = 'value'"
+              placeholder="Query..."
               className="pl-8 pr-[76px] w-full border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
             />
             <div className="absolute right-1 top-1/2 -translate-y-1/2 flex items-center space-x-1">
@@ -480,13 +506,24 @@ export function QuerySearchBox({
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-7 w-7 hover:bg-accent"
+                  className="h-7 w-7 hover:bg-accent cursor-pointer"
                   onClick={clearQuery}
                   title="Clear"
                 >
                   <X className="h-4 w-4" />
                 </Button>
               )}
+              <Button
+                className={cn("h-7 w-7 hover:bg-accent cursor-pointer", {
+                  "bg-accent": isShowingHelp,
+                })}
+                size="icon"
+                variant="ghost"
+                onClick={() => setIsShowingHelp(!isShowingHelp)}
+                title="Query Examples"
+              >
+                <Info />
+              </Button>
               <Button
                 className="h-7 w-7 hover:bg-accent"
                 size="icon"
@@ -500,16 +537,16 @@ export function QuerySearchBox({
           </div>
         </div>
         {isColumnPickerOpen && columnSuggestions.length > 0 && (
-          <div 
+          <div
             ref={suggestionsRef}
-            style={{ 
-              position: 'fixed', 
+            style={{
+              position: "fixed",
               zIndex: 9999,
               top: `${suggestionPosition.top}px`,
               left: `${suggestionPosition.left}px`,
               width: `${suggestionPosition.width}px`,
-              maxHeight: `${suggestionPosition.maxHeight}px`
-            }} 
+              maxHeight: `${suggestionPosition.maxHeight}px`,
+            }}
             className="mt-1 bg-background border rounded-md shadow-lg overflow-auto"
           >
             <div className="p-1">
@@ -537,20 +574,12 @@ export function QuerySearchBox({
         <div className="text-sm text-destructive">{errorMessage}</div>
       )}
 
-      <div className="flex items-center justify-between">
-        <Button
-          variant="ghost"
-          size="sm"
-          className="px-2 h-6 text-xs text-muted-foreground hover:text-foreground"
-          onClick={() => setIsShowingHelp(!isShowingHelp)}
-        >
-          {isShowingHelp ? "Hide examples" : "Show examples"}
-        </Button>
-      </div>
-
       {activeQuery && (
         <div className="flex items-center gap-2">
-          <Badge variant="secondary" className="flex items-center gap-1.5 px-2 py-1 bg-accent/20 border border-accent/30 text-accent-foreground">
+          <Badge
+            variant="secondary"
+            className="flex items-center gap-1.5 px-2 py-1 bg-accent/20 border border-accent/30 text-accent-foreground"
+          >
             <Filter className="h-3 w-3" />
             <span className="font-normal">{activeQuery}</span>
             <Button
@@ -566,85 +595,100 @@ export function QuerySearchBox({
       )}
 
       {isShowingHelp && (
-        <div className="bg-muted/30 rounded-md border p-3 border-border/40">
-          <h4 className="text-sm font-medium mb-2">Query Examples:</h4>
-          <ScrollArea className="h-[150px]">
-            <ul className="text-xs space-y-2 text-muted-foreground">
-              <li>
-                <code className="bg-muted p-0.5 rounded">name = 'John'</code> -
-                Exact match
-              </li>
-              <li>
-                <code className="bg-muted p-0.5 rounded">age &gt; 30</code> -
-                Greater than
-              </li>
-              <li>
-                <code className="bg-muted p-0.5 rounded">age &gt;= 30</code> -
-                Greater than or equal
-              </li>
-              <li>
-                <code className="bg-muted p-0.5 rounded">
-                  name like '*Smith*'
-                </code>{" "}
-                - Pattern match (use * instead of %)
-              </li>
-              <li>
-                <code className="bg-muted p-0.5 rounded">status is true</code> -
-                Boolean value
-              </li>
-              <li>
-                <code className="bg-muted p-0.5 rounded">manager is null</code>{" "}
-                - NULL value
-              </li>
-              <li>
-                <code className="bg-muted p-0.5 rounded">id in (1,2,3)</code> -
-                List of values
-              </li>
-              <li>
-                <code className="bg-muted p-0.5 rounded">
-                  tags cs {"{"}"sport,outdoor{"}"}
-                </code>{" "}
-                - Array contains
-              </li>
-              <li>
-                <code className="bg-muted p-0.5 rounded">
-                  data cd {"{"}"1,2{"}"}
-                </code>{" "}
-                - Array contained in
-              </li>
-              <li>
-                <code className="bg-muted p-0.5 rounded">
-                  ranges ov {"{"}"20,30{"}"}
-                </code>{" "}
-                - Array overlap
-              </li>
-              <li>
-                <code className="bg-muted p-0.5 rounded">
-                  description fts 'search terms'
-                </code>{" "}
-                - Full-text search
-              </li>
-              <li>
-                <code className="bg-muted p-0.5 rounded">
-                  content fts english:'query'
-                </code>{" "}
-                - Full-text search with language
-              </li>
-              <li>
-                <code className="bg-muted p-0.5 rounded">
-                  name = 'John' AND age &gt; 30
-                </code>{" "}
-                - Multiple conditions with AND
-              </li>
-              <li>
-                <code className="bg-muted p-0.5 rounded">
-                  status = 'active' OR status = 'pending'
-                </code>{" "}
-                - Multiple conditions with OR
-              </li>
-            </ul>
-          </ScrollArea>
-        </div>
+        <motion.div
+          initial={{ height: 0, opacity: 0 }}
+          animate={{
+            height: "auto",
+            opacity: 1,
+            transition: {
+              type: "ease",
+              ease: "easeInOut",
+              duration: 0.3,
+            },
+          }}
+        >
+          <div className="bg-muted/30 rounded-md border p-3 border-border/40">
+            <h4 className="text-sm font-medium mb-2">Query Examples:</h4>
+            <ScrollArea className="h-[150px]">
+              <ul className="text-xs space-y-2 text-muted-foreground">
+                <li>
+                  <code className="bg-muted p-0.5 rounded">name = 'John'</code>{" "}
+                  - Exact match
+                </li>
+                <li>
+                  <code className="bg-muted p-0.5 rounded">age &gt; 30</code> -
+                  Greater than
+                </li>
+                <li>
+                  <code className="bg-muted p-0.5 rounded">age &gt;= 30</code> -
+                  Greater than or equal
+                </li>
+                <li>
+                  <code className="bg-muted p-0.5 rounded">
+                    name like '*Smith*'
+                  </code>{" "}
+                  - Pattern match (use * instead of %)
+                </li>
+                <li>
+                  <code className="bg-muted p-0.5 rounded">status is true</code>{" "}
+                  - Boolean value
+                </li>
+                <li>
+                  <code className="bg-muted p-0.5 rounded">
+                    manager is null
+                  </code>{" "}
+                  - NULL value
+                </li>
+                <li>
+                  <code className="bg-muted p-0.5 rounded">id in (1,2,3)</code>{" "}
+                  - List of values
+                </li>
+                <li>
+                  <code className="bg-muted p-0.5 rounded">
+                    tags cs {"{"}"sport,outdoor{"}"}
+                  </code>{" "}
+                  - Array contains
+                </li>
+                <li>
+                  <code className="bg-muted p-0.5 rounded">
+                    data cd {"{"}"1,2{"}"}
+                  </code>{" "}
+                  - Array contained in
+                </li>
+                <li>
+                  <code className="bg-muted p-0.5 rounded">
+                    ranges ov {"{"}"20,30{"}"}
+                  </code>{" "}
+                  - Array overlap
+                </li>
+                <li>
+                  <code className="bg-muted p-0.5 rounded">
+                    description fts 'search terms'
+                  </code>{" "}
+                  - Full-text search
+                </li>
+                <li>
+                  <code className="bg-muted p-0.5 rounded">
+                    content fts english:'query'
+                  </code>{" "}
+                  - Full-text search with language
+                </li>
+                <li>
+                  <code className="bg-muted p-0.5 rounded">
+                    name = 'John' AND age &gt; 30
+                  </code>{" "}
+                  - Multiple conditions with AND
+                </li>
+                <li>
+                  <code className="bg-muted p-0.5 rounded">
+                    status = 'active' OR status = 'pending'
+                  </code>{" "}
+                  - Multiple conditions with OR
+                </li>
+              </ul>
+            </ScrollArea>
+          </div>
+        </motion.div>
       )}
     </div>
   );

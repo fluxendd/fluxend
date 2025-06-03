@@ -1,6 +1,12 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { FolderIcon, LoaderCircle, MessageCircleWarning } from "lucide-react";
-import { useEffect, useLayoutEffect } from "react";
+import {
+  BadgeAlert,
+  FolderIcon,
+  HashIcon,
+  LoaderCircle,
+  MessageCircleWarning,
+} from "lucide-react";
+import { useCallback, useEffect, useLayoutEffect, useMemo } from "react";
 import { CollectionListSkeleton } from "~/components/shared/collection-list-skeleton";
 import {
   href,
@@ -11,6 +17,7 @@ import {
   useParams,
 } from "react-router";
 import { getAllCollections } from "~/services/collections";
+import { motion } from "motion/react";
 
 // Define collection type
 interface Collection {
@@ -27,8 +34,8 @@ class UnauthorizedError extends Error {
 }
 
 const InfoMessage = ({ message }: { message: string }) => (
-  <div className="flex items-center justify-center p-4 text-muted-foreground h-full">
-    <MessageCircleWarning className="mr-2" />
+  <div className="flex items-center p-4 text-muted-foreground">
+    <BadgeAlert className="mr-2" />
     <div className="text-md">{message}</div>
   </div>
 );
@@ -54,7 +61,7 @@ const collectionsQuery = (projectId: string) => ({
 });
 
 function CollectionListFallback() {
-  return <CollectionListSkeleton count={8} />;
+  return <CollectionListSkeleton count={5} />;
 }
 
 type CollectionListProps = {
@@ -66,29 +73,31 @@ export const CollectionList = ({
   projectId,
   searchTerm = "",
 }: CollectionListProps) => {
-  const queryClient = useQueryClient();
   const navigate = useNavigate();
-  const { isLoading, isFetching, isError, data, error } = useQuery<Collection[]>(
-    collectionsQuery(projectId)
-  );
 
-  const { collectionId } = useParams();
+  const { isLoading, isFetching, isError, data, error } = useQuery<
+    Collection[]
+  >(collectionsQuery(projectId));
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (error?.name === "UnauthorizedError") {
       navigate(href("/logout"));
     }
   }, [error]);
 
-  // Navigate to the first collection when no collection is selected
-  useEffect(() => {
-    if (!collectionId && !isLoading && data && data.length > 0) {
-      navigate(
-        `/projects/${projectId}/collections/${data[0].name}`,
-        { replace: true }
-      );
+  const filteredData = useMemo(() => {
+    if (!data) {
+      return [];
     }
-  }, [collectionId, isLoading, data, projectId, navigate]);
+
+    if (!searchTerm) {
+      return data;
+    }
+
+    return data.filter((table) =>
+      table.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [searchTerm, data]);
 
   if (isLoading) {
     return <CollectionListFallback />;
@@ -104,12 +113,6 @@ export const CollectionList = ({
     return <InfoMessage message="No collections found" />;
   }
 
-  const filteredData = searchTerm
-    ? data.filter((table) =>
-        table.name.toLowerCase().includes(searchTerm.toLowerCase())
-      )
-    : data;
-
   if (filteredData.length === 0) {
     return <InfoMessage message="No matching collections found" />;
   }
@@ -117,27 +120,43 @@ export const CollectionList = ({
   return (
     <div className="h-full overflow-y-auto flex flex-col">
       {filteredData.map((table) => (
-    <NavLink
-      to={href(`/projects/:projectId/collections/:collectionId?`, {
-        projectId: projectId,
-        collectionId: table.name,
-      })}
-      key={table.name}
-      className={({ isActive, isPending, isTransitioning }) =>
-        [
-          `flex flex-col items-start gap-2 whitespace-nowrap border-b p-4 text-sm leading-tight last:border-b-0 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground ${
-            isFetching ? "opacity-60" : ""
-          }`,
-          isActive ? "bg-sidebar-accent text-sidebar-accent-foreground" : "",
-        ].join(" ")
-      }
-    >
-      <div className="flex w-full items-center gap-2">
-        <FolderIcon size={20} />
-        <span className="font-medium">{table.name}</span>
-        <span className="ml-auto text-xs">{table.totalSize}</span>
-      </div>
-    </NavLink>
+        <NavLink
+          to={href(`/projects/:projectId/collections/:collectionId?`, {
+            projectId: projectId,
+            collectionId: table.name,
+          })}
+          key={table.name}
+          className={({ isActive }) =>
+            [
+              `relative flex flex-col items-start whitespace-nowrap p-2 rounded-md mx-2  text-sm leading-tight hover:text-primary cursor-pointer ${
+                isFetching ? "opacity-60" : ""
+              }`,
+              isActive ? "text-primary" : "",
+            ].join(" ")
+          }
+        >
+          {({ isActive }) => (
+            <>
+              <div className="flex w-full items-center gap-1">
+                {isActive && (
+                  <motion.div
+                    layoutId="collectionId"
+                    className="absolute inset-0 bg-primary/10 rounded-md"
+                    transition={{
+                      type: "spring",
+                      bounce: 0.2,
+                      duration: 0.3,
+                      delay: 0.1,
+                    }}
+                  />
+                )}
+                <HashIcon size={12} />
+                <span className="">{table.name}</span>
+                <span className="ml-auto text-xs">{table.totalSize}</span>
+              </div>
+            </>
+          )}
+        </NavLink>
       ))}
     </div>
   );

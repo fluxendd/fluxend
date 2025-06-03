@@ -38,8 +38,6 @@ import {
   TableRow,
 } from "~/components/ui/table";
 import { cn } from "~/lib/utils";
-import { RowSkeleton } from "~/components/shared/row-skeleton";
-import { Skeleton } from "~/components/ui/skeleton";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -48,7 +46,6 @@ interface DataTableProps<TData, TValue> {
   pagination: PaginationState;
   totalRows: number;
   onPaginationChange: OnChangeFn<PaginationState>;
-  isLoading?: boolean;
 }
 
 export function DataTable<TData, TValue>({
@@ -58,7 +55,6 @@ export function DataTable<TData, TValue>({
   pagination,
   totalRows,
   onPaginationChange,
-  isLoading = false,
 }: DataTableProps<TData, TValue>) {
   const tableRef = useRef<HTMLTableElement>(null);
 
@@ -116,13 +112,7 @@ export function DataTable<TData, TValue>({
             ))}
           </TableHeader>
           <TableBody>
-            {isLoading ? (
-              <RowSkeleton
-                columns={columns.length}
-                rows={pagination.pageSize}
-              />
-            ) : table.getRowModel().rows &&
-              table.getRowModel().rows.length > 0 ? (
+            {table.getRowModel().rows && table.getRowModel().rows.length > 0 ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
@@ -174,7 +164,7 @@ export function DataTable<TData, TValue>({
               table.getFilteredSelectedRowModel().rows.length
             } of ${totalRows} row(s) selected`}
         </div>
-        <div className="flex w-full items-center gap-8 lg:w-fit">
+        <div className="flex w-full items-center justify-end gap-8 lg:w-fit">
           <div className="hidden items-center gap-2 lg:flex">
             <Label htmlFor="rows-per-page" className="text-sm font-medium">
               Rows per page
