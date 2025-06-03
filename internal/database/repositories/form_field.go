@@ -23,7 +23,7 @@ func (r *FormFieldRepository) ListForForm(formUUID uuid.UUID) ([]form.Field, err
 	query := "SELECT * FROM fluxend.form_fields WHERE form_uuid = $1;"
 
 	var forms []form.Field
-	return forms, r.db.SelectList(&forms, query, formUUID)
+	return forms, r.db.Select(&forms, query, formUUID)
 }
 
 func (r *FormFieldRepository) GetByUUID(formUUID uuid.UUID) (form.Field, error) {

@@ -45,7 +45,7 @@ func (r *ColumnRepository) List(tableName string) ([]database.Column, error) {
 		  AND NOT a.attisdropped
 		ORDER BY a.attnum;
 	`
-	return columns, r.db.SelectList(&columns, query, tableName)
+	return columns, r.db.Select(&columns, query, tableName)
 }
 
 func (r *ColumnRepository) Has(tableName, columnName string) (bool, error) {

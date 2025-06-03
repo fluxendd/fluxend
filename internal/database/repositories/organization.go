@@ -67,7 +67,7 @@ func (r *OrganizationRepository) ListUsers(organizationUUID uuid.UUID) ([]user.U
 	query = fmt.Sprintf(query, pkg.GetColumnsWithAlias[user.User]("users"))
 
 	var users []user.User
-	return users, r.db.SelectList(&users, query, organizationUUID)
+	return users, r.db.Select(&users, query, organizationUUID)
 }
 
 func (r *OrganizationRepository) GetUser(organizationUUID, userUUID uuid.UUID) (user.User, error) {

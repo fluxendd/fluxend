@@ -38,7 +38,7 @@ func (r *IndexRepository) List(tableName string) ([]string, error) {
        FROM pg_indexes
        WHERE tablename = $1
     `
-	return indexes, r.db.SelectList(&indexes, query, tableName)
+	return indexes, r.db.Select(&indexes, query, tableName)
 }
 
 func (r *IndexRepository) Create(tableName string, indexName string, columns []string, isUnique bool) (bool, error) {
