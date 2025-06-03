@@ -2,7 +2,7 @@ package commands
 
 import (
 	"fluxend/internal/app"
-	"fluxend/internal/database/repositories"
+	"fluxend/internal/domain/project"
 	"fluxend/internal/domain/shared"
 	"fmt"
 	"github.com/samber/do"
@@ -21,7 +21,7 @@ func restartPostgrestInstances() error {
 	container := app.InitializeContainer()
 
 	// Inject dependencies
-	projectRepository := do.MustInvoke[*repositories.ProjectRepository](container)
+	projectRepository := do.MustInvoke[project.Repository](container)
 	postgrestService := do.MustInvoke[shared.PostgrestService](container)
 
 	projects, err := projectRepository.List(shared.PaginationParams{Page: 1, Limit: 1000})
@@ -38,20 +38,20 @@ func restartPostgrestInstances() error {
 	fmt.Printf("Found %d projects\n", len(projects))
 
 	// Restart PostGREST instances for each project
-	for i, project := range projects {
-		if project.DBName == "" {
+	for i, currentProject := range projects {
+		if currentProject.DBName == "" {
 			continue
 		}
 
 		// Log restart process for each project
-		fmt.Printf("Restarting PostGREST instance for project %s (%d/%d)\n", project.DBName, i+1, len(projects))
+		fmt.Printf("Restarting PostGREST instance for project %s (%d/%d)\n", currentProject.DBName, i+1, len(projects))
 
-		hasContainer := postgrestService.HasContainer(project.DBName)
+		hasContainer := postgrestService.HasContainer(currentProject.DBName)
 		if hasContainer {
-			postgrestService.RemoveContainer(project.DBName)
+			postgrestService.RemoveContainer(currentProject.DBName)
 		}
 
-		postgrestService.StartContainer(project.DBName)
+		postgrestService.StartContainer(currentProject.DBName)
 	}
 
 	return nil
