@@ -31,6 +31,7 @@ func NewHealthHandler(injector *do.Injector) (*HealthHandler, error) {
 //
 // @Success 200 {object} response.Response{content=dto.GenericResponse} "Health status"
 // @Failure 401 "Unauthorized"
+// @Failure 403 "Forbidden"
 //
 // @Router /admin/health [get]
 func (hh *HealthHandler) Pulse(c echo.Context) error {
