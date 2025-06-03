@@ -77,7 +77,7 @@ pgr.list: ## List all postgrest containers
 	@docker ps --filter "name=postgrest_" --format "table {{.ID}}\t{{.Names}}\t{{.Ports}}\t{{.CreatedAt}}\t{{.Status}}"
 
 pgr.destroy: ## Destroy all postgrest containers
-	@docker rm -f $(shell docker ps -a -q --filter "name=postgrest_")
+	@docker ps -a -q --filter "name=postgrest_" | xargs -r docker rm -f
 
 pgr.restart: ## Restart all postgrest containers
 	@make udb.restart
