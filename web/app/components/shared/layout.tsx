@@ -1,4 +1,4 @@
-import { Outlet, useNavigate, useNavigation } from "react-router";
+import { Outlet, useNavigate, useNavigation, useParams } from "react-router";
 import { SidebarInset, SidebarProvider } from "~/components/ui/sidebar";
 import { AppSidebar } from "~/components/shared/sidebar";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -20,11 +20,12 @@ const FloatingLoadingIcon = () => {
 };
 
 export default function AppLayout() {
+  const { projectId } = useParams();
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <SidebarProvider open={false}>
-          <AppSidebar />
+          <AppSidebar projectId={projectId} />
           <SidebarInset>
             <Outlet />
             <FloatingLoadingIcon />

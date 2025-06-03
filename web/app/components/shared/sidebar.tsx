@@ -8,7 +8,7 @@ import {
   Scroll,
   Settings2,
 } from "lucide-react";
-import { href, Link, useLocation, useParams } from "react-router";
+import { href, NavLink, useHref, useLocation, useParams } from "react-router";
 
 import {
   Sidebar,
@@ -21,109 +21,115 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "~/components/ui/sidebar";
+import { Logo } from "./logo";
+import { motion } from "motion/react";
+import { cn } from "~/lib/utils";
+import { memo, useMemo } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 
 type AppSidebarItem = {
   title: string;
   url: string;
-  icon: React.ComponentType;
+  Icon: React.ComponentType;
   isActive?: boolean;
 };
 
-// Menu items.
 const items: AppSidebarItem[] = [
   {
     title: "Dashboard",
-    url: "",
-    icon: LayoutDashboard,
+    url: "dashboard",
+    Icon: LayoutDashboard,
   },
   {
     title: "Collections",
     url: "collections",
-    icon: Database,
+    Icon: Database,
     isActive: true,
   },
   {
     title: "Functions",
     url: "functions",
-    icon: Parentheses,
+    Icon: Parentheses,
   },
-  { title: "Storage", url: "storage", icon: PackageOpen },
+  { title: "Storage", url: "storage", Icon: PackageOpen },
   {
     title: "Logs",
     url: "logs",
-    icon: Scroll,
+    Icon: Scroll,
   },
   {
     title: "Settings",
     url: "settings",
-    icon: Settings2,
+    Icon: Settings2,
   },
 ];
 
-export function AppSidebar() {
-  const { projectId = "not-found" } = useParams();
-  const location = useLocation();
-
-  const checkIsActive = (url: string) => {
-    if (url === "") {
-      return location.pathname.endsWith("/");
-    }
-
-    return location.pathname.includes(url);
-  };
-
-  return (
-    <Sidebar collapsible="icon">
-      <SidebarHeader>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton size="lg" asChild className="md:h-8 md:p-0">
-              <a href="#">
-                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                  <Command className="size-4" />
-                </div>
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">Fluxend</span>
-                  <span className="truncate text-xs">Enterprise</span>
-                </div>
-              </a>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarHeader>
-      <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {items.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton
-                    asChild
-                    tooltip={item.title}
-                    isActive={checkIsActive(item.url)}
-                  >
-                    <Link
+export const AppSidebar = memo(
+  ({ projectId }: { projectId: string | undefined }) => {
+    return (
+      <Sidebar collapsible="icon">
+        <SidebarHeader>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton size="lg" asChild className="md:h-8 md:p-0">
+                <>
+                  <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-muted text-black">
+                    <Logo className="size-4" />
+                  </div>
+                </>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarHeader>
+        <SidebarContent>
+          <SidebarGroup>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {items.map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <NavLink
                       to={href(`projects/:projectId/${item.url}`, {
                         projectId,
                       })}
                     >
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-      </SidebarContent>
-      <SidebarFooter>
-        <SidebarMenuButton asChild tooltip={"Logout"}>
-          <Link to={href("/logout")} relative="route">
-            <LogOutIcon />
-          </Link>
-        </SidebarMenuButton>
-      </SidebarFooter>
-    </Sidebar>
-  );
-}
+                      {({ isActive }) => (
+                        <>
+                          {isActive && (
+                            <motion.div
+                              layoutId="sidebarItemId"
+                              className="absolute inset-0 bg-sidebar-accent text-sidebar-accent-foreground rounded-md"
+                              transition={{
+                                type: "spring",
+                                bounce: 0.2,
+                                duration: 0.3,
+                              }}
+                            />
+                          )}
+                          <SidebarMenuButton
+                            asChild
+                            isActive={isActive}
+                            // tooltip={item.title}
+                            className="isolate hover:bg-transparent active:bg-transparent data-[active=true]:bg-transparent active:text-primary data-[active=true]:text-primary hover:text-primary transition-colors duration-300"
+                          >
+                            <item.Icon />
+                          </SidebarMenuButton>
+                        </>
+                      )}
+                    </NavLink>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        </SidebarContent>
+        <SidebarFooter>
+          <SidebarMenuButton asChild tooltip={"Logout"}>
+            <NavLink to={href("/logout")} relative="route">
+              <LogOutIcon />
+            </NavLink>
+          </SidebarMenuButton>
+        </SidebarFooter>
+      </Sidebar>
+    );
+  }
+);

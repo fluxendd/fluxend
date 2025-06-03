@@ -38,6 +38,23 @@ body {
   }
 }
 
+@keyframes pulse-border {
+  0% {
+    border-color: hsla(47.9, 95.8%, 53.1%, 0.3);
+  }
+  50% {
+    border-color: hsla(47.9, 95.8%, 53.1%, 0.9);
+  }
+  100% {
+    border-color: hsla(47.9, 95.8%, 53.1%, 0.3);
+  }
+}
+
+.animate-pulse-border {
+  animation: pulse-border 1.5s infinite ease-in-out;
+  border: 1px solid rgba(99, 102, 241, 0.7);
+}
+
 @layer base {
   :root {
     --background: hsl(0 0% 100%);
@@ -82,7 +99,7 @@ body {
     --card-foreground: hsl(60 9.1% 97.8%);
     --popover: hsl(20 14.3% 4.1%);
     --popover-foreground: hsl(60 9.1% 97.8%);
-    --primary: hsl(47.9 95.8% 53.1%);
+    --primary: #ffa600;
     --primary-foreground: hsl(26 83.3% 14.1%);
     --secondary: hsl(12 6.5% 15.1%);
     --secondary-foreground: hsl(60 9.1% 97.8%);
@@ -165,4 +182,162 @@ body {
   background-color: var(--background);
   z-index: 1;
   box-shadow: -2px 0 4px rgba(0, 0, 0, 0.05);
+}
+
+/* Virtualized table optimizations */
+.virtualized-table-container {
+  contain: layout style paint;
+  will-change: scroll-position;
+  overflow-x: auto;
+  min-width: 100%;
+}
+
+/* Table container for proper overflow handling */
+.table-container {
+  overflow-x: auto;
+  overflow-y: visible;
+  min-width: 100%;
+}
+
+.table-container table {
+  min-width: max-content;
+}
+
+.virtualized-table-row {
+  contain: layout style paint;
+  will-change: transform;
+}
+
+/* Performance optimizations for large datasets */
+.data-table-wrapper {
+  contain: layout style;
+}
+
+/* Smooth scrolling for virtualized content */
+.virtualized-scroll-container {
+  scroll-behavior: smooth;
+  overscroll-behavior: contain;
+}
+
+/* Reduce layout thrashing during virtualization */
+.virtual-table-body {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* Virtualized table layout fixes */
+.virtualized-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  table-layout: fixed;
+}
+
+.virtualized-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background-color: var(--background);
+}
+
+/* Ensure stable table header layout for measurement */
+table {
+  table-layout: auto;
+  width: 100%;
+  min-width: 100%;
+}
+
+/* Tailwind utilities for table layout */
+.table-fixed {
+  table-layout: auto !important;
+  min-width: 100%;
+}
+
+.w-full {
+  width: 100% !important;
+}
+
+.min-h-\[45px\] {
+  min-height: 45px !important;
+}
+
+.h-full {
+  height: 100% !important;
+}
+
+.border-r {
+  border-right: 1px solid var(--border) !important;
+}
+
+.min-w-max {
+  min-width: max-content !important;
+}
+
+th {
+  position: relative;
+  white-space: nowrap;
+  overflow: visible;
+  text-overflow: ellipsis;
+  padding: 0.75rem !important;
+  min-width: fit-content;
+}
+
+/* Ensure string columns get proper width */
+th[data-column-type="string"],
+th[data-column-type="varchar"],
+th[data-column-type="text"] {
+  min-width: 200px;
+}
+
+/* Ensure date columns get proper width */
+th[data-column-type="date"],
+th[data-column-type="datetime"],
+th[data-column-type="timestamp"] {
+  min-width: 150px;
+}
+
+/* Ensure proper cell alignment in virtualized rows */
+.virtualized-row {
+  display: flex;
+  width: 100%;
+  min-height: 45px;
+  border-bottom: 1px solid var(--border);
+  align-items: center;
+}
+
+.virtualized-row:hover {
+  background-color: var(--muted);
+}
+
+.virtualized-cell {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Fix table header alignment */
+.table-header-fixed {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background-color: var(--background);
+  border-bottom: 1px solid var(--border);
+}
+
+/* Ensure virtualized content doesn't interfere with header */
+.virtualized-body-container {
+  position: relative;
+  width: 100%;
+}
+
+/* Prevent layout shift during virtualization */
+.virtual-table-container {
+  contain: layout style paint;
+  will-change: scroll-position;
 }

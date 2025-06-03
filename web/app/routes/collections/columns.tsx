@@ -28,17 +28,17 @@ import {
 } from "~/components/ui/tooltip";
 import { getDbIdFromCookies } from "~/lib/utils";
 
-export const columnsQuery = (projectId: string, collectionName?: string) => ({
-  queryKey: ["columns", projectId, collectionName],
+export const columnsQuery = (projectId: string, collectionId?: string) => ({
+  queryKey: ["columns", projectId, collectionId],
   queryFn: async () => {
-    if (!collectionName) {
+    if (!collectionId) {
       return [];
     }
 
     const res = await getCollectionColumn(
       { headers: {} },
       projectId,
-      collectionName
+      collectionId
     );
 
     if (!res.ok) {
@@ -430,7 +430,7 @@ export const rowsQuery = (
             offset,
             ...filters,
           },
-          baseUrl: `http://${dbId}.fluxend.app/`,
+          baseUrl: `https://${dbId}.fluxend.app/`,
         },
         projectId,
         collectionName

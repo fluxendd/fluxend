@@ -4,7 +4,7 @@ import { AppHeader } from "~/components/shared/header";
 export default function Logs() {
   return (
     <>
-      <AppHeader title="Logs"></AppHeader>
+      <AppHeader title="Logs" />
     </>
   );
 }

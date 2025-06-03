@@ -23,22 +23,11 @@ function getData(users, errors) {
   });
 }
 
-// export async function loader({ params }: Route.LoaderArgs) {
-//   console.log("LOADER");
-//   const promise = getData(200, 12);
-//   return { promise };
-// }
-
-export async function clientLoader({ params }: Route.LoaderArgs) {
-  const promise = getData(300, 15);
-  return { promise };
-}
-
 export default function Dashboard({ loaderData }: Route.ComponentProps) {
   const { isLoading, isFetching, isError, data } = useQuery({
     queryKey: ["dashboard"],
     queryFn: async () => {
-      const res = await loaderData.promise;
+      const res = await getData(300, 15);
       return res;
     },
   });
@@ -59,7 +48,7 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
     <>
       <AppHeader title="Dashboard" />
       <div className="flex">
-        <div className="*:data-[slot=card]:shadow-xs flex gap-4 py-4 px-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card lg:px-6">
+        <div className="*:data-[slot=card]:shadow-xs flex gap-4 py-4 px-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card ">
           <Card className="">
             <CardHeader className="relative">
               <CardDescription>Total Users</CardDescription>

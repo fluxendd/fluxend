@@ -1657,10 +1657,22 @@
   dependencies:
     "@tanstack/table-core" "8.21.2"
 
+"@tanstack/react-virtual@^3.13.9":
+  version "3.13.9"
+  resolved "https://registry.yarnpkg.com/@tanstack/react-virtual/-/react-virtual-3.13.9.tgz#6f87bce08a65c8f4ec6d2c303646ca6b3897e9fe"
+  integrity sha512-SPWC8kwG/dWBf7Py7cfheAPOxuvIv4fFQ54PdmYbg7CpXfsKxkucak43Q0qKsxVthhUJQ1A7CIMAIplq4BjVwA==
+  dependencies:
+    "@tanstack/virtual-core" "3.13.9"
+
 "@tanstack/table-core@8.21.2":
   version "8.21.2"
   resolved "https://registry.npmjs.org/@tanstack/table-core/-/table-core-8.21.2.tgz"
   integrity sha512-uvXk/U4cBiFMxt+p9/G7yUWI/UbHYbyghLCjlpWZ3mLeIZiUBSKcUnw9UnKkdRz7Z/N4UBuFLWQdJCjUe7HjvA==
+
+"@tanstack/virtual-core@3.13.9":
+  version "3.13.9"
+  resolved "https://registry.yarnpkg.com/@tanstack/virtual-core/-/virtual-core-3.13.9.tgz#62b4d2d4351d658101664beacf088fbd061190bf"
+  integrity sha512-3jztt0jpaoJO5TARe2WIHC1UQC3VMLAFUW5mmMo0yrkwtDB2AQP0+sh10BVUpWrnvHjSLvzFizydtEGLCJKFoQ==
 
 "@types/d3-hierarchy@^1.1.8":
   version "1.1.11"
@@ -2455,6 +2467,15 @@ framer-motion@^12.0.6:
     motion-utils "^12.0.0"
     tslib "^2.4.0"
 
+framer-motion@^12.15.0:
+  version "12.15.0"
+  resolved "https://registry.yarnpkg.com/framer-motion/-/framer-motion-12.15.0.tgz#6892283fc7967b071f537d6d160ab49e3d5e73ae"
+  integrity sha512-XKg/LnKExdLGugZrDILV7jZjI599785lDIJZLxMiiIFidCsy0a4R2ZEf+Izm67zyOuJgQYTHOmodi7igQsw3vg==
+  dependencies:
+    motion-dom "^12.15.0"
+    motion-utils "^12.12.1"
+    tslib "^2.4.0"
+
 fresh@0.5.2:
   version "0.5.2"
   resolved "https://registry.npmjs.org/fresh/-/fresh-0.5.2.tgz"
@@ -2909,6 +2930,13 @@ morgan@^1.10.0:
     on-finished "~2.3.0"
     on-headers "~1.0.2"
 
+motion-dom@^12.15.0:
+  version "12.15.0"
+  resolved "https://registry.yarnpkg.com/motion-dom/-/motion-dom-12.15.0.tgz#eca7c9d8c28976b8c920f175f92d5288f5a17785"
+  integrity sha512-D2ldJgor+2vdcrDtKJw48k3OddXiZN1dDLLWrS8kiHzQdYVruh0IoTwbJBslrnTXIPgFED7PBN2Zbwl7rNqnhA==
+  dependencies:
+    motion-utils "^12.12.1"
+
 motion-dom@^12.4.5:
   version "12.4.5"
   resolved "https://registry.npmjs.org/motion-dom/-/motion-dom-12.4.5.tgz"
@@ -2920,6 +2948,19 @@ motion-utils@^12.0.0:
   version "12.0.0"
   resolved "https://registry.npmjs.org/motion-utils/-/motion-utils-12.0.0.tgz"
   integrity sha512-MNFiBKbbqnmvOjkPyOKgHUp3Q6oiokLkI1bEwm5QA28cxMZrv0CbbBGDNmhF6DIXsi1pCQBSs0dX8xjeER1tmA==
+
+motion-utils@^12.12.1:
+  version "12.12.1"
+  resolved "https://registry.yarnpkg.com/motion-utils/-/motion-utils-12.12.1.tgz#63e28751325cb9d1cd684f3c273a570022b0010e"
+  integrity sha512-f9qiqUHm7hWSLlNW8gS9pisnsN7CRFRD58vNjptKdsqFLpkVnX00TNeD6Q0d27V9KzT7ySFyK1TZ/DShfVOv6w==
+
+motion@^12.15.0:
+  version "12.15.0"
+  resolved "https://registry.yarnpkg.com/motion/-/motion-12.15.0.tgz#dbfc09a0c3c60e9b40aa5f2f855a8822bb5d36de"
+  integrity sha512-HLouXyIb1uQFiZgJTYGrtEzbatPc6vK+HP+Qt6afLQjaudiGiLLVsoy71CwzD/Stlh06FUd5OpyiXqn6XvqjqQ==
+  dependencies:
+    framer-motion "^12.15.0"
+    tslib "^2.4.0"
 
 ms@2.0.0:
   version "2.0.0"

@@ -13,8 +13,13 @@ export default [
   route("logout", "./routes/auth/logout.tsx"),
   layout("./components/shared/layout.tsx", [
     ...prefix("projects/:projectId", [
-      index("./routes/dashboard/page.tsx"),
-      routeFolder("collections/:collectionId?", "./routes/collections/"),
+      route("dashboard", "./routes/dashboard/page.tsx"),
+      route("collections", "./routes/collections/sidebar.tsx", [
+        route("create", "./routes/collections/create.tsx"),
+        route(":collectionId", "./routes/collections/page.tsx"),
+        route(":collectionId/edit", "./routes/collections/edit.tsx"),
+      ]),
+      // routeFolder("collections/:collectionId", "./routes/collections/"),
       routeFolder("functions", "./routes/functions/"),
       routeFolder("storage", "./routes/storage/"),
       routeFolder("logs", "./routes/logs/"),
