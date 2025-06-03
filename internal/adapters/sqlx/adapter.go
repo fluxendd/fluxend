@@ -102,17 +102,6 @@ func (a *Adapter) Beginx() (shared.Tx, error) {
 
 // Common convenience methods for the adapter //
 
-// SelectList executes a query and scans the results into a slice
-func (a *Adapter) SelectList(dest interface{}, query string, args ...interface{}) error {
-	rows, err := a.db.Query(query, args...)
-	if err != nil {
-		return err
-	}
-	defer rows.Close()
-
-	return a.scanRowsIntoSlice(dest, rows)
-}
-
 // SelectNamedList executes a named query and scans the results into a slice
 func (a *Adapter) SelectNamedList(dest interface{}, query string, arg interface{}) error {
 	rows, err := a.db.NamedQuery(query, arg)

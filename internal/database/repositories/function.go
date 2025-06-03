@@ -24,7 +24,7 @@ func (r *FunctionRepository) List(schema string) ([]database.Function, error) {
        FROM information_schema.routines 
        WHERE routine_type = 'FUNCTION' AND specific_schema = $1`
 
-	return functions, r.db.SelectList(&functions, query, schema)
+	return functions, r.db.Select(&functions, query, schema)
 }
 
 func (r *FunctionRepository) Create(functionSQL string) error {

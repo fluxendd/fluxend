@@ -40,7 +40,6 @@ type DB interface {
 	Beginx() (Tx, error)
 
 	// Custom convenience methods
-	SelectList(dest interface{}, query string, args ...interface{}) error
 	SelectNamedList(dest interface{}, query string, arg interface{}) error
 	GetWithNotFound(dest interface{}, notFoundMsg string, query string, args ...interface{}) error
 	Exists(table, condition string, args ...interface{}) (bool, error)

@@ -6,6 +6,7 @@ import (
 
 func ToCreateFormInput(request *CreateRequest) *form.CreateFormInput {
 	return &form.CreateFormInput{
+		ProjectUUID: request.ProjectUUID,
 		Name:        request.Name,
 		Description: request.Description,
 	}

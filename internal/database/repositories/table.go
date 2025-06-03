@@ -82,7 +82,7 @@ func (r *TableRepository) List() ([]database.Table, error) {
          AND c.relkind = 'r'  -- 'r' means regular table (excludes views, indexes, etc.)
        ORDER BY c.relname;
     `
-	return tables, r.db.SelectList(&tables, query)
+	return tables, r.db.Select(&tables, query)
 }
 
 func (r *TableRepository) GetByNameInSchema(schema, name string) (database.Table, error) {
