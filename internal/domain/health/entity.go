@@ -7,9 +7,6 @@ type Health struct {
 	PostgrestStatus string `json:"postgrest_status"`
 
 	// System Resources
-	RamUsage      string `json:"ram_usage"`
-	RamAvailable  string `json:"ram_available"`
-	RamTotal      string `json:"ram_total"`
 	DiskUsage     string `json:"disk_usage"`
 	DiskAvailable string `json:"disk_available"`
 	DiskTotal     string `json:"disk_total"`
