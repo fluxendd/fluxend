@@ -1,4 +1,4 @@
-name: Deploy to DigitalOcean
+name: Deploy Fluxend Application
 
 on:
   push:
