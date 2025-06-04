@@ -3,6 +3,7 @@ package repositories
 import (
 	"fluxend/internal/domain/database"
 	"fluxend/internal/domain/shared"
+	"fluxend/pkg"
 	"fmt"
 	"github.com/lib/pq"
 	"github.com/samber/do"
@@ -105,7 +106,9 @@ func (r *TableRepository) GetByNameInSchema(schema, name string) (database.Table
 }
 
 func (r *TableRepository) DropIfExists(name string) error {
-	return r.db.ExecWithErr(fmt.Sprintf("DROP TABLE IF EXISTS %s", name))
+	schema, name := pkg.ParseTableName(name)
+
+	return r.db.ExecWithErr(fmt.Sprintf(`DROP TABLE IF EXISTS %s."%s"`, schema, name))
 }
 
 func (r *TableRepository) Rename(oldName string, newName string) error {
