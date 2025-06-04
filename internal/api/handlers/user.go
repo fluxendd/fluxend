@@ -5,6 +5,9 @@ import (
 	userDto "fluxend/internal/api/dto/user"
 	"fluxend/internal/api/mapper"
 	"fluxend/internal/api/response"
+	"fluxend/internal/config/constants"
+	authDomain "fluxend/internal/domain/auth"
+	"fluxend/internal/domain/organization"
 	"fluxend/internal/domain/user"
 	"fluxend/pkg/auth"
 	"github.com/labstack/echo/v4"
@@ -12,13 +15,18 @@ import (
 )
 
 type UserHandler struct {
-	userService user.Service
+	userService         user.Service
+	organizationService organization.Service
 }
 
 func NewUserHandler(injector *do.Injector) (*UserHandler, error) {
 	userService := do.MustInvoke[user.Service](injector)
+	organizationService := do.MustInvoke[organization.Service](injector)
 
-	return &UserHandler{userService: userService}, nil
+	return &UserHandler{
+		userService:         userService,
+		organizationService: organizationService,
+	}, nil
 }
 
 // Show retrieves details of a specific user.
@@ -127,6 +135,19 @@ func (uh *UserHandler) Store(c echo.Context) error {
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
+
+	// Create default organization for the user
+	authUser := authDomain.User{
+		Uuid:   storedUser.Uuid,
+		RoleID: storedUser.RoleID,
+	}
+
+	createdOrganization, err := uh.organizationService.Create(constants.DefaultOrganizationName, authUser)
+	if err != nil {
+		return response.ErrorResponse(c, err)
+	}
+
+	storedUser.OrganizationUuid = createdOrganization.Uuid
 
 	return response.CreatedResponse(c, map[string]interface{}{
 		"user":  mapper.ToUserResource(&storedUser),
