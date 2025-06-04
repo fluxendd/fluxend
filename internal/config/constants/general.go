@@ -1,6 +1,7 @@
 package constants
 
 const (
+	DefaultOrganizationName = "Default"
 	JWTSecretMinLength      = 32
 	XProjectHeaderName      = "X-Project"
 	BackupContainerName     = "fluxend-client-database-backups"

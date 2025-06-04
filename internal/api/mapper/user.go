@@ -7,14 +7,15 @@ import (
 
 func ToUserResource(user *userDomain.User) userDto.Response {
 	return userDto.Response{
-		Uuid:      user.Uuid,
-		Username:  user.Username,
-		Email:     user.Email,
-		Status:    user.Status,
-		RoleID:    user.RoleID,
-		Bio:       user.Bio,
-		CreatedAt: user.CreatedAt.Format("2006-01-02 15:04:05"),
-		UpdatedAt: user.UpdatedAt.Format("2006-01-02 15:04:05"),
+		Uuid:             user.Uuid,
+		OrganizationUuid: user.OrganizationUuid,
+		Username:         user.Username,
+		Email:            user.Email,
+		Status:           user.Status,
+		RoleID:           user.RoleID,
+		Bio:              user.Bio,
+		CreatedAt:        user.CreatedAt.Format("2006-01-02 15:04:05"),
+		UpdatedAt:        user.UpdatedAt.Format("2006-01-02 15:04:05"),
 	}
 }
 
