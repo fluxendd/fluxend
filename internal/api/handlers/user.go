@@ -147,10 +147,8 @@ func (uh *UserHandler) Store(c echo.Context) error {
 		return response.ErrorResponse(c, err)
 	}
 
-	storedUser.OrganizationUuid = createdOrganization.Uuid
-
 	return response.CreatedResponse(c, map[string]interface{}{
-		"user":  mapper.ToUserResource(&storedUser),
+		"user":  mapper.ToRegisterUserResource(&storedUser, createdOrganization.Uuid),
 		"token": token,
 	})
 }

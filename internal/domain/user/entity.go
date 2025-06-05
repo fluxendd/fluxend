@@ -9,16 +9,15 @@ import (
 
 type User struct {
 	shared.BaseEntity
-	Uuid             uuid.UUID `db:"uuid"`
-	Username         string    `db:"username"`
-	Email            string    `db:"email"`
-	Status           string    `db:"status"`
-	RoleID           int       `db:"role_id"`
-	Bio              string    `db:"bio"`
-	OrganizationUuid uuid.UUID `db:"organization_uuid"` // TODO: remove default org after alpha release
-	Password         string    `db:"password"`
-	CreatedAt        time.Time `db:"created_at"`
-	UpdatedAt        time.Time `db:"updated_at"`
+	Uuid      uuid.UUID `db:"uuid"`
+	Username  string    `db:"username"`
+	Email     string    `db:"email"`
+	Status    string    `db:"status"`
+	RoleID    int       `db:"role_id"`
+	Bio       string    `db:"bio"`
+	Password  string    `db:"password"`
+	CreatedAt time.Time `db:"created_at"`
+	UpdatedAt time.Time `db:"updated_at"`
 }
 
 func (u User) IsActive() bool {
