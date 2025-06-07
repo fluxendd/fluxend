@@ -64,7 +64,7 @@ services:
       - fluxend_network
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.fluxend_app.rule=Host(`${API_URL}`)"
+      - "traefik.http.routers.fluxend_app.rule=Host(`${API_SUB_DOMAIN}.${BASE_DOMAIN}`)"
       - "traefik.http.routers.fluxend_app.entrypoints=websecure"
       - "traefik.http.services.fluxend_app.loadbalancer.server.port=8080"
       - "traefik.http.routers.fluxend_app.tls=true"
@@ -85,7 +85,7 @@ services:
       - fluxend_network
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.fluxend_frontend.rule=Host(`${APP_URL}`)"
+      - "traefik.http.routers.fluxend_frontend.rule=Host(`${APP_SUB_DOMAIN}.${BASE_DOMAIN}`)"
       - "traefik.http.routers.fluxend_frontend.entrypoints=websecure"
       - "traefik.http.services.fluxend_frontend.loadbalancer.server.port=3000"
       - "traefik.http.routers.fluxend_frontend.tls=true"
