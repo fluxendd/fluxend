@@ -12,7 +12,7 @@ export const login = async (email: string, password: string) => {
     password,
   });
   const data = await response.json();
-  console.log(data, "DATA");
+
   return data as APIResponse<any>;
 };
 

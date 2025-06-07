@@ -3,7 +3,6 @@ import fetch, { get, post, del, type APIRequestOptions } from "~/tools/fetch";
 
 export const getAllCollections = async (request: any, projectId: string) => {
   const authToken = await getAuthToken(request.headers);
-  console.log("Token", authToken);
 
   const fetchOptions: RequestInit = {
     headers: {

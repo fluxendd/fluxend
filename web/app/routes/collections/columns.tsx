@@ -412,6 +412,9 @@ export const rowsQuery = (
       return { rows: [], totalCount: 0 };
     }
 
+    const baseDomain = import.meta.env.VITE_FLX_BASE_DOMAIN
+    const httpScheme = import.meta.env.VITE_FLX_HTTP_SCHEME
+
     const dbId = await getDbIdFromCookies(document.cookie);
     const offset = pagination.pageIndex * pagination.pageSize;
     const limit = pagination.pageSize;
@@ -430,7 +433,7 @@ export const rowsQuery = (
             offset,
             ...filters,
           },
-          baseUrl: `https://${dbId}.fluxend.app/`,
+          baseUrl: `${httpScheme}://${dbId}.${baseDomain}/`,
         },
         projectId,
         collectionName

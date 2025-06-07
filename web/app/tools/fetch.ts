@@ -9,12 +9,33 @@ export type APIRequestOptions = {
 } & RequestInit;
 
 // Get the base URL from the appropriate environment variable
-const getBaseUrl = () => {
+const getBaseUrl = (): string => {
   if (isServer()) {
-    return process.env.VITE_FLX_API_BASE_URL || "";
+    const serverUrl = process.env.VITE_FLX_INTERNAL_URL;
+    if (serverUrl) {
+      return serverUrl;
+    }
+
+    console.warn("VITE_FLX_INTERNAL_URL environment variable not set");
+    return "";
   }
 
-  return import.meta.env.VITE_FLX_API_BASE_URL || "";
+  // Client-side environment variables - check if process exists first
+  let clientUrl: string | undefined;
+
+  if (typeof process !== 'undefined' && process.env?.VITE_FLX_API_URL) {
+    clientUrl = process.env.VITE_FLX_API_URL;
+  } else if (typeof import.meta !== 'undefined' && import.meta.env?.VITE_FLX_API_URL) {
+    clientUrl = import.meta.env.VITE_FLX_API_URL;
+  }
+
+  if (clientUrl) {
+    return clientUrl;
+  }
+
+  console.warn("No VITE_FLX_API_URL found in environment variables");
+
+  return "";
 };
 
 /**
