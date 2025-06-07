@@ -64,23 +64,21 @@ services:
       - fluxend_network
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.fluxend_app.rule=Host(`${API_URL}`) || (Host(`${APP_URL}`) && PathPrefix(`/docs`))"
+      - "traefik.http.routers.fluxend_app.rule=Host(`${API_URL}`)"
       - "traefik.http.routers.fluxend_app.entrypoints=websecure"
       - "traefik.http.services.fluxend_app.loadbalancer.server.port=8080"
       - "traefik.http.routers.fluxend_app.tls=true"
       - "traefik.http.routers.fluxend_app.tls.certresolver=le"
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/run/docker.sock:/var/run/docker.sock # TODO: Figure out a better way to handle this
 
   fluxend_frontend:
     build:
       context: ./web
       dockerfile: Dockerfile
     container_name: fluxend_frontend
-    environment:
-      - NODE_ENV=${NODE_ENV:-production}
-      - VITE_FLX_API_BASE_URL=${VITE_FLX_API_BASE_URL:-http://api.fulxend.localhost}
-      # Add other frontend environment variables here
+    env_file:
+      - .env
     depends_on:
       - fluxend_app
     networks:
