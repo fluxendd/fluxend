@@ -85,11 +85,7 @@ func (uh *UserHandler) Show(c echo.Context) error {
 // @Router /users/login [post]
 func (uh *UserHandler) Login(c echo.Context) error {
 	var request userDto.LoginRequest
-	if err := c.Bind(&request); err != nil {
-		return response.BadRequestResponse(c, "user.error.invalidPayload")
-	}
-
-	if err := request.Validate(); err != nil {
+	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
 	}
 
@@ -123,11 +119,7 @@ func (uh *UserHandler) Login(c echo.Context) error {
 // @Router /users [post]
 func (uh *UserHandler) Store(c echo.Context) error {
 	var request userDto.CreateRequest
-	if err := c.Bind(&request); err != nil {
-		return response.BadRequestResponse(c, "user.error.invalidPayload")
-	}
-
-	if err := request.Validate(); err != nil {
+	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
 	}
 
