@@ -20,7 +20,7 @@ func TestCreateRequest_BindAndValidate_Suite(t *testing.T) {
 			"organization_uuid": validUUID.String(),
 		}
 
-		ctx := pkg.CreateTestContext(t, e, http.MethodPost, "/", payload)
+		ctx := pkg.CreateFakeRequestContext(t, e, http.MethodPost, payload)
 
 		var r CreateRequest
 		errs := r.BindAndValidate(ctx)
@@ -95,7 +95,7 @@ func TestCreateRequest_BindAndValidate_Suite(t *testing.T) {
 
 		for _, tc := range tests {
 			t.Run(tc.name, func(t *testing.T) {
-				ctx := pkg.CreateTestContext(t, e, http.MethodPost, "/", tc.payload)
+				ctx := pkg.CreateFakeRequestContext(t, e, http.MethodPost, tc.payload)
 
 				var r CreateRequest
 				errs := r.BindAndValidate(ctx)
@@ -117,7 +117,7 @@ func TestUpdateRequest_BindAndValidate_Suite(t *testing.T) {
 			"description": "Updated desc",
 		}
 
-		ctx := pkg.CreateTestContext(t, e, http.MethodPut, "/", payload)
+		ctx := pkg.CreateFakeRequestContext(t, e, http.MethodPut, payload)
 
 		var r UpdateRequest
 		errs := r.BindAndValidate(ctx)
@@ -164,7 +164,7 @@ func TestUpdateRequest_BindAndValidate_Suite(t *testing.T) {
 
 		for _, tc := range tests {
 			t.Run(tc.name, func(t *testing.T) {
-				ctx := pkg.CreateTestContext(t, e, http.MethodPut, "/", tc.payload)
+				ctx := pkg.CreateFakeRequestContext(t, e, http.MethodPut, tc.payload)
 
 				var r UpdateRequest
 				errs := r.BindAndValidate(ctx)
