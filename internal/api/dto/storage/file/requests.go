@@ -42,10 +42,7 @@ func (r *CreateRequest) BindAndValidate(c echo.Context) []string {
 					constants.MinContainerNameLength,
 					constants.MaxContainerNameLength,
 				),
-			),
-			/*validation.Match(
-				regexp.MustCompile(utils.AlphanumericWithSpaceUnderScoreAndDashPattern()),
-			).Error("File name must be alphanumeric with underscores, spaces and dashes")*/),
+			)),
 		validation.Field(&r.File, validation.By(fileRequired)),
 	)
 
@@ -74,10 +71,7 @@ func (r *RenameRequest) BindAndValidate(c echo.Context) []string {
 					constants.MinContainerNameLength,
 					constants.MaxContainerNameLength,
 				),
-			),
-			/*validation.Match(
-				regexp.MustCompile(utils.AlphanumericWithSpaceUnderScoreAndDashPattern()),
-			).Error("File name must be alphanumeric with underscores, spaces and dashes")*/),
+			)),
 	)
 
 	return r.ExtractValidationErrors(err)
