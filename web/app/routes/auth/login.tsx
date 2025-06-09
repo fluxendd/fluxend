@@ -16,6 +16,8 @@ export function meta({}: Route.MetaArgs) {
   ];
 }
 
+// Check if session_token is present, redirect it to dashboard
+// Its also duplicate in signup.tsx, make sure to make changes there as well.
 export async function loader({ request }: Route.LoaderArgs) {
   const sessionToken = await getServerAuthToken(request.headers);
 
@@ -157,6 +159,7 @@ export default function Login({}: Route.ComponentProps) {
                 <Button
                   variant="link"
                   className="font-medium text-muted-foreground p-0"
+                  disabled={isLoading}
                 >
                   Forgot your password?
                 </Button>

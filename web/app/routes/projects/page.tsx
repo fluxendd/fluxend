@@ -10,7 +10,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   const authToken = await getServerAuthToken(request.headers);
 
   if (!authToken) {
-    return redirect("/");
+    return redirect("/logout");
   }
 
   const organizationId = await organizationCookie.parse(
@@ -18,7 +18,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   );
 
   if (!organizationId) {
-    return redirect("/");
+    return redirect("/logout");
   }
 
   const services = initializeServices(authToken);
@@ -32,7 +32,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 
 const ProjectsPage = ({ loaderData }: Route.ComponentProps) => {
   const { title, projects } = loaderData;
-  console.log(projects);
+
   return (
     <div>
       <AppHeader title={title} />

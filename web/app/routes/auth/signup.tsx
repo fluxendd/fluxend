@@ -21,9 +21,9 @@ export async function loader({ request }: Route.LoaderArgs) {
 
   if (sessionToken) {
     return redirect(`/projects`);
-  } else {
-    throw new Response("Project Id is missing", { status: 400 });
   }
+
+  return null;
 }
 
 export async function action({ request }: Route.ActionArgs) {
