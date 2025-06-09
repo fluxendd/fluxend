@@ -4,6 +4,7 @@ import (
 	"fluxend/internal/api/dto"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/go-ozzo/ozzo-validation/v4/is"
+	"github.com/labstack/echo/v4"
 	"regexp"
 )
 
@@ -26,7 +27,11 @@ type UpdateRequest struct {
 	Bio string `json:"bio"`
 }
 
-func (r *CreateRequest) Validate() []string {
+func (r *CreateRequest) BindAndValidate(c echo.Context) []string {
+	if err := c.Bind(r); err != nil {
+		return []string{"Invalid request payload: " + err.Error()}
+	}
+
 	usernameRegex := regexp.MustCompile(`^[a-zA-Z0-9_-]+$`)
 
 	err := validation.ValidateStruct(r,
@@ -55,7 +60,11 @@ func (r *CreateRequest) Validate() []string {
 	return r.ExtractValidationErrors(err)
 }
 
-func (r *LoginRequest) Validate() []string {
+func (r *LoginRequest) BindAndValidate(c echo.Context) []string {
+	if err := c.Bind(r); err != nil {
+		return []string{"Invalid request payload: " + err.Error()}
+	}
+
 	err := validation.ValidateStruct(r,
 		// Email: required, valid format
 		validation.Field(&r.Email,
@@ -72,7 +81,11 @@ func (r *LoginRequest) Validate() []string {
 	return r.ExtractValidationErrors(err)
 }
 
-func (r *UpdateRequest) Validate() []string {
+func (r *UpdateRequest) BindAndValidate(c echo.Context) []string {
+	if err := c.Bind(r); err != nil {
+		return []string{"Invalid request payload: " + err.Error()}
+	}
+
 	err := validation.ValidateStruct(r,
 		// Bio: optional, length 0-500
 		validation.Field(&r.Bio,
