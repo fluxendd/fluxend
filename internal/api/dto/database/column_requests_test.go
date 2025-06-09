@@ -262,12 +262,12 @@ func TestRenameColumnRequest_BindAndValidate_Suite(t *testing.T) {
 			{
 				name: "Reserved column name",
 				payload: map[string]interface{}{
-					"name": "created_at",
+					"name": "oid",
 				},
 				headers: map[string]string{
 					constants.ProjectHeaderKey: dummyProjectUUID,
 				},
-				expected: []string{"column name 'created_at' is reserved"},
+				expected: []string{"column name 'oid' is reserved"},
 			},
 		}
 
