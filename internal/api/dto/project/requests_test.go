@@ -1,14 +1,11 @@
 package project
 
 import (
-	"bytes"
-	"encoding/json"
+	"fluxend/pkg"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
 	"net/http"
-	"net/http/httptest"
-	"strings"
 	"testing"
 )
 
@@ -23,7 +20,7 @@ func TestCreateRequest_BindAndValidate_Suite(t *testing.T) {
 			"organization_uuid": validUUID.String(),
 		}
 
-		ctx := createTestContext(t, e, payload)
+		ctx := pkg.CreateTestContext(t, e, http.MethodPost, "/", payload)
 
 		var r CreateRequest
 		errs := r.BindAndValidate(ctx)
@@ -98,13 +95,13 @@ func TestCreateRequest_BindAndValidate_Suite(t *testing.T) {
 
 		for _, tc := range tests {
 			t.Run(tc.name, func(t *testing.T) {
-				ctx := createTestContext(t, e, tc.payload)
+				ctx := pkg.CreateTestContext(t, e, http.MethodPost, "/", tc.payload)
 
 				var r CreateRequest
 				errs := r.BindAndValidate(ctx)
 
 				for _, expected := range tc.expected {
-					assertErrorContains(t, errs, expected)
+					pkg.AssertErrorContains(t, errs, expected)
 				}
 			})
 		}
@@ -120,7 +117,7 @@ func TestUpdateRequest_BindAndValidate_Suite(t *testing.T) {
 			"description": "Updated desc",
 		}
 
-		ctx := createTestContext(t, e, payload)
+		ctx := pkg.CreateTestContext(t, e, http.MethodPut, "/", payload)
 
 		var r UpdateRequest
 		errs := r.BindAndValidate(ctx)
@@ -167,43 +164,15 @@ func TestUpdateRequest_BindAndValidate_Suite(t *testing.T) {
 
 		for _, tc := range tests {
 			t.Run(tc.name, func(t *testing.T) {
-				body, err := json.Marshal(tc.payload)
-				assert.NoError(t, err, "Failed to marshal payload")
-
-				fakeRequest := httptest.NewRequest(http.MethodPut, "/", bytes.NewReader(body))
-				fakeRequest.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
-
-				ctx := e.NewContext(fakeRequest, httptest.NewRecorder())
+				ctx := pkg.CreateTestContext(t, e, http.MethodPut, "/", tc.payload)
 
 				var r UpdateRequest
 				errs := r.BindAndValidate(ctx)
 
 				for _, expected := range tc.expected {
-					assertErrorContains(t, errs, expected)
+					pkg.AssertErrorContains(t, errs, expected)
 				}
 			})
 		}
 	})
-}
-
-func createTestContext(t *testing.T, e *echo.Echo, payload map[string]interface{}) echo.Context {
-	body, err := json.Marshal(payload)
-	assert.NoError(t, err, "Failed to marshal payload")
-
-	fakeRequest := httptest.NewRequest(http.MethodPost, "/", bytes.NewReader(body))
-	fakeRequest.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
-
-	return e.NewContext(fakeRequest, httptest.NewRecorder())
-}
-
-func assertErrorContains(t *testing.T, errs []string, expectedSubstring string) {
-	t.Helper()
-
-	for _, err := range errs {
-		if strings.Contains(err, expectedSubstring) {
-			return
-		}
-	}
-
-	t.Errorf("Expected error containing '%s', but got errors: %v", expectedSubstring, errs)
 }
