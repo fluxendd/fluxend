@@ -63,7 +63,7 @@ func (r *RenameColumnRequest) BindAndValidate(c echo.Context) []string {
 				constants.MinColumnNameLength, constants.MaxColumnNameLength,
 			).Error(
 				fmt.Sprintf(
-					"Column name be between %d and %d characters",
+					"Column name must be between %d and %d characters",
 					constants.MinColumnNameLength,
 					constants.MaxColumnNameLength,
 				),
@@ -84,7 +84,7 @@ func Validate(column columnDomain.Column) error {
 				constants.MinColumnNameLength, constants.MaxColumnNameLength,
 			).Error(
 				fmt.Sprintf(
-					"Column name be between %d and %d characters",
+					"Column name must be between %d and %d characters",
 					constants.MinColumnNameLength,
 					constants.MaxTableNameLength,
 				),

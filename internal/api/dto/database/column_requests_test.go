@@ -125,7 +125,7 @@ func TestCreateColumnRequest_BindAndValidate_Suite(t *testing.T) {
 				headers: map[string]string{
 					constants.ProjectHeaderKey: dummyProjectUUID,
 				},
-				expected: []string{"Column name be between"},
+				expected: []string{"Column name must be between"},
 			},
 			{
 				name: "Invalid column name - special characters",
@@ -257,7 +257,7 @@ func TestRenameColumnRequest_BindAndValidate_Suite(t *testing.T) {
 				headers: map[string]string{
 					constants.ProjectHeaderKey: dummyProjectUUID,
 				},
-				expected: []string{"Column name be between"},
+				expected: []string{"Column name must be between"},
 			},
 			{
 				name: "Reserved column name",
