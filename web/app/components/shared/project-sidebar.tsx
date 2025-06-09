@@ -1,5 +1,4 @@
 import {
-  Command,
   Database,
   LayoutDashboard,
   LogOutIcon,
@@ -8,7 +7,7 @@ import {
   Scroll,
   Settings2,
 } from "lucide-react";
-import { href, NavLink, useHref, useLocation, useParams } from "react-router";
+import { href, NavLink, type Params } from "react-router";
 
 import {
   Sidebar,
@@ -23,9 +22,7 @@ import {
 } from "~/components/ui/sidebar";
 import { Logo } from "./logo";
 import { motion } from "motion/react";
-import { cn } from "~/lib/utils";
-import { memo, useMemo } from "react";
-import { useQueryClient } from "@tanstack/react-query";
+import { memo } from "react";
 
 type AppSidebarItem = {
   title: string;
@@ -34,7 +31,7 @@ type AppSidebarItem = {
   isActive?: boolean;
 };
 
-const items: AppSidebarItem[] = [
+const items = [
   {
     title: "Dashboard",
     url: "dashboard",
@@ -46,26 +43,30 @@ const items: AppSidebarItem[] = [
     Icon: Database,
     isActive: true,
   },
-  {
-    title: "Functions",
-    url: "functions",
-    Icon: Parentheses,
-  },
-  { title: "Storage", url: "storage", Icon: PackageOpen },
-  {
-    title: "Logs",
-    url: "logs",
-    Icon: Scroll,
-  },
-  {
-    title: "Settings",
-    url: "settings",
-    Icon: Settings2,
-  },
-];
+  // {
+  //   title: "Functions",
+  //   url: "functions",
+  //   Icon: Parentheses,
+  // },
+  // { title: "Storage", url: "storage", Icon: PackageOpen },
+  // {
+  //   title: "Logs",
+  //   url: "logs",
+  //   Icon: Scroll,
+  // },
+  // {
+  //   title: "Settings",
+  //   url: "settings",
+  //   Icon: Settings2,
+  // },
+] as const satisfies readonly AppSidebarItem[];
 
-export const AppSidebar = memo(
+export const ProjectSidebar = memo(
   ({ projectId }: { projectId: string | undefined }) => {
+    if (!projectId) {
+      return null;
+    }
+
     return (
       <Sidebar collapsible="icon">
         <SidebarHeader>
@@ -88,7 +89,7 @@ export const AppSidebar = memo(
                 {items.map((item) => (
                   <SidebarMenuItem key={item.title}>
                     <NavLink
-                      to={href(`projects/:projectId/${item.url}`, {
+                      to={href(`/projects/:projectId/${item.url}`, {
                         projectId,
                       })}
                     >

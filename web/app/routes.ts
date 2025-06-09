@@ -11,13 +11,16 @@ export default [
   index("./routes/auth/login.tsx"),
   route("signup", "./routes/auth/signup.tsx"),
   route("logout", "./routes/auth/logout.tsx"),
-  layout("./components/shared/layout.tsx", [
-    ...prefix("projects/:projectId", [
+  layout("./components/shared/app-layout.tsx", [
+    route("projects", "./routes/projects/page.tsx"),
+  ]),
+  ...prefix("projects/:projectId", [
+    layout("./components/shared/project-layout.tsx", [
       route("dashboard", "./routes/dashboard/page.tsx"),
       route("collections", "./routes/collections/sidebar.tsx", [
         route("create", "./routes/collections/create.tsx"),
         route(":collectionId", "./routes/collections/page.tsx"),
-        route(":collectionId/edit", "./routes/collections/edit.tsx"),
+        // route(":collectionId/edit", "./routes/collections/edit.tsx"),
       ]),
       // routeFolder("collections/:collectionId", "./routes/collections/"),
       routeFolder("functions", "./routes/functions/"),

@@ -23,9 +23,12 @@ const getBaseUrl = (): string => {
   // Client-side environment variables - check if process exists first
   let clientUrl: string | undefined;
 
-  if (typeof process !== 'undefined' && process.env?.VITE_FLX_API_URL) {
+  if (typeof process !== "undefined" && process.env?.VITE_FLX_API_URL) {
     clientUrl = process.env.VITE_FLX_API_URL;
-  } else if (typeof import.meta !== 'undefined' && import.meta.env?.VITE_FLX_API_URL) {
+  } else if (
+    typeof import.meta !== "undefined" &&
+    import.meta.env?.VITE_FLX_API_URL
+  ) {
     clientUrl = import.meta.env.VITE_FLX_API_URL;
   }
 
@@ -41,7 +44,7 @@ const getBaseUrl = (): string => {
 /**
  * Client-side fetch implementation using browser's fetch API
  */
-const clientFetch = async <T>(
+const clientFetch = async (
   url: string,
   method: string,
   data?: any,
@@ -78,7 +81,7 @@ const clientFetch = async <T>(
 /**
  * Server-side fetch implementation using Node.js native fetch
  */
-const serverFetch = async <T>(
+const serverFetch = async (
   url: string,
   method: string,
   data?: any,
@@ -129,15 +132,15 @@ const serverFetch = async <T>(
 /**
  * Universal fetch function that uses the appropriate implementation based on environment
  */
-const universalFetch = <T>(
+const universalFetch = (
   url: string,
   method: string,
   data?: any,
   options: APIRequestOptions = {}
 ): Promise<Response> => {
   return isServer()
-    ? serverFetch<T>(url, method, data, options)
-    : clientFetch<T>(url, method, data, options);
+    ? serverFetch(url, method, data, options)
+    : clientFetch(url, method, data, options);
 };
 
 /**
@@ -146,11 +149,11 @@ const universalFetch = <T>(
  * @param options - Request options including optional query params
  * @returns Promise with the parsed JSON response
  */
-export const get = <T>(
+export const get = (
   url: string,
   options: APIRequestOptions = {}
 ): Promise<Response> => {
-  return universalFetch<T>(url, "GET", undefined, options);
+  return universalFetch(url, "GET", undefined, options);
 };
 
 /**
@@ -160,12 +163,12 @@ export const get = <T>(
  * @param options - Request options
  * @returns Promise with the parsed JSON response
  */
-export const post = <T>(
+export const post = (
   url: string,
   data: any,
   options: APIRequestOptions = {}
 ): Promise<Response> => {
-  return universalFetch<T>(url, "POST", data, options);
+  return universalFetch(url, "POST", data, options);
 };
 
 /**
@@ -175,12 +178,12 @@ export const post = <T>(
  * @param options - Request options
  * @returns Promise with the parsed JSON response
  */
-export const put = <T>(
+export const put = (
   url: string,
   data: any,
   options: APIRequestOptions = {}
 ): Promise<Response> => {
-  return universalFetch<T>(url, "PUT", data, options);
+  return universalFetch(url, "PUT", data, options);
 };
 
 /**
@@ -190,12 +193,12 @@ export const put = <T>(
  * @param options - Request options
  * @returns Promise with the parsed JSON response
  */
-export const patch = <T>(
+export const patch = (
   url: string,
   data: any,
   options: APIRequestOptions = {}
 ): Promise<Response> => {
-  return universalFetch<T>(url, "PATCH", data, options);
+  return universalFetch(url, "PATCH", data, options);
 };
 
 /**
@@ -204,11 +207,11 @@ export const patch = <T>(
  * @param options - Request options
  * @returns Promise with the parsed JSON response
  */
-export const del = <T>(
+export const del = (
   url: string,
   options: APIRequestOptions = {}
 ): Promise<Response> => {
-  return universalFetch<T>(url, "DELETE", undefined, options);
+  return universalFetch(url, "DELETE", undefined, options);
 };
 
 export default {

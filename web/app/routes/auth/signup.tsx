@@ -3,9 +3,9 @@ import type { Route } from "./+types/signup";
 import { useState } from "react";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
-import { sessionCookie } from "~/lib/cookies";
 import { signup } from "~/services/auth";
 import { LoaderCircle, LogIn } from "lucide-react";
+import { getAuthToken } from "~/lib/auth";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -14,15 +14,16 @@ export function meta({}: Route.MetaArgs) {
   ];
 }
 
+// Check if session_token is present, redirect it to dashboard
+// Its also duplicate in login.tsx, make sure to make changes there as well.
 export async function loader({ request }: Route.LoaderArgs) {
-  const cookieHeader = request.headers.get("Cookie");
-  const sessionToken = await sessionCookie.parse(cookieHeader);
+  const sessionToken = await getAuthToken(request.headers);
 
   if (sessionToken) {
-    return redirect("/projects/123");
+    return redirect(`/projects`);
+  } else {
+    throw new Response("Project Id is missing", { status: 400 });
   }
-
-  return null;
 }
 
 export async function action({ request }: Route.ActionArgs) {
@@ -50,8 +51,8 @@ export async function action({ request }: Route.ActionArgs) {
   }
 
   return data({
-    success: true,
-    error: undefined,
+    success,
+    error,
     content,
   });
 }

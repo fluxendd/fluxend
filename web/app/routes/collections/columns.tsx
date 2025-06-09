@@ -1,4 +1,3 @@
-import { getCollectionColumn, getCollectionRows } from "~/services/collections";
 import {
   Hash,
   AlignLeft,
@@ -19,42 +18,44 @@ import {
   DropdownMenuLabel,
 } from "~/components/ui/dropdown-menu";
 
-import React, { useRef, useState, useCallback } from "react";
+import React, { useState } from "react";
 import { Switch } from "~/components/ui/switch";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "~/components/ui/tooltip";
-import { getDbIdFromCookies } from "~/lib/utils";
+import { formatTimestamp, getTypedResponseData } from "~/lib/utils";
+import type { APIResponse } from "~/lib/types";
+import { getClientAuthToken } from "~/lib/auth";
+import { initializeServices } from "~/services";
 
-export const columnsQuery = (projectId: string, collectionId?: string) => ({
+export const columnsQuery = (projectId: string, collectionId: string) => ({
   queryKey: ["columns", projectId, collectionId],
   queryFn: async () => {
-    if (!collectionId) {
-      return [];
+    const authToken = await getClientAuthToken();
+    if (!authToken) {
+      throw new Error("Unauthorized");
     }
 
-    const res = await getCollectionColumn(
-      { headers: {} },
+    const services = initializeServices(authToken);
+
+    const res = await services.collections.getCollectionColumns(
       projectId,
       collectionId
     );
 
-    if (!res.ok) {
-      const responseData = await res.json();
-      const errorMessage = responseData?.errors[0] || "Unknown error";
-      if (res.status === 401) {
-        // throw new UnauthorizedError(errorMessage);
-      } else {
-        throw new Error(errorMessage);
-      }
+    if (!res.ok && res.status > 500) {
+      throw new Error("Unexpected Error");
     }
 
-    const data = await res.json();
+    const data = await getTypedResponseData<APIResponse<any>>(res);
 
-    // Return raw column data, we'll prepare it with visibility in the component
-    return Array.isArray(data.content) ? data.content : [];
+    if (!res.ok) {
+      throw new Error(data.errors?.[0] || "Unexpected Error");
+    }
+
+    return data.content;
   },
 });
 
@@ -65,92 +66,6 @@ const mockDeleteRow = (rowId: string) => {
   // and potentially use queryClient.invalidateQueries to refresh data
 };
 
-const formatTimestamp = (
-  timestamp: string
-): { date: string; time: string; fullDate: string; relativeTime: string } => {
-  try {
-    const date = new Date(timestamp);
-
-    // Check if date is valid
-    if (isNaN(date.getTime())) {
-      return { date: "Invalid date", time: "", fullDate: "", relativeTime: "" };
-    }
-
-    // Format date as "Mon DD, YYYY"
-    const monthNames = [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec",
-    ];
-    const month = monthNames[date.getMonth()];
-    const day = date.getDate();
-    const year = date.getFullYear();
-
-    // Format time as "HH:MM AM/PM"
-    let hours = date.getHours();
-    const minutes = date.getMinutes().toString().padStart(2, "0");
-    const seconds = date.getSeconds().toString().padStart(2, "0");
-    const ampm = hours >= 12 ? "PM" : "AM";
-    hours = hours % 12;
-    hours = hours ? hours : 12; // Convert 0 to 12
-
-    // Calculate relative time
-    const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
-    const diffSec = Math.floor(diffMs / 1000);
-    const diffMin = Math.floor(diffSec / 60);
-    const diffHour = Math.floor(diffMin / 60);
-    const diffDay = Math.floor(diffHour / 24);
-
-    let relativeTime = "";
-    if (diffMs < 0) {
-      // Future date
-      relativeTime = "In the future";
-    } else if (diffDay > 365) {
-      relativeTime = `${Math.floor(diffDay / 365)} year${
-        Math.floor(diffDay / 365) > 1 ? "s" : ""
-      } ago`;
-    } else if (diffDay > 30) {
-      relativeTime = `${Math.floor(diffDay / 30)} month${
-        Math.floor(diffDay / 30) > 1 ? "s" : ""
-      } ago`;
-    } else if (diffDay > 0) {
-      relativeTime = `${diffDay} day${diffDay > 1 ? "s" : ""} ago`;
-    } else if (diffHour > 0) {
-      relativeTime = `${diffHour} hour${diffHour > 1 ? "s" : ""} ago`;
-    } else if (diffMin > 0) {
-      relativeTime = `${diffMin} minute${diffMin > 1 ? "s" : ""} ago`;
-    } else {
-      relativeTime = "Just now";
-    }
-
-    // Full ISO date for tooltip
-    const fullDate = `${year}-${(date.getMonth() + 1)
-      .toString()
-      .padStart(2, "0")}-${day.toString().padStart(2, "0")} ${hours
-      .toString()
-      .padStart(2, "0")}:${minutes}:${seconds} ${ampm}`;
-
-    return {
-      date: `${month} ${day}, ${year}`,
-      time: `${hours}:${minutes} ${ampm}`,
-      fullDate,
-      relativeTime,
-    };
-  } catch (error) {
-    return { date: "Invalid date", time: "", fullDate: "", relativeTime: "" };
-  }
-};
-
 enum ColumnType {
   Integer = "integer",
   Text = "text",
@@ -158,19 +73,25 @@ enum ColumnType {
   Timestamp = "timestamp",
 }
 
-const ColumnIcon = ({ column }: { column: any }) => {
-  const dataType = column.type || "";
-
+const ColumnIcon = (type: ColumnType) => {
   let Icon = Circle;
 
-  if (dataType.includes(ColumnType.Integer)) {
-    Icon = Hash;
-  } else if (dataType.includes(ColumnType.Varchar)) {
-    Icon = Text;
-  } else if (dataType.includes(ColumnType.Text)) {
-    Icon = AlignLeft;
-  } else if (dataType.includes(ColumnType.Timestamp)) {
-    Icon = Clock;
+  switch (type) {
+    case ColumnType.Integer:
+      Icon = Hash;
+      break;
+    case ColumnType.Varchar:
+      Icon = Text;
+      break;
+    case ColumnType.Text:
+      Icon = AlignLeft;
+      break;
+    case ColumnType.Timestamp:
+      Icon = Clock;
+      break;
+    default:
+      Icon = Circle;
+      break;
   }
 
   return <Icon className="mr-2 h-3 w-3 flex-shrink-0 translate-y-[0.5px]" />;
@@ -322,7 +243,7 @@ export const prepareColumns = (
             row && column && column.name ? row[column.name] : null,
           header: () => (
             <div className="inline-flex items-center whitespace-nowrap">
-              <ColumnIcon column={column} />
+              <ColumnIcon type={column.type} />
               <span className="truncate font-medium">
                 {column && column.name ? column.name : ""}
               </span>
@@ -395,7 +316,8 @@ export const prepareColumns = (
 
 export const rowsQuery = (
   projectId: string,
-  collectionName?: string,
+  dbId: string,
+  collectionName: string,
   pagination: PaginationState = { pageIndex: 0, pageSize: 50 },
   filters: Record<string, string> = {}
 ) => ({
@@ -412,18 +334,24 @@ export const rowsQuery = (
       return { rows: [], totalCount: 0 };
     }
 
-    const baseDomain = import.meta.env.VITE_FLX_BASE_DOMAIN
-    const httpScheme = import.meta.env.VITE_FLX_HTTP_SCHEME
+    const baseDomain = import.meta.env.VITE_FLX_BASE_DOMAIN;
+    const httpScheme = import.meta.env.VITE_FLX_HTTP_SCHEME;
 
-    const dbId = await getDbIdFromCookies(document.cookie);
     const offset = pagination.pageIndex * pagination.pageSize;
     const limit = pagination.pageSize;
 
-    // Create a stable string representation of filters for logging
-    console.log(`Fetching rows with filters:`, JSON.stringify(filters));
+    const authToken = await getClientAuthToken();
+
+    if (!authToken) {
+      throw new Error("No auth token");
+    }
+
+    const services = initializeServices(authToken);
 
     try {
-      const res = await getCollectionRows(
+      const res = await services.collections.getCollectionRows(
+        projectId,
+        collectionName,
         {
           headers: {
             Prefer: "count=exact",
@@ -434,9 +362,7 @@ export const rowsQuery = (
             ...filters,
           },
           baseUrl: `${httpScheme}://${dbId}.${baseDomain}/`,
-        },
-        projectId,
-        collectionName
+        }
       );
 
       if (!res.ok) {

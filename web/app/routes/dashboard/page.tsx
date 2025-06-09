@@ -7,8 +7,6 @@ import {
 } from "~/components/ui/card";
 import type { Route } from "./+types/page";
 import {
-  TrendingDownIcon,
-  TrendingUpIcon,
   CheckCircleIcon,
   XCircleIcon,
   Database,
@@ -16,11 +14,17 @@ import {
   HardDrive,
   Cpu,
 } from "lucide-react";
-import { Badge } from "~/components/ui/badge";
-import { AppHeader } from "~/components/shared/header";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useMemo, useState } from "react";
-import { getHealthStatus, type HealthData } from "~/services/dashboard";
+import { initializeServices } from "~/services";
+import { getClientAuthToken, getServerAuthToken } from "~/lib/auth";
+import { useMemo } from "react";
+import { AppHeader } from "~/components/shared/header";
+import {
+  data,
+  useOutletContext,
+  type ShouldRevalidateFunctionArgs,
+} from "react-router";
+import type { ProjectLayoutOutletContext } from "~/components/shared/project-layout";
 
 function StatusCard({
   title,
@@ -132,8 +136,9 @@ function MetricCard({
   );
 }
 
-export default function Dashboard({ loaderData }: Route.ComponentProps) {
-  // Query for health data with 10-second refetch interval
+export default function Dashboard({}: Route.ComponentProps) {
+  const { services } = useOutletContext<ProjectLayoutOutletContext>();
+
   const {
     isLoading,
     isError,
@@ -142,9 +147,9 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
   } = useQuery({
     queryKey: ["dashboard-health"],
     queryFn: async () => {
-      return await getHealthStatus();
+      return await services.dashboard.getHealthStatus();
     },
-    staleTime: 12000,
+    staleTime: 15000,
     refetchInterval: 10000, // Refetch every 10 seconds
     refetchIntervalInBackground: true,
   });
@@ -200,19 +205,19 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
             title="Database"
             status={healthData.database_status}
             icon={Database}
-            isStale={isStale}
+            isStale={!isLoading && isStale}
           />
           <StatusCard
             title="UI App"
             status={healthData.app_status}
             icon={Server}
-            isStale={isStale}
+            isStale={!isLoading && isStale}
           />
           <StatusCard
             title="PostgREST"
             status={healthData.postgrest_status}
             icon={Server}
-            isStale={isStale}
+            isStale={!isLoading && isStale}
           />
         </div>
 

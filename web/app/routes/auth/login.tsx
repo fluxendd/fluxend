@@ -1,18 +1,13 @@
-import { Form, NavLink, redirect, useFetcher, data } from "react-router";
+import { NavLink, redirect, useFetcher, data } from "react-router";
 import { useState } from "react";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { login } from "~/services/auth";
-import {
-  sessionCookie,
-  organizationCookie,
-  projectCookie,
-  dbCookie,
-} from "~/lib/cookies";
+import { sessionCookie, organizationCookie } from "~/lib/cookies";
 import type { Route } from "./+types/login";
 import { LoaderCircle, LogIn } from "lucide-react";
-import { getAuthToken } from "~/lib/auth";
-import { getUserOrganizations, getUserProjects } from "~/services/user";
+import { getServerAuthToken } from "~/lib/auth";
+import { initializeServices } from "~/services";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -21,24 +16,13 @@ export function meta({}: Route.MetaArgs) {
   ];
 }
 
-// Check if session_token is present, redirect it to dashboard
 export async function loader({ request }: Route.LoaderArgs) {
-  const sessionToken = await getAuthToken(request.headers);
+  const sessionToken = await getServerAuthToken(request.headers);
 
   if (sessionToken) {
-    // Parse the project ID cookie using the proper API
-    const projectIdValue = await projectCookie.parse(
-      request.headers.get("Cookie") || ""
-    );
-
-    if (projectIdValue) {
-      // Redirect to the specific project
-      return redirect(`/projects/${projectIdValue}/dashboard`);
-    } else {
-      // If project cookie is missing, throw an error
-      throw new Response("Project ID is missing", { status: 400 });
-    }
+    return redirect(`/projects`);
   }
+
   return null;
 }
 
@@ -53,89 +37,41 @@ export async function action({ request }: Route.ActionArgs) {
 
   try {
     const { success, errors, content } = await login(email, password);
-    const error = errors?.[0];
 
-    if (!success && error) {
-      return data({ error }, { status: 401 });
+    if (!success && errors?.[0]) {
+      return data({ error: errors?.[0] }, { status: 401 });
     }
 
-    if (!content) {
+    if (!content || !content.token) {
       return data({ error: "Unexpected Error Occured" }, { status: 401 });
     }
 
-    // Serialize session cookie
+    const services = initializeServices(content.token);
+
+    const {
+      success: orgSuccess,
+      errors: orgErrors,
+      content: orgContent,
+    } = await services.user.getUserOrganizations();
+
+    if (!orgSuccess && orgErrors?.[0]) {
+      return data({ error: orgErrors[0] }, { status: 401 });
+    }
+
+    if (!orgContent || !orgContent.length) {
+      return data({ error: "No organization found" }, { status: 401 });
+    }
+
+    const organization = orgContent?.[0];
+
     const sessionTokenCookie = await sessionCookie.serialize(content.token);
-
-    // Get user organizations
-    const mockRequestHeaders = {
-      headers: { Authorization: `Bearer ${content.token}` },
-    };
-
-    let organizationsResponse, organizationsData;
-    try {
-      organizationsResponse = await getUserOrganizations(mockRequestHeaders);
-      organizationsData = await organizationsResponse.json();
-    } catch (error) {
-      console.error("Failed to fetch organizations:", error);
-      return data({ error: "Failed to fetch organizations" }, { status: 500 });
-    }
-
-    let organizationId = "default_org";
-    let projectId = "default_project";
-    let dbId = "default_db";
-
-    if (
-      organizationsData.success &&
-      organizationsData.content &&
-      organizationsData.content.length > 0
-    ) {
-      organizationId = organizationsData.content[0].uuid;
-
-      // Get user projects for the first organization
-      let projectsResponse, projectsData;
-      try {
-        projectsResponse = await getUserProjects(
-          mockRequestHeaders,
-          organizationId
-        );
-        projectsData = await projectsResponse.json();
-      } catch (error) {
-        console.error("Failed to fetch projects:", error);
-        return data({ error: "Failed to fetch projects" }, { status: 500 });
-      }
-
-      // Get first project UUID
-      if (
-        projectsData.success &&
-        projectsData.content &&
-        projectsData.content.length > 0
-      ) {
-        projectId = projectsData.content[0].uuid;
-        dbId = projectsData.content[0].dbName;
-      } else {
-        console.warn("No projects found or invalid project data format");
-      }
-    } else {
-      console.warn(
-        "No organizations found or invalid organization data format"
-      );
-    }
-
-    // Serialize organization and project cookies
     const organizationIdCookie = await organizationCookie.serialize(
-      organizationId
+      organization.uuid
     );
-    const projectIdCookie = await projectCookie.serialize(projectId);
-    const dbIdCookie = await dbCookie.serialize(dbId);
 
-    return redirect(`/projects/${projectId}/dashboard`, {
+    return redirect(`/projects`, {
       headers: {
-        "Set-Cookie": [
-          sessionTokenCookie,
-          organizationIdCookie,
-          projectIdCookie,
-          dbIdCookie,
-        ].join(", "),
+        "Set-Cookie": [sessionTokenCookie, organizationIdCookie].join(", "),
       },
     });
   } catch (error) {

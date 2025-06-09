@@ -6,8 +6,8 @@ import { RefreshButton } from "~/components/shared/refresh-button";
 import { SearchDataTableWrapper } from "~/components/shared/search-data-table-wrapper";
 import { DataTableSkeleton } from "~/components/shared/data-table-skeleton";
 import { DeleteButton } from "~/components/shared/delete-button";
-import { useNavigate } from "react-router";
-import { deleteCollection } from "~/services/collections";
+import { useNavigate, useOutletContext } from "react-router";
+import type { ProjectLayoutOutletContext } from "~/components/shared/project-layout";
 
 const DEFAULT_PAGE_SIZE = 50;
 const DEFAULT_PAGE_INDEX = 0;
@@ -21,6 +21,9 @@ export default function CollectionPageContent({
   params,
 }: Route.ComponentProps) {
   const { projectId, collectionId } = params;
+  const { projectDetails, services } =
+    useOutletContext<ProjectLayoutOutletContext>();
+
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [pagination, setPagination] = useState<PaginationType>({
@@ -70,7 +73,13 @@ export default function CollectionPageContent({
     isFetching: isRowsFetching,
     error: rowsError,
   } = useQuery({
-    ...rowsQuery(projectId, collectionId, pagination, filterParams),
+    ...rowsQuery(
+      projectId,
+      projectDetails?.dbName as string,
+      collectionId,
+      pagination,
+      filterParams
+    ),
   });
 
   // Safely destructure to handle undefined
@@ -133,8 +142,7 @@ export default function CollectionPageContent({
 
     if (!confirmDelete) return;
 
-    const response = await deleteCollection(
-      { headers: {} },
+    const response = await services.collections.deleteCollection(
       projectId,
       collectionId
     );
@@ -179,7 +187,7 @@ export default function CollectionPageContent({
       </div>
 
       {isInitialLoading && (
-        <div className="rounded-md border mx-4">
+        <div className="rounded-md border mx-4 py-4">
           <DataTableSkeleton columns={5} rows={8} />
         </div>
       )}

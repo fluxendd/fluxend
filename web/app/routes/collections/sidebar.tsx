@@ -1,5 +1,12 @@
 import type { Route } from "./+types/sidebar";
-import { data, Outlet, useNavigate } from "react-router";
+import {
+  data,
+  href,
+  Outlet,
+  redirect,
+  useNavigate,
+  useOutletContext,
+} from "react-router";
 import { useState } from "react";
 import {
   Sidebar,
@@ -15,6 +22,9 @@ import { CollectionList } from "./collection-list";
 import { PlusCircle } from "lucide-react";
 import { CollectionListSkeleton } from "~/components/shared/collection-list-skeleton";
 import { Button } from "~/components/ui/button";
+import type { ProjectLayoutOutletContext } from "~/components/shared/project-layout";
+import { getServerAuthToken } from "~/lib/auth";
+import { initializeServices } from "~/services";
 
 export function HydrateFallback() {
   return (
@@ -66,20 +76,59 @@ const CreateCollectionButton = ({
 
   return (
     <Button
-      className="w-full"
+      className="w-full relative overflow-hidden group cursor-pointer"
       size="sm"
       disabled={disabled}
       onClick={handleClick}
     >
-      <PlusCircle className="mr-2 size-4" />
-      Create Collection
+      <PlusCircle className="mr-1 size-4" />
+      Create Table
+      <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-primary/50 to-primary/70 -translate-x-full group-hover:translate-x-full transition-transform duration-400" />
     </Button>
   );
 };
 
-export default function CollectionSidebar({ params }: Route.ComponentProps) {
+export async function loader({ request, params }: Route.LoaderArgs) {
+  const authToken = await getServerAuthToken(request.headers);
+  const { projectId, collectionId } = params;
+  if (!authToken) {
+    throw new Error("Unauthorized");
+  }
+
+  const services = initializeServices(authToken);
+
+  const { success, errors, content, ok, status } =
+    await services.collections.getAllCollections(projectId);
+
+  if (!ok) {
+    const errorMessage = errors?.[0] || "Unknown error";
+    if (status === 401) {
+      throw new Error(errorMessage);
+    } else {
+      throw new Error(errorMessage);
+    }
+  }
+
+  if (!collectionId) {
+    return redirect(
+      href("/projects/:projectId/collections/:collectionId", {
+        projectId,
+        collectionId: content[0].name,
+      })
+    );
+  }
+
+  return data(content, { status: 200 });
+}
+
+export default function CollectionSidebar({
+  loaderData,
+  params,
+}: Route.ComponentProps) {
   const { projectId } = params;
   const [searchTerm, setSearchTerm] = useState("");
+  const { projectDetails, services } =
+    useOutletContext<ProjectLayoutOutletContext>();
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
@@ -106,7 +155,11 @@ export default function CollectionSidebar({ params }: Route.ComponentProps) {
           <SidebarContent className="flex-1 min-h-0 flex flex-col">
             <SidebarGroup className="p-0 flex-1 overflow-hidden">
               <SidebarGroupContent className="h-full overflow-y-auto">
-                <CollectionList projectId={projectId} searchTerm={searchTerm} />
+                <CollectionList
+                  initialData={loaderData}
+                  projectId={projectId}
+                  searchTerm={searchTerm}
+                />
               </SidebarGroupContent>
             </SidebarGroup>
             <div className="p-4 border-t flex-shrink-0">
@@ -116,7 +169,7 @@ export default function CollectionSidebar({ params }: Route.ComponentProps) {
         </Sidebar>
         <SidebarInset className="flex-1 overflow-hidden">
           <div className="h-full overflow-auto">
-            <Outlet />
+            <Outlet context={{ projectDetails, services }} />
           </div>
         </SidebarInset>
       </div>

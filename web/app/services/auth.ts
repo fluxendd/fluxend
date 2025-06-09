@@ -1,19 +1,20 @@
+import type { APIResponse } from "~/lib/types";
+import { getTypedResponseData } from "~/lib/utils";
 import { post } from "~/tools/fetch";
 
-export type APIResponse<T> = {
-  success: boolean;
-  errors: string[] | null;
-  content: T | null;
-};
+// NOTE: Auth Service is special kind of service that does not rely on the auth token.
+// That's why it should not be initialized through initilizeService function.
 
 export const login = async (email: string, password: string) => {
-  const response = await post<{ token: string }>("/users/login", {
+  const response = await post("/users/login", {
     email,
     password,
   });
-  const data = await response.json();
 
-  return data as APIResponse<any>;
+  const data = await getTypedResponseData<
+    APIResponse<{ token: string; organizationUuid: string }>
+  >(response);
+  return data;
 };
 
 export const signup = async (
@@ -21,11 +22,14 @@ export const signup = async (
   username: string,
   password: string
 ) => {
-  const response = await post<{ token: string }>("/users/register", {
+  const response = await post("/users/register", {
     email,
     username,
     password,
   });
-  const data = await response.json();
-  return data as APIResponse<any>;
+
+  const data = await getTypedResponseData<
+    APIResponse<{ token: string; organizationUuid: string }>
+  >(response);
+  return data;
 };

@@ -1,30 +1,18 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-  BadgeAlert,
-  FolderIcon,
-  HashIcon,
-  LoaderCircle,
-  MessageCircleWarning,
-} from "lucide-react";
-import { useCallback, useEffect, useLayoutEffect, useMemo } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { HashIcon } from "lucide-react";
+import { useEffect } from "react";
 import { CollectionListSkeleton } from "~/components/shared/collection-list-skeleton";
-import {
-  href,
-  NavLink,
-  redirect,
-  useNavigate,
-  useNavigation,
-  useParams,
-} from "react-router";
-import { getAllCollections } from "~/services/collections";
+import { href, NavLink, useNavigate, useOutletContext } from "react-router";
 import { motion } from "motion/react";
+import { InfoMessage } from "~/components/shared/info-message";
+import type { ProjectLayoutOutletContext } from "~/components/shared/project-layout";
+import type { Services } from "~/services";
 
-// Define collection type
-interface Collection {
+export type Collection = {
   name: string;
   totalSize: string;
   [key: string]: any;
-}
+};
 
 class UnauthorizedError extends Error {
   constructor(message: string) {
@@ -33,30 +21,22 @@ class UnauthorizedError extends Error {
   }
 }
 
-const InfoMessage = ({ message }: { message: string }) => (
-  <div className="flex items-center p-4 text-muted-foreground">
-    <BadgeAlert className="mr-2" />
-    <div className="text-md">{message}</div>
-  </div>
-);
-
-const collectionsQuery = (projectId: string) => ({
+const collectionsQuery = (services: Services, projectId: string) => ({
   queryKey: ["collections", projectId],
   queryFn: async () => {
-    const res = await getAllCollections({ headers: {} }, projectId);
+    const { success, errors, content, ok, status } =
+      await services.collections.getAllCollections(projectId);
 
-    if (!res.ok) {
-      const responseData = await res.json();
-      const errorMessage = responseData?.errors[0] || "Unknown error";
-      if (res.status === 401) {
+    if (!ok) {
+      const errorMessage = errors?.[0] || "Unknown error";
+      if (status === 401) {
         throw new UnauthorizedError(errorMessage);
       } else {
         throw new Error(errorMessage);
       }
     }
 
-    const data = await res.json();
-    return data.content;
+    return content;
   },
 });
 
@@ -65,19 +45,23 @@ function CollectionListFallback() {
 }
 
 type CollectionListProps = {
+  initialData: Collection[];
   projectId: string;
   searchTerm?: string;
 };
 
 export const CollectionList = ({
+  initialData,
   projectId,
   searchTerm = "",
 }: CollectionListProps) => {
+  console.log(initialData, "asdasdas");
   const navigate = useNavigate();
+  const { services } = useOutletContext<ProjectLayoutOutletContext>();
 
   const { isLoading, isFetching, isError, data, error } = useQuery<
     Collection[]
-  >(collectionsQuery(projectId));
+  >({ initialData: initialData, ...collectionsQuery(services, projectId) });
 
   useEffect(() => {
     if (error?.name === "UnauthorizedError") {
@@ -85,21 +69,21 @@ export const CollectionList = ({
     }
   }, [error]);
 
-  const filteredData = useMemo(() => {
-    if (!data) {
-      return [];
-    }
+  // const filteredData = useMemo(() => {
+  //   if (!data) {
+  //     return [];
+  //   }
 
-    if (!searchTerm) {
-      return data;
-    }
+  //   if (!searchTerm) {
+  //     return data;
+  //   }
 
-    return data.filter((table) =>
-      table.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }, [searchTerm, data]);
+  //   return data.filter((table) =>
+  //     table.name.toLowerCase().includes(searchTerm.toLowerCase())
+  //   );
+  // }, [searchTerm, data]);
 
-  if (isLoading) {
+  if (isFetching) {
     return <CollectionListFallback />;
   }
 
@@ -113,15 +97,15 @@ export const CollectionList = ({
     return <InfoMessage message="No collections found" />;
   }
 
-  if (filteredData.length === 0) {
+  if (data.length === 0) {
     return <InfoMessage message="No matching collections found" />;
   }
 
   return (
     <div className="h-full overflow-y-auto flex flex-col">
-      {filteredData.map((table) => (
+      {data.map((table) => (
         <NavLink
-          to={href(`/projects/:projectId/collections/:collectionId?`, {
+          to={href("/projects/:projectId/collections/:collectionId", {
             projectId: projectId,
             collectionId: table.name,
           })}

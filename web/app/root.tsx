@@ -5,13 +5,10 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
-  useNavigate,
 } from "react-router";
 
 import type { Route } from "./+types/root";
 import "./globals.css";
-import { SidebarProvider, SidebarTrigger } from "./components/ui/sidebar";
-import { AppSidebar } from "./components/shared/sidebar";
 import { useTheme } from "./hooks/use-theme";
 
 function ThemeProvider({ children }: { children: React.ReactNode }) {

@@ -23,3 +23,17 @@ export const getAuthToken = async (
 
   return null;
 };
+
+// Get Server Auth Token
+export const getServerAuthToken = async (
+  headers: Headers
+): Promise<string | null> => {
+  const cookieHeader = headers.get("Cookie");
+  const sessionToken = await sessionCookie.parse(cookieHeader);
+  return sessionToken;
+};
+
+export const getClientAuthToken = async (): Promise<string | null> => {
+  const cookie = await sessionCookie.parse(document.cookie);
+  return cookie;
+};

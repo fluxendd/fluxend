@@ -1,106 +1,92 @@
-import { getAuthToken } from "~/lib/auth";
-import fetch, { get, post, del, type APIRequestOptions } from "~/tools/fetch";
+import type { APIResponse } from "~/lib/types";
+import { getTypedResponseData } from "~/lib/utils";
+import { get, post, del, type APIRequestOptions } from "~/tools/fetch";
 
-export const getAllCollections = async (request: any, projectId: string) => {
-  const authToken = await getAuthToken(request.headers);
+export function createCollectionsService(authToken: string) {
+  const getAllCollections = async (projectId: string) => {
+    const fetchOptions: RequestInit = {
+      headers: {
+        "X-Project": projectId,
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authToken}`,
+      },
+    };
 
-  const fetchOptions: RequestInit = {
-    headers: {
-      "X-Project": projectId,
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${authToken}`,
-    },
+    const response = await get("/tables", fetchOptions);
+    const data = await getTypedResponseData<APIResponse<any>>(response);
+
+    return data;
   };
 
-  const response = get<any>("/tables", fetchOptions);
+  const getCollectionColumns = async (
+    projectId: string,
+    collectionName: string
+  ) => {
+    const fetchOptions: RequestInit = {
+      headers: {
+        "X-Project": projectId,
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authToken}`,
+      },
+    };
 
-  return response;
-};
-
-export const getCollectionColumn = async (
-  request: any,
-  projectId: string,
-  collectionName: string
-) => {
-  const authToken = await getAuthToken(request.headers);
-
-  const fetchOptions: RequestInit = {
-    headers: {
-      "X-Project": projectId,
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${authToken}`,
-    },
+    return get(`/tables/public.${collectionName}/columns`, fetchOptions);
   };
 
-  const response = get<any>(
-    `/tables/public.${collectionName}/columns`,
-    fetchOptions
-  );
+  const getCollectionRows = async (
+    projectId: string,
+    collectionName: string,
+    options?: {
+      headers?: HeadersInit;
+      params?: Record<string, any>;
+      baseUrl?: string;
+    }
+  ) => {
+    const fetchOptions: APIRequestOptions = {
+      headers: {
+        "X-Project": projectId,
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authToken}`,
+        ...options?.headers,
+      },
+      params: options?.params,
+      baseUrl: options?.baseUrl,
+    };
 
-  return response;
-};
-
-export const getCollectionRows = async (
-  request: any,
-  projectId: string,
-  collectionName: string
-) => {
-  const authToken = await getAuthToken(request.headers);
-
-  const fetchOptions: APIRequestOptions = {
-    headers: {
-      "X-Project": projectId,
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${authToken}`,
-      ...request?.headers,
-    },
-    params: {
-      ...request?.params,
-    },
-    baseUrl: request.baseUrl,
+    return get(collectionName, fetchOptions);
   };
 
-  const response = get<any>(collectionName, fetchOptions);
+  const createCollection = async (projectId: string, data: any) => {
+    const fetchOptions: RequestInit = {
+      headers: {
+        "X-Project": projectId,
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authToken}`,
+      },
+    };
 
-  return response;
-};
-
-export const createCollection = async (
-  request: any,
-  projectId: string,
-  data: any
-) => {
-  const authToken = await getAuthToken(request.headers);
-
-  const fetchOptions: RequestInit = {
-    headers: {
-      "X-Project": projectId,
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${authToken}`,
-    },
+    return post("/tables", data, fetchOptions);
   };
 
-  const response = post<any>("/tables", data, fetchOptions);
+  const deleteCollection = async (projectId: string, tableName: string) => {
+    const fetchOptions: RequestInit = {
+      headers: {
+        "X-Project": projectId,
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authToken}`,
+      },
+    };
 
-  return response;
-};
-
-export const deleteCollection = async (
-  request: any,
-  projectId: string,
-  tableName: string
-) => {
-  const authToken = await getAuthToken(request.headers);
-
-  const fetchOptions: RequestInit = {
-    headers: {
-      "X-Project": projectId,
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${authToken}`,
-    },
+    return del(`/tables/public.${tableName}`, fetchOptions);
   };
 
-  const response = del<any>(`/tables/public.${tableName}`, fetchOptions);
+  return {
+    getAllCollections,
+    getCollectionColumns,
+    getCollectionRows,
+    createCollection,
+    deleteCollection,
+  };
+}
 
-  return response;
-};
+export type CollectionsService = ReturnType<typeof createCollectionsService>;
