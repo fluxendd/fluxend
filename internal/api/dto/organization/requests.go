@@ -53,7 +53,17 @@ func (r *MemberCreateRequest) BindAndValidate(c echo.Context) []string {
 	}
 
 	err := validation.ValidateStruct(r,
-		validation.Field(&r.UserID, validation.Required.Error("UserID is required")),
+		validation.Field(
+			&r.UserID,
+			validation.By(func(value interface{}) error {
+				if uuidValue, ok := value.(uuid.UUID); ok {
+					if uuidValue == uuid.Nil {
+						return fmt.Errorf("UserID is required")
+					}
+				}
+				return nil
+			}),
+		),
 	)
 
 	return r.ExtractValidationErrors(err)
