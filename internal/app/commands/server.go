@@ -56,7 +56,7 @@ func setupServer(container *do.Injector) *echo.Echo {
 			echo.HeaderContentType,
 			echo.HeaderAccept,
 			echo.HeaderAuthorization,
-			constants.XProjectHeaderName,
+			constants.ProjectHeaderKey,
 		},
 		ExposeHeaders: []string{
 			echo.HeaderContentLength, echo.HeaderContentType,

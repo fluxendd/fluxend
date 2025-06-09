@@ -1,14 +1,11 @@
 package organization
 
 import (
-	"bytes"
-	"encoding/json"
 	"fluxend/pkg"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
 	"net/http"
-	"net/http/httptest"
 	"testing"
 )
 
@@ -126,13 +123,7 @@ func TestMemberCreateRequest_BindAndValidate_Suite(t *testing.T) {
 
 		for _, tc := range tests {
 			t.Run(tc.name, func(t *testing.T) {
-				body, err := json.Marshal(tc.payload)
-				assert.NoError(t, err, "Failed to marshal payload")
-
-				fakeRequest := httptest.NewRequest(http.MethodPost, "/", bytes.NewReader(body))
-				fakeRequest.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
-
-				ctx := e.NewContext(fakeRequest, httptest.NewRecorder())
+				ctx := pkg.CreateFakeRequestContext(t, e, http.MethodPost, tc.payload)
 
 				var r MemberCreateRequest
 				errs := r.BindAndValidate(ctx)
