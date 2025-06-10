@@ -74,6 +74,14 @@ func (ts *TestServer) PostJSON(endpoint string, data interface{}) *http.Response
 	return resp
 }
 
+func (ts *TestServer) PutJSON(endpoint string, data interface{}) *http.Response {
+	jsonData, _ := json.Marshal(data)
+	req, _ := http.NewRequest("PUT", ts.BaseURL+endpoint, bytes.NewBuffer(jsonData))
+	req.Header.Set("Content-Type", "application/json")
+	resp, _ := ts.Client.Do(req)
+	return resp
+}
+
 // GetWithAuth sends a GET request with Authorization header
 func (ts *TestServer) GetWithAuth(endpoint, token string) *http.Response {
 	req, _ := http.NewRequest("GET", ts.BaseURL+endpoint, nil)
