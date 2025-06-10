@@ -17,7 +17,7 @@ var routesCmd = &cobra.Command{
 }
 
 func printRoutes() {
-	e := setupServer(app.InitializeContainer())
+	e := SetupServer(app.InitializeContainer())
 
 	registeredRoutes := e.Routes()
 	routesGrouped := make(map[string][]string)
