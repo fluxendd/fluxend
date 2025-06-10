@@ -67,9 +67,9 @@ func (r *UserRepository) GetByEmail(email string) (user.User, error) {
 }
 
 func (r *UserRepository) Create(input *user.User) (*user.User, error) {
-	query := "INSERT INTO authentication.users (username, email, status, role_id, password) VALUES ($1, $2, $3, $4, $5) RETURNING uuid"
+	query := "INSERT INTO authentication.users (username, email, status, role_id, bio, password) VALUES ($1, $2, $3, $4, $5, $6) RETURNING uuid"
 
-	err := r.db.QueryRow(query, input.Username, input.Email, constants.UserStatusActive, input.RoleID, auth.HashPassword(input.Password)).Scan(&input.Uuid)
+	err := r.db.QueryRow(query, input.Username, input.Email, constants.UserStatusActive, input.RoleID, input.Bio, auth.HashPassword(input.Password)).Scan(&input.Uuid)
 	if err != nil {
 		return &user.User{}, fmt.Errorf("could not create row: %v", err)
 	}

@@ -53,12 +53,12 @@ func (uh *UserHandler) Show(c echo.Context) error {
 		return response.UnprocessableResponse(c, err)
 	}
 
-	id, err := request.GetUUIDPathParam(c, "id", true)
+	id, err := request.GetUUIDPathParam(c, "userUUID", true)
 	if err != nil {
 		return response.BadRequestResponse(c, err.Error())
 	}
 
-	fetchedUser, err := uh.userService.GetByID(id)
+	fetchedUser, err := uh.userService.GetByUUID(id)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
@@ -85,11 +85,7 @@ func (uh *UserHandler) Show(c echo.Context) error {
 // @Router /users/login [post]
 func (uh *UserHandler) Login(c echo.Context) error {
 	var request userDto.LoginRequest
-	if err := c.Bind(&request); err != nil {
-		return response.BadRequestResponse(c, "user.error.invalidPayload")
-	}
-
-	if err := request.Validate(); err != nil {
+	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
 	}
 
@@ -123,11 +119,7 @@ func (uh *UserHandler) Login(c echo.Context) error {
 // @Router /users [post]
 func (uh *UserHandler) Store(c echo.Context) error {
 	var request userDto.CreateRequest
-	if err := c.Bind(&request); err != nil {
-		return response.BadRequestResponse(c, "user.error.invalidPayload")
-	}
-
-	if err := request.Validate(); err != nil {
+	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
 	}
 

@@ -30,13 +30,13 @@ var serverCmd = &cobra.Command{
 }
 
 func startServer() {
-	e := setupServer(app.InitializeContainer())
+	e := SetupServer(app.InitializeContainer())
 	validateEnvVariables()
 
 	e.Logger.Fatal(e.Start("0.0.0.0:8080"))
 }
 
-func setupServer(container *do.Injector) *echo.Echo {
+func SetupServer(container *do.Injector) *echo.Echo {
 	e := echo.New()
 
 	// Middleware
@@ -56,7 +56,7 @@ func setupServer(container *do.Injector) *echo.Echo {
 			echo.HeaderContentType,
 			echo.HeaderAccept,
 			echo.HeaderAuthorization,
-			constants.XProjectHeaderName,
+			constants.ProjectHeaderKey,
 		},
 		ExposeHeaders: []string{
 			echo.HeaderContentLength, echo.HeaderContentType,
@@ -103,6 +103,14 @@ func registerRoutes(e *echo.Echo, container *do.Injector) {
 	routes.RegisterStorageRoutes(e, container, authMiddleware, allowStorageMiddleware)
 	routes.RegisterFunctionRoutes(e, container, authMiddleware)
 	routes.RegisterBackup(e, container, authMiddleware, allowBackupMiddleware)
+
+	e.GET("/", func(c echo.Context) error {
+		response := map[string]string{
+			"message": "Welcome to Fluxend API",
+		}
+
+		return c.JSON(200, response)
+	})
 
 	e.GET("/docs/*", echoSwagger.WrapHandler)
 }

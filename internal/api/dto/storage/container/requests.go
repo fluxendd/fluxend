@@ -43,7 +43,6 @@ func (r *CreateRequest) BindAndValidate(c echo.Context) []string {
 			validation.Match(
 				regexp.MustCompile(constants.AlphanumericWithUnderscoreAndDashPattern),
 			).Error("Container name must be alphanumeric with underscores and dashes")),
-		validation.Field(&r.IsPublic, validation.Required.Error("IsPublic is required")),
 		validation.Field(&r.MaxFileSize,
 			validation.Required.Error("max_file_size is required"),
 			validation.Min(1).Error("max_file_size must be a positive number"),

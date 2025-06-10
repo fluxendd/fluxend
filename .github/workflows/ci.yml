@@ -1,0 +1,116 @@
+name: Go
+permissions:
+  contents: read
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+  workflow_dispatch:  # Allows manual triggering
+    inputs:
+      run_integration_tests:
+        description: 'Run integration tests'
+        required: false
+        default: 'true'
+        type: boolean
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: fluxend
+          POSTGRES_PASSWORD: fluxend
+          POSTGRES_DB: fluxend
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.23.4'
+
+      - name: Create .env file
+        run: |
+          if [ -f .env.example ]; then
+            cp .env.example .env
+          else
+            # Create a basic .env file if .env.example doesn't exist
+            cat > .env << EOF
+          APP_ENV=test
+          DATABASE_HOST=localhost
+          DATABASE_USER=fluxend
+          DATABASE_PASSWORD=fluxend
+          DATABASE_NAME=fluxend
+          DATABASE_SSL_MODE=disable
+          JWT_SECRET=test_jwt_secret_key_that_is_long_enough_for_validation
+          BASE_URL=http://localhost:8080
+          APP_URL=http://localhost:3000
+          API_URL=http://localhost:8080
+          EOF
+          fi
+
+      - name: Wait for PostgreSQL
+        run: |
+          until pg_isready -h localhost -p 5432 -U fluxend; do
+            echo "Waiting for PostgreSQL..."
+            sleep 2
+          done
+          echo "PostgreSQL is ready!"
+
+      - name: Install Goose
+        run: go install github.com/pressly/goose/v3/cmd/goose@latest
+
+      - name: Run Database Migrations
+        env:
+          DATABASE_CONNECTION: "postgres://fluxend:fluxend@localhost:5432/fluxend?sslmode=disable"
+        run: |
+          goose -dir internal/database/migrations postgres "$DATABASE_CONNECTION" up
+
+      - name: Seed Database
+        env:
+          APP_ENV: test
+          DATABASE_HOST: localhost
+          DATABASE_USER: fluxend
+          DATABASE_PASSWORD: fluxend
+          DATABASE_NAME: fluxend
+          DATABASE_SSL_MODE: disable
+          JWT_SECRET: test_jwt_secret_key_that_is_long_enough_for_validation
+          BASE_URL: http://localhost:8080
+          APP_URL: http://localhost:3000
+          API_URL: http://localhost:8080
+        run: |
+          go run cmd/main.go seed
+
+      - name: Build
+        run: go build -v ./...
+
+      - name: Run Unit Tests
+        run: go test -v ./... -short
+
+      - name: Run Integration Tests
+        if: github.event.inputs.run_integration_tests != 'false'
+        env:
+          APP_ENV: test
+          DATABASE_HOST: localhost
+          DATABASE_USER: fluxend
+          DATABASE_PASSWORD: fluxend
+          DATABASE_NAME: fluxend
+          DATABASE_SSL_MODE: disable
+          JWT_SECRET: test_jwt_secret_key_that_is_long_enough_for_validation
+          BASE_URL: http://localhost:8080
+          APP_URL: http://localhost:3000
+          API_URL: http://localhost:8080
+        run: go test -v ./tests/integration/...
