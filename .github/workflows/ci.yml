@@ -1,0 +1,55 @@
+name: Go
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.23.4'
+
+      - name: Create .env file for testing
+        run: |
+          cat > .env << EOF
+          APP_ENV=test
+          DATABASE_USER=fluxend
+          DATABASE_PASSWORD=fluxend
+          DATABASE_NAME=fluxend
+          BASE_DOMAIN=localhost
+          API_SUB_DOMAIN=api
+          APP_SUB_DOMAIN=app
+          EOF
+
+      - name: Start services with Docker Compose
+        run: |
+          docker-compose up -d fluxend_db
+          # Wait for database to be ready
+          sleep 10
+
+      - name: Build
+        run: go build -v ./...
+
+      - name: Run Unit Tests
+        run: go test -v ./... -short
+
+      - name: Run Integration Tests
+        env:
+          DATABASE_HOST: localhost
+          DATABASE_USER: fluxend
+          DATABASE_PASSWORD: fluxend
+          DATABASE_NAME: fluxend
+          DATABASE_SSL_MODE: disable
+        run: go test -v ./tests/integration/...
+
+      - name: Stop services
+        run: docker-compose down
