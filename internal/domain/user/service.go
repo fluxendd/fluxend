@@ -19,7 +19,7 @@ type Service interface {
 	Login(request *LoginUserInput) (User, string, error)
 	List(paginationParams shared.PaginationParams) ([]User, error)
 	ExistsByUUID(id uuid.UUID) error
-	GetByID(id uuid.UUID) (User, error)
+	GetByUUID(id uuid.UUID) (User, error)
 	Create(ctx echo.Context, request *CreateUserInput) (User, string, error)
 	Update(userUUID, authUserUUID uuid.UUID, request *UpdateUserInput) (*User, error)
 	Delete(userUUID uuid.UUID) (bool, error)
@@ -71,7 +71,7 @@ func (s *ServiceImpl) List(paginationParams shared.PaginationParams) ([]User, er
 	return s.userRepo.List(paginationParams)
 }
 
-func (s *ServiceImpl) GetByID(id uuid.UUID) (User, error) {
+func (s *ServiceImpl) GetByUUID(id uuid.UUID) (User, error) {
 	return s.userRepo.GetByID(id)
 }
 
@@ -115,6 +115,7 @@ func (s *ServiceImpl) Create(ctx echo.Context, request *CreateUserInput) (User, 
 		Username: request.Username,
 		Email:    request.Email,
 		Password: request.Password,
+		Bio:      request.Bio,
 		Status:   constants.UserStatusActive,
 		RoleID:   constants.UserRoleOwner,
 	}

@@ -53,12 +53,12 @@ func (uh *UserHandler) Show(c echo.Context) error {
 		return response.UnprocessableResponse(c, err)
 	}
 
-	id, err := request.GetUUIDPathParam(c, "id", true)
+	id, err := request.GetUUIDPathParam(c, "userUUID", true)
 	if err != nil {
 		return response.BadRequestResponse(c, err.Error())
 	}
 
-	fetchedUser, err := uh.userService.GetByID(id)
+	fetchedUser, err := uh.userService.GetByUUID(id)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
