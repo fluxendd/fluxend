@@ -8,10 +8,12 @@ type AppHeaderProps = {
   showDelete?: boolean;
   isLoading?: boolean;
   loadingProgress?: number;
+  children?: React.ReactNode;
 };
 
 export function AppHeader({
   title,
+  children,
   onDelete,
   deleteLabel = "Delete",
   showDelete = false,
@@ -23,8 +25,8 @@ export function AppHeader({
   return (
     <header className="group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 flex h-12 shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear px-4">
       <h1 className="text-base font-medium flex-1">{title}</h1>
-
-      {showDelete && onDelete && (
+      {children}
+      {/* {showDelete && onDelete && (
         <Button
           variant="destructive"
           size="sm"
@@ -34,7 +36,7 @@ export function AppHeader({
           <Trash2 className="w-4 h-4 mr-2" />
           {deleteLabel}
         </Button>
-      )}
+      )} */}
     </header>
   );
 }

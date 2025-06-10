@@ -94,13 +94,11 @@ export function RefreshButton({
       size={size}
       onClick={handleRefresh}
       title={title}
-      className={cn("h-8 w-8 cursor-pointer", className)}
+      className={cn("cursor-pointer", className)}
       disabled={isRefreshing}
       {...props}
     >
-      <div ref={refreshIconRef}>
-        {icon || <RefreshCw className="h-4 w-4" />}
-      </div>
+      <div ref={refreshIconRef}>{icon || <RefreshCw className="size-4" />}</div>
     </Button>
   );
 }

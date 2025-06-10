@@ -13,6 +13,7 @@ export default [
   route("logout", "./routes/auth/logout.tsx"),
   layout("./components/shared/app-layout.tsx", [
     route("projects", "./routes/projects/page.tsx"),
+    route("projects/create", "./routes/projects/create.tsx"),
   ]),
   ...prefix("projects/:projectId", [
     layout("./components/shared/project-layout.tsx", [

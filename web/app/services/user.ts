@@ -1,6 +1,6 @@
 import type { APIResponse } from "~/lib/types";
 import { getTypedResponseData } from "~/lib/utils";
-import { get } from "~/tools/fetch";
+import { get, post } from "~/tools/fetch";
 
 export type Organization = {
   uuid: string;
@@ -52,8 +52,27 @@ export const createUserService = (authToken: string) => {
     return data;
   };
 
+  const createUserProject = async (name: string, organizationId: string) => {
+    const fetchOptions: RequestInit = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authToken}`,
+      },
+    };
+
+    const response = await post(
+      `/projects`,
+      { name, organization_uuid: organizationId },
+      fetchOptions
+    );
+
+    const data = await getTypedResponseData<APIResponse<Project>>(response);
+    return data;
+  };
+
   return {
     getUserOrganizations,
     getUserProjects,
+    createUserProject,
   };
 };
