@@ -15,16 +15,12 @@ import {
   Cpu,
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { initializeServices } from "~/services";
-import { getClientAuthToken, getServerAuthToken } from "~/lib/auth";
 import { useMemo } from "react";
 import { AppHeader } from "~/components/shared/header";
-import {
-  data,
-  useOutletContext,
-  type ShouldRevalidateFunctionArgs,
-} from "react-router";
+import { redirect, useOutletContext } from "react-router";
 import type { ProjectLayoutOutletContext } from "~/components/shared/project-layout";
+import { getAuthToken, getClientAuthToken } from "~/lib/auth";
+import { initializeServices } from "~/services";
 
 function StatusCard({
   title,
@@ -38,7 +34,7 @@ function StatusCard({
   isStale: boolean;
 }) {
   return (
-    <Card className="flex-1 min-w-[120px]">
+    <Card className="flex-1 min-w-[120px] rounded-lg">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <Icon className="size-4 text-muted-foreground" />
@@ -74,7 +70,7 @@ function MetricCard({
   const minValue = Math.min(...data);
 
   return (
-    <Card className="flex-1 min-w-[200px]">
+    <Card className="flex-1 min-w-[200px] rounded-lg">
       <CardHeader className="relative pb-2">
         <div className="flex items-center justify-between">
           <Icon className="size-4 text-muted-foreground" />
@@ -136,7 +132,20 @@ function MetricCard({
   );
 }
 
-export default function Dashboard({}: Route.ComponentProps) {
+export async function clientLoader() {
+  const authToken = await getClientAuthToken();
+  if (!authToken) {
+    return redirect("/logout");
+  }
+
+  const services = initializeServices(authToken);
+
+  const data = await services.dashboard.getHealthStatus();
+
+  return data;
+}
+
+export default function Dashboard({ loaderData }: Route.ComponentProps) {
   const { services } = useOutletContext<ProjectLayoutOutletContext>();
 
   const {
@@ -146,6 +155,7 @@ export default function Dashboard({}: Route.ComponentProps) {
     isStale,
   } = useQuery({
     queryKey: ["dashboard-health"],
+    initialData: loaderData,
     queryFn: async () => {
       return await services.dashboard.getHealthStatus();
     },

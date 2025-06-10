@@ -55,7 +55,6 @@ export const CollectionList = ({
   projectId,
   searchTerm = "",
 }: CollectionListProps) => {
-  console.log(initialData, "asdasdas");
   const navigate = useNavigate();
   const { services } = useOutletContext<ProjectLayoutOutletContext>();
 

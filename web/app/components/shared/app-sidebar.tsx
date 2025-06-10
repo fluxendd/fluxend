@@ -1,4 +1,10 @@
-import { LogOutIcon } from "lucide-react";
+import {
+  EllipsisVertical,
+  Files,
+  LogOut,
+  LogOutIcon,
+  Settings,
+} from "lucide-react";
 import { href, NavLink } from "react-router";
 
 import {
@@ -14,6 +20,15 @@ import {
 } from "~/components/ui/sidebar";
 import { Logo } from "./logo";
 import { memo } from "react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
 
 export const AppSidebar = memo(() => {
   return (
@@ -37,11 +52,46 @@ export const AppSidebar = memo(() => {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
-        <SidebarMenuButton asChild tooltip={"Logout"}>
-          <NavLink to={href("/logout")} relative="route">
-            <LogOutIcon />
-          </NavLink>
-        </SidebarMenuButton>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <SidebarMenuButton className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
+                  <EllipsisVertical />
+                </SidebarMenuButton>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
+                // side={isMobile ? "bottom" : "right"}
+                side="right"
+                align="end"
+                sideOffset={4}
+              >
+                <DropdownMenuGroup>
+                  <DropdownMenuItem asChild>
+                    <NavLink to="/projects">
+                      <Files />
+                      View All Projects
+                    </NavLink>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <NavLink to="/settings">
+                      <Settings />
+                      Settings
+                    </NavLink>
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <NavLink to="/logout">
+                    <LogOut />
+                    Log out
+                  </NavLink>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </SidebarMenuItem>
+        </SidebarMenu>
       </SidebarFooter>
     </Sidebar>
   );
