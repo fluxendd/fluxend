@@ -5,12 +5,18 @@ on:
     branches: [ "master" ]
   pull_request:
     branches: [ "master" ]
+  workflow_dispatch:  # Allows manual triggering
+    inputs:
+      run_integration_tests:
+        description: 'Run integration tests'
+        required: false
+        default: 'true'
+        type: boolean
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    
-    # Use PostgreSQL service directly - simpler than Docker Compose
+
     services:
       postgres:
         image: postgres:15
@@ -34,7 +40,6 @@ jobs:
         with:
           go-version: '1.23.4'
 
-      # Wait for PostgreSQL to be ready
       - name: Wait for PostgreSQL
         run: |
           until pg_isready -h localhost -p 5432 -U fluxend; do
@@ -52,6 +57,21 @@ jobs:
         run: |
           goose -dir internal/database/migrations postgres "$DATABASE_CONNECTION" up
 
+      - name: Seed Database
+        env:
+          APP_ENV: test
+          DATABASE_HOST: localhost
+          DATABASE_USER: fluxend
+          DATABASE_PASSWORD: fluxend
+          DATABASE_NAME: fluxend
+          DATABASE_SSL_MODE: disable
+          JWT_SECRET: test_jwt_secret_key_that_is_long_enough_for_validation
+          BASE_URL: http://localhost:8080
+          APP_URL: http://localhost:3000
+          API_URL: http://localhost:8080
+        run: |
+          go run cmd/main.go seed
+
       - name: Build
         run: go build -v ./...
 
@@ -59,6 +79,7 @@ jobs:
         run: go test -v ./... -short
 
       - name: Run Integration Tests
+        if: github.event.inputs.run_integration_tests != 'false'
         env:
           APP_ENV: test
           DATABASE_HOST: localhost
