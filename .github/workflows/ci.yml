@@ -10,6 +10,22 @@ jobs:
   build:
     runs-on: ubuntu-latest
     
+    # Use PostgreSQL service directly - simpler than Docker Compose
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: fluxend
+          POSTGRES_PASSWORD: fluxend
+          POSTGRES_DB: fluxend
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
     steps:
       - uses: actions/checkout@v4
 
@@ -18,23 +34,14 @@ jobs:
         with:
           go-version: '1.23.4'
 
-      - name: Create .env file for testing
+      # Wait for PostgreSQL to be ready
+      - name: Wait for PostgreSQL
         run: |
-          cat > .env << EOF
-          APP_ENV=test
-          DATABASE_USER=fluxend
-          DATABASE_PASSWORD=fluxend
-          DATABASE_NAME=fluxend
-          BASE_DOMAIN=localhost
-          API_SUB_DOMAIN=api
-          APP_SUB_DOMAIN=app
-          EOF
-
-      - name: Start services with Docker Compose
-        run: |
-          docker-compose up -d fluxend_db
-          # Wait for database to be ready
-          sleep 10
+          until pg_isready -h localhost -p 5432 -U fluxend; do
+            echo "Waiting for PostgreSQL..."
+            sleep 2
+          done
+          echo "PostgreSQL is ready!"
 
       - name: Build
         run: go build -v ./...
@@ -44,12 +51,14 @@ jobs:
 
       - name: Run Integration Tests
         env:
+          APP_ENV: test
           DATABASE_HOST: localhost
           DATABASE_USER: fluxend
           DATABASE_PASSWORD: fluxend
           DATABASE_NAME: fluxend
           DATABASE_SSL_MODE: disable
+          JWT_SECRET: test_jwt_secret_key_that_is_long_enough_for_validation
+          BASE_URL: http://localhost:8080
+          APP_URL: http://localhost:3000
+          API_URL: http://localhost:8080
         run: go test -v ./tests/integration/...
-
-      - name: Stop services
-        run: docker-compose down
