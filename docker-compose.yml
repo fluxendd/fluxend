@@ -11,12 +11,12 @@ services:
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
-      #- "--entrypoints.web.http.redirections.entryPoint.to=websecure"
-      #- "--entrypoints.web.http.redirections.entryPoint.scheme=https"
-      #- "--entrypoints.websecure.address=:443"
+      - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
+      - "--entrypoints.websecure.address=:443"
       - "--certificatesresolvers.le.acme.tlschallenge=true"
       - "--certificatesresolvers.le.acme.email=hello@fluxend.app"
-      #- "--certificatesresolvers.le.acme.storage=/letsencrypt/acme.json"
+      - "--certificatesresolvers.le.acme.storage=/letsencrypt/acme.json"
       - "--log.level=DEBUG"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
@@ -65,10 +65,10 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.fluxend_app.rule=Host(`${API_SUB_DOMAIN}.${BASE_DOMAIN}`)"
-      #- "traefik.http.routers.fluxend_app.entrypoints=websecure"
+      - "traefik.http.routers.fluxend_app.entrypoints=websecure"
       - "traefik.http.services.fluxend_app.loadbalancer.server.port=8080"
-      #- "traefik.http.routers.fluxend_app.tls=true"
-      #- "traefik.http.routers.fluxend_app.tls.certresolver=le"
+      - "traefik.http.routers.fluxend_app.tls=true"
+      - "traefik.http.routers.fluxend_app.tls.certresolver=le"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock # TODO: Figure out a better way to handle this
 
@@ -86,10 +86,10 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.fluxend_frontend.rule=Host(`${APP_SUB_DOMAIN}.${BASE_DOMAIN}`)"
-      #- "traefik.http.routers.fluxend_frontend.entrypoints=websecure"
+      - "traefik.http.routers.fluxend_frontend.entrypoints=websecure"
       - "traefik.http.services.fluxend_frontend.loadbalancer.server.port=3000"
-      #- "traefik.http.routers.fluxend_frontend.tls=true"
-      #- "traefik.http.routers.fluxend_frontend.tls.certresolver=le"
+      - "traefik.http.routers.fluxend_frontend.tls=true"
+      - "traefik.http.routers.fluxend_frontend.tls.certresolver=le"
 
 networks:
   fluxend_network:
