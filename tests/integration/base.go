@@ -1,53 +1,128 @@
+// tests/integration/base.go - Updated with shared methods
 package integration
 
 import (
+	"bytes"
 	"encoding/json"
 	"fluxend/internal/app/commands"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"os"
-	"testing"
 	"time"
 
 	"fluxend/internal/app"
+	"fluxend/internal/database"
+	"github.com/google/uuid"
+	"github.com/jmoiron/sqlx"
 	"github.com/labstack/echo/v4"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
-// TestServer wraps the echo server for testing
-type TestServer struct {
-	Server  *httptest.Server
-	EchoApp *echo.Echo
-	BaseURL string
+type APIResponse struct {
+	Success bool     `json:"success"`
+	Errors  []string `json:"errors,omitempty"`
 }
 
-// NewTestServer creates a new test server instance
+type TestServer struct {
+	Server       *httptest.Server
+	EchoApp      *echo.Echo
+	DB           *sqlx.DB
+	Client       *http.Client
+	BaseURL      string
+	cleanupFuncs []func() error
+}
+
 func NewTestServer() *TestServer {
-	// Set up test environment variables
 	setTestEnvVars()
 
-	// Initialize container and setup server
-	container := app.InitializeContainer()
-	e := commands.SetupServer(container) // You'll need to export this function
+	// Initialize database
+	database.InitDB()
+	db := database.GetDB()
 
-	// Create test server
+	container := app.InitializeContainer()
+	e := commands.SetupServer(container)
+
 	server := httptest.NewServer(e)
 
 	return &TestServer{
-		Server:  server,
-		EchoApp: e,
-		BaseURL: server.URL,
+		Server:       server,
+		EchoApp:      e,
+		DB:           db,
+		Client:       &http.Client{Timeout: 10 * time.Second},
+		BaseURL:      server.URL,
+		cleanupFuncs: make([]func() error, 0),
 	}
 }
 
-// Close shuts down the test server
 func (ts *TestServer) Close() {
+	// Run cleanup functions in reverse order
+	for i := len(ts.cleanupFuncs) - 1; i >= 0; i-- {
+		ts.cleanupFuncs[i]()
+	}
 	ts.Server.Close()
 }
 
-// setTestEnvVars sets up required environment variables for testing
+// AddCleanup adds a cleanup function to be run when the server closes
+func (ts *TestServer) AddCleanup(fn func() error) {
+	ts.cleanupFuncs = append(ts.cleanupFuncs, fn)
+}
+
+// PostJSON sends a POST request with JSON body
+func (ts *TestServer) PostJSON(endpoint string, data interface{}) *http.Response {
+	jsonData, _ := json.Marshal(data)
+	resp, _ := ts.Client.Post(ts.BaseURL+endpoint, "application/json", bytes.NewBuffer(jsonData))
+	return resp
+}
+
+// GetWithAuth sends a GET request with Authorization header
+func (ts *TestServer) GetWithAuth(endpoint, token string) *http.Response {
+	req, _ := http.NewRequest("GET", ts.BaseURL+endpoint, nil)
+	req.Header.Set("Authorization", "Bearer "+token)
+	resp, _ := ts.Client.Do(req)
+	return resp
+}
+
+// PutJSONWithAuth sends a PUT request with JSON body and Authorization header
+func (ts *TestServer) PutJSONWithAuth(endpoint, token string, data interface{}) *http.Response {
+	jsonData, _ := json.Marshal(data)
+	req, _ := http.NewRequest("PUT", ts.BaseURL+endpoint, bytes.NewBuffer(jsonData))
+	req.Header.Set("Authorization", "Bearer "+token)
+	req.Header.Set("Content-Type", "application/json")
+	resp, _ := ts.Client.Do(req)
+	return resp
+}
+
+// PostWithAuth sends a POST request with Authorization header
+func (ts *TestServer) PostWithAuth(endpoint, token string) *http.Response {
+	req, _ := http.NewRequest("POST", ts.BaseURL+endpoint, nil)
+	req.Header.Set("Authorization", "Bearer "+token)
+	resp, _ := ts.Client.Do(req)
+	return resp
+}
+
+// CleanupUser removes a user and related data from the database
+func (ts *TestServer) CleanupUser(userUUID uuid.UUID) error {
+	// Clean up JWT versions
+	_, err := ts.DB.Exec("DELETE FROM authentication.jwt_versions WHERE user_id = $1", userUUID)
+	if err != nil {
+		fmt.Printf("Warning: Failed to cleanup JWT versions: %v\n", err)
+	}
+
+	// Clean up organizations (if any)
+	_, err = ts.DB.Exec("DELETE FROM organizations WHERE created_by = $1", userUUID)
+	if err != nil {
+		fmt.Printf("Warning: Failed to cleanup organizations: %v\n", err)
+	}
+
+	// Clean up user
+	_, err = ts.DB.Exec("DELETE FROM authentication.users WHERE uuid = $1", userUUID)
+	if err != nil {
+		fmt.Printf("Warning: Failed to cleanup user: %v\n", err)
+	}
+
+	return nil
+}
+
 func setTestEnvVars() {
 	testEnvVars := map[string]string{
 		"APP_ENV":                 "test",
@@ -82,149 +157,5 @@ func setTestEnvVars() {
 		if os.Getenv(key) == "" {
 			os.Setenv(key, value)
 		}
-	}
-}
-
-// TestHealthEndpoint demonstrates a simple integration test
-func TestHealthEndpoint(t *testing.T) {
-	// Start test server
-	testServer := NewTestServer()
-	defer testServer.Close()
-
-	// Make HTTP request
-	client := &http.Client{Timeout: 10 * time.Second}
-
-	// Test health endpoint (assuming you have one)
-	resp, err := client.Get(testServer.BaseURL)
-	require.NoError(t, err)
-	defer resp.Body.Close()
-
-	// Assert response
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
-
-	// Parse and print JSON response
-	var response map[string]interface{}
-	err = json.NewDecoder(resp.Body).Decode(&response)
-	require.NoError(t, err)
-
-	// Pretty print JSON
-	jsonBytes, err := json.MarshalIndent(response, "", "  ")
-	require.NoError(t, err)
-	fmt.Printf("Health endpoint response:\n%s\n", string(jsonBytes))
-}
-
-// TestAPIWithCustomHost demonstrates testing with custom host header
-func TestAPIWithCustomHost(t *testing.T) {
-	testServer := NewTestServer()
-	defer testServer.Close()
-
-	client := &http.Client{Timeout: 10 * time.Second}
-
-	// Create request with custom host header
-	req, err := http.NewRequest("GET", testServer.BaseURL+"/docs/", nil)
-	require.NoError(t, err)
-
-	// Set host header to simulate api.fluxend.localhost
-	req.Host = "api.fluxend.localhost"
-	req.Header.Set("Origin", "http://api.fluxend.localhost")
-
-	resp, err := client.Do(req)
-	require.NoError(t, err)
-	defer resp.Body.Close()
-
-	fmt.Printf("Status: %d\n", resp.StatusCode)
-	fmt.Printf("Headers: %+v\n", resp.Header)
-
-	// If it's JSON, parse and print
-	if resp.Header.Get("Content-Type") == "application/json" {
-		var response map[string]interface{}
-		if err := json.NewDecoder(resp.Body).Decode(&response); err == nil {
-			jsonBytes, _ := json.MarshalIndent(response, "", "  ")
-			fmt.Printf("JSON Response:\n%s\n", string(jsonBytes))
-		}
-	}
-}
-
-// TestUserEndpoint demonstrates testing a protected endpoint
-func TestUserEndpoint(t *testing.T) {
-	testServer := NewTestServer()
-	defer testServer.Close()
-
-	client := &http.Client{Timeout: 10 * time.Second}
-
-	// Test without authentication (should fail)
-	resp, err := client.Get(testServer.BaseURL + "/users")
-	require.NoError(t, err)
-	defer resp.Body.Close()
-
-	fmt.Printf("Unauthenticated request status: %d\n", resp.StatusCode)
-
-	// Parse response if it's JSON
-	var response map[string]interface{}
-	if err := json.NewDecoder(resp.Body).Decode(&response); err == nil {
-		jsonBytes, _ := json.MarshalIndent(response, "", "  ")
-		fmt.Printf("Error response:\n%s\n", string(jsonBytes))
-	}
-}
-
-// Helper function to create authenticated request
-func createAuthenticatedRequest(method, url, token string) (*http.Request, error) {
-	req, err := http.NewRequest(method, url, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	if token != "" {
-		req.Header.Set("Authorization", "Bearer "+token)
-	}
-
-	return req, nil
-}
-
-// TestIntegrationSuite runs multiple integration tests
-func TestIntegrationSuite(t *testing.T) {
-	testServer := NewTestServer()
-	defer testServer.Close()
-
-	tests := []struct {
-		name     string
-		endpoint string
-		method   string
-		headers  map[string]string
-	}{
-		{"Swagger Docs", "/docs/", "GET", nil},
-		{"Health Check", "/health", "GET", nil},
-		{"Users Endpoint", "/users", "GET", map[string]string{"Origin": "http://api.fluxend.localhost"}},
-	}
-
-	client := &http.Client{Timeout: 10 * time.Second}
-
-	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
-			req, err := http.NewRequest(test.method, testServer.BaseURL+test.endpoint, nil)
-			require.NoError(t, err)
-
-			// Set custom headers
-			for key, value := range test.headers {
-				req.Header.Set(key, value)
-			}
-
-			resp, err := client.Do(req)
-			require.NoError(t, err)
-			defer resp.Body.Close()
-
-			fmt.Printf("\n=== %s ===\n", test.name)
-			fmt.Printf("URL: %s\n", testServer.BaseURL+test.endpoint)
-			fmt.Printf("Status: %d\n", resp.StatusCode)
-
-			// Try to parse as JSON
-			var response interface{}
-			if err := json.NewDecoder(resp.Body).Decode(&response); err == nil {
-				jsonBytes, _ := json.MarshalIndent(response, "", "  ")
-				fmt.Printf("Response:\n%s\n", string(jsonBytes))
-			} else {
-				fmt.Printf("Response is not JSON or empty\n")
-			}
-		})
 	}
 }
