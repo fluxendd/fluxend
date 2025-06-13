@@ -1,11 +1,27 @@
-import { data, NavLink, redirect, useFetcher, useNavigate } from "react-router";
+import {
+  data,
+  Link,
+  NavLink,
+  redirect,
+  useFetcher,
+  useNavigate,
+} from "react-router";
 import type { Route } from "./+types/signup";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { signup } from "~/services/auth";
 import { LoaderCircle, LogIn } from "lucide-react";
 import { getAuthToken } from "~/lib/auth";
+import { cn } from "~/lib/utils";
+import { Logo } from "~/components/shared/logo";
+import {
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "~/components/ui/card";
+import { NeonCard } from "~/components/shared/neon-card";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -76,107 +92,128 @@ export default function SignUp() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <h2 className="text-3xl font-extrabold text-foreground mb-0">
-          Register new account
-        </h2>
-        <span className="text-sm text-muted-foreground">
-          Or{" "}
-          <Button
-            variant="link"
-            className="p-0 font-medium text-primary hover:text-primary/80 hover:underline"
+    <div className="relative">
+      {/* <div className="border-2 absolute inset-0 mx-20" />
+      <div className="border-2 absolute inset-0 my-20" /> */}
+      <div className="bg-background flex min-h-svh  items-center justify-center gap-6 p-6 md:p-10">
+        <div className="flex w-full max-w-sm flex-col gap-6">
+          <a
+            href="#"
+            className="flex items-center gap-2 self-center font-medium"
           >
-            <NavLink to="/">sign in to your account</NavLink>
-          </Button>
-        </span>
-
-        <div className="mt-8 space-y-6">
-          <fetcher.Form className="space-y-6" method="post">
-            <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-muted-foreground"
-              >
-                Email address
-              </label>
-              <div className="mt-1">
-                <Input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="your email"
-                  className="w-full px-3 py-2  text-sm"
-                />
-              </div>
+            <div className="bg-muted flex size-6 items-center justify-center rounded-md">
+              <Logo className="size-4" />
             </div>
-            <div>
-              <label
-                htmlFor="username"
-                className="block text-sm font-medium text-muted-foreground"
-              >
-                Username
-              </label>
-              <div className="mt-1">
-                <Input
-                  id="username"
-                  name="username"
-                  type="text"
-                  autoComplete="email"
-                  required
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  placeholder="your username"
-                  className="w-full px-3 py-2  text-sm"
-                />
+            Fluxend
+          </a>
+          <NeonCard className="shadow-md">
+            <CardHeader className="text-center">
+              <CardTitle className="text-xl">Sign in to your account</CardTitle>
+              <CardDescription>
+                Or{" "}
+                <Button
+                  variant="link"
+                  className="p-0 font-medium text-primary hover:text-primary/80 hover:underline"
+                >
+                  <NavLink to="/">sign in to your account</NavLink>
+                </Button>
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className={cn("flex flex-col gap-6")}>
+                <fetcher.Form className="space-y-6" method="post">
+                  <div>
+                    <label
+                      htmlFor="email"
+                      className="block text-sm font-medium text-muted-foreground"
+                    >
+                      Email address
+                    </label>
+                    <div className="mt-1">
+                      <Input
+                        id="email"
+                        name="email"
+                        type="email"
+                        autoComplete="email"
+                        required
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="your email"
+                        className="w-full px-3 py-2  text-sm"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="username"
+                      className="block text-sm font-medium text-muted-foreground"
+                    >
+                      Username
+                    </label>
+                    <div className="mt-1">
+                      <Input
+                        id="username"
+                        name="username"
+                        type="text"
+                        autoComplete="email"
+                        required
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                        placeholder="your username"
+                        className="w-full px-3 py-2  text-sm"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="password"
+                      className="block text-sm font-medium text-muted-foreground"
+                    >
+                      Password
+                    </label>
+                    <div className="mt-1">
+                      <Input
+                        id="password"
+                        name="password"
+                        type="password"
+                        autoComplete="current-password"
+                        required
+                        value={password}
+                        placeholder="your password"
+                        onChange={(e) => setPassword(e.target.value)}
+                        className="w-full px-3 py-2 text-sm"
+                      />
+                    </div>
+                  </div>
+                  {data && data.error && (
+                    <div className="text-red-500 text-sm">{data.error}</div>
+                  )}
+                  {data && data.success && (
+                    <div className="text-green-600 text-sm">
+                      Signed Up Successfully, Redirecting to login...
+                    </div>
+                  )}
+                  <div>
+                    <Button
+                      disabled={isLoading}
+                      type="submit"
+                      className="w-full"
+                      size="lg"
+                    >
+                      {isLoading && <LoaderCircle className="loading-icon" />}
+                      {!isLoading && <LogIn />}
+                      Sign up
+                    </Button>
+                  </div>
+                </fetcher.Form>
               </div>
-            </div>
-            <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-muted-foreground"
-              >
-                Password
-              </label>
-              <div className="mt-1">
-                <Input
-                  id="password"
-                  name="password"
-                  type="password"
-                  autoComplete="current-password"
-                  required
-                  value={password}
-                  placeholder="your password"
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-3 py-2 text-sm"
-                />
-              </div>
-            </div>
-            {data && data.error && (
-              <div className="text-red-500 text-sm">{data.error}</div>
-            )}
-            {data && data.success && (
-              <div className="text-green-600 text-sm">
-                Signed Up Successfully, Redirecting to login...
-              </div>
-            )}
-            <div>
-              <Button
-                disabled={isLoading}
-                type="submit"
-                className="w-full"
-                size="lg"
-              >
-                {isLoading && <LoaderCircle className="loading-icon" />}
-                {!isLoading && <LogIn />}
-                Sign up
-              </Button>
-            </div>
-          </fetcher.Form>
+            </CardContent>
+          </NeonCard>
+          <div className="text-muted-foreground *:[a]:hover:text-primary text-center text-xs text-balance *:[a]:underline *:[a]:underline-offset-4">
+            By clicking continue, you agree to our{" "}
+            <Link to="/">Terms of Service</Link> and{" "}
+            <Link to="/">Privacy Policy</Link>.
+          </div>
         </div>
       </div>
     </div>

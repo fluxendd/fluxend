@@ -1,13 +1,23 @@
-import { NavLink, redirect, useFetcher, data } from "react-router";
+import { NavLink, redirect, useFetcher, data, Link } from "react-router";
 import { useState } from "react";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { login } from "~/services/auth";
 import { sessionCookie, organizationCookie } from "~/lib/cookies";
 import type { Route } from "./+types/login";
-import { LoaderCircle, LogIn } from "lucide-react";
+import { GalleryVerticalEnd, LoaderCircle, LogIn } from "lucide-react";
 import { getServerAuthToken } from "~/lib/auth";
 import { initializeServices } from "~/services";
+import { cn } from "~/lib/utils";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "~/components/ui/card";
+import { Logo } from "~/components/shared/logo";
+import { NeonCard } from "~/components/shared/neon-card";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -93,92 +103,110 @@ export default function Login({}: Route.ComponentProps) {
   const isLoading = fetcher.state != "idle";
 
   return (
-    <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <h2 className="text-3xl font-extrabold text-foreground mb-0">
-          Sign in to your account
-        </h2>
-        <span className="text-sm text-muted-foreground">
-          Or{" "}
-          <Button
-            variant="link"
-            className="p-0 font-medium text-primary hover:text-primary/80 hover:underline"
-          >
-            <NavLink to="/signup">create a new account</NavLink>
-          </Button>
-        </span>
-
-        <div className="mt-8 space-y-6">
-          <fetcher.Form method="post" className="space-y-6">
-            <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-muted-foreground"
-              >
-                Email address
-              </label>
-              <div className="mt-1">
-                <Input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="your email"
-                  className="w-full px-3 py-2  text-sm"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-muted-foreground"
-              >
-                Password
-              </label>
-              <div className="mt-1">
-                <Input
-                  id="password"
-                  name="password"
-                  type="password"
-                  autoComplete="current-password"
-                  required
-                  value={password}
-                  placeholder="your password"
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-3 py-2 text-sm"
-                />
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <div className="text-sm">
+    <div className="bg-background flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10">
+      <div className="flex w-full max-w-sm flex-col gap-6">
+        <a href="#" className="flex items-center gap-2 self-center font-medium">
+          <div className="bg-muted flex size-6 items-center justify-center rounded-md">
+            <Logo className="size-4" />
+          </div>
+          Fluxend
+        </a>
+        <div className={cn("flex flex-col gap-6")}>
+          <NeonCard className="shadow-md">
+            <CardHeader className="text-center">
+              <CardTitle className="text-xl">Sign in to your account</CardTitle>
+              <CardDescription>
+                Or{" "}
                 <Button
                   variant="link"
-                  className="font-medium text-muted-foreground p-0"
-                  disabled={isLoading}
+                  className="p-0 font-medium text-primary hover:text-primary/80 hover:underline"
                 >
-                  Forgot your password?
+                  <NavLink to="/signup">create a new account</NavLink>
                 </Button>
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-6">
+                <fetcher.Form method="post" className="space-y-6">
+                  <div>
+                    <label
+                      htmlFor="email"
+                      className="block text-sm font-medium text-muted-foreground"
+                    >
+                      Email address
+                    </label>
+                    <div className="mt-1">
+                      <Input
+                        id="email"
+                        name="email"
+                        type="email"
+                        autoComplete="email"
+                        required
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="your email"
+                        className="w-full px-3 py-2  text-sm"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label
+                      htmlFor="password"
+                      className="block text-sm font-medium text-muted-foreground"
+                    >
+                      Password
+                    </label>
+                    <div className="mt-1">
+                      <Input
+                        id="password"
+                        name="password"
+                        type="password"
+                        autoComplete="current-password"
+                        required
+                        value={password}
+                        placeholder="your password"
+                        onChange={(e) => setPassword(e.target.value)}
+                        className="w-full px-3 py-2 text-sm"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div className="text-sm">
+                      <Button
+                        variant="link"
+                        className="font-medium text-muted-foreground p-0"
+                        disabled={isLoading}
+                      >
+                        Forgot your password?
+                      </Button>
+                    </div>
+                  </div>
+                  {data && (
+                    <div className="text-red-500 text-sm">{data.error}</div>
+                  )}
+                  <div>
+                    <Button
+                      disabled={isLoading}
+                      type="submit"
+                      className="w-full"
+                      size="lg"
+                    >
+                      {isLoading && <LoaderCircle className="loading-icon" />}
+                      {!isLoading && <LogIn />}
+                      Sign in
+                    </Button>
+                  </div>
+                </fetcher.Form>
               </div>
-            </div>
-            {data && <div className="text-red-500 text-sm">{data.error}</div>}
-            <div>
-              <Button
-                disabled={isLoading}
-                type="submit"
-                className="w-full"
-                size="lg"
-              >
-                {isLoading && <LoaderCircle className="loading-icon" />}
-                {!isLoading && <LogIn />}
-                Sign in
-              </Button>
-            </div>
-          </fetcher.Form>
+            </CardContent>
+          </NeonCard>
+          <div className="text-muted-foreground *:[a]:hover:text-primary text-center text-xs text-balance *:[a]:underline *:[a]:underline-offset-4">
+            By clicking continue, you agree to our{" "}
+            <Link to="/">Terms of Service</Link> and{" "}
+            <Link to="/">Privacy Policy</Link>.
+          </div>
         </div>
       </div>
     </div>

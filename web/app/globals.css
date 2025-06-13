@@ -9,6 +9,8 @@
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif,
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco;
+
+  --animate-neon: neon 3s ease-in-out infinite;
 }
 
 html,
@@ -47,6 +49,20 @@ body {
   }
   100% {
     border-color: hsla(47.9, 95.8%, 53.1%, 0.3);
+  }
+}
+
+@keyframes borderTrail {
+  0% {
+    offset-distance: 0%;
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 0.8;
+  }
+  100% {
+    offset-distance: 100%;
+    opacity: 0.5;
   }
 }
 
@@ -173,6 +189,46 @@ body {
   }
   body {
     @apply bg-background text-foreground;
+  }
+
+  .card-with-trail {
+    position: relative;
+    overflow: visible;
+  }
+
+  .card-with-trail::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 1px;
+    background: var(--muted-foreground);
+
+    opacity: 0.3;
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    transition: opacity 0.3s ease;
+  }
+
+  .card-with-trail:hover::before {
+    opacity: 0.5;
+  }
+
+  .trail {
+    width: 40px;
+    height: 15px;
+    position: absolute;
+    background: radial-gradient(
+      100% 100% at right,
+      var(--foreground),
+      transparent 80%
+    );
+    offset-path: border-box;
+    offset-anchor: 100% 50%;
+    animation: borderTrail 9s infinite linear;
+    z-index: 1;
+    filter: blur(2px);
+    mix-blend-mode: soft-light;
   }
 }
 
