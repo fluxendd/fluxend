@@ -25,6 +25,8 @@ import { useEffect, useState } from "react";
 export async function loader({ request }: Route.LoaderArgs) {
   const authToken = await getServerAuthToken(request.headers);
 
+  console.log("AUTH", authToken);
+
   if (!authToken) {
     return redirect("/logout");
   }
@@ -32,6 +34,8 @@ export async function loader({ request }: Route.LoaderArgs) {
   const organizationId = await organizationCookie.parse(
     request.headers.get("Cookie")
   );
+
+  console.log("ORGANIZATION", organizationId);
 
   if (!organizationId) {
     return redirect("/logout");
