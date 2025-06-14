@@ -17,13 +17,14 @@ const (
 )
 
 type Config struct {
-	DBUser     string
-	DBPassword string
-	DBHost     string
-	DBSchema   string
-	DBRole     string
-	JWTSecret  string
-	BaseDomain string
+	DBUser        string
+	DBPassword    string
+	DBHost        string
+	DBSchema      string
+	DBRole        string
+	JWTSecret     string
+	BaseDomain    string
+	CustomOrigins string
 }
 
 type ServiceImpl struct {
@@ -32,14 +33,20 @@ type ServiceImpl struct {
 }
 
 func NewPostgrestService(injector *do.Injector) (shared.PostgrestService, error) {
+	corsOrigins := os.Getenv("CUSTOM_ORIGINS")
+	if corsOrigins == "" {
+		corsOrigins = "*"
+	}
+
 	config := &Config{
-		DBUser:     os.Getenv("POSTGREST_DB_USER"),
-		DBPassword: os.Getenv("POSTGREST_DB_PASSWORD"),
-		DBHost:     os.Getenv("POSTGREST_DB_HOST"),
-		DBSchema:   os.Getenv("POSTGREST_DEFAULT_SCHEMA"),
-		DBRole:     os.Getenv("POSTGREST_DEFAULT_ROLE"),
-		JWTSecret:  os.Getenv("JWT_SECRET"),
-		BaseDomain: os.Getenv("BASE_DOMAIN"),
+		DBUser:        os.Getenv("POSTGREST_DB_USER"),
+		DBPassword:    os.Getenv("POSTGREST_DB_PASSWORD"),
+		DBHost:        os.Getenv("POSTGREST_DB_HOST"),
+		DBSchema:      os.Getenv("POSTGREST_DEFAULT_SCHEMA"),
+		DBRole:        os.Getenv("POSTGREST_DEFAULT_ROLE"),
+		JWTSecret:     os.Getenv("JWT_SECRET"),
+		BaseDomain:    os.Getenv("BASE_DOMAIN"),
+		CustomOrigins: corsOrigins,
 	}
 
 	projectRepo := do.MustInvoke[project.Repository](injector)
@@ -144,6 +151,7 @@ func (s *ServiceImpl) buildStartCommand(dbName string) []string {
 		"-e", "PGRST_DB_ANON_ROLE=" + s.config.DBRole,
 		"-e", "PGRST_DB_SCHEMA=" + s.config.DBSchema,
 		"-e", "PGRST_JWT_SECRET=" + s.config.JWTSecret,
+		"-e", "PGRST_SERVER_CORS_ALLOWED_ORIGINS=" + s.config.CustomOrigins,
 		"--label", "traefik.enable=true",
 		"--label", fmt.Sprintf("traefik.http.routers.%s.rule=Host(`%s.%s`)", dbName, dbName, s.config.BaseDomain),
 		"--label", fmt.Sprintf("traefik.http.services.%s.loadbalancer.server.port=3000", dbName),
