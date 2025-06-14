@@ -105,24 +105,26 @@ export default function Login({}: Route.ComponentProps) {
   return (
     <div className="bg-background flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10">
       <div className="flex w-full max-w-sm flex-col gap-6">
-        <a href="#" className="flex items-center gap-2 self-center font-medium">
-          <div className="bg-muted flex size-6 items-center justify-center rounded-md">
+        <div className="flex items-center gap-2 self-center font-medium">
+          <div className="bg-muted flex py-1 px-2 items-center justify-center rounded-md">
             <Logo className="size-4" />
+            <p className="ml-1">Fluxend</p>
           </div>
-          Fluxend
-        </a>
+        </div>
         <div className={cn("flex flex-col gap-6")}>
           <NeonCard className="shadow-md">
             <CardHeader className="text-center">
               <CardTitle className="text-xl">Sign in to your account</CardTitle>
               <CardDescription>
                 Or{" "}
-                <Button
-                  variant="link"
-                  className="p-0 font-medium text-primary hover:text-primary/80 hover:underline"
-                >
-                  <NavLink to="/signup">create a new account</NavLink>
-                </Button>
+                <NavLink to="/signup">
+                  <Button
+                    variant="link"
+                    className="p-0 font-medium text-primary hover:text-primary/80 hover:underline cusror-pointer"
+                  >
+                    create a new account
+                  </Button>
+                </NavLink>
               </CardDescription>
             </CardHeader>
             <CardContent>

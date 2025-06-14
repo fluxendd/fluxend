@@ -97,26 +97,25 @@ export default function SignUp() {
       <div className="border-2 absolute inset-0 my-20" /> */}
       <div className="bg-background flex min-h-svh  items-center justify-center gap-6 p-6 md:p-10">
         <div className="flex w-full max-w-sm flex-col gap-6">
-          <a
-            href="#"
-            className="flex items-center gap-2 self-center font-medium"
-          >
-            <div className="bg-muted flex size-6 items-center justify-center rounded-md">
+          <div className="flex items-center gap-2 self-center font-medium">
+            <div className="bg-muted flex py-1 px-2 items-center justify-center rounded-md">
               <Logo className="size-4" />
+              <p className="ml-1">Fluxend</p>
             </div>
-            Fluxend
-          </a>
+          </div>
           <NeonCard className="shadow-md">
             <CardHeader className="text-center">
               <CardTitle className="text-xl">Sign in to your account</CardTitle>
               <CardDescription>
                 Or{" "}
-                <Button
-                  variant="link"
-                  className="p-0 font-medium text-primary hover:text-primary/80 hover:underline"
-                >
-                  <NavLink to="/">sign in to your account</NavLink>
-                </Button>
+                <NavLink to="/">
+                  <Button
+                    variant="link"
+                    className="p-0 font-medium text-primary hover:text-primary/80 hover:underline cusror-pointer"
+                  >
+                    sign in to your account
+                  </Button>
+                </NavLink>
               </CardDescription>
             </CardHeader>
             <CardContent>

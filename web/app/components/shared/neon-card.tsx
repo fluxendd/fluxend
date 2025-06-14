@@ -22,17 +22,10 @@ export function NeonCard({ children, className, ...props }: NeonCardProps) {
       {/* Card container with border */}
       <div className="card-with-trail rounded-xl">
         {/* Animated muted trail that follows the border */}
-        <div
-          className="trail"
-          style={{
-            // animationDuration: hoverState ? "4s" : "7s",
-            width: hoverState ? "35px" : "40px",
-            opacity: hoverState ? 0.6 : 0.9,
-          }}
-        />
+        <div className="trail" />
 
         {/* Inner card with content */}
-        <Card className="relative bg-card rounded-xl z-10 border-transparent shadow-sm">
+        <Card className="relative bg-card rounded-xl overflow-clip border-transparent shadow-sm">
           {children}
         </Card>
       </div>
