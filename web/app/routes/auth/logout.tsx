@@ -1,25 +1,20 @@
-import { redirect } from "react-router";
-import {
-  sessionCookie,
-  organizationCookie,
-  projectCookie,
-  dbCookie,
-} from "../../lib/cookies";
+import { sessionCookie, organizationCookie } from "../../lib/cookies";
 
 export async function loader() {
   const sessionCookieStr = await sessionCookie.serialize("");
   const organizationCookieStr = await organizationCookie.serialize("");
-  const projectCookieStr = await projectCookie.serialize("");
-  const dbCookieStr = await dbCookie.serialize("");
 
-  return redirect("/", {
+  // Create a Response object that allows setting multiple cookies
+  const response = new Response(null, {
+    status: 302,
     headers: {
-      "Set-Cookie": [
-        sessionCookieStr,
-        organizationCookieStr,
-        projectCookieStr,
-        dbCookieStr,
-      ].join(", "),
+      Location: "/",
     },
   });
+
+  // Append each cookie separately
+  response.headers.append("Set-Cookie", sessionCookieStr);
+  response.headers.append("Set-Cookie", organizationCookieStr);
+
+  return response;
 }

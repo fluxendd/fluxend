@@ -1,4 +1,4 @@
-import { NavLink, redirect, useFetcher, data, Link } from "react-router";
+import { NavLink, useFetcher, data, Link, redirect } from "react-router";
 import { useState } from "react";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
@@ -66,7 +66,7 @@ export async function action({ request }: Route.ActionArgs) {
       content: orgContent,
     } = await services.user.getUserOrganizations();
 
-    console.log(orgContent, "ORGANIZATION ON LOGIN");
+    console.log(orgContent, "ORGANIZATION ON LOGIN PAGE");
 
     if (!orgSuccess && orgErrors?.[0]) {
       return data({ error: orgErrors[0] }, { status: 401 });
@@ -83,11 +83,19 @@ export async function action({ request }: Route.ActionArgs) {
       organization.uuid
     );
 
-    return redirect(`/projects`, {
+    // Create a Response object that allows setting multiple cookies
+    const response = new Response(null, {
+      status: 302,
       headers: {
-        "Set-Cookie": [sessionTokenCookie, organizationIdCookie].join(", "),
+        Location: `/projects`,
       },
     });
+
+    // Append each cookie separately
+    response.headers.append("Set-Cookie", sessionTokenCookie);
+    response.headers.append("Set-Cookie", organizationIdCookie);
+
+    return response;
   } catch (error) {
     console.error("Unexpected error during login process:", error);
     return data(
