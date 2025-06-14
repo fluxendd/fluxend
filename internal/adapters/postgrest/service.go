@@ -152,6 +152,8 @@ func (s *ServiceImpl) buildStartCommand(dbName string) []string {
 		"-e", "PGRST_DB_SCHEMA=" + s.config.DBSchema,
 		"-e", "PGRST_JWT_SECRET=" + s.config.JWTSecret,
 		"-e", "PGRST_SERVER_CORS_ALLOWED_ORIGINS=" + s.config.CustomOrigins,
+		"-e", "PGRST_SERVER_CORS_ALLOWED_HEADERS=Authorization,Content-Type,Accept,Origin,User-Agent,X-Requested-With",
+		"-e", "PGRST_SERVER_CORS_ALLOWED_METHODS=GET,POST,PATCH,PUT,DELETE,OPTIONS,HEAD",
 		"--label", "traefik.enable=true",
 		"--label", fmt.Sprintf("traefik.http.routers.%s.rule=Host(`%s.%s`)", dbName, dbName, s.config.BaseDomain),
 		"--label", fmt.Sprintf("traefik.http.services.%s.loadbalancer.server.port=3000", dbName),
