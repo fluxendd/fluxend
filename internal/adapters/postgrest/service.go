@@ -23,7 +23,7 @@ type Config struct {
 	DBSchema   string
 	DBRole     string
 	JWTSecret  string
-	BaseURL    string
+	BaseDomain string
 }
 
 type ServiceImpl struct {
@@ -39,7 +39,7 @@ func NewPostgrestService(injector *do.Injector) (shared.PostgrestService, error)
 		DBSchema:   os.Getenv("POSTGREST_DEFAULT_SCHEMA"),
 		DBRole:     os.Getenv("POSTGREST_DEFAULT_ROLE"),
 		JWTSecret:  os.Getenv("JWT_SECRET"),
-		BaseURL:    os.Getenv("BASE_URL"),
+		BaseDomain: os.Getenv("BASE_DOMAIN"),
 	}
 
 	projectRepo := do.MustInvoke[project.Repository](injector)
@@ -145,7 +145,7 @@ func (s *ServiceImpl) buildStartCommand(dbName string) []string {
 		"-e", "PGRST_DB_SCHEMA=" + s.config.DBSchema,
 		"-e", "PGRST_JWT_SECRET=" + s.config.JWTSecret,
 		"--label", "traefik.enable=true",
-		"--label", fmt.Sprintf("traefik.http.routers.%s.rule=Host(`%s.%s`)", dbName, dbName, s.config.BaseURL),
+		"--label", fmt.Sprintf("traefik.http.routers.%s.rule=Host(`%s.%s`)", dbName, dbName, s.config.BaseDomain),
 		"--label", fmt.Sprintf("traefik.http.services.%s.loadbalancer.server.port=3000", dbName),
 		"--label", fmt.Sprintf("traefik.http.routers.%s.entrypoints=websecure", dbName),
 		"--label", fmt.Sprintf("traefik.http.routers.%s.tls=true", dbName),
