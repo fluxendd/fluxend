@@ -66,6 +66,8 @@ export async function action({ request }: Route.ActionArgs) {
       content: orgContent,
     } = await services.user.getUserOrganizations();
 
+    console.log(orgContent, "ORGANIZATION ON LOGIN");
+
     if (!orgSuccess && orgErrors?.[0]) {
       return data({ error: orgErrors[0] }, { status: 401 });
     }
