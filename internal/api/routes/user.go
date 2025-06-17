@@ -12,6 +12,7 @@ func RegisterUserRoutes(e *echo.Echo, container *do.Injector, authMiddleware ech
 	e.POST("users/register", userController.Store)
 	e.POST("users/login", userController.Login)
 	e.GET("users/:userUUID", authMiddleware(userController.Show))
+	e.GET("users/me", authMiddleware(userController.Me))
 	e.PUT("users/:userUUID", authMiddleware(userController.Update))
 	e.POST("users/logout", authMiddleware(userController.Logout))
 }

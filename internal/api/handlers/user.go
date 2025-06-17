@@ -66,6 +66,37 @@ func (uh *UserHandler) Show(c echo.Context) error {
 	return response.SuccessResponse(c, mapper.ToUserResource(&fetchedUser))
 }
 
+// Me retrieves details of a logged-in user.
+//
+// @Summary Retrieve logged-in user
+// @Description Get details of logged-in specific user
+// @Tags Users
+//
+// @Accept json
+// @Produce json
+//
+// @Param Authorization header string true "Bearer Token"
+//
+// @Success 200 {object} response.Response{content=user.Response} "User details"
+// @Failure 401 "Unauthorized"
+// @Failure 500 "Internal server error"
+//
+// @Router /users/me [get]
+func (uh *UserHandler) Me(c echo.Context) error {
+	var request dto.DefaultRequest
+	if err := request.BindAndValidate(c); err != nil {
+		return response.UnprocessableResponse(c, err)
+	}
+
+	authUserUUID, _ := auth.NewAuth(c).Uuid()
+	fetchedUser, err := uh.userService.GetByUUID(authUserUUID)
+	if err != nil {
+		return response.ErrorResponse(c, err)
+	}
+
+	return response.SuccessResponse(c, mapper.ToUserResource(&fetchedUser))
+}
+
 // Login authenticates a user and returns a JWT token.
 //
 // @Summary Authenticate user
