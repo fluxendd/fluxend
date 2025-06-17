@@ -52,6 +52,9 @@
                     },
                     "401": {
                         "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
                     }
                 }
             }
@@ -4920,6 +4923,56 @@
                 }
             }
         },
+        "/users/me": {
+            "get": {
+                "description": "Get details of logged-in specific user",
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Retrieve logged-in user",
+                "parameters": [
+                    {
+                        "description": "Bearer Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User details",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/response.Response"
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "content": {
+                                                    "$ref": "#/components/schemas/user.Response"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
         "/users/{userUUID}": {
             "get": {
                 "description": "Get details of a specific user",
@@ -6002,6 +6055,9 @@
                         "type": "string"
                     },
                     "email": {
+                        "type": "string"
+                    },
+                    "organizationUuid": {
                         "type": "string"
                     },
                     "roleId": {

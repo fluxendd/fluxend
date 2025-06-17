@@ -602,6 +602,8 @@ definitions:
         type: string
       email:
         type: string
+      organizationUuid:
+        type: string
       roleId:
         type: integer
       status:
@@ -655,6 +657,8 @@ paths:
               type: object
         "401":
           description: Unauthorized
+        "403":
+          description: Forbidden
       summary: Check system health
       tags:
       - Admin
@@ -3688,6 +3692,36 @@ paths:
         "500":
           description: Internal server error
       summary: Logout user
+      tags:
+      - Users
+  /users/me:
+    get:
+      consumes:
+      - application/json
+      description: Get details of logged-in specific user
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User details
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                content:
+                  $ref: '#/definitions/user.Response'
+              type: object
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal server error
+      summary: Retrieve logged-in user
       tags:
       - Users
 schemes:
