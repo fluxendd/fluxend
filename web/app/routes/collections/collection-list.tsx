@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { HashIcon } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { CollectionListSkeleton } from "~/components/shared/collection-list-skeleton";
 import { href, NavLink, useNavigate, useOutletContext } from "react-router";
 import { motion } from "motion/react";
@@ -60,7 +60,10 @@ export const CollectionList = ({
 
   const { isLoading, isFetching, isError, data, error } = useQuery<
     Collection[]
-  >({ initialData: initialData, ...collectionsQuery(services, projectId) });
+  >({
+    initialData: initialData,
+    ...collectionsQuery(services, projectId),
+  });
 
   useEffect(() => {
     if (error?.name === "UnauthorizedError") {
@@ -68,21 +71,21 @@ export const CollectionList = ({
     }
   }, [error]);
 
-  // const filteredData = useMemo(() => {
-  //   if (!data) {
-  //     return [];
-  //   }
+  const filteredData = useMemo(() => {
+    if (!data) {
+      return [];
+    }
 
-  //   if (!searchTerm) {
-  //     return data;
-  //   }
+    if (!searchTerm) {
+      return data;
+    }
 
-  //   return data.filter((table) =>
-  //     table.name.toLowerCase().includes(searchTerm.toLowerCase())
-  //   );
-  // }, [searchTerm, data]);
+    return data.filter((table) =>
+      table.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [searchTerm, data]);
 
-  if (isFetching) {
+  if (isLoading) {
     return <CollectionListFallback />;
   }
 
@@ -102,7 +105,7 @@ export const CollectionList = ({
 
   return (
     <div className="h-full overflow-y-auto flex flex-col">
-      {data.map((table) => (
+      {filteredData.map((table) => (
         <NavLink
           to={href("/projects/:projectId/collections/:collectionId", {
             projectId: projectId,

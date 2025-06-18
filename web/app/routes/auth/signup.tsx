@@ -84,7 +84,6 @@ export default function SignUp() {
   const data = fetcher.data;
 
   if (data?.success) {
-    console.log(data.success, "success");
     // Redirect to login after 3 seconds
     setTimeout(() => {
       navigate("/");
