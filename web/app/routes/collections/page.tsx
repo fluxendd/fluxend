@@ -5,9 +5,22 @@ import { useState, useMemo, useCallback } from "react";
 import { RefreshButton } from "~/components/shared/refresh-button";
 import { SearchDataTableWrapper } from "~/components/shared/search-data-table-wrapper";
 import { DataTableSkeleton } from "~/components/shared/data-table-skeleton";
-import { DeleteButton } from "~/components/shared/delete-button";
 import { useNavigate, useOutletContext } from "react-router";
 import type { ProjectLayoutOutletContext } from "~/components/shared/project-layout";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "~/components/ui/alert-dialog";
+import { Button } from "~/components/ui/button";
+import { Trash2 } from "lucide-react";
+import { toast } from "sonner";
 
 const DEFAULT_PAGE_SIZE = 50;
 const DEFAULT_PAGE_INDEX = 0;
@@ -136,12 +149,6 @@ export default function CollectionPageContent({
   const handleDeleteTable = useCallback(async () => {
     if (!collectionId || !projectId) return;
 
-    const confirmDelete = window.confirm(
-      `Are you sure you want to delete the table "${collectionId}"? This action cannot be undone.`
-    );
-
-    if (!confirmDelete) return;
-
     const response = await services.collections.deleteCollection(
       projectId,
       collectionId
@@ -153,11 +160,11 @@ export default function CollectionPageContent({
         queryKey: ["collections", projectId],
       });
 
-      // Navigate back to collections without specific collection
       navigate(`/projects/${projectId}/collections`);
+    } else if (response?.errors) {
+      toast.error(response?.errors[0]);
     } else {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.message || "Failed to delete table");
+      throw new Error("Unknown error deleting collection");
     }
   }, [collectionId, projectId, queryClient, navigate]);
 
@@ -171,8 +178,43 @@ export default function CollectionPageContent({
             Collections / {collectionId && `${collectionId}`}
           </div>
           <div className="flex items-center gap-2">
-            {collectionId && (
-              <DeleteButton onDelete={handleDeleteTable} title="Delete Table" />
+            {!noCollectionSelected && (
+              <AlertDialog>
+                <AlertDialogTrigger>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="cursor-pointer"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>
+                      Are you absolutely sure?
+                    </AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This action cannot be undone. This will permanently delete
+                      table{" "}
+                      <strong className="text-destructive">
+                        {collectionId}
+                      </strong>{" "}
+                      from our servers.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={handleDeleteTable}
+                      className="cursor-pointer"
+                    >
+                      Continue
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             )}
             <RefreshButton
               onRefresh={useCallback(handleRefresh, [

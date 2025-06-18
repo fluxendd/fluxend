@@ -1,5 +1,6 @@
 import type { APIResponse } from "~/lib/types";
 import { getTypedResponseData } from "~/lib/utils";
+import type { Collection } from "~/routes/collections/collection-list";
 import { get, post, del, type APIRequestOptions } from "~/tools/fetch";
 
 export function createCollectionsService(authToken: string) {
@@ -77,7 +78,9 @@ export function createCollectionsService(authToken: string) {
       },
     };
 
-    return del(`/tables/public.${tableName}`, fetchOptions);
+    const response = await del(`/tables/public.${tableName}`, fetchOptions);
+    const data = await getTypedResponseData<APIResponse<null>>(response);
+    return data;
   };
 
   return {
