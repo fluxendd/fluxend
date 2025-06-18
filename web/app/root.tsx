@@ -10,6 +10,7 @@ import {
 import type { Route } from "./+types/root";
 import "./globals.css";
 import { useTheme } from "./hooks/use-theme";
+import { Toaster } from "./components/ui/sonner";
 
 function ThemeProvider({ children }: { children: React.ReactNode }) {
   useTheme();
@@ -40,6 +41,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         <ThemeProvider>{children}</ThemeProvider>
+        <Toaster />
         <ScrollRestoration />
         <Scripts />
       </body>
