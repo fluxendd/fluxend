@@ -19,8 +19,8 @@ export default [
   ...prefix("projects/:projectId", [
     layout("./components/shared/project-layout.tsx", [
       route("dashboard", "./routes/dashboard/page.tsx"),
+      route("collections/create", "./routes/collections/create.tsx"),
       route("collections", "./routes/collections/sidebar.tsx", [
-        route("create", "./routes/collections/create.tsx"),
         route(":collectionId", "./routes/collections/page.tsx"),
         // route(":collectionId/edit", "./routes/collections/edit.tsx"),
       ]),

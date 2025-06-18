@@ -83,7 +83,6 @@ const CreateCollectionButton = ({
     >
       <PlusCircle className="mr-1 size-4" />
       Create Table
-      <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-primary/50 to-primary/70 -translate-x-full group-hover:translate-x-full transition-transform duration-400" />
     </Button>
   );
 };
