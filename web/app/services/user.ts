@@ -17,6 +17,18 @@ export type Project = {
   updatedAt: string;
 };
 
+export type User = {
+  bio: string;
+  createdAt: string;
+  email: string;
+  organizationUuid: string;
+  roleId: number;
+  status: string;
+  updatedAt: string;
+  username: string;
+  uuid: string;
+};
+
 export const createUserService = (authToken: string) => {
   const getUserOrganizations = async () => {
     const fetchOptions: RequestInit = {
@@ -70,9 +82,24 @@ export const createUserService = (authToken: string) => {
     return data;
   };
 
+  const getCurrentUser = async () => {
+    const fetchOptions: RequestInit = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authToken}`,
+      },
+    };
+
+    const response = await get(`/users/me`, fetchOptions);
+
+    const data = await getTypedResponseData<APIResponse<User>>(response);
+    return data;
+  };
+
   return {
     getUserOrganizations,
     getUserProjects,
     createUserProject,
+    getCurrentUser,
   };
 };

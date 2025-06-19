@@ -17,7 +17,7 @@ import {
   Settings2,
   Sparkles,
 } from "lucide-react";
-import { href, NavLink, type Params } from "react-router";
+import { href, NavLink, useOutletContext, type Params } from "react-router";
 
 import {
   Sidebar,
@@ -42,6 +42,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
+import type { User } from "~/services/user";
 
 type AppSidebarItem = {
   title: string;
@@ -80,111 +81,121 @@ const items = [
   // },
 ] as const satisfies readonly AppSidebarItem[];
 
-export const ProjectSidebar = memo(
-  ({ projectId }: { projectId: string | undefined }) => {
-    if (!projectId) {
-      return null;
-    }
+type ProjectSidebarProps = {
+  projectId: string;
+  userDetails: User;
+};
 
-    return (
-      <Sidebar collapsible="icon">
-        <SidebarHeader>
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton size="lg" asChild className="md:h-8 md:p-0">
-                <>
-                  <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-muted text-black">
-                    <Logo className="size-4" />
+export const ProjectSidebar = memo(
+  ({ projectId, userDetails }: ProjectSidebarProps) => (
+    <Sidebar collapsible="icon">
+      <SidebarHeader>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton size="lg" asChild className="md:h-8 md:p-0">
+              <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-muted text-black">
+                <Logo className="size-4" />
+              </div>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarHeader>
+      <SidebarContent>
+        <SidebarGroup>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {items.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <NavLink
+                    to={href(`/projects/:projectId/${item.url}`, {
+                      projectId,
+                    })}
+                  >
+                    {({ isActive }) => (
+                      <>
+                        {isActive && (
+                          <motion.div
+                            layoutId="sidebarItemId"
+                            className="absolute inset-0 bg-sidebar-accent text-sidebar-accent-foreground rounded-md"
+                            transition={{
+                              type: "spring",
+                              bounce: 0.2,
+                              duration: 0.3,
+                            }}
+                          />
+                        )}
+                        <SidebarMenuButton
+                          asChild
+                          isActive={isActive}
+                          // tooltip={item.title}
+                          className="isolate hover:bg-transparent active:bg-transparent data-[active=true]:bg-transparent active:text-primary data-[active=true]:text-primary hover:text-primary transition-colors duration-300"
+                        >
+                          <item.Icon />
+                        </SidebarMenuButton>
+                      </>
+                    )}
+                  </NavLink>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
+      <SidebarFooter>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <SidebarMenuButton className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
+                  <EllipsisVertical />
+                </SidebarMenuButton>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
+                // side={isMobile ? "bottom" : "right"}
+                side="right"
+                align="end"
+                sideOffset={4}
+              >
+                <DropdownMenuLabel className="p-0 font-normal">
+                  <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+                    <div className="grid flex-1 text-left text-sm leading-tight">
+                      <span className="truncate font-medium">
+                        {userDetails.username}
+                      </span>
+                      <span className="text-muted-foreground truncate text-xs">
+                        {userDetails.email}
+                      </span>
+                    </div>
                   </div>
-                </>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          </SidebarMenu>
-        </SidebarHeader>
-        <SidebarContent>
-          <SidebarGroup>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {items.map((item) => (
-                  <SidebarMenuItem key={item.title}>
-                    <NavLink
-                      to={href(`/projects/:projectId/${item.url}`, {
-                        projectId,
-                      })}
-                    >
-                      {({ isActive }) => (
-                        <>
-                          {isActive && (
-                            <motion.div
-                              layoutId="sidebarItemId"
-                              className="absolute inset-0 bg-sidebar-accent text-sidebar-accent-foreground rounded-md"
-                              transition={{
-                                type: "spring",
-                                bounce: 0.2,
-                                duration: 0.3,
-                              }}
-                            />
-                          )}
-                          <SidebarMenuButton
-                            asChild
-                            isActive={isActive}
-                            // tooltip={item.title}
-                            className="isolate hover:bg-transparent active:bg-transparent data-[active=true]:bg-transparent active:text-primary data-[active=true]:text-primary hover:text-primary transition-colors duration-300"
-                          >
-                            <item.Icon />
-                          </SidebarMenuButton>
-                        </>
-                      )}
-                    </NavLink>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        </SidebarContent>
-        <SidebarFooter>
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <SidebarMenuButton className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
-                    <EllipsisVertical />
-                  </SidebarMenuButton>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent
-                  className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
-                  // side={isMobile ? "bottom" : "right"}
-                  side="right"
-                  align="end"
-                  sideOffset={4}
-                >
-                  <DropdownMenuGroup>
-                    <DropdownMenuItem asChild>
-                      <NavLink to="/projects">
-                        <Files />
-                        View All Projects
-                      </NavLink>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <NavLink to="/settings">
-                        <Settings />
-                        Settings
-                      </NavLink>
-                    </DropdownMenuItem>
-                  </DropdownMenuGroup>
-                  <DropdownMenuSeparator />
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuGroup>
                   <DropdownMenuItem asChild>
-                    <NavLink to="/logout">
-                      <LogOut />
-                      Log out
+                    <NavLink to="/projects">
+                      <Files />
+                      View All Projects
                     </NavLink>
                   </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </SidebarMenuItem>
-          </SidebarMenu>
-        </SidebarFooter>
-      </Sidebar>
-    );
-  }
+                  <DropdownMenuItem asChild>
+                    <NavLink to="/settings">
+                      <Settings />
+                      Settings
+                    </NavLink>
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <NavLink to="/logout">
+                    <LogOut />
+                    Log out
+                  </NavLink>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarFooter>
+    </Sidebar>
+  )
 );

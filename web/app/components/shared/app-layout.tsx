@@ -1,10 +1,13 @@
-import { Outlet, useNavigation } from "react-router";
+import { data, Outlet, useNavigation } from "react-router";
 import { SidebarInset, SidebarProvider } from "~/components/ui/sidebar";
 import { AppSidebar } from "~/components/shared/app-sidebar";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "~/lib/query";
 import { LoaderCircle } from "lucide-react";
 import { TooltipProvider } from "~/components/ui/tooltip";
+import { getServerAuthToken } from "~/lib/auth";
+import type { Route } from "./+types/app-layout";
+import { initializeServices } from "~/services";
 
 const FloatingLoadingIcon = () => {
   const navigation = useNavigation();
@@ -19,12 +22,32 @@ const FloatingLoadingIcon = () => {
   );
 };
 
-export default function AppLayout() {
+export async function loader({ request, params }: Route.LoaderArgs) {
+  const authToken = await getServerAuthToken(request.headers);
+
+  if (!authToken) {
+    throw new Error("Unauthorized");
+  }
+
+  const services = initializeServices(authToken);
+
+  const user = await services.user.getCurrentUser();
+
+  return data({ user, authToken }, { status: 200 });
+}
+
+export default function AppLayout({ loaderData }: Route.ComponentProps) {
+  const { user, authToken } = loaderData;
+
+  if (!user.content) {
+    return null;
+  }
+
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <SidebarProvider open={false}>
-          <AppSidebar />
+          <AppSidebar authToken={authToken} userDetails={user.content} />
           <SidebarInset>
             <Outlet />
             <FloatingLoadingIcon />

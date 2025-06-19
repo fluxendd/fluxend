@@ -26,8 +26,12 @@ export function getOrganizationIdCookie(headers: Headers): Promise<string> {
 
 // TODO: Validate Response with Types using zod
 export async function getTypedResponseData<T>(response: Response): Promise<T> {
+  if (response.status === 204) {
+    // No content response, return empty object
+    return { ok: response.ok, status: response.status } as T;
+  }
   const json = await response.json();
-  return { ok: response.ok, status: response.status, ...json };
+  return { ok: response.ok, status: response.status, ...json } as T;
 }
 
 export function formatTimestamp(timestamp: string): {

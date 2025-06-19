@@ -15,6 +15,7 @@ import { getServerAuthToken } from "~/lib/auth";
 import type { Route } from "./+types/project-layout";
 import { initializeServices, type Services } from "~/services";
 import type { Project } from "~/services/projects";
+import type { User } from "~/services/user";
 
 const FloatingLoadingIcon = () => {
   const navigation = useNavigation();
@@ -38,8 +39,12 @@ export async function loader({ request, params }: Route.LoaderArgs) {
 
   const services = initializeServices(authToken);
 
-  const project = await services.projects.getProjectDetails(projectId);
-  return data({ projectDetails: project, authToken }, { status: 200 });
+  const projectPromise = services.projects.getProjectDetails(projectId);
+  const userPromise = services.user.getCurrentUser();
+
+  const [project, user] = await Promise.all([projectPromise, userPromise]);
+
+  return data({ projectDetails: project, user, authToken }, { status: 200 });
 }
 
 export function shouldRevalidate(arg: ShouldRevalidateFunctionArgs) {
@@ -47,22 +52,32 @@ export function shouldRevalidate(arg: ShouldRevalidateFunctionArgs) {
 }
 
 export type ProjectLayoutOutletContext = {
+  userDetails: User;
   projectDetails: Project;
   services: Services;
 };
 
 export default function ProjectLayout({ loaderData }: Route.ComponentProps) {
   const { projectId } = useParams();
+  const { user } = loaderData;
   const services = initializeServices(loaderData.authToken);
+
+  if (!projectId || !user.content) {
+    throw new Error("Unauthorized");
+  }
 
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <SidebarProvider open={false}>
-          <ProjectSidebar projectId={projectId} />
+          <ProjectSidebar projectId={projectId} userDetails={user.content} />
           <SidebarInset>
             <Outlet
-              context={{ projectDetails: loaderData.projectDetails, services }}
+              context={{
+                projectDetails: loaderData.projectDetails,
+                userDetails: loaderData.user,
+                services,
+              }}
             />
             <FloatingLoadingIcon />
           </SidebarInset>
