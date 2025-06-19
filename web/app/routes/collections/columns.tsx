@@ -73,7 +73,11 @@ enum ColumnType {
   Timestamp = "timestamp",
 }
 
-const ColumnIcon = (type: ColumnType) => {
+interface ColumnIconProps {
+  type: ColumnType | string;
+}
+
+const ColumnIcon: React.FC<ColumnIconProps> = ({ type }) => {
   let Icon = Circle;
 
   switch (type) {

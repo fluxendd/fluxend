@@ -19,12 +19,12 @@ export default [
   ...prefix("projects/:projectId", [
     layout("./components/shared/project-layout.tsx", [
       route("dashboard", "./routes/dashboard/page.tsx"),
-      route("collections/create", "./routes/collections/create.tsx"),
       route("collections", "./routes/collections/sidebar.tsx", [
-        route(":collectionId", "./routes/collections/page.tsx"),
-        // route(":collectionId/edit", "./routes/collections/edit.tsx"),
+        route(":collectionId", "./routes/collections/page.tsx", [
+          route("edit", "./routes/collections/edit.tsx"),
+        ]),
+        route("create", "./routes/collections/create.tsx"),
       ]),
-      // routeFolder("collections/:collectionId", "./routes/collections/"),
       routeFolder("functions", "./routes/functions/"),
       routeFolder("storage", "./routes/storage/"),
       routeFolder("logs", "./routes/logs/"),
