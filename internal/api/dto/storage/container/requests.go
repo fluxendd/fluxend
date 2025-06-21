@@ -10,7 +10,7 @@ import (
 )
 
 type CreateRequest struct {
-	dto.BaseRequest
+	dto.DefaultRequestWithProjectHeader
 	Name        string `json:"name"`
 	Description string `json:"description"`
 	IsPublic    bool   `json:"is_public"`

@@ -16,7 +16,7 @@ type functionParameter struct {
 }
 
 type CreateFunctionRequest struct {
-	dto.BaseRequest
+	dto.DefaultRequestWithProjectHeader
 	Name       string              `json:"name"`
 	Parameters []functionParameter `json:"parameters"`
 	Definition string              `json:"definition"`

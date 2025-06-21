@@ -13,12 +13,12 @@ import (
 )
 
 type CreateColumnRequest struct {
-	dto.BaseRequest
+	dto.DefaultRequestWithProjectHeader
 	Columns []columnDomain.Column `json:"columns"`
 }
 
 type RenameColumnRequest struct {
-	dto.BaseRequest
+	dto.DefaultRequestWithProjectHeader
 	Name string `json:"name"`
 }
 

@@ -11,7 +11,7 @@ import (
 )
 
 type CreateIndexRequest struct {
-	dto.BaseRequest
+	dto.DefaultRequestWithProjectHeader
 	Name     string   `json:"name"`
 	Columns  []string `json:"columns"`
 	IsUnique bool     `json:"is_unique"`

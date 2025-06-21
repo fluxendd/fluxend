@@ -413,13 +413,9 @@ definitions:
     properties:
       name:
         type: string
-      projectUUID:
-        type: string
     type: object
   organization.MemberCreateRequest:
     properties:
-      projectUUID:
-        type: string
       user_id:
         type: string
     type: object
@@ -481,6 +477,36 @@ definitions:
       projectUUID:
         type: string
     type: object
+  response.BadRequestErrorResponse:
+    properties:
+      content:
+        example: "null"
+        type: string
+      errors:
+        example:
+        - Invalid input parameter
+        items:
+          type: string
+        type: array
+      success:
+        example: false
+        type: boolean
+    type: object
+  response.InternalServerErrorResponse:
+    properties:
+      content:
+        example: "null"
+        type: string
+      errors:
+        example:
+        - Internal server error
+        items:
+          type: string
+        type: array
+      success:
+        example: false
+        type: boolean
+    type: object
   response.Response:
     properties:
       content: {}
@@ -489,6 +515,36 @@ definitions:
           type: string
         type: array
       success:
+        type: boolean
+    type: object
+  response.UnauthorizedErrorResponse:
+    properties:
+      content:
+        example: "null"
+        type: string
+      errors:
+        example:
+        - Unauthorized access
+        items:
+          type: string
+        type: array
+      success:
+        example: false
+        type: boolean
+    type: object
+  response.UnprocessableErrorResponse:
+    properties:
+      content:
+        example: "null"
+        type: string
+      errors:
+        example:
+        - Validation failed
+        items:
+          type: string
+        type: array
+      success:
+        example: false
         type: boolean
     type: object
   setting.IndividualSetting:
@@ -515,8 +571,6 @@ definitions:
     type: object
   setting.UpdateRequest:
     properties:
-      projectUUID:
-        type: string
       settings:
         items:
           $ref: '#/definitions/setting.IndividualSetting'
@@ -580,8 +634,6 @@ definitions:
         type: string
       password:
         type: string
-      projectUUID:
-        type: string
       username:
         type: string
     type: object
@@ -590,8 +642,6 @@ definitions:
       email:
         type: string
       password:
-        type: string
-      projectUUID:
         type: string
     type: object
   user.Response:
@@ -618,8 +668,6 @@ definitions:
   user.UpdateRequest:
     properties:
       bio:
-        type: string
-      projectUUID:
         type: string
     type: object
 host: api.fluxend.app
@@ -726,11 +774,17 @@ paths:
                 type: object
             type: array
         "400":
-          description: Invalid input
+          description: Bad request response
+          schema:
+            $ref: '#/definitions/response.BadRequestErrorResponse'
         "401":
-          description: Unauthorized
+          description: Unauthorized response
+          schema:
+            $ref: '#/definitions/response.UnauthorizedErrorResponse'
         "500":
-          description: Internal server error
+          description: Internal server error response
+          schema:
+            $ref: '#/definitions/response.InternalServerErrorResponse'
       summary: List logs
       tags:
       - Logs
@@ -760,11 +814,17 @@ paths:
                   type: array
               type: object
         "400":
-          description: Invalid input
+          description: Bad request response
+          schema:
+            $ref: '#/definitions/response.BadRequestErrorResponse'
         "401":
-          description: Unauthorized
+          description: Unauthorized response
+          schema:
+            $ref: '#/definitions/response.UnauthorizedErrorResponse'
         "500":
-          description: Internal server error
+          description: Internal server error response
+          schema:
+            $ref: '#/definitions/response.InternalServerErrorResponse'
       summary: List settings
       tags:
       - Admin
@@ -799,13 +859,21 @@ paths:
                   type: array
               type: object
         "400":
-          description: Invalid input
+          description: Bad request response
+          schema:
+            $ref: '#/definitions/response.BadRequestErrorResponse'
         "401":
-          description: Unauthorized
+          description: Unauthorized response
+          schema:
+            $ref: '#/definitions/response.UnauthorizedErrorResponse'
         "422":
-          description: Unprocessable entity
+          description: Unprocessable input response
+          schema:
+            $ref: '#/definitions/response.UnprocessableErrorResponse'
         "500":
-          description: Internal server error
+          description: Internal server error response
+          schema:
+            $ref: '#/definitions/response.InternalServerErrorResponse'
       summary: Update settings
       tags:
       - Admin
@@ -835,13 +903,21 @@ paths:
                   type: array
               type: object
         "400":
-          description: Invalid input
+          description: Bad request response
+          schema:
+            $ref: '#/definitions/response.BadRequestErrorResponse'
         "401":
-          description: Unauthorized
+          description: Unauthorized response
+          schema:
+            $ref: '#/definitions/response.UnauthorizedErrorResponse'
         "422":
-          description: Unprocessable entity
+          description: Unprocessable input response
+          schema:
+            $ref: '#/definitions/response.UnprocessableErrorResponse'
         "500":
-          description: Internal server error
+          description: Internal server error response
+          schema:
+            $ref: '#/definitions/response.InternalServerErrorResponse'
       summary: Reset settings
       tags:
       - Admin
@@ -878,9 +954,13 @@ paths:
                 type: object
             type: array
         "401":
-          description: Unauthorized
+          description: Unauthorized response
+          schema:
+            $ref: '#/definitions/response.UnauthorizedErrorResponse'
         "500":
-          description: Internal server error
+          description: Internal server error response
+          schema:
+            $ref: '#/definitions/response.InternalServerErrorResponse'
       summary: List backups
       tags:
       - Backups
@@ -918,13 +998,21 @@ paths:
                   $ref: '#/definitions/backup.Response'
               type: object
         "400":
-          description: Invalid input
+          description: Bad request response
+          schema:
+            $ref: '#/definitions/response.BadRequestErrorResponse'
         "401":
-          description: Unauthorized
+          description: Unauthorized response
+          schema:
+            $ref: '#/definitions/response.UnauthorizedErrorResponse'
         "422":
-          description: Unprocessable entity
+          description: Unprocessable input response
+          schema:
+            $ref: '#/definitions/response.UnprocessableErrorResponse'
         "500":
-          description: Internal server error
+          description: Internal server error response
+          schema:
+            $ref: '#/definitions/response.InternalServerErrorResponse'
       summary: Create backup
       tags:
       - Backups
@@ -955,11 +1043,17 @@ paths:
         "204":
           description: Backup deleted
         "400":
-          description: Invalid input
+          description: Bad request response
+          schema:
+            $ref: '#/definitions/response.BadRequestErrorResponse'
         "401":
-          description: Unauthorized
+          description: Unauthorized response
+          schema:
+            $ref: '#/definitions/response.UnauthorizedErrorResponse'
         "500":
-          description: Internal server error
+          description: Internal server error response
+          schema:
+            $ref: '#/definitions/response.InternalServerErrorResponse'
       summary: Delete backup
       tags:
       - Backups
@@ -996,11 +1090,17 @@ paths:
                   $ref: '#/definitions/backup.Response'
               type: object
         "400":
-          description: Invalid input
+          description: Bad request response
+          schema:
+            $ref: '#/definitions/response.BadRequestErrorResponse'
         "401":
-          description: Unauthorized
+          description: Unauthorized response
+          schema:
+            $ref: '#/definitions/response.UnauthorizedErrorResponse'
         "500":
-          description: Internal server error
+          description: Internal server error response
+          schema:
+            $ref: '#/definitions/response.InternalServerErrorResponse'
       summary: Retrieve backup
       tags:
       - Backups
@@ -1013,6 +1113,11 @@ paths:
       - description: Bearer Token
         in: header
         name: Authorization
+        required: true
+        type: string
+      - description: Project UUID
+        in: header
+        name: X-Project
         required: true
         type: string
       - description: Container UUID
@@ -1053,11 +1158,17 @@ paths:
                 type: object
             type: array
         "400":
-          description: Invalid input
+          description: Bad request response
+          schema:
+            $ref: '#/definitions/response.BadRequestErrorResponse'
         "401":
-          description: Unauthorized
+          description: Unauthorized response
+          schema:
+            $ref: '#/definitions/response.UnauthorizedErrorResponse'
         "500":
-          description: Internal server error
+          description: Internal server error response
+          schema:
+            $ref: '#/definitions/response.InternalServerErrorResponse'
       summary: List files
       tags:
       - Files
@@ -1069,6 +1180,11 @@ paths:
       - description: Bearer Token
         in: header
         name: Authorization
+        required: true
+        type: string
+      - description: Project UUID
+        in: header
+        name: X-Project
         required: true
         type: string
       - description: Container UUID
@@ -1095,11 +1211,17 @@ paths:
                   $ref: '#/definitions/file.Response'
               type: object
         "400":
-          description: Invalid input
+          description: Bad request response
+          schema:
+            $ref: '#/definitions/response.BadRequestErrorResponse'
         "401":
-          description: Unauthorized
+          description: Unauthorized response
+          schema:
+            $ref: '#/definitions/response.UnauthorizedErrorResponse'
         "500":
-          description: Internal server error
+          description: Internal server error response
+          schema:
+            $ref: '#/definitions/response.InternalServerErrorResponse'
       summary: Create file
       tags:
       - Files
@@ -1112,6 +1234,11 @@ paths:
       - description: Bearer Token
         in: header
         name: Authorization
+        required: true
+        type: string
+      - description: Project UUID
+        in: header
+        name: X-Project
         required: true
         type: string
       - description: Container UUID
@@ -1130,11 +1257,17 @@ paths:
         "204":
           description: File deleted
         "400":
-          description: Invalid input
+          description: Bad request response
+          schema:
+            $ref: '#/definitions/response.BadRequestErrorResponse'
         "401":
-          description: Unauthorized
+          description: Unauthorized response
+          schema:
+            $ref: '#/definitions/response.UnauthorizedErrorResponse'
         "500":
-          description: Internal server error
+          description: Internal server error response
+          schema:
+            $ref: '#/definitions/response.InternalServerErrorResponse'
       summary: Delete file
       tags:
       - Files
@@ -1146,6 +1279,11 @@ paths:
       - description: Bearer Token
         in: header
         name: Authorization
+        required: true
+        type: string
+      - description: Project UUID
+        in: header
+        name: X-Project
         required: true
         type: string
       - description: Container UUID
@@ -1171,11 +1309,17 @@ paths:
                   $ref: '#/definitions/file.Response'
               type: object
         "400":
-          description: Invalid input
+          description: Bad request response
+          schema:
+            $ref: '#/definitions/response.BadRequestErrorResponse'
         "401":
-          description: Unauthorized
+          description: Unauthorized response
+          schema:
+            $ref: '#/definitions/response.UnauthorizedErrorResponse'
         "500":
-          description: Internal server error
+          description: Internal server error response
+          schema:
+            $ref: '#/definitions/response.InternalServerErrorResponse'
       summary: Retrieve file
       tags:
       - Files
@@ -1189,6 +1333,11 @@ paths:
       - description: Bearer Token
         in: header
         name: Authorization
+        required: true
+        type: string
+      - description: Project UUID
+        in: header
+        name: X-Project
         required: true
         type: string
       - description: Container UUID
@@ -1220,11 +1369,17 @@ paths:
                   $ref: '#/definitions/file.Response'
               type: object
         "400":
-          description: Invalid input
+          description: Bad request response
+          schema:
+            $ref: '#/definitions/response.BadRequestErrorResponse'
         "401":
-          description: Unauthorized
+          description: Unauthorized response
+          schema:
+            $ref: '#/definitions/response.UnauthorizedErrorResponse'
         "500":
-          description: Internal server error
+          description: Internal server error response
+          schema:
+            $ref: '#/definitions/response.InternalServerErrorResponse'
       summary: Rename file
       tags:
       - Files
@@ -1277,11 +1432,17 @@ paths:
                 type: object
             type: array
         "400":
-          description: Invalid input
+          description: Bad request response
+          schema:
+            $ref: '#/definitions/response.BadRequestErrorResponse'
         "401":
-          description: Unauthorized
+          description: Unauthorized response
+          schema:
+            $ref: '#/definitions/response.UnauthorizedErrorResponse'
         "500":
-          description: Internal server error
+          description: Internal server error response
+          schema:
+            $ref: '#/definitions/response.InternalServerErrorResponse'
       summary: List forms
       tags:
       - Forms
@@ -1319,13 +1480,21 @@ paths:
                   $ref: '#/definitions/form.Response'
               type: object
         "400":
-          description: Invalid input
+          description: Bad request response
+          schema:
+            $ref: '#/definitions/response.BadRequestErrorResponse'
         "401":
-          description: Unauthorized
+          description: Unauthorized response
+          schema:
+            $ref: '#/definitions/response.UnauthorizedErrorResponse'
         "422":
-          description: Unprocessable entity
+          description: Unprocessable input response
+          schema:
+            $ref: '#/definitions/response.UnprocessableErrorResponse'
         "500":
-          description: Internal server error
+          description: Internal server error response
+          schema:
+            $ref: '#/definitions/response.InternalServerErrorResponse'
       summary: Create form
       tags:
       - Forms
@@ -1356,11 +1525,17 @@ paths:
         "204":
           description: Form deleted
         "400":
-          description: Invalid input
+          description: Bad request response
+          schema:
+            $ref: '#/definitions/response.BadRequestErrorResponse'
         "401":
-          description: Unauthorized
+          description: Unauthorized response
+          schema:
+            $ref: '#/definitions/response.UnauthorizedErrorResponse'
         "500":
-          description: Internal server error
+          description: Internal server error response
+          schema:
+            $ref: '#/definitions/response.InternalServerErrorResponse'
       summary: Delete form
       tags:
       - Forms
@@ -1397,11 +1572,17 @@ paths:
                   $ref: '#/definitions/form.Response'
               type: object
         "400":
-          description: Invalid input
+          description: Bad request response
+          schema:
+            $ref: '#/definitions/response.BadRequestErrorResponse'
         "401":
-          description: Unauthorized
+          description: Unauthorized response
+          schema:
+            $ref: '#/definitions/response.UnauthorizedErrorResponse'
         "500":
-          description: Internal server error
+          description: Internal server error response
+          schema:
+            $ref: '#/definitions/response.InternalServerErrorResponse'
       summary: Retrieve form
       tags:
       - Forms
@@ -1444,13 +1625,21 @@ paths:
                   $ref: '#/definitions/form.Response'
               type: object
         "400":
-          description: Invalid input
+          description: Bad request response
+          schema:
+            $ref: '#/definitions/response.BadRequestErrorResponse'
         "401":
-          description: Unauthorized
+          description: Unauthorized response
+          schema:
+            $ref: '#/definitions/response.UnauthorizedErrorResponse'
         "422":
-          description: Unprocessable entity
+          description: Unprocessable input response
+          schema:
+            $ref: '#/definitions/response.UnprocessableErrorResponse'
         "500":
-          description: Internal server error
+          description: Internal server error response
+          schema:
+            $ref: '#/definitions/response.InternalServerErrorResponse'
       summary: Update form
       tags:
       - Forms
@@ -1487,11 +1676,17 @@ paths:
                 type: object
             type: array
         "400":
-          description: Invalid input
+          description: Bad request response
+          schema:
+            $ref: '#/definitions/response.BadRequestErrorResponse'
         "401":
-          description: Unauthorized
+          description: Unauthorized response
+          schema:
+            $ref: '#/definitions/response.UnauthorizedErrorResponse'
         "500":
-          description: Internal server error
+          description: Internal server error response
+          schema:
+            $ref: '#/definitions/response.InternalServerErrorResponse'
       summary: List fields
       tags:
       - Form Fields
@@ -1529,13 +1724,21 @@ paths:
                   $ref: '#/definitions/form.FieldResponseApi'
               type: object
         "400":
-          description: Invalid input
+          description: Bad request response
+          schema:
+            $ref: '#/definitions/response.BadRequestErrorResponse'
         "401":
-          description: Unauthorized
+          description: Unauthorized response
+          schema:
+            $ref: '#/definitions/response.UnauthorizedErrorResponse'
         "422":
-          description: Unprocessable entity
+          description: Unprocessable input response
+          schema:
+            $ref: '#/definitions/response.UnprocessableErrorResponse'
         "500":
-          description: Internal server error
+          description: Internal server error response
+          schema:
+            $ref: '#/definitions/response.InternalServerErrorResponse'
       summary: Create field
       tags:
       - Form Fields
@@ -1566,11 +1769,17 @@ paths:
         "204":
           description: Field deleted
         "400":
-          description: Invalid input
+          description: Bad request response
+          schema:
+            $ref: '#/definitions/response.BadRequestErrorResponse'
         "401":
-          description: Unauthorized
+          description: Unauthorized response
+          schema:
+            $ref: '#/definitions/response.UnauthorizedErrorResponse'
         "500":
-          description: Internal server error
+          description: Internal server error response
+          schema:
+            $ref: '#/definitions/response.InternalServerErrorResponse'
       summary: Delete field
       tags:
       - Form Fields
@@ -1607,11 +1816,17 @@ paths:
                   $ref: '#/definitions/form.FieldResponseApi'
               type: object
         "400":
-          description: Invalid input
+          description: Bad request response
+          schema:
+            $ref: '#/definitions/response.BadRequestErrorResponse'
         "401":
-          description: Unauthorized
+          description: Unauthorized response
+          schema:
+            $ref: '#/definitions/response.UnauthorizedErrorResponse'
         "500":
-          description: Internal server error
+          description: Internal server error response
+          schema:
+            $ref: '#/definitions/response.InternalServerErrorResponse'
       summary: Retrieve field
       tags:
       - Form Fields
@@ -1654,13 +1869,21 @@ paths:
                   $ref: '#/definitions/form.FieldResponseApi'
               type: object
         "400":
-          description: Invalid input
+          description: Bad request response
+          schema:
+            $ref: '#/definitions/response.BadRequestErrorResponse'
         "401":
-          description: Unauthorized
+          description: Unauthorized response
+          schema:
+            $ref: '#/definitions/response.UnauthorizedErrorResponse'
         "422":
-          description: Unprocessable entity
+          description: Unprocessable input response
+          schema:
+            $ref: '#/definitions/response.UnprocessableErrorResponse'
         "500":
-          description: Internal server error
+          description: Internal server error response
+          schema:
+            $ref: '#/definitions/response.InternalServerErrorResponse'
       summary: Update field
       tags:
       - Form Fields
@@ -1700,11 +1923,17 @@ paths:
                   type: array
               type: object
         "400":
-          description: Invalid input
+          description: Bad request response
+          schema:
+            $ref: '#/definitions/response.BadRequestErrorResponse'
         "401":
-          description: Unauthorized
+          description: Unauthorized response
+          schema:
+            $ref: '#/definitions/response.UnauthorizedErrorResponse'
         "500":
-          description: Internal server error
+          description: Internal server error response
+          schema:
+            $ref: '#/definitions/response.InternalServerErrorResponse'
       summary: List form responses
       tags:
       - Form Responses
@@ -1747,13 +1976,21 @@ paths:
                   $ref: '#/definitions/form.ResponseForAPI'
               type: object
         "400":
-          description: Invalid input
+          description: Bad request response
+          schema:
+            $ref: '#/definitions/response.BadRequestErrorResponse'
         "401":
-          description: Unauthorized
+          description: Unauthorized response
+          schema:
+            $ref: '#/definitions/response.UnauthorizedErrorResponse'
         "422":
-          description: Unprocessable entity
+          description: Unprocessable input response
+          schema:
+            $ref: '#/definitions/response.UnprocessableErrorResponse'
         "500":
-          description: Internal server error
+          description: Internal server error response
+          schema:
+            $ref: '#/definitions/response.InternalServerErrorResponse'
       summary: Create form response
       tags:
       - Form Responses
@@ -1789,11 +2026,17 @@ paths:
         "204":
           description: Form response deleted
         "400":
-          description: Invalid input
+          description: Bad request response
+          schema:
+            $ref: '#/definitions/response.BadRequestErrorResponse'
         "401":
-          description: Unauthorized
+          description: Unauthorized response
+          schema:
+            $ref: '#/definitions/response.UnauthorizedErrorResponse'
         "500":
-          description: Internal server error
+          description: Internal server error response
+          schema:
+            $ref: '#/definitions/response.InternalServerErrorResponse'
       summary: Delete form response
       tags:
       - Form Responses
@@ -1835,11 +2078,17 @@ paths:
                   $ref: '#/definitions/form.ResponseForAPI'
               type: object
         "400":
-          description: Invalid input
+          description: Bad request response
+          schema:
+            $ref: '#/definitions/response.BadRequestErrorResponse'
         "401":
-          description: Unauthorized
+          description: Unauthorized response
+          schema:
+            $ref: '#/definitions/response.UnauthorizedErrorResponse'
         "500":
-          description: Internal server error
+          description: Internal server error response
+          schema:
+            $ref: '#/definitions/response.InternalServerErrorResponse'
       summary: Retrieve form response
       tags:
       - Form Responses
@@ -1886,11 +2135,17 @@ paths:
                 type: object
             type: array
         "400":
-          description: Invalid input
+          description: Bad request response
+          schema:
+            $ref: '#/definitions/response.BadRequestErrorResponse'
         "401":
-          description: Unauthorized
+          description: Unauthorized response
+          schema:
+            $ref: '#/definitions/response.UnauthorizedErrorResponse'
         "500":
-          description: Internal server error
+          description: Internal server error response
+          schema:
+            $ref: '#/definitions/response.InternalServerErrorResponse'
       summary: List functions
       tags:
       - Functions
@@ -1928,13 +2183,21 @@ paths:
                   $ref: '#/definitions/database.FunctionResponse'
               type: object
         "400":
-          description: Invalid input
+          description: Bad request response
+          schema:
+            $ref: '#/definitions/response.BadRequestErrorResponse'
         "401":
-          description: Unauthorized
+          description: Unauthorized response
+          schema:
+            $ref: '#/definitions/response.UnauthorizedErrorResponse'
         "422":
-          description: Unprocessable entity
+          description: Unprocessable input response
+          schema:
+            $ref: '#/definitions/response.UnprocessableErrorResponse'
         "500":
-          description: Internal server error
+          description: Internal server error response
+          schema:
+            $ref: '#/definitions/response.InternalServerErrorResponse'
       summary: Create function
       tags:
       - Functions
@@ -1975,11 +2238,17 @@ paths:
         "204":
           description: Form deleted
         "400":
-          description: Invalid input
+          description: Bad request response
+          schema:
+            $ref: '#/definitions/response.BadRequestErrorResponse'
         "401":
-          description: Unauthorized
+          description: Unauthorized response
+          schema:
+            $ref: '#/definitions/response.UnauthorizedErrorResponse'
         "500":
-          description: Internal server error
+          description: Internal server error response
+          schema:
+            $ref: '#/definitions/response.InternalServerErrorResponse'
       summary: Delete function
       tags:
       - Functions
@@ -2021,11 +2290,17 @@ paths:
                   $ref: '#/definitions/database.FunctionResponse'
               type: object
         "400":
-          description: Invalid input
+          description: Bad request response
+          schema:
+            $ref: '#/definitions/response.BadRequestErrorResponse'
         "401":
-          description: Unauthorized
+          description: Unauthorized response
+          schema:
+            $ref: '#/definitions/response.UnauthorizedErrorResponse'
         "500":
-          description: Internal server error
+          description: Internal server error response
+          schema:
+            $ref: '#/definitions/response.InternalServerErrorResponse'
       summary: Retrieve function
       tags:
       - Functions
@@ -2106,13 +2381,21 @@ paths:
                   $ref: '#/definitions/organization.Response'
               type: object
         "400":
-          description: Invalid input
+          description: Bad request response
+          schema:
+            $ref: '#/definitions/response.BadRequestErrorResponse'
         "401":
-          description: Unauthorized
+          description: Unauthorized response
+          schema:
+            $ref: '#/definitions/response.UnauthorizedErrorResponse'
         "422":
-          description: Unprocessable entity
+          description: Unprocessable input response
+          schema:
+            $ref: '#/definitions/response.UnprocessableErrorResponse'
         "500":
-          description: Internal server error
+          description: Internal server error response
+          schema:
+            $ref: '#/definitions/response.InternalServerErrorResponse'
       summary: Create organization
       tags:
       - Organizations
@@ -2174,13 +2457,21 @@ paths:
                   $ref: '#/definitions/organization.Response'
               type: object
         "400":
-          description: Invalid input
+          description: Bad request response
+          schema:
+            $ref: '#/definitions/response.BadRequestErrorResponse'
         "401":
-          description: Unauthorized
+          description: Unauthorized response
+          schema:
+            $ref: '#/definitions/response.UnauthorizedErrorResponse'
         "422":
-          description: Unprocessable entity
+          description: Unprocessable input response
+          schema:
+            $ref: '#/definitions/response.UnprocessableErrorResponse'
         "500":
-          description: Internal server error
+          description: Internal server error response
+          schema:
+            $ref: '#/definitions/response.InternalServerErrorResponse'
       summary: Retrieve organization
       tags:
       - Organizations
@@ -2218,13 +2509,21 @@ paths:
                   $ref: '#/definitions/organization.Response'
               type: object
         "400":
-          description: Invalid input
+          description: Bad request response
+          schema:
+            $ref: '#/definitions/response.BadRequestErrorResponse'
         "401":
-          description: Unauthorized
+          description: Unauthorized response
+          schema:
+            $ref: '#/definitions/response.UnauthorizedErrorResponse'
         "422":
-          description: Unprocessable entity
+          description: Unprocessable input response
+          schema:
+            $ref: '#/definitions/response.UnprocessableErrorResponse'
         "500":
-          description: Internal server error
+          description: Internal server error response
+          schema:
+            $ref: '#/definitions/response.InternalServerErrorResponse'
       summary: Update organization
       tags:
       - Organizations
@@ -2259,13 +2558,21 @@ paths:
                   type: array
               type: object
         "400":
-          description: Invalid input
+          description: Bad request response
+          schema:
+            $ref: '#/definitions/response.BadRequestErrorResponse'
         "401":
-          description: Unauthorized
+          description: Unauthorized response
+          schema:
+            $ref: '#/definitions/response.UnauthorizedErrorResponse'
         "422":
-          description: Unprocessable entity
+          description: Unprocessable input response
+          schema:
+            $ref: '#/definitions/response.UnprocessableErrorResponse'
         "500":
-          description: Internal server error
+          description: Internal server error response
+          schema:
+            $ref: '#/definitions/response.InternalServerErrorResponse'
       summary: List organization members
       tags:
       - Organization Members
@@ -2303,13 +2610,21 @@ paths:
                   $ref: '#/definitions/user.Response'
               type: object
         "400":
-          description: Invalid input
+          description: Bad request response
+          schema:
+            $ref: '#/definitions/response.BadRequestErrorResponse'
         "401":
-          description: Unauthorized
+          description: Unauthorized response
+          schema:
+            $ref: '#/definitions/response.UnauthorizedErrorResponse'
         "422":
-          description: Unprocessable entity
+          description: Unprocessable input response
+          schema:
+            $ref: '#/definitions/response.UnprocessableErrorResponse'
         "500":
-          description: Internal server error
+          description: Internal server error response
+          schema:
+            $ref: '#/definitions/response.InternalServerErrorResponse'
       summary: Create organization member
       tags:
       - Organization Members
@@ -2340,13 +2655,21 @@ paths:
         "204":
           description: User deleted
         "400":
-          description: Invalid input
+          description: Bad request response
+          schema:
+            $ref: '#/definitions/response.BadRequestErrorResponse'
         "401":
-          description: Unauthorized
+          description: Unauthorized response
+          schema:
+            $ref: '#/definitions/response.UnauthorizedErrorResponse'
         "422":
-          description: Unprocessable entity
+          description: Unprocessable input response
+          schema:
+            $ref: '#/definitions/response.UnprocessableErrorResponse'
         "500":
-          description: Internal server error
+          description: Internal server error response
+          schema:
+            $ref: '#/definitions/response.InternalServerErrorResponse'
       summary: Delete organization member
       tags:
       - Organization Members
@@ -2397,11 +2720,17 @@ paths:
                   type: array
               type: object
         "400":
-          description: Invalid input
+          description: Bad request response
+          schema:
+            $ref: '#/definitions/response.BadRequestErrorResponse'
         "401":
-          description: Unauthorized
+          description: Unauthorized response
+          schema:
+            $ref: '#/definitions/response.UnauthorizedErrorResponse'
         "500":
-          description: Internal server error
+          description: Internal server error response
+          schema:
+            $ref: '#/definitions/response.InternalServerErrorResponse'
       summary: List projects
       tags:
       - Projects
@@ -2439,13 +2768,21 @@ paths:
                   $ref: '#/definitions/project.Response'
               type: object
         "400":
-          description: Invalid input
+          description: Bad request response
+          schema:
+            $ref: '#/definitions/response.BadRequestErrorResponse'
         "401":
-          description: Unauthorized
+          description: Unauthorized response
+          schema:
+            $ref: '#/definitions/response.UnauthorizedErrorResponse'
         "422":
-          description: Unprocessable entity
+          description: Unprocessable input response
+          schema:
+            $ref: '#/definitions/response.UnprocessableErrorResponse'
         "500":
-          description: Internal server error
+          description: Internal server error response
+          schema:
+            $ref: '#/definitions/response.InternalServerErrorResponse'
       summary: Create project
       tags:
       - Projects
@@ -2473,11 +2810,17 @@ paths:
           schema:
             $ref: '#/definitions/response.Response'
         "400":
-          description: Invalid input
+          description: Bad request response
+          schema:
+            $ref: '#/definitions/response.BadRequestErrorResponse'
         "401":
-          description: Unauthorized
+          description: Unauthorized response
+          schema:
+            $ref: '#/definitions/response.UnauthorizedErrorResponse'
         "500":
-          description: Internal server error
+          description: Internal server error response
+          schema:
+            $ref: '#/definitions/response.InternalServerErrorResponse'
       summary: Delete project
       tags:
       - Projects
@@ -2509,13 +2852,21 @@ paths:
                   $ref: '#/definitions/project.Response'
               type: object
         "400":
-          description: Invalid input
+          description: Bad request response
+          schema:
+            $ref: '#/definitions/response.BadRequestErrorResponse'
         "401":
-          description: Unauthorized
+          description: Unauthorized response
+          schema:
+            $ref: '#/definitions/response.UnauthorizedErrorResponse'
         "422":
-          description: Unprocessable entity
+          description: Unprocessable input response
+          schema:
+            $ref: '#/definitions/response.UnprocessableErrorResponse'
         "500":
-          description: Internal server error
+          description: Internal server error response
+          schema:
+            $ref: '#/definitions/response.InternalServerErrorResponse'
       summary: Retrieve project
       tags:
       - Projects
@@ -2553,13 +2904,21 @@ paths:
                   $ref: '#/definitions/project.Response'
               type: object
         "400":
-          description: Invalid input
+          description: Bad request response
+          schema:
+            $ref: '#/definitions/response.BadRequestErrorResponse'
         "401":
-          description: Unauthorized
+          description: Unauthorized response
+          schema:
+            $ref: '#/definitions/response.UnauthorizedErrorResponse'
         "422":
-          description: Unprocessable entity
+          description: Unprocessable input response
+          schema:
+            $ref: '#/definitions/response.UnprocessableErrorResponse'
         "500":
-          description: Internal server error
+          description: Internal server error response
+          schema:
+            $ref: '#/definitions/response.InternalServerErrorResponse'
       summary: Update project
       tags:
       - Projects
@@ -2645,11 +3004,17 @@ paths:
                   type: array
               type: object
         "400":
-          description: Invalid input
+          description: Invalid input response
+          schema:
+            $ref: '#/definitions/response.BadRequestErrorResponse'
         "401":
-          description: Unauthorized
+          description: Unauthorized response
+          schema:
+            $ref: '#/definitions/response.UnauthorizedErrorResponse'
         "500":
-          description: Internal server error
+          description: Internal server error response
+          schema:
+            $ref: '#/definitions/response.InternalServerErrorResponse'
       summary: List containers
       tags:
       - Containers
@@ -2687,13 +3052,21 @@ paths:
                   $ref: '#/definitions/container.Response'
               type: object
         "400":
-          description: Invalid input
+          description: Bad request response
+          schema:
+            $ref: '#/definitions/response.BadRequestErrorResponse'
         "401":
-          description: Unauthorized
+          description: Unauthorized response
+          schema:
+            $ref: '#/definitions/response.UnauthorizedErrorResponse'
         "422":
-          description: Unprocessable entity
+          description: Invalid input response
+          schema:
+            $ref: '#/definitions/response.UnprocessableErrorResponse'
         "500":
-          description: Internal server error
+          description: Internal server error response
+          schema:
+            $ref: '#/definitions/response.InternalServerErrorResponse'
       summary: Create container
       tags:
       - Containers
@@ -2724,11 +3097,17 @@ paths:
         "204":
           description: Container deleted
         "400":
-          description: Invalid input
+          description: Bad request response
+          schema:
+            $ref: '#/definitions/response.BadRequestErrorResponse'
         "401":
-          description: Unauthorized
+          description: Unauthorized response
+          schema:
+            $ref: '#/definitions/response.UnauthorizedErrorResponse'
         "500":
-          description: Internal server error
+          description: Internal server error response
+          schema:
+            $ref: '#/definitions/response.InternalServerErrorResponse'
       summary: Delete container
       tags:
       - Containers
@@ -2765,13 +3144,21 @@ paths:
                   $ref: '#/definitions/container.Response'
               type: object
         "400":
-          description: Invalid input
+          description: Bad request response
+          schema:
+            $ref: '#/definitions/response.BadRequestErrorResponse'
         "401":
-          description: Unauthorized
+          description: Unauthorized response
+          schema:
+            $ref: '#/definitions/response.UnauthorizedErrorResponse'
         "422":
-          description: Unprocessable entity
+          description: Invalid input response
+          schema:
+            $ref: '#/definitions/response.UnprocessableErrorResponse'
         "500":
-          description: Internal server error
+          description: Internal server error response
+          schema:
+            $ref: '#/definitions/response.InternalServerErrorResponse'
       summary: Retrieve container
       tags:
       - Containers
@@ -2814,13 +3201,21 @@ paths:
                   $ref: '#/definitions/container.Response'
               type: object
         "400":
-          description: Invalid input
+          description: Bad request response
+          schema:
+            $ref: '#/definitions/response.BadRequestErrorResponse'
         "401":
-          description: Unauthorized
+          description: Unauthorized response
+          schema:
+            $ref: '#/definitions/response.UnauthorizedErrorResponse'
         "422":
-          description: Unprocessable entity
+          description: Unprocessable input response
+          schema:
+            $ref: '#/definitions/response.UnprocessableErrorResponse'
         "500":
-          description: Internal server error
+          description: Internal server error response
+          schema:
+            $ref: '#/definitions/response.InternalServerErrorResponse'
       summary: Update container
       tags:
       - Containers
@@ -2855,11 +3250,17 @@ paths:
                   type: array
               type: object
         "400":
-          description: Invalid input
+          description: Bad request response
+          schema:
+            $ref: '#/definitions/response.BadRequestErrorResponse'
         "401":
-          description: Unauthorized
+          description: Unauthorized response
+          schema:
+            $ref: '#/definitions/response.UnauthorizedErrorResponse'
         "500":
-          description: Internal server error
+          description: Internal server error response
+          schema:
+            $ref: '#/definitions/response.InternalServerErrorResponse'
       summary: List tables
       tags:
       - Tables
@@ -2897,13 +3298,21 @@ paths:
                   $ref: '#/definitions/database.TableResponse'
               type: object
         "400":
-          description: Invalid input
+          description: Bad request response
+          schema:
+            $ref: '#/definitions/response.BadRequestErrorResponse'
         "401":
-          description: Unauthorized
+          description: Unauthorized response
+          schema:
+            $ref: '#/definitions/response.UnauthorizedErrorResponse'
         "422":
-          description: Unprocessable entity
+          description: Unprocessable input response
+          schema:
+            $ref: '#/definitions/response.UnprocessableErrorResponse'
         "500":
-          description: Internal server error
+          description: Internal server error response
+          schema:
+            $ref: '#/definitions/response.InternalServerErrorResponse'
       summary: Create table
       tags:
       - Tables
@@ -2938,11 +3347,17 @@ paths:
                   type: array
               type: object
         "400":
-          description: Invalid input
+          description: Bad request response
+          schema:
+            $ref: '#/definitions/response.BadRequestErrorResponse'
         "401":
-          description: Unauthorized
+          description: Unauthorized response
+          schema:
+            $ref: '#/definitions/response.UnauthorizedErrorResponse'
         "500":
-          description: Internal server error
+          description: Internal server error response
+          schema:
+            $ref: '#/definitions/response.InternalServerErrorResponse'
       summary: List columns
       tags:
       - Columns
@@ -2985,13 +3400,21 @@ paths:
                   $ref: '#/definitions/database.ColumnResponse'
               type: object
         "400":
-          description: Invalid input
+          description: Bad request response
+          schema:
+            $ref: '#/definitions/response.BadRequestErrorResponse'
         "401":
-          description: Unauthorized
+          description: Unauthorized response
+          schema:
+            $ref: '#/definitions/response.UnauthorizedErrorResponse'
         "422":
-          description: Unprocessable entity
+          description: Unprocessable input response
+          schema:
+            $ref: '#/definitions/response.UnprocessableErrorResponse'
         "500":
-          description: Internal server error
+          description: Internal server error response
+          schema:
+            $ref: '#/definitions/response.InternalServerErrorResponse'
       summary: Create column
       tags:
       - Columns
@@ -3034,13 +3457,21 @@ paths:
                   $ref: '#/definitions/database.ColumnResponse'
               type: object
         "400":
-          description: Invalid input
+          description: Bad request response
+          schema:
+            $ref: '#/definitions/response.BadRequestErrorResponse'
         "401":
-          description: Unauthorized
+          description: Unauthorized response
+          schema:
+            $ref: '#/definitions/response.UnauthorizedErrorResponse'
         "422":
-          description: Unprocessable entity
+          description: Unprocessable input response
+          schema:
+            $ref: '#/definitions/response.UnprocessableErrorResponse'
         "500":
-          description: Internal server error
+          description: Internal server error response
+          schema:
+            $ref: '#/definitions/response.InternalServerErrorResponse'
       summary: Modify columns
       tags:
       - Columns
@@ -3125,13 +3556,21 @@ paths:
           schema:
             $ref: '#/definitions/response.Response'
         "400":
-          description: Invalid input
+          description: Bad request response
+          schema:
+            $ref: '#/definitions/response.BadRequestErrorResponse'
         "401":
-          description: Unauthorized
+          description: Unauthorized response
+          schema:
+            $ref: '#/definitions/response.UnauthorizedErrorResponse'
         "422":
-          description: Unprocessable entity
+          description: Unprocessable input response
+          schema:
+            $ref: '#/definitions/response.UnprocessableErrorResponse'
         "500":
-          description: Internal server error
+          description: Internal server error response
+          schema:
+            $ref: '#/definitions/response.InternalServerErrorResponse'
       summary: Rename column
       tags:
       - Columns
@@ -3255,13 +3694,21 @@ paths:
                   $ref: '#/definitions/database.TableResponse'
               type: object
         "400":
-          description: Invalid input
+          description: Bad request response
+          schema:
+            $ref: '#/definitions/response.BadRequestErrorResponse'
         "401":
-          description: Unauthorized
+          description: Unauthorized response
+          schema:
+            $ref: '#/definitions/response.UnauthorizedErrorResponse'
         "422":
-          description: Unprocessable entity
+          description: Unprocessable input response
+          schema:
+            $ref: '#/definitions/response.UnprocessableErrorResponse'
         "500":
-          description: Internal server error
+          description: Internal server error response
+          schema:
+            $ref: '#/definitions/response.InternalServerErrorResponse'
       summary: Duplicate table
       tags:
       - Tables
@@ -3295,11 +3742,17 @@ paths:
                   type: array
               type: object
         "400":
-          description: Invalid input
+          description: Bad request response
+          schema:
+            $ref: '#/definitions/response.BadRequestErrorResponse'
         "401":
-          description: Unauthorized
+          description: Unauthorized response
+          schema:
+            $ref: '#/definitions/response.UnauthorizedErrorResponse'
         "500":
-          description: Internal server error
+          description: Internal server error response
+          schema:
+            $ref: '#/definitions/response.InternalServerErrorResponse'
       summary: List indexes
       tags:
       - Indexes
@@ -3336,13 +3789,21 @@ paths:
                 content: {}
               type: object
         "400":
-          description: Invalid input
+          description: Bad request response
+          schema:
+            $ref: '#/definitions/response.BadRequestErrorResponse'
         "401":
-          description: Unauthorized
+          description: Unauthorized response
+          schema:
+            $ref: '#/definitions/response.UnauthorizedErrorResponse'
         "422":
-          description: Unprocessable entity
+          description: Unprocessable input response
+          schema:
+            $ref: '#/definitions/response.UnprocessableErrorResponse'
         "500":
-          description: Internal server error
+          description: Internal server error response
+          schema:
+            $ref: '#/definitions/response.InternalServerErrorResponse'
       summary: Create index
       tags:
       - Indexes
@@ -3465,13 +3926,21 @@ paths:
                   $ref: '#/definitions/database.TableResponse'
               type: object
         "400":
-          description: Invalid input
+          description: Bad request response
+          schema:
+            $ref: '#/definitions/response.BadRequestErrorResponse'
         "401":
-          description: Unauthorized
+          description: Unauthorized response
+          schema:
+            $ref: '#/definitions/response.UnauthorizedErrorResponse'
         "422":
-          description: Unprocessable entity
+          description: Unprocessable input response
+          schema:
+            $ref: '#/definitions/response.UnprocessableErrorResponse'
         "500":
-          description: Internal server error
+          description: Internal server error response
+          schema:
+            $ref: '#/definitions/response.InternalServerErrorResponse'
       summary: Rename table
       tags:
       - Tables
@@ -3510,13 +3979,21 @@ paths:
                   $ref: '#/definitions/database.TableResponse'
               type: object
         "400":
-          description: Invalid input
+          description: Bad request response
+          schema:
+            $ref: '#/definitions/response.BadRequestErrorResponse'
         "401":
-          description: Unauthorized
+          description: Unauthorized response
+          schema:
+            $ref: '#/definitions/response.UnauthorizedErrorResponse'
         "422":
-          description: Unprocessable entity
+          description: Unprocessable input response
+          schema:
+            $ref: '#/definitions/response.UnprocessableErrorResponse'
         "500":
-          description: Internal server error
+          description: Internal server error response
+          schema:
+            $ref: '#/definitions/response.InternalServerErrorResponse'
       summary: Upload table
       tags:
       - Tables
@@ -3582,11 +4059,17 @@ paths:
                   $ref: '#/definitions/user.Response'
               type: object
         "400":
-          description: Invalid input
+          description: Bad request response
+          schema:
+            $ref: '#/definitions/response.BadRequestErrorResponse'
         "401":
-          description: Unauthorized
+          description: Unauthorized response
+          schema:
+            $ref: '#/definitions/response.UnauthorizedErrorResponse'
         "500":
-          description: Internal server error
+          description: Internal server error response
+          schema:
+            $ref: '#/definitions/response.InternalServerErrorResponse'
       summary: Retrieve user
       tags:
       - Users
@@ -3624,13 +4107,21 @@ paths:
                   $ref: '#/definitions/user.Response'
               type: object
         "400":
-          description: Invalid input
+          description: Bad request response
+          schema:
+            $ref: '#/definitions/response.BadRequestErrorResponse'
         "401":
-          description: Unauthorized
+          description: Unauthorized response
+          schema:
+            $ref: '#/definitions/response.UnauthorizedErrorResponse'
         "422":
-          description: Unprocessable entity
+          description: Unprocessable input response
+          schema:
+            $ref: '#/definitions/response.UnprocessableErrorResponse'
         "500":
-          description: Internal server error
+          description: Internal server error response
+          schema:
+            $ref: '#/definitions/response.InternalServerErrorResponse'
       summary: Update user
       tags:
       - Users
@@ -3659,11 +4150,17 @@ paths:
                   $ref: '#/definitions/user.Response'
               type: object
         "400":
-          description: Invalid input
+          description: Bad request response
+          schema:
+            $ref: '#/definitions/response.BadRequestErrorResponse'
         "401":
-          description: Unauthorized
+          description: Unauthorized response
+          schema:
+            $ref: '#/definitions/response.UnauthorizedErrorResponse'
         "500":
-          description: Internal server error
+          description: Internal server error response
+          schema:
+            $ref: '#/definitions/response.InternalServerErrorResponse'
       summary: Authenticate user
       tags:
       - Users
@@ -3686,11 +4183,17 @@ paths:
           schema:
             $ref: '#/definitions/response.Response'
         "400":
-          description: Invalid input
+          description: Bad request response
+          schema:
+            $ref: '#/definitions/response.BadRequestErrorResponse'
         "401":
-          description: Unauthorized
+          description: Unauthorized response
+          schema:
+            $ref: '#/definitions/response.UnauthorizedErrorResponse'
         "500":
-          description: Internal server error
+          description: Internal server error response
+          schema:
+            $ref: '#/definitions/response.InternalServerErrorResponse'
       summary: Logout user
       tags:
       - Users

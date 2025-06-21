@@ -11,14 +11,14 @@ import (
 )
 
 type CreateRequest struct {
-	dto.BaseRequest
+	dto.DefaultRequestWithProjectHeader
 	Name             string    `json:"name"`
 	Description      string    `json:"description"`
 	OrganizationUUID uuid.UUID `json:"organization_uuid"`
 }
 
 type UpdateRequest struct {
-	dto.BaseRequest
+	dto.DefaultRequestWithProjectHeader
 	Name        string `json:"name"`
 	Description string `json:"description"`
 }

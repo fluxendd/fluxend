@@ -43,9 +43,9 @@ func NewLogHandler(injector *do.Injector) (*LogHandler, error) {
 // @Param order query string false "Sort order (asc or desc)"
 //
 // @Success 200 {array} response.Response{content=[]logging.Response} "List of files"
-// @Failure 400 "Invalid input"
-// @Failure 401 "Unauthorized"
-// @Failure 500 "Internal server error"
+// @Failure 400 {object} response.BadRequestErrorResponse "Bad request response"
+// @Failure 401 {object} response.UnauthorizedErrorResponse "Unauthorized response"
+// @Failure 500 {object} response.InternalServerErrorResponse "Internal server error response"
 //
 // @Router /admin/logs [get]
 func (lh *LogHandler) List(c echo.Context) error {

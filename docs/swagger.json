@@ -166,13 +166,22 @@
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             }
@@ -222,13 +231,22 @@
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             },
@@ -285,16 +303,28 @@
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "422": {
-                        "description": "Unprocessable entity"
+                        "description": "Unprocessable input response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnprocessableErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             }
@@ -344,16 +374,28 @@
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "422": {
-                        "description": "Unprocessable entity"
+                        "description": "Unprocessable input response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnprocessableErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             }
@@ -413,10 +455,16 @@
                         }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             },
@@ -477,16 +525,28 @@
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "422": {
-                        "description": "Unprocessable entity"
+                        "description": "Unprocessable input response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnprocessableErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             }
@@ -547,13 +607,22 @@
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             },
@@ -597,13 +666,22 @@
                         "description": "Backup deleted"
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             }
@@ -626,6 +704,13 @@
                         "type": "string",
                         "description": "Bearer Token",
                         "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Project UUID",
+                        "name": "X-Project",
                         "in": "header",
                         "required": true
                     },
@@ -687,13 +772,22 @@
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             },
@@ -714,6 +808,13 @@
                         "type": "string",
                         "description": "Bearer Token",
                         "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Project UUID",
+                        "name": "X-Project",
                         "in": "header",
                         "required": true
                     },
@@ -754,13 +855,22 @@
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             }
@@ -783,6 +893,13 @@
                         "type": "string",
                         "description": "Bearer Token",
                         "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Project UUID",
+                        "name": "X-Project",
                         "in": "header",
                         "required": true
                     },
@@ -821,13 +938,22 @@
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             },
@@ -853,6 +979,13 @@
                     },
                     {
                         "type": "string",
+                        "description": "Project UUID",
+                        "name": "X-Project",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
                         "description": "Container UUID",
                         "name": "containerUUID",
                         "in": "path",
@@ -871,13 +1004,22 @@
                         "description": "File deleted"
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             }
@@ -900,6 +1042,13 @@
                         "type": "string",
                         "description": "Bearer Token",
                         "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Project UUID",
+                        "name": "X-Project",
                         "in": "header",
                         "required": true
                     },
@@ -947,13 +1096,22 @@
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             }
@@ -1037,13 +1195,22 @@
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             },
@@ -1104,16 +1271,28 @@
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "422": {
-                        "description": "Unprocessable entity"
+                        "description": "Unprocessable input response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnprocessableErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             }
@@ -1174,13 +1353,22 @@
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             },
@@ -1248,16 +1436,28 @@
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "422": {
-                        "description": "Unprocessable entity"
+                        "description": "Unprocessable input response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnprocessableErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             },
@@ -1301,13 +1501,22 @@
                         "description": "Form deleted"
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             }
@@ -1367,13 +1576,22 @@
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             },
@@ -1434,16 +1652,28 @@
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "422": {
-                        "description": "Unprocessable entity"
+                        "description": "Unprocessable input response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnprocessableErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             }
@@ -1504,13 +1734,22 @@
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             },
@@ -1578,16 +1817,28 @@
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "422": {
-                        "description": "Unprocessable entity"
+                        "description": "Unprocessable input response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnprocessableErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             },
@@ -1631,13 +1882,22 @@
                         "description": "Field deleted"
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             }
@@ -1701,13 +1961,22 @@
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             },
@@ -1775,16 +2044,28 @@
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "422": {
-                        "description": "Unprocessable entity"
+                        "description": "Unprocessable input response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnprocessableErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             }
@@ -1852,13 +2133,22 @@
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             },
@@ -1909,13 +2199,22 @@
                         "description": "Form response deleted"
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             }
@@ -1989,13 +2288,22 @@
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             },
@@ -2056,16 +2364,28 @@
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "422": {
-                        "description": "Unprocessable entity"
+                        "description": "Unprocessable input response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnprocessableErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             }
@@ -2133,13 +2453,22 @@
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             },
@@ -2197,13 +2526,22 @@
                         "description": "Form deleted"
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             }
@@ -2334,16 +2672,28 @@
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "422": {
-                        "description": "Unprocessable entity"
+                        "description": "Unprocessable input response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnprocessableErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             }
@@ -2397,16 +2747,28 @@
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "422": {
-                        "description": "Unprocessable entity"
+                        "description": "Unprocessable input response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnprocessableErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             },
@@ -2467,16 +2829,28 @@
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "422": {
-                        "description": "Unprocessable entity"
+                        "description": "Unprocessable input response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnprocessableErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             },
@@ -2576,16 +2950,28 @@
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "422": {
-                        "description": "Unprocessable entity"
+                        "description": "Unprocessable input response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnprocessableErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             },
@@ -2646,16 +3032,28 @@
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "422": {
-                        "description": "Unprocessable entity"
+                        "description": "Unprocessable input response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnprocessableErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             }
@@ -2701,16 +3099,28 @@
                         "description": "User deleted"
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "422": {
-                        "description": "Unprocessable entity"
+                        "description": "Unprocessable input response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnprocessableErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             }
@@ -2791,13 +3201,22 @@
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             },
@@ -2858,16 +3277,28 @@
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "422": {
-                        "description": "Unprocessable entity"
+                        "description": "Unprocessable input response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnprocessableErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             }
@@ -2921,16 +3352,28 @@
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "422": {
-                        "description": "Unprocessable entity"
+                        "description": "Unprocessable input response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnprocessableErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             },
@@ -2991,16 +3434,28 @@
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "422": {
-                        "description": "Unprocessable entity"
+                        "description": "Unprocessable input response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnprocessableErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             },
@@ -3040,13 +3495,22 @@
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             }
@@ -3184,13 +3648,22 @@
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Invalid input response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             },
@@ -3251,16 +3724,28 @@
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "422": {
-                        "description": "Unprocessable entity"
+                        "description": "Invalid input response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnprocessableErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             }
@@ -3321,16 +3806,28 @@
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "422": {
-                        "description": "Unprocessable entity"
+                        "description": "Invalid input response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnprocessableErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             },
@@ -3398,16 +3895,28 @@
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "422": {
-                        "description": "Unprocessable entity"
+                        "description": "Unprocessable input response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnprocessableErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             },
@@ -3451,13 +3960,22 @@
                         "description": "Container deleted"
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             }
@@ -3514,13 +4032,22 @@
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             },
@@ -3581,16 +4108,28 @@
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "422": {
-                        "description": "Unprocessable entity"
+                        "description": "Unprocessable input response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnprocessableErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             }
@@ -3653,16 +4192,28 @@
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "422": {
-                        "description": "Unprocessable entity"
+                        "description": "Unprocessable input response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnprocessableErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             }
@@ -3719,13 +4270,22 @@
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             },
@@ -3793,16 +4353,28 @@
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "422": {
-                        "description": "Unprocessable entity"
+                        "description": "Unprocessable input response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnprocessableErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             },
@@ -3870,16 +4442,28 @@
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "422": {
-                        "description": "Unprocessable entity"
+                        "description": "Unprocessable input response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnprocessableErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             }
@@ -3944,16 +4528,28 @@
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "422": {
-                        "description": "Unprocessable entity"
+                        "description": "Unprocessable input response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnprocessableErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             },
@@ -4206,16 +4802,28 @@
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "422": {
-                        "description": "Unprocessable entity"
+                        "description": "Unprocessable input response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnprocessableErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             }
@@ -4270,13 +4878,22 @@
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             },
@@ -4335,16 +4952,28 @@
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "422": {
-                        "description": "Unprocessable entity"
+                        "description": "Unprocessable input response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnprocessableErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             }
@@ -4535,16 +5164,28 @@
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "422": {
-                        "description": "Unprocessable entity"
+                        "description": "Unprocessable input response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnprocessableErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             }
@@ -4648,13 +5289,22 @@
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             }
@@ -4689,13 +5339,22 @@
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             }
@@ -4799,13 +5458,22 @@
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             },
@@ -4866,16 +5534,28 @@
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "422": {
-                        "description": "Unprocessable entity"
+                        "description": "Unprocessable input response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnprocessableErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             }
@@ -5506,18 +6186,12 @@
             "properties": {
                 "name": {
                     "type": "string"
-                },
-                "projectUUID": {
-                    "type": "string"
                 }
             }
         },
         "organization.MemberCreateRequest": {
             "type": "object",
             "properties": {
-                "projectUUID": {
-                    "type": "string"
-                },
                 "user_id": {
                     "type": "string"
                 }
@@ -5612,6 +6286,50 @@
                 }
             }
         },
+        "response.BadRequestErrorResponse": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string",
+                    "example": "null"
+                },
+                "errors": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "Invalid input parameter"
+                    ]
+                },
+                "success": {
+                    "type": "boolean",
+                    "example": false
+                }
+            }
+        },
+        "response.InternalServerErrorResponse": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string",
+                    "example": "null"
+                },
+                "errors": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "Internal server error"
+                    ]
+                },
+                "success": {
+                    "type": "boolean",
+                    "example": false
+                }
+            }
+        },
         "response.Response": {
             "type": "object",
             "properties": {
@@ -5624,6 +6342,50 @@
                 },
                 "success": {
                     "type": "boolean"
+                }
+            }
+        },
+        "response.UnauthorizedErrorResponse": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string",
+                    "example": "null"
+                },
+                "errors": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "Unauthorized access"
+                    ]
+                },
+                "success": {
+                    "type": "boolean",
+                    "example": false
+                }
+            }
+        },
+        "response.UnprocessableErrorResponse": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string",
+                    "example": "null"
+                },
+                "errors": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "Validation failed"
+                    ]
+                },
+                "success": {
+                    "type": "boolean",
+                    "example": false
                 }
             }
         },
@@ -5664,9 +6426,6 @@
         "setting.UpdateRequest": {
             "type": "object",
             "properties": {
-                "projectUUID": {
-                    "type": "string"
-                },
                 "settings": {
                     "type": "array",
                     "items": {
@@ -5764,9 +6523,6 @@
                 "password": {
                     "type": "string"
                 },
-                "projectUUID": {
-                    "type": "string"
-                },
                 "username": {
                     "type": "string"
                 }
@@ -5779,9 +6535,6 @@
                     "type": "string"
                 },
                 "password": {
-                    "type": "string"
-                },
-                "projectUUID": {
                     "type": "string"
                 }
             }
@@ -5822,9 +6575,6 @@
             "type": "object",
             "properties": {
                 "bio": {
-                    "type": "string"
-                },
-                "projectUUID": {
                     "type": "string"
                 }
             }

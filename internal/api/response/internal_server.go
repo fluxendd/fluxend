@@ -7,7 +7,7 @@ import (
 )
 
 func InternalServerResponse(c echo.Context, error string) error {
-	response := Response{
+	response := InternalServerErrorResponse{
 		Success: false,
 		Errors:  []string{message.Message(error)},
 		Content: nil,

@@ -7,7 +7,7 @@ import (
 )
 
 func ForbiddenResponse(c echo.Context, error string) error {
-	response := Response{
+	response := ForbiddenErrorResponse{
 		Success: false,
 		Errors:  []string{message.Message(error)},
 		Content: nil,

@@ -37,9 +37,9 @@ func NewFunctionHandler(injector *do.Injector) (*FunctionHandler, error) {
 // @Param schema path string true "Schema to search under"
 //
 // @Success 200 {array} response.Response{content=[]database.FunctionResponse} "List of functions"
-// @Failure 400 "Invalid input"
-// @Failure 401 "Unauthorized"
-// @Failure 500 "Internal server error"
+// @Failure 400 {object} response.BadRequestErrorResponse "Bad request response"
+// @Failure 401 {object} response.UnauthorizedErrorResponse "Unauthorized response"
+// @Failure 500 {object} response.InternalServerErrorResponse "Internal server error response"
 //
 // @Router /functions/{schema} [get]
 func (fh *FunctionHandler) List(c echo.Context) error {
@@ -79,9 +79,9 @@ func (fh *FunctionHandler) List(c echo.Context) error {
 // @Param functionName path string true "Function name"
 //
 // @Success 200 {object} response.Response{content=database.FunctionResponse} "Function details"
-// @Failure 400 "Invalid input"
-// @Failure 401 "Unauthorized"
-// @Failure 500 "Internal server error"
+// @Failure 400 {object} response.BadRequestErrorResponse "Bad request response"
+// @Failure 401 {object} response.UnauthorizedErrorResponse "Unauthorized response"
+// @Failure 500 {object} response.InternalServerErrorResponse "Internal server error response"
 //
 // @Router /functions/{schema}/{functionName} [get]
 func (fh *FunctionHandler) Show(c echo.Context) error {
@@ -125,10 +125,10 @@ func (fh *FunctionHandler) Show(c echo.Context) error {
 // @Param function body database.CreateFunctionRequest true "Function details"
 //
 // @Success 201 {object} response.Response{content=database.FunctionResponse} "Function created"
-// @Failure 422 "Unprocessable entity"
-// @Failure 400 "Invalid input"
-// @Failure 401 "Unauthorized"
-// @Failure 500 "Internal server error"
+// @Failure 422 {object} response.UnprocessableErrorResponse "Unprocessable input response"
+// @Failure 400 {object} response.BadRequestErrorResponse "Bad request response"
+// @Failure 401 {object} response.UnauthorizedErrorResponse "Unauthorized response"
+// @Failure 500 {object} response.InternalServerErrorResponse "Internal server error response"
 //
 // @Router /functions/{schema} [post]
 func (fh *FunctionHandler) Store(c echo.Context) error {
@@ -169,9 +169,9 @@ func (fh *FunctionHandler) Store(c echo.Context) error {
 // @Param functionName path string true "Function name"
 //
 // @Success 204 "Form deleted"
-// @Failure 400 "Invalid input"
-// @Failure 401 "Unauthorized"
-// @Failure 500 "Internal server error"
+// @Failure 400 {object} response.BadRequestErrorResponse "Bad request response"
+// @Failure 401 {object} response.UnauthorizedErrorResponse "Unauthorized response"
+// @Failure 500 {object} response.InternalServerErrorResponse "Internal server error response"
 //
 // @Router /functions/{schema}/{functionName} [delete]
 func (fh *FunctionHandler) Delete(c echo.Context) error {

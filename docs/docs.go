@@ -169,13 +169,22 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             }
@@ -225,13 +234,22 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             },
@@ -288,16 +306,28 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "422": {
-                        "description": "Unprocessable entity"
+                        "description": "Unprocessable input response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnprocessableErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             }
@@ -347,16 +377,28 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "422": {
-                        "description": "Unprocessable entity"
+                        "description": "Unprocessable input response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnprocessableErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             }
@@ -416,10 +458,16 @@ const docTemplate = `{
                         }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             },
@@ -480,16 +528,28 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "422": {
-                        "description": "Unprocessable entity"
+                        "description": "Unprocessable input response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnprocessableErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             }
@@ -550,13 +610,22 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             },
@@ -600,13 +669,22 @@ const docTemplate = `{
                         "description": "Backup deleted"
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             }
@@ -629,6 +707,13 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Bearer Token",
                         "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Project UUID",
+                        "name": "X-Project",
                         "in": "header",
                         "required": true
                     },
@@ -690,13 +775,22 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             },
@@ -717,6 +811,13 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Bearer Token",
                         "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Project UUID",
+                        "name": "X-Project",
                         "in": "header",
                         "required": true
                     },
@@ -757,13 +858,22 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             }
@@ -786,6 +896,13 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Bearer Token",
                         "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Project UUID",
+                        "name": "X-Project",
                         "in": "header",
                         "required": true
                     },
@@ -824,13 +941,22 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             },
@@ -856,6 +982,13 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "description": "Project UUID",
+                        "name": "X-Project",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
                         "description": "Container UUID",
                         "name": "containerUUID",
                         "in": "path",
@@ -874,13 +1007,22 @@ const docTemplate = `{
                         "description": "File deleted"
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             }
@@ -903,6 +1045,13 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Bearer Token",
                         "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Project UUID",
+                        "name": "X-Project",
                         "in": "header",
                         "required": true
                     },
@@ -950,13 +1099,22 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             }
@@ -1040,13 +1198,22 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             },
@@ -1107,16 +1274,28 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "422": {
-                        "description": "Unprocessable entity"
+                        "description": "Unprocessable input response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnprocessableErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             }
@@ -1177,13 +1356,22 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             },
@@ -1251,16 +1439,28 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "422": {
-                        "description": "Unprocessable entity"
+                        "description": "Unprocessable input response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnprocessableErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             },
@@ -1304,13 +1504,22 @@ const docTemplate = `{
                         "description": "Form deleted"
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             }
@@ -1370,13 +1579,22 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             },
@@ -1437,16 +1655,28 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "422": {
-                        "description": "Unprocessable entity"
+                        "description": "Unprocessable input response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnprocessableErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             }
@@ -1507,13 +1737,22 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             },
@@ -1581,16 +1820,28 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "422": {
-                        "description": "Unprocessable entity"
+                        "description": "Unprocessable input response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnprocessableErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             },
@@ -1634,13 +1885,22 @@ const docTemplate = `{
                         "description": "Field deleted"
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             }
@@ -1704,13 +1964,22 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             },
@@ -1778,16 +2047,28 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "422": {
-                        "description": "Unprocessable entity"
+                        "description": "Unprocessable input response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnprocessableErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             }
@@ -1855,13 +2136,22 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             },
@@ -1912,13 +2202,22 @@ const docTemplate = `{
                         "description": "Form response deleted"
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             }
@@ -1992,13 +2291,22 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             },
@@ -2059,16 +2367,28 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "422": {
-                        "description": "Unprocessable entity"
+                        "description": "Unprocessable input response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnprocessableErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             }
@@ -2136,13 +2456,22 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             },
@@ -2200,13 +2529,22 @@ const docTemplate = `{
                         "description": "Form deleted"
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             }
@@ -2337,16 +2675,28 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "422": {
-                        "description": "Unprocessable entity"
+                        "description": "Unprocessable input response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnprocessableErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             }
@@ -2400,16 +2750,28 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "422": {
-                        "description": "Unprocessable entity"
+                        "description": "Unprocessable input response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnprocessableErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             },
@@ -2470,16 +2832,28 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "422": {
-                        "description": "Unprocessable entity"
+                        "description": "Unprocessable input response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnprocessableErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             },
@@ -2579,16 +2953,28 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "422": {
-                        "description": "Unprocessable entity"
+                        "description": "Unprocessable input response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnprocessableErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             },
@@ -2649,16 +3035,28 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "422": {
-                        "description": "Unprocessable entity"
+                        "description": "Unprocessable input response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnprocessableErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             }
@@ -2704,16 +3102,28 @@ const docTemplate = `{
                         "description": "User deleted"
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "422": {
-                        "description": "Unprocessable entity"
+                        "description": "Unprocessable input response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnprocessableErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             }
@@ -2794,13 +3204,22 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             },
@@ -2861,16 +3280,28 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "422": {
-                        "description": "Unprocessable entity"
+                        "description": "Unprocessable input response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnprocessableErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             }
@@ -2924,16 +3355,28 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "422": {
-                        "description": "Unprocessable entity"
+                        "description": "Unprocessable input response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnprocessableErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             },
@@ -2994,16 +3437,28 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "422": {
-                        "description": "Unprocessable entity"
+                        "description": "Unprocessable input response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnprocessableErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             },
@@ -3043,13 +3498,22 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             }
@@ -3187,13 +3651,22 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Invalid input response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             },
@@ -3254,16 +3727,28 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "422": {
-                        "description": "Unprocessable entity"
+                        "description": "Invalid input response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnprocessableErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             }
@@ -3324,16 +3809,28 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "422": {
-                        "description": "Unprocessable entity"
+                        "description": "Invalid input response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnprocessableErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             },
@@ -3401,16 +3898,28 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "422": {
-                        "description": "Unprocessable entity"
+                        "description": "Unprocessable input response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnprocessableErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             },
@@ -3454,13 +3963,22 @@ const docTemplate = `{
                         "description": "Container deleted"
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             }
@@ -3517,13 +4035,22 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             },
@@ -3584,16 +4111,28 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "422": {
-                        "description": "Unprocessable entity"
+                        "description": "Unprocessable input response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnprocessableErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             }
@@ -3656,16 +4195,28 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "422": {
-                        "description": "Unprocessable entity"
+                        "description": "Unprocessable input response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnprocessableErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             }
@@ -3722,13 +4273,22 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             },
@@ -3796,16 +4356,28 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "422": {
-                        "description": "Unprocessable entity"
+                        "description": "Unprocessable input response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnprocessableErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             },
@@ -3873,16 +4445,28 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "422": {
-                        "description": "Unprocessable entity"
+                        "description": "Unprocessable input response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnprocessableErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             }
@@ -3947,16 +4531,28 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "422": {
-                        "description": "Unprocessable entity"
+                        "description": "Unprocessable input response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnprocessableErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             },
@@ -4209,16 +4805,28 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "422": {
-                        "description": "Unprocessable entity"
+                        "description": "Unprocessable input response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnprocessableErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             }
@@ -4273,13 +4881,22 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             },
@@ -4338,16 +4955,28 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "422": {
-                        "description": "Unprocessable entity"
+                        "description": "Unprocessable input response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnprocessableErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             }
@@ -4538,16 +5167,28 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "422": {
-                        "description": "Unprocessable entity"
+                        "description": "Unprocessable input response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnprocessableErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             }
@@ -4651,13 +5292,22 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             }
@@ -4692,13 +5342,22 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             }
@@ -4802,13 +5461,22 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             },
@@ -4869,16 +5537,28 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "422": {
-                        "description": "Unprocessable entity"
+                        "description": "Unprocessable input response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnprocessableErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             }
@@ -5509,18 +6189,12 @@ const docTemplate = `{
             "properties": {
                 "name": {
                     "type": "string"
-                },
-                "projectUUID": {
-                    "type": "string"
                 }
             }
         },
         "organization.MemberCreateRequest": {
             "type": "object",
             "properties": {
-                "projectUUID": {
-                    "type": "string"
-                },
                 "user_id": {
                     "type": "string"
                 }
@@ -5615,6 +6289,50 @@ const docTemplate = `{
                 }
             }
         },
+        "response.BadRequestErrorResponse": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string",
+                    "example": "null"
+                },
+                "errors": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "Invalid input parameter"
+                    ]
+                },
+                "success": {
+                    "type": "boolean",
+                    "example": false
+                }
+            }
+        },
+        "response.InternalServerErrorResponse": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string",
+                    "example": "null"
+                },
+                "errors": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "Internal server error"
+                    ]
+                },
+                "success": {
+                    "type": "boolean",
+                    "example": false
+                }
+            }
+        },
         "response.Response": {
             "type": "object",
             "properties": {
@@ -5627,6 +6345,50 @@ const docTemplate = `{
                 },
                 "success": {
                     "type": "boolean"
+                }
+            }
+        },
+        "response.UnauthorizedErrorResponse": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string",
+                    "example": "null"
+                },
+                "errors": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "Unauthorized access"
+                    ]
+                },
+                "success": {
+                    "type": "boolean",
+                    "example": false
+                }
+            }
+        },
+        "response.UnprocessableErrorResponse": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string",
+                    "example": "null"
+                },
+                "errors": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "Validation failed"
+                    ]
+                },
+                "success": {
+                    "type": "boolean",
+                    "example": false
                 }
             }
         },
@@ -5667,9 +6429,6 @@ const docTemplate = `{
         "setting.UpdateRequest": {
             "type": "object",
             "properties": {
-                "projectUUID": {
-                    "type": "string"
-                },
                 "settings": {
                     "type": "array",
                     "items": {
@@ -5767,9 +6526,6 @@ const docTemplate = `{
                 "password": {
                     "type": "string"
                 },
-                "projectUUID": {
-                    "type": "string"
-                },
                 "username": {
                     "type": "string"
                 }
@@ -5782,9 +6538,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "password": {
-                    "type": "string"
-                },
-                "projectUUID": {
                     "type": "string"
                 }
             }
@@ -5825,9 +6578,6 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "bio": {
-                    "type": "string"
-                },
-                "projectUUID": {
                     "type": "string"
                 }
             }

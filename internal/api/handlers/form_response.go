@@ -36,9 +36,9 @@ func NewFormResponseHandler(injector *do.Injector) (*FormResponseHandler, error)
 // @Param formUUID path string true "Form UUID"
 //
 // @Success 200 {object} response.Response{content=[]form.ResponseForAPI} "List of form responses"
-// @Failure 400 "Invalid input"
-// @Failure 401 "Unauthorized"
-// @Failure 500 "Internal server error"
+// @Failure 400 {object} response.BadRequestErrorResponse "Bad request response"
+// @Failure 401 {object} response.UnauthorizedErrorResponse "Unauthorized response"
+// @Failure 500 {object} response.InternalServerErrorResponse "Internal server error response"
 //
 // @Router /forms/{formUUID}/responses [get]
 func (ffh *FormResponseHandler) List(c echo.Context) error {
@@ -78,9 +78,9 @@ func (ffh *FormResponseHandler) List(c echo.Context) error {
 // @Param formResponseUUID path string true "Form Response UUID"
 //
 // @Success 200 {object} response.Response{content=form.ResponseForAPI} "Form response details"
-// @Failure 400 "Invalid input"
-// @Failure 401 "Unauthorized"
-// @Failure 500 "Internal server error"
+// @Failure 400 {object} response.BadRequestErrorResponse "Bad request response"
+// @Failure 401 {object} response.UnauthorizedErrorResponse "Unauthorized response"
+// @Failure 500 {object} response.InternalServerErrorResponse "Internal server error response"
 //
 // @Router /forms/{formUUID}/responses/{formResponseUUID} [get]
 func (ffh *FormResponseHandler) Show(c echo.Context) error {
@@ -120,10 +120,10 @@ func (ffh *FormResponseHandler) Show(c echo.Context) error {
 // @Param request body form.CreateResponseRequest true "Request body to create a new form response"
 //
 // @Success 201 {object} response.Response{content=form.ResponseForAPI} "Form response details"
-// @Failure 422 "Unprocessable entity"
-// @Failure 400 "Invalid input"
-// @Failure 401 "Unauthorized"
-// @Failure 500 "Internal server error"
+// @Failure 422 {object} response.UnprocessableErrorResponse "Unprocessable input response"
+// @Failure 400 {object} response.BadRequestErrorResponse "Bad request response"
+// @Failure 401 {object} response.UnauthorizedErrorResponse "Unauthorized response"
+// @Failure 500 {object} response.InternalServerErrorResponse "Internal server error response"
 //
 // @Router /forms/{formUUID}/responses [post]
 func (ffh *FormResponseHandler) Store(c echo.Context) error {
@@ -163,9 +163,9 @@ func (ffh *FormResponseHandler) Store(c echo.Context) error {
 // @Param formResponseUUID path string true "Form Response UUID"
 //
 // @Success 204 "Form response deleted"
-// @Failure 400 "Invalid input"
-// @Failure 401 "Unauthorized"
-// @Failure 500 "Internal server error"
+// @Failure 400 {object} response.BadRequestErrorResponse "Bad request response"
+// @Failure 401 {object} response.UnauthorizedErrorResponse "Unauthorized response"
+// @Failure 500 {object} response.InternalServerErrorResponse "Internal server error response"
 //
 // @Router /forms/{formUUID}/responses/{formResponseUUID} [delete]
 func (ffh *FormResponseHandler) Delete(c echo.Context) error {
