@@ -1,7 +1,9 @@
 package pkg
 
 import (
+	"encoding/json"
 	"fmt"
+	"os"
 	"regexp"
 )
 
@@ -17,4 +19,14 @@ func MatchRegex(input, pattern string) (bool, error) {
 	}
 
 	return re.MatchString(input), nil
+}
+
+func DumpJSON(data interface{}) {
+	jsonData, err := json.MarshalIndent(data, "", "  ")
+	if err != nil {
+		fmt.Printf("Error marshaling to JSON: %v\n", err)
+		os.Exit(1)
+	}
+
+	fmt.Println(string(jsonData))
 }

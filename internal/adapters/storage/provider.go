@@ -26,7 +26,6 @@ func NewFactory(injector *do.Injector) (*Factory, error) {
 	return &Factory{injector: injector}, nil
 }
 
-// TODO: use injector and context
 func (f *Factory) CreateProvider(providerType string) (Provider, error) {
 	switch providerType {
 	case constants.StorageDriverDropbox:
