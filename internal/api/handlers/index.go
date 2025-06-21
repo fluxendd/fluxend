@@ -33,9 +33,9 @@ func NewIndexHandler(injector *do.Injector) (*IndexHandler, error) {
 // @Param tableUUID path string true "Table UUID"
 //
 // @Success 200 {object} response.Response{content=[]dto.GenericResponse} "List of indexes"
-// @Failure 400 "Invalid input"
-// @Failure 401 "Unauthorized"
-// @Failure 500 "Internal server error"
+// @Failure 400 {object} response.BadRequestErrorResponse "Bad request response"
+// @Failure 401 {object} response.UnauthorizedErrorResponse "Unauthorized response"
+// @Failure 500 {object} response.InternalServerErrorResponse "Internal server error response"
 //
 // @Router /tables/{tableUUID}/indexes [get]
 func (ih *IndexHandler) List(c echo.Context) error {
@@ -116,10 +116,10 @@ func (ih *IndexHandler) Show(c echo.Context) error {
 // @Param index body database.CreateIndexRequest true "Index details JSON"
 //
 // @Success 201 {object} response.Response{content=dto.GenericResponse} "Index created"
-// @Failure 400 "Invalid input"
-// @Failure 401 "Unauthorized"
-// @Failure 422 "Unprocessable entity"
-// @Failure 500 "Internal server error"
+// @Failure 422 {object} response.UnprocessableErrorResponse "Unprocessable input response"
+// @Failure 400 {object} response.BadRequestErrorResponse "Bad request response"
+// @Failure 401 {object} response.UnauthorizedErrorResponse "Unauthorized response"
+// @Failure 500 {object} response.InternalServerErrorResponse "Internal server error response"
 //
 // @Router /tables/{tableUUID}/indexes [post]
 func (ih *IndexHandler) Store(c echo.Context) error {

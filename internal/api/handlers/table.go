@@ -34,9 +34,9 @@ func NewTableHandler(injector *do.Injector) (*TableHandler, error) {
 // @param Header X-Project header string true "Project UUID"
 //
 // @Success 200 {object} response.Response{content=[]database.TableResponse} "List of tables"
-// @Failure 400 "Invalid input"
-// @Failure 401 "Unauthorized"
-// @Failure 500 "Internal server error"
+// @Failure 400 {object} response.BadRequestErrorResponse "Bad request response"
+// @Failure 401 {object} response.UnauthorizedErrorResponse "Unauthorized response"
+// @Failure 500 {object} response.InternalServerErrorResponse "Internal server error response"
 //
 // @Router /tables [get]
 func (th *TableHandler) List(c echo.Context) error {
@@ -112,10 +112,10 @@ func (th *TableHandler) Show(c echo.Context) error {
 // @Param table body database.CreateTableRequest true "Table definition JSON"
 //
 // @Success 201 {object} response.Response{content=database.TableResponse} "Table created"
-// @Failure 400 "Invalid input"
-// @Failure 401 "Unauthorized"
-// @Failure 422 "Unprocessable entity"
-// @Failure 500 "Internal server error"
+// @Failure 422 {object} response.UnprocessableErrorResponse "Unprocessable input response"
+// @Failure 400 {object} response.BadRequestErrorResponse "Bad request response"
+// @Failure 401 {object} response.UnauthorizedErrorResponse "Unauthorized response"
+// @Failure 500 {object} response.InternalServerErrorResponse "Internal server error response"
 //
 // @Router /tables [post]
 func (th *TableHandler) Store(c echo.Context) error {
@@ -149,10 +149,10 @@ func (th *TableHandler) Store(c echo.Context) error {
 // @Param table body database.UploadTableRequest true "Table definition multipart/form-data"
 //
 // @Success 201 {object} response.Response{content=database.TableResponse} "Table created"
-// @Failure 400 "Invalid input"
-// @Failure 401 "Unauthorized"
-// @Failure 422 "Unprocessable entity"
-// @Failure 500 "Internal server error"
+// @Failure 422 {object} response.UnprocessableErrorResponse "Unprocessable input response"
+// @Failure 400 {object} response.BadRequestErrorResponse "Bad request response"
+// @Failure 401 {object} response.UnauthorizedErrorResponse "Unauthorized response"
+// @Failure 500 {object} response.InternalServerErrorResponse "Internal server error response"
 //
 // @Router /tables/upload [post]
 func (th *TableHandler) Upload(c echo.Context) error {
@@ -187,10 +187,10 @@ func (th *TableHandler) Upload(c echo.Context) error {
 // @Param new_name body database.RenameTableRequest true "Duplicate table name JSON"
 //
 // @Success 201 {object} response.Response{content=database.TableResponse} "Table duplicated"
-// @Failure 400 "Invalid input"
-// @Failure 401 "Unauthorized"
-// @Failure 422 "Unprocessable entity"
-// @Failure 500 "Internal server error"
+// @Failure 422 {object} response.UnprocessableErrorResponse "Unprocessable input response"
+// @Failure 400 {object} response.BadRequestErrorResponse "Bad request response"
+// @Failure 401 {object} response.UnauthorizedErrorResponse "Unauthorized response"
+// @Failure 500 {object} response.InternalServerErrorResponse "Internal server error response"
 //
 // @Router /tables/{tableUUID}/duplicate [put]
 func (th *TableHandler) Duplicate(c echo.Context) error {
@@ -230,10 +230,10 @@ func (th *TableHandler) Duplicate(c echo.Context) error {
 // @Param new_name body database.RenameTableRequest true "New table name JSON"
 //
 // @Success 200 {object} response.Response{content=database.TableResponse} "Table renamed"
-// @Failure 400 "Invalid input"
-// @Failure 401 "Unauthorized"
-// @Failure 422 "Unprocessable entity"
-// @Failure 500 "Internal server error"
+// @Failure 422 {object} response.UnprocessableErrorResponse "Unprocessable input response"
+// @Failure 400 {object} response.BadRequestErrorResponse "Bad request response"
+// @Failure 401 {object} response.UnauthorizedErrorResponse "Unauthorized response"
+// @Failure 500 {object} response.InternalServerErrorResponse "Internal server error response"
 //
 // @Router /tables/{tableUUID}/rename [put]
 func (th *TableHandler) Rename(c echo.Context) error {

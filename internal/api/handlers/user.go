@@ -42,9 +42,9 @@ func NewUserHandler(injector *do.Injector) (*UserHandler, error) {
 // @Param id path string true "User UUID"
 //
 // @Success 200 {object} response.Response{content=user.Response} "User details"
-// @Failure 400 "Invalid input"
-// @Failure 401 "Unauthorized"
-// @Failure 500 "Internal server error"
+// @Failure 400 {object} response.BadRequestErrorResponse "Bad request response"
+// @Failure 401 {object} response.UnauthorizedErrorResponse "Unauthorized response"
+// @Failure 500 {object} response.InternalServerErrorResponse "Internal server error response"
 //
 // @Router /users/{userUUID} [get]
 func (uh *UserHandler) Show(c echo.Context) error {
@@ -109,9 +109,9 @@ func (uh *UserHandler) Me(c echo.Context) error {
 // @Param user body user.LoginRequest true "Login request"
 //
 // @Success 200 {object} response.Response{content=user.Response} "User details"
-// @Failure 400 "Invalid input"
-// @Failure 401 "Unauthorized"
-// @Failure 500 "Internal server error"
+// @Failure 400 {object} response.BadRequestErrorResponse "Bad request response"
+// @Failure 401 {object} response.UnauthorizedErrorResponse "Unauthorized response"
+// @Failure 500 {object} response.InternalServerErrorResponse "Internal server error response"
 //
 // @Router /users/login [post]
 func (uh *UserHandler) Login(c echo.Context) error {
@@ -232,9 +232,9 @@ func (uh *UserHandler) Update(c echo.Context) error {
 // @Param Authorization header string true "Bearer Token"
 //
 // @Success 200 {object} response.Response{} "User logged out"
-// @Failure 400 "Invalid input"
-// @Failure 401 "Unauthorized"
-// @Failure 500 "Internal server error"
+// @Failure 400 {object} response.BadRequestErrorResponse "Bad request response"
+// @Failure 401 {object} response.UnauthorizedErrorResponse "Unauthorized response"
+// @Failure 500 {object} response.InternalServerErrorResponse "Internal server error response"
 //
 // @Router /users/logout [post]
 func (uh *UserHandler) Logout(c echo.Context) error {

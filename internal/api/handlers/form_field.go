@@ -34,9 +34,9 @@ func NewFormFieldHandler(injector *do.Injector) (*FormFieldHandler, error) {
 // @Param formUUID path string true "Form UUID"
 //
 // @Success 200 {array} response.Response{content=[]form.FieldResponseApi} "List of fields"
-// @Failure 400 "Invalid input"
-// @Failure 401 "Unauthorized"
-// @Failure 500 "Internal server error"
+// @Failure 400 {object} response.BadRequestErrorResponse "Bad request response"
+// @Failure 401 {object} response.UnauthorizedErrorResponse "Unauthorized response"
+// @Failure 500 {object} response.InternalServerErrorResponse "Internal server error response"
 //
 // @Router /forms/{formUUID}/fields [get]
 func (ffh *FormFieldHandler) List(c echo.Context) error {
@@ -74,9 +74,9 @@ func (ffh *FormFieldHandler) List(c echo.Context) error {
 // @Param fieldUUID path string true "Field UUID"
 //
 // @Success 200 {object} response.Response{content=form.FieldResponseApi} "Field details"
-// @Failure 400 "Invalid input"
-// @Failure 401 "Unauthorized"
-// @Failure 500 "Internal server error"
+// @Failure 400 {object} response.BadRequestErrorResponse "Bad request response"
+// @Failure 401 {object} response.UnauthorizedErrorResponse "Unauthorized response"
+// @Failure 500 {object} response.InternalServerErrorResponse "Internal server error response"
 //
 // @Router /forms/{formUUID}/fields/{fieldUUID} [get]
 func (ffh *FormFieldHandler) Show(c echo.Context) error {
@@ -202,9 +202,9 @@ func (ffh *FormFieldHandler) Update(c echo.Context) error {
 // @Param fieldUUID path string true "Field UUID"
 //
 // @Success 204 "Field deleted"
-// @Failure 400 "Invalid input"
-// @Failure 401 "Unauthorized"
-// @Failure 500 "Internal server error"
+// @Failure 400 {object} response.BadRequestErrorResponse "Bad request response"
+// @Failure 401 {object} response.UnauthorizedErrorResponse "Unauthorized response"
+// @Failure 500 {object} response.InternalServerErrorResponse "Internal server error response"
 //
 // @Router /forms/{formUUID}/fields/{fieldUUID} [delete]
 func (ffh *FormFieldHandler) Delete(c echo.Context) error {

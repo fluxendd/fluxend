@@ -32,9 +32,9 @@ func NewSettingHandler(injector *do.Injector) (*SettingHandler, error) {
 // @Param Authorization header string true "Bearer Token"
 //
 // @Success 200 {object} response.Response{content=[]setting.Response} "List of indexes"
-// @Failure 400 "Invalid input"
-// @Failure 401 "Unauthorized"
-// @Failure 500 "Internal server error"
+// @Failure 400 {object} response.BadRequestErrorResponse "Bad request response"
+// @Failure 401 {object} response.UnauthorizedErrorResponse "Unauthorized response"
+// @Failure 500 {object} response.InternalServerErrorResponse "Internal server error response"
 //
 // @Router /admin/settings [get]
 func (sh *SettingHandler) List(c echo.Context) error {

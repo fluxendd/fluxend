@@ -39,9 +39,9 @@ func NewProjectHandler(injector *do.Injector) (*ProjectHandler, error) {
 // @Param order query string false "Sort order (asc or desc)"
 //
 // @Success 200 {object} response.Response{content=[]project.Response} "List of projects"
-// @Failure 400 "Invalid input"
-// @Failure 401 "Unauthorized"
-// @Failure 500 "Internal server error"
+// @Failure 400 {object} response.BadRequestErrorResponse "Bad request response"
+// @Failure 401 {object} response.UnauthorizedErrorResponse "Unauthorized response"
+// @Failure 500 {object} response.InternalServerErrorResponse "Internal server error response"
 //
 // @Router /projects [get]
 func (ph *ProjectHandler) List(c echo.Context) error {
@@ -196,9 +196,9 @@ func (ph *ProjectHandler) Update(c echo.Context) error {
 // @Param projectUUID path string true "Project UUID"
 //
 // @Success 200 {object} response.Response{} "Project deleted"
-// @Failure 400 "Invalid input"
-// @Failure 401 "Unauthorized"
-// @Failure 500 "Internal server error"
+// @Failure 400 {object} response.BadRequestErrorResponse "Bad request response"
+// @Failure 401 {object} response.UnauthorizedErrorResponse "Unauthorized response"
+// @Failure 500 {object} response.InternalServerErrorResponse "Internal server error response"
 //
 // @Router /projects/{projectUUID} [delete]
 func (ph *ProjectHandler) Delete(c echo.Context) error {

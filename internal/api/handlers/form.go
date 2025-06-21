@@ -39,9 +39,9 @@ func NewFormHandler(injector *do.Injector) (*FormHandler, error) {
 // @Param order query string false "Sort order (asc or desc)"
 //
 // @Success 200 {array} response.Response{content=[]form.Response} "List of forms"
-// @Failure 400 "Invalid input"
-// @Failure 401 "Unauthorized"
-// @Failure 500 "Internal server error"
+// @Failure 400 {object} response.BadRequestErrorResponse "Bad request response"
+// @Failure 401 {object} response.UnauthorizedErrorResponse "Unauthorized response"
+// @Failure 500 {object} response.InternalServerErrorResponse "Internal server error response"
 //
 // @Router /forms [get]
 func (fh *FormHandler) List(c echo.Context) error {
@@ -75,9 +75,9 @@ func (fh *FormHandler) List(c echo.Context) error {
 // @Param formUUID path string true "Form UUID"
 //
 // @Success 200 {object} response.Response{content=form.Response} "Form details"
-// @Failure 400 "Invalid input"
-// @Failure 401 "Unauthorized"
-// @Failure 500 "Internal server error"
+// @Failure 400 {object} response.BadRequestErrorResponse "Bad request response"
+// @Failure 401 {object} response.UnauthorizedErrorResponse "Unauthorized response"
+// @Failure 500 {object} response.InternalServerErrorResponse "Internal server error response"
 //
 // @Router /forms/{formUUID} [get]
 func (fh *FormHandler) Show(c echo.Context) error {
@@ -196,9 +196,9 @@ func (fh *FormHandler) Update(c echo.Context) error {
 // @Param formUUID path string true "Form UUID"
 //
 // @Success 204 "Form deleted"
-// @Failure 400 "Invalid input"
-// @Failure 401 "Unauthorized"
-// @Failure 500 "Internal server error"
+// @Failure 400 {object} response.BadRequestErrorResponse "Bad request response"
+// @Failure 401 {object} response.UnauthorizedErrorResponse "Unauthorized response"
+// @Failure 500 {object} response.InternalServerErrorResponse "Internal server error response"
 //
 // @Router /forms/{formUUID} [delete]
 func (fh *FormHandler) Delete(c echo.Context) error {

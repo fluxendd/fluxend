@@ -39,9 +39,9 @@ func NewFileHandler(injector *do.Injector) (*FileHandler, error) {
 // @Param order query string false "Sort order (asc or desc)"
 //
 // @Success 200 {array} response.Response{content=[]file.Response} "List of files"
-// @Failure 400 "Invalid input"
-// @Failure 401 "Unauthorized"
-// @Failure 500 "Internal server error"
+// @Failure 400 {object} response.BadRequestErrorResponse "Bad request response"
+// @Failure 401 {object} response.UnauthorizedErrorResponse "Unauthorized response"
+// @Failure 500 {object} response.InternalServerErrorResponse "Internal server error response"
 //
 // @Router /containers/{containerUUID}/files [get]
 func (fh *FileHandler) List(c echo.Context) error {
@@ -80,9 +80,9 @@ func (fh *FileHandler) List(c echo.Context) error {
 // @Param fileUUID path string true "File UUID"
 //
 // @Success 200 {object} response.Response{content=file.Response} "File details"
-// @Failure 400 "Invalid input"
-// @Failure 401 "Unauthorized"
-// @Failure 500 "Internal server error"
+// @Failure 400 {object} response.BadRequestErrorResponse "Bad request response"
+// @Failure 401 {object} response.UnauthorizedErrorResponse "Unauthorized response"
+// @Failure 500 {object} response.InternalServerErrorResponse "Internal server error response"
 //
 // @Router /containers/{containerUUID}/files/{fileUUID} [get]
 func (fh *FileHandler) Show(c echo.Context) error {
@@ -125,9 +125,9 @@ func (fh *FileHandler) Show(c echo.Context) error {
 // @Param file body file.CreateRequest true "File details"
 //
 // @Success 201 {object} response.Response{content=file.Response} "File details"
-// @Failure 400 "Invalid input"
-// @Failure 401 "Unauthorized"
-// @Failure 500 "Internal server error"
+// @Failure 400 {object} response.BadRequestErrorResponse "Bad request response"
+// @Failure 401 {object} response.UnauthorizedErrorResponse "Unauthorized response"
+// @Failure 500 {object} response.InternalServerErrorResponse "Internal server error response"
 //
 // @Router /containers/{containerUUID}/files [post]
 func (fh *FileHandler) Store(c echo.Context) error {
@@ -166,9 +166,9 @@ func (fh *FileHandler) Store(c echo.Context) error {
 // @Param file body file.RenameRequest true "New file name"
 //
 // @Success 200 {object} response.Response{content=file.Response} "File details"
-// @Failure 400 "Invalid input"
-// @Failure 401 "Unauthorized"
-// @Failure 500 "Internal server error"
+// @Failure 400 {object} response.BadRequestErrorResponse "Bad request response"
+// @Failure 401 {object} response.UnauthorizedErrorResponse "Unauthorized response"
+// @Failure 500 {object} response.InternalServerErrorResponse "Internal server error response"
 //
 // @Router /containers/{containerUUID}/files/{fileUUID}/rename [put]
 func (fh *FileHandler) Rename(c echo.Context) error {
@@ -211,9 +211,9 @@ func (fh *FileHandler) Rename(c echo.Context) error {
 // @Param fileUUID path string true "File UUID"
 //
 // @Success 204 "File deleted"
-// @Failure 400 "Invalid input"
-// @Failure 401 "Unauthorized"
-// @Failure 500 "Internal server error"
+// @Failure 400 {object} response.BadRequestErrorResponse "Bad request response"
+// @Failure 401 {object} response.UnauthorizedErrorResponse "Unauthorized response"
+// @Failure 500 {object} response.InternalServerErrorResponse "Internal server error response"
 //
 // @Router /containers/{containerUUID}/files/{fileUUID} [delete]
 func (fh *FileHandler) Delete(c echo.Context) error {

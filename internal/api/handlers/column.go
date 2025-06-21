@@ -35,9 +35,9 @@ func NewColumnHandler(injector *do.Injector) (*ColumnHandler, error) {
 // @param Header X-Project header string true "Project UUID"
 //
 // @Success 200 {object} response.Response{content=[]database.ColumnResponse} "List of columns"
-// @Failure 400 "Invalid input"
-// @Failure 401 "Unauthorized"
-// @Failure 500 "Internal server error"
+// @Failure 400 {object} response.BadRequestErrorResponse "Bad request response"
+// @Failure 401 {object} response.UnauthorizedErrorResponse "Unauthorized response"
+// @Failure 500 {object} response.InternalServerErrorResponse "Internal server error response"
 //
 // @Router /tables/{fullTableName}/columns [get]
 func (ch *ColumnHandler) List(c echo.Context) error {
@@ -77,10 +77,10 @@ func (ch *ColumnHandler) List(c echo.Context) error {
 // @Param columns body database.CreateColumnRequest true "Columns JSON"
 //
 // @Success 201 {object} response.Response{content=database.ColumnResponse} "Columns created"
-// @Failure 400 "Invalid input"
-// @Failure 401 "Unauthorized"
-// @Failure 422 "Unprocessable entity"
-// @Failure 500 "Internal server error"
+// @Failure 422 {object} response.UnprocessableErrorResponse "Unprocessable input response"
+// @Failure 400 {object} response.BadRequestErrorResponse "Bad request response"
+// @Failure 401 {object} response.UnauthorizedErrorResponse "Unauthorized response"
+// @Failure 500 {object} response.InternalServerErrorResponse "Internal server error response"
 //
 // @Router /tables/{fullTableName}/columns [post]
 func (ch *ColumnHandler) Store(c echo.Context) error {
@@ -120,10 +120,10 @@ func (ch *ColumnHandler) Store(c echo.Context) error {
 // @Param columns body database.CreateColumnRequest true "Updated column definitions"
 //
 // @Success 200 {object} response.Response{content=database.ColumnResponse} "Columns altered"
-// @Failure 400 "Invalid input"
-// @Failure 401 "Unauthorized"
-// @Failure 422 "Unprocessable entity"
-// @Failure 500 "Internal server error"
+// @Failure 422 {object} response.UnprocessableErrorResponse "Unprocessable input response"
+// @Failure 400 {object} response.BadRequestErrorResponse "Bad request response"
+// @Failure 401 {object} response.UnauthorizedErrorResponse "Unauthorized response"
+// @Failure 500 {object} response.InternalServerErrorResponse "Internal server error response"
 //
 // @Router /tables/{fullTableName}/columns [put]
 func (ch *ColumnHandler) Alter(c echo.Context) error {
@@ -164,10 +164,10 @@ func (ch *ColumnHandler) Alter(c echo.Context) error {
 // @Param new_name body database.RenameColumnRequest true "New column name JSON"
 //
 // @Success 200 {object} response.Response "Column renamed"
-// @Failure 400 "Invalid input"
-// @Failure 401 "Unauthorized"
-// @Failure 422 "Unprocessable entity"
-// @Failure 500 "Internal server error"
+// @Failure 422 {object} response.UnprocessableErrorResponse "Unprocessable input response"
+// @Failure 400 {object} response.BadRequestErrorResponse "Bad request response"
+// @Failure 401 {object} response.UnauthorizedErrorResponse "Unauthorized response"
+// @Failure 500 {object} response.InternalServerErrorResponse "Internal server error response"
 //
 // @Router /tables/{fullTableName}/columns/{columnName} [put]
 func (ch *ColumnHandler) Rename(c echo.Context) error {

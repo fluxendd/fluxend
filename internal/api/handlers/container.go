@@ -194,9 +194,9 @@ func (ch *ContainerHandler) Update(c echo.Context) error {
 // @Param containerUUID path string true "Container UUID"
 //
 // @Success 204 "Container deleted"
-// @Failure 400 "Invalid input"
-// @Failure 401 "Unauthorized"
-// @Failure 500 "Internal server error"
+// @Failure 400 {object} response.BadRequestErrorResponse "Bad request response"
+// @Failure 401 {object} response.UnauthorizedErrorResponse "Unauthorized response"
+// @Failure 500 {object} response.InternalServerErrorResponse "Internal server error response"
 //
 // @Router /storage/containers/{containerUUID} [delete]
 func (ch *ContainerHandler) Delete(c echo.Context) error {
