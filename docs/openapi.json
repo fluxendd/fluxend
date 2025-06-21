@@ -833,6 +833,15 @@
                         }
                     },
                     {
+                        "description": "Project UUID",
+                        "name": "X-Project",
+                        "in": "header",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
                         "description": "Container UUID",
                         "name": "containerUUID",
                         "in": "path",
@@ -952,6 +961,15 @@
                         }
                     },
                     {
+                        "description": "Project UUID",
+                        "name": "X-Project",
+                        "in": "header",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
                         "description": "Container UUID",
                         "name": "containerUUID",
                         "in": "path",
@@ -1039,6 +1057,15 @@
                     {
                         "description": "Bearer Token",
                         "name": "Authorization",
+                        "in": "header",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "Project UUID",
+                        "name": "X-Project",
                         "in": "header",
                         "required": true,
                         "schema": {
@@ -1136,6 +1163,15 @@
                         }
                     },
                     {
+                        "description": "Project UUID",
+                        "name": "X-Project",
+                        "in": "header",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
                         "description": "Container UUID",
                         "name": "containerUUID",
                         "in": "path",
@@ -1202,6 +1238,15 @@
                     {
                         "description": "Bearer Token",
                         "name": "Authorization",
+                        "in": "header",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "Project UUID",
+                        "name": "X-Project",
                         "in": "header",
                         "required": true,
                         "schema": {

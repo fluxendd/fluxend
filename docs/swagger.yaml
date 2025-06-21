@@ -1115,6 +1115,11 @@ paths:
         name: Authorization
         required: true
         type: string
+      - description: Project UUID
+        in: header
+        name: X-Project
+        required: true
+        type: string
       - description: Container UUID
         in: path
         name: containerUUID
@@ -1177,6 +1182,11 @@ paths:
         name: Authorization
         required: true
         type: string
+      - description: Project UUID
+        in: header
+        name: X-Project
+        required: true
+        type: string
       - description: Container UUID
         in: path
         name: containerUUID
@@ -1226,6 +1236,11 @@ paths:
         name: Authorization
         required: true
         type: string
+      - description: Project UUID
+        in: header
+        name: X-Project
+        required: true
+        type: string
       - description: Container UUID
         in: path
         name: containerUUID
@@ -1264,6 +1279,11 @@ paths:
       - description: Bearer Token
         in: header
         name: Authorization
+        required: true
+        type: string
+      - description: Project UUID
+        in: header
+        name: X-Project
         required: true
         type: string
       - description: Container UUID
@@ -1313,6 +1333,11 @@ paths:
       - description: Bearer Token
         in: header
         name: Authorization
+        required: true
+        type: string
+      - description: Project UUID
+        in: header
+        name: X-Project
         required: true
         type: string
       - description: Container UUID

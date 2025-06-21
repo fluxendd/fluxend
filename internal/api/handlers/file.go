@@ -31,6 +31,8 @@ func NewFileHandler(injector *do.Injector) (*FileHandler, error) {
 // @Produce json
 //
 // @Param Authorization header string true "Bearer Token"
+// @Param X-Project header string true "Project UUID"
+//
 // @Param containerUUID path string true "Container UUID"
 //
 // @Param page query string false "Page number for pagination"
@@ -76,6 +78,8 @@ func (fh *FileHandler) List(c echo.Context) error {
 // @Produce json
 //
 // @Param Authorization header string true "Bearer Token"
+// @Param X-Project header string true "Project UUID"
+//
 // @Param containerUUID path string true "Container UUID"
 // @Param fileUUID path string true "File UUID"
 //
@@ -121,6 +125,8 @@ func (fh *FileHandler) Show(c echo.Context) error {
 // @Produce json
 //
 // @Param Authorization header string true "Bearer Token"
+// @Param X-Project header string true "Project UUID"
+//
 // @Param containerUUID path string true "Container UUID"
 // @Param file body file.CreateRequest true "File details"
 //
@@ -161,6 +167,8 @@ func (fh *FileHandler) Store(c echo.Context) error {
 // @Produce json
 //
 // @Param Authorization header string true "Bearer Token"
+// @Param X-Project header string true "Project UUID"
+//
 // @Param containerUUID path string true "Container UUID"
 // @Param fileUUID path string true "File UUID"
 // @Param file body file.RenameRequest true "New file name"
@@ -207,6 +215,8 @@ func (fh *FileHandler) Rename(c echo.Context) error {
 // @Produce json
 //
 // @Param Authorization header string true "Bearer Token"
+// @Param X-Project header string true "Project UUID"
+//
 // @Param containerUUID path string true "Container UUID"
 // @Param fileUUID path string true "File UUID"
 //

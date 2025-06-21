@@ -712,6 +712,13 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "description": "Project UUID",
+                        "name": "X-Project",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
                         "description": "Container UUID",
                         "name": "containerUUID",
                         "in": "path",
@@ -809,6 +816,13 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "description": "Project UUID",
+                        "name": "X-Project",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
                         "description": "Container UUID",
                         "name": "containerUUID",
                         "in": "path",
@@ -882,6 +896,13 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Bearer Token",
                         "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Project UUID",
+                        "name": "X-Project",
                         "in": "header",
                         "required": true
                     },
@@ -961,6 +982,13 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "description": "Project UUID",
+                        "name": "X-Project",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
                         "description": "Container UUID",
                         "name": "containerUUID",
                         "in": "path",
@@ -1017,6 +1045,13 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Bearer Token",
                         "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Project UUID",
+                        "name": "X-Project",
                         "in": "header",
                         "required": true
                     },
