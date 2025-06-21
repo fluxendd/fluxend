@@ -34,8 +34,8 @@ import type { APIResponse } from "~/lib/types";
 import { getClientAuthToken } from "~/lib/auth";
 import { initializeServices } from "~/services";
 
-export const columnsQuery = (projectId: string, collectionId: string) => ({
-  queryKey: ["columns", projectId, collectionId],
+export const columnsQuery = (projectId: string, tableId: string) => ({
+  queryKey: ["columns", projectId, tableId],
   queryFn: async () => {
     const authToken = await getClientAuthToken();
     if (!authToken) {
@@ -44,10 +44,7 @@ export const columnsQuery = (projectId: string, collectionId: string) => ({
 
     const services = initializeServices(authToken);
 
-    const res = await services.collections.getTableColumns(
-      projectId,
-      collectionId
-    );
+    const res = await services.tables.getTableColumns(projectId, tableId);
 
     if (!res.ok && res.status > 500) {
       throw new Error("Unexpected Error");
@@ -391,7 +388,7 @@ export const rowsQuery = (
     const services = initializeServices(authToken);
 
     try {
-      const res = await services.collections.getTableRows(
+      const res = await services.tables.getTableRows(
         projectId,
         collectionName,
         {

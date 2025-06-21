@@ -18,7 +18,7 @@ import {
   SidebarInset,
   SidebarProvider,
 } from "~/components/ui/sidebar";
-import { TableList } from "./collection-list";
+import { TableList } from "./table-list";
 import { PlusCircle } from "lucide-react";
 import { TableListSkeleton } from "~/components/shared/collection-list-skeleton";
 import { Button } from "~/components/ui/button";
@@ -85,7 +85,7 @@ const CreateTableButton = ({ disabled = false }: { disabled?: boolean }) => {
 
 export async function loader({ request, params }: Route.LoaderArgs) {
   const authToken = await getServerAuthToken(request.headers);
-  const { projectId, collectionId } = params;
+  const { projectId, tableId } = params;
 
   if (!authToken) {
     throw new Error("Unauthorized");
@@ -94,7 +94,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   const services = initializeServices(authToken);
 
   const { success, errors, content, ok, status } =
-    await services.collections.getAllTables(projectId);
+    await services.tables.getAllTables(projectId);
 
   if (!ok) {
     const errorMessage = errors?.[0] || "Unknown error";
@@ -105,11 +105,11 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     }
   }
 
-  if (!collectionId) {
+  if (!tableId) {
     return redirect(
-      href("/projects/:projectId/collections/:collectionId", {
+      href("/projects/:projectId/tables/:tableId", {
         projectId,
-        collectionId: content[0].name,
+        tableId: content[0].name,
       })
     );
   }

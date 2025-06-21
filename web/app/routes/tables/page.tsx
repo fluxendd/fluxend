@@ -31,7 +31,7 @@ type PaginationType = {
 };
 
 export default function TablePageContent({ params }: Route.ComponentProps) {
-  const { projectId, collectionId } = params;
+  const { projectId, tableId } = params;
   const { projectDetails, services } =
     useOutletContext<ProjectLayoutOutletContext>();
 
@@ -47,15 +47,15 @@ export default function TablePageContent({ params }: Route.ComponentProps) {
     data: columnsData = [],
     isFetching: isColumnsFetching,
     error: columnsError,
-  } = useQuery(columnsQuery(projectId, collectionId)) || { data: [] };
+  } = useQuery(columnsQuery(projectId, tableId)) || { data: [] };
 
   const columns = useMemo(() => {
     if (!columnsData || !Array.isArray(columnsData)) {
       return [];
     }
 
-    return prepareColumns(columnsData, collectionId);
-  }, [columnsData, collectionId]);
+    return prepareColumns(columnsData, tableId);
+  }, [columnsData, tableId]);
 
   const [filterParams, setFilterParams] = useState<Record<string, string>>({});
 
@@ -87,7 +87,7 @@ export default function TablePageContent({ params }: Route.ComponentProps) {
     ...rowsQuery(
       projectId,
       projectDetails?.dbName as string,
-      collectionId,
+      tableId,
       pagination,
       filterParams
     ),
@@ -101,17 +101,17 @@ export default function TablePageContent({ params }: Route.ComponentProps) {
   const isFetching = isColumnsFetching || isRowsFetching;
 
   const handleRefresh = async () => {
-    if (collectionId) {
+    if (tableId) {
       // Invalidate queries
       await Promise.all([
         queryClient.invalidateQueries({
-          queryKey: ["columns", projectId, collectionId],
+          queryKey: ["columns", projectId, tableId],
         }),
         queryClient.invalidateQueries({
           queryKey: [
             "rows",
             projectId,
-            collectionId,
+            tableId,
             pagination.pageSize,
             pagination.pageIndex,
             filterParams,
@@ -134,46 +134,43 @@ export default function TablePageContent({ params }: Route.ComponentProps) {
         queryKey: [
           "rows",
           projectId,
-          collectionId,
+          tableId,
           newPagination.pageSize,
           newPagination.pageIndex,
           filterParams,
         ],
       });
     },
-    [pagination, projectId, collectionId, filterParams, queryClient]
+    [pagination, projectId, tableId, filterParams, queryClient]
   );
 
   const handleDeleteTable = useCallback(async () => {
-    if (!collectionId || !projectId) return;
+    if (!tableId || !projectId) return;
 
-    const response = await services.collections.deleteTable(
-      projectId,
-      collectionId
-    );
+    const response = await services.tables.deleteTable(projectId, tableId);
 
     if (response.ok) {
       // Invalidate collections query to refresh the sidebar
       await queryClient.invalidateQueries({
-        queryKey: ["collections", projectId],
+        queryKey: ["tables", projectId],
       });
 
-      navigate(`/projects/${projectId}/collections`);
+      navigate(`/projects/${projectId}/tables`);
     } else if (response?.errors) {
       toast.error(response?.errors[0]);
     } else {
       throw new Error("Unknown error deleting collection");
     }
-  }, [collectionId, projectId, queryClient, navigate]);
+  }, [tableId, projectId, queryClient, navigate]);
 
-  const noTableSelected = !collectionId;
+  const noTableSelected = !tableId;
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
       <div className="border-b px-4 py-2 mb-2 flex-shrink-0">
         <div className="flex items-center justify-between">
           <div className="text-base font-bold text-foreground h-[32px] flex flex-col justify-center">
-            Tables / {collectionId && `${collectionId}`}
+            Tables / {tableId && `${tableId}`}
           </div>
           <div className="flex items-center gap-2">
             {!noTableSelected && (
@@ -196,9 +193,7 @@ export default function TablePageContent({ params }: Route.ComponentProps) {
                     <AlertDialogDescription>
                       This action cannot be undone. This will permanently delete
                       table{" "}
-                      <strong className="text-destructive">
-                        {collectionId}
-                      </strong>{" "}
+                      <strong className="text-destructive">{tableId}</strong>{" "}
                       from our servers.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
@@ -216,7 +211,7 @@ export default function TablePageContent({ params }: Route.ComponentProps) {
             )}
             <RefreshButton
               onRefresh={useCallback(handleRefresh, [
-                collectionId,
+                tableId,
                 projectId,
                 queryClient,
               ])}
@@ -236,7 +231,7 @@ export default function TablePageContent({ params }: Route.ComponentProps) {
       {!isInitialLoading &&
         Array.isArray(columns) &&
         columns.length > 0 &&
-        collectionId && (
+        tableId && (
           <div className="flex-1 min-h-0 py-2 pb-3 overflow-hidden">
             <SearchDataTableWrapper
               columns={columns}
@@ -248,7 +243,7 @@ export default function TablePageContent({ params }: Route.ComponentProps) {
               pagination={pagination}
               totalRows={totalCount}
               projectId={projectId}
-              collectionId={collectionId}
+              tableId={tableId}
               onFilterChange={handleFilterChange}
               onPaginationChange={onPaginationChange}
             />
@@ -257,7 +252,7 @@ export default function TablePageContent({ params }: Route.ComponentProps) {
 
       {!isInitialLoading &&
         (!Array.isArray(columns) || columns.length === 0) &&
-        collectionId && (
+        tableId && (
           <div className="flex-1 min-h-0 flex items-center justify-center mx-4">
             <div className="text-md text-muted-foreground border rounded-md p-8 bg-muted/10">
               No Table Data Found

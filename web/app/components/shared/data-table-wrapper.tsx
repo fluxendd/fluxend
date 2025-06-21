@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { cn } from "~/lib/utils";
-import { DataTable } from "~/routes/collections/data-table";
+import { DataTable } from "~/routes/tables/data-table";
 import type {
   ColumnDef,
   OnChangeFn,

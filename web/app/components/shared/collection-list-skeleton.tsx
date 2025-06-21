@@ -10,7 +10,7 @@ export function TableListSkeleton({ count = 5 }: TableListSkeletonProps) {
     <>
       {Array.from({ length: count }).map((_, index) => (
         <div
-          key={`collection-skeleton-${index}`}
+          key={`table-skeleton-${index}`}
           className="flex flex-col items-start gap-8 whitespace-nowrap p-2 mx-2  text-sm leading-tight"
         >
           <div className="flex w-full items-center gap-1">

@@ -25,7 +25,7 @@ const collectionsQuery = (services: Services, projectId: string) => ({
   queryKey: ["collections", projectId],
   queryFn: async () => {
     const { success, errors, content, ok, status } =
-      await services.collections.getAllTables(projectId);
+      await services.tables.getAllTables(projectId);
 
     if (!ok) {
       const errorMessage = errors?.[0] || "Unknown error";
@@ -88,26 +88,24 @@ export const TableList = ({
   }
 
   if (isError) {
-    return (
-      <InfoMessage message={error.message || "Failed to load collections"} />
-    );
+    return <InfoMessage message={error.message || "Failed to load tables"} />;
   }
 
   if (!data || data.length === 0) {
-    return <InfoMessage message="No collections found" />;
+    return <InfoMessage message="No tables found" />;
   }
 
   if (data.length === 0) {
-    return <InfoMessage message="No matching collections found" />;
+    return <InfoMessage message="No matching tables found" />;
   }
 
   return (
     <div className="h-full overflow-y-auto flex flex-col">
       {filteredData.map((table) => (
         <NavLink
-          to={href("/projects/:projectId/collections/:collectionId", {
+          to={href("/projects/:projectId/tables/:tableId", {
             projectId: projectId,
-            collectionId: table.name,
+            tableId: table.name,
           })}
           key={table.name}
           className={({ isActive }) =>
@@ -124,7 +122,7 @@ export const TableList = ({
               <div className="flex w-full items-center gap-1">
                 {isActive && (
                   <motion.div
-                    layoutId="collectionId"
+                    layoutId="tableId"
                     className="absolute inset-0 bg-primary/10 rounded-lg"
                     transition={{
                       type: "spring",
