@@ -75,9 +75,11 @@ enum ColumnType {
   Serial = "serial",
   Varchar = "varchar",
   Text = "text",
+  CharacterVarying = "character varying(255)",
   Boolean = "boolean",
   Date = "date",
   Timestamp = "timestamp",
+  TimestampWithoutTimeZone = "timestamp without time zone",
   Float = "float",
   UUID = "uuid",
   JSON = "json",
@@ -90,6 +92,8 @@ interface ColumnIconProps {
 const ColumnIcon: React.FC<ColumnIconProps> = ({ type }) => {
   let Icon = Circle;
 
+  console.log("Column type:", type);
+
   switch (type) {
     case ColumnType.Integer:
       Icon = Hash;
@@ -98,6 +102,9 @@ const ColumnIcon: React.FC<ColumnIconProps> = ({ type }) => {
       Icon = Hash;
       break;
     case ColumnType.Varchar:
+      Icon = Text;
+      break;
+    case ColumnType.CharacterVarying:
       Icon = Text;
       break;
     case ColumnType.Text:
@@ -110,6 +117,9 @@ const ColumnIcon: React.FC<ColumnIconProps> = ({ type }) => {
       Icon = Calendar;
       break;
     case ColumnType.Timestamp:
+      Icon = Clock;
+      break;
+    case ColumnType.TimestampWithoutTimeZone:
       Icon = Clock;
       break;
     case ColumnType.Float:
