@@ -499,7 +499,7 @@ export function QuerySearchBox({
               onChange={handleQueryChange}
               onKeyDown={handleKeyDown}
               placeholder="Query..."
-              className="pl-8 pr-[76px] w-full border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+              className="pl-8 pr-[76px] w-full border focus-visible:ring-0 focus-visible:ring-offset-0 rounded-lg"
             />
             <div className="absolute right-1 top-1/2 -translate-y-1/2 flex items-center space-x-1">
               {query && (

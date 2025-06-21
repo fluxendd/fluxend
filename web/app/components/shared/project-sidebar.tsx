@@ -93,9 +93,11 @@ export const ProjectSidebar = memo(
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild className="md:h-8 md:p-0">
-              <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-muted text-black">
-                <Logo className="size-4" />
-              </div>
+              <NavLink to="/projects">
+                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-muted text-black">
+                  <Logo className="size-4" />
+                </div>
+              </NavLink>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
@@ -116,7 +118,7 @@ export const ProjectSidebar = memo(
                         {isActive && (
                           <motion.div
                             layoutId="sidebarItemId"
-                            className="absolute inset-0 bg-sidebar-accent text-sidebar-accent-foreground rounded-md"
+                            className="absolute inset-0 bg-sidebar-accent text-sidebar-accent-foreground rounded-lg"
                             transition={{
                               type: "spring",
                               bounce: 0.2,

@@ -34,12 +34,12 @@ export function HydrateFallback() {
         className="hidden md:flex h-screen"
         variant="inset"
       >
-        <SidebarHeader className="gap-3 border-b p-2">
+        <SidebarHeader className="border-b px-2">
           <div className="flex items-center gap-2">
             <SidebarInput
               placeholder="Type to search..."
               disabled
-              className="flex-1"
+              className="flex-1 rounded-lg"
             />
           </div>
         </SidebarHeader>
@@ -72,7 +72,7 @@ const CreateTableButton = ({ disabled = false }: { disabled?: boolean }) => {
 
   return (
     <Button
-      className="w-full relative overflow-hidden group cursor-pointer"
+      className="w-full relative overflow-hidden group cursor-pointer rounded-lg"
       size="sm"
       disabled={disabled}
       onClick={handleClick}
@@ -144,7 +144,7 @@ export default function TableSidebar({
                 placeholder="Type to search..."
                 value={searchTerm}
                 onChange={handleSearch}
-                className="flex-1"
+                className="flex-1 rounded-lg"
               />
             </div>
           </SidebarHeader>

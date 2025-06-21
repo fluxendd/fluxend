@@ -178,14 +178,14 @@ export default function TablePageContent({ params }: Route.ComponentProps) {
           <div className="flex items-center gap-2">
             {!noTableSelected && (
               <AlertDialog>
-                <AlertDialogTrigger>
+                <AlertDialogTrigger asChild>
                   <Button
                     type="button"
                     variant="ghost"
-                    size="icon"
+                    size="sm"
                     className="cursor-pointer"
                   >
-                    <Trash2 className="h-4 w-4" />
+                    <Trash2 />
                   </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
@@ -220,6 +220,7 @@ export default function TablePageContent({ params }: Route.ComponentProps) {
                 projectId,
                 queryClient,
               ])}
+              size="sm"
               title="Refresh Tables and Table Data"
             />
           </div>

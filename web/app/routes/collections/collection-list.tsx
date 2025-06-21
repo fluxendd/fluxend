@@ -125,7 +125,7 @@ export const TableList = ({
                 {isActive && (
                   <motion.div
                     layoutId="collectionId"
-                    className="absolute inset-0 bg-primary/10 rounded-md"
+                    className="absolute inset-0 bg-primary/10 rounded-lg"
                     transition={{
                       type: "spring",
                       bounce: 0.2,

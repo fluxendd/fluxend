@@ -98,7 +98,7 @@ export function RefreshButton({
       disabled={isRefreshing}
       {...props}
     >
-      <div ref={refreshIconRef}>{icon || <RefreshCw className="size-4" />}</div>
+      <div ref={refreshIconRef}>{icon || <RefreshCw />}</div>
     </Button>
   );
 }

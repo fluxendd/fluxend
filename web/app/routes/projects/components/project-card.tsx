@@ -24,7 +24,7 @@ const ProjectCard = ({ project, onClick }: ProjectCardProps) => {
 
   return (
     <div
-      className="group relative overflow-hidden rounded-md border border-gray-200 bg-white p-3 shadow-sm transition-all duration-200 hover:shadow-md hover:border-muted-foreground cursor-pointer dark:border-muted dark:bg-background dark:hover:border-gray-600"
+      className="group relative overflow-hidden rounded-lg border border-gray-200 bg-white p-3 shadow-sm transition-all duration-200 hover:shadow-md hover:border-muted-foreground cursor-pointer dark:border-muted dark:bg-background dark:hover:border-gray-600"
       onClick={onClick}
     >
       <div className="flex flex-col mb-3 gap-1">
