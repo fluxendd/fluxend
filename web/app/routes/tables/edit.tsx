@@ -35,17 +35,14 @@ export default function EditTable() {
 
     setIsDeleting(true);
     try {
-      const response = await services.collections.deleteTable(
-        projectId,
-        tableName
-      );
+      const response = await services.tables.deleteTable(projectId, tableName);
 
       if (response.ok) {
-        // Navigate back to collections list after successful deletion
-        navigate("/collections");
+        // Navigate back to tables list after successful deletion
+        navigate("/tables");
       } else {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || "Failed to delete table");
+        const errorData = response.errors?.[0];
+        throw new Error(errorData || "Failed to delete table");
       }
     } catch (error) {
       console.error("Error deleting table:", error);
@@ -93,10 +90,7 @@ export default function EditTable() {
               </div>
 
               <div className="flex justify-end space-x-2">
-                <Button
-                  variant="outline"
-                  onClick={() => navigate("/collections")}
-                >
+                <Button variant="outline" onClick={() => navigate("/tables")}>
                   Back to Tables
                 </Button>
                 <Button disabled>Save Changes</Button>

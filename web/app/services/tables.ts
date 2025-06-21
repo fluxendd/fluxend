@@ -1,6 +1,6 @@
 import type { APIResponse } from "~/lib/types";
 import { getTypedResponseData } from "~/lib/utils";
-import type { Table } from "~/routes/collections/collection-list";
+import type { Table } from "~/routes/tables/table-list";
 import { get, post, del, type APIRequestOptions } from "~/tools/fetch";
 
 export function createTablesService(authToken: string) {

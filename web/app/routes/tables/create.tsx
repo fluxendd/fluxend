@@ -113,7 +113,7 @@ export default function CreateTable() {
         columns: data.columns,
       };
 
-      const response = await services.collections.createTable(
+      const response = await services.tables.createTable(
         projectId,
         requestBody
       );
@@ -122,13 +122,13 @@ export default function CreateTable() {
         const responseData = await response.json();
         const newTableName = responseData.content?.name || data.tableName;
 
-        // Invalidate collections query to refresh the sidebar
+        // Invalidate tables query to refresh the sidebar
         await queryClient.invalidateQueries({
-          queryKey: ["collections", projectId],
+          queryKey: ["tables", projectId],
         });
 
         // Redirect to the new table
-        navigate(`/projects/${projectId}/collections/${newTableName}`);
+        navigate(`/projects/${projectId}/tables/${newTableName}`);
       } else {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(errorData.message || "Failed to create table");

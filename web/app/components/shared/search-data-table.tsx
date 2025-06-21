@@ -2,7 +2,14 @@ import { useState, useCallback, useEffect, useMemo } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { X, Search, FilterX, ChevronDown, ChevronUp, AlertCircle } from "lucide-react";
+import {
+  X,
+  Search,
+  FilterX,
+  ChevronDown,
+  ChevronUp,
+  AlertCircle,
+} from "lucide-react";
 import {
   Form,
   FormControl,
@@ -20,7 +27,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select";
-import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "~/components/ui/popover";
 import {
   Accordion,
   AccordionContent,
@@ -45,19 +56,19 @@ enum ColumnDataType {
   Varchar = "character varying",
   Char = "character",
   Boolean = "boolean",
-  
+
   // Numeric
   Numeric = "numeric",
   Decimal = "decimal",
   Real = "real",
   DoublePrecision = "double precision",
-  
+
   // Date/Time
   Date = "date",
   Time = "time",
   Timestamp = "timestamp",
   TimestampTZ = "timestamptz",
-  
+
   // Other common types
   UUID = "uuid",
   JSON = "json",
@@ -70,36 +81,36 @@ export enum FilterOperator {
   // Equality
   Equals = "eq",
   NotEquals = "neq",
-  
+
   // Comparison
   GreaterThan = "gt",
   GreaterThanOrEqual = "gte",
   LessThan = "lt",
   LessThanOrEqual = "lte",
-  
+
   // Text
   Like = "like",
   ILike = "ilike",
   Match = "match",
   IMatch = "imatch",
-  
+
   // Full Text Search
   FTS = "fts",
   PlainFTS = "plfts",
   PhraseFTS = "phfts",
   WebFTS = "wfts",
-  
+
   // Lists
   In = "in",
-  
+
   // Boolean
   Is = "is",
-  
+
   // Arrays/JSON
   Contains = "cs",
   ContainedIn = "cd",
   Overlap = "ov",
-  
+
   // Range Operators
   StrictlyLeft = "sl",
   StrictlyRight = "sr",
@@ -127,14 +138,15 @@ const OPERATOR_BY_TYPE = {
     { value: FilterOperator.Equals, label: "Equals" },
     { value: FilterOperator.NotEquals, label: "Not Equals" },
     { value: FilterOperator.GreaterThan, label: "Greater Than" },
-    { value: FilterOperator.GreaterThanOrEqual, label: "Greater Than or Equal" },
+    {
+      value: FilterOperator.GreaterThanOrEqual,
+      label: "Greater Than or Equal",
+    },
     { value: FilterOperator.LessThan, label: "Less Than" },
     { value: FilterOperator.LessThanOrEqual, label: "Less Than or Equal" },
     { value: FilterOperator.In, label: "In List" },
   ],
-  boolean: [
-    { value: FilterOperator.Is, label: "Is" },
-  ],
+  boolean: [{ value: FilterOperator.Is, label: "Is" }],
   date: [
     { value: FilterOperator.Equals, label: "Equals" },
     { value: FilterOperator.NotEquals, label: "Not Equals" },
@@ -148,9 +160,7 @@ const OPERATOR_BY_TYPE = {
     { value: FilterOperator.ContainedIn, label: "Contained In" },
     { value: FilterOperator.Overlap, label: "Overlaps" },
   ],
-  json: [
-    { value: FilterOperator.Contains, label: "Contains" },
-  ],
+  json: [{ value: FilterOperator.Contains, label: "Contains" }],
   range: [
     { value: FilterOperator.StrictlyLeft, label: "Strictly Left Of" },
     { value: FilterOperator.StrictlyRight, label: "Strictly Right Of" },
@@ -162,9 +172,11 @@ const OPERATOR_BY_TYPE = {
 };
 
 // Map PostgreSQL column types to our simplified categories
-const mapColumnTypeToCategory = (columnType: string): keyof typeof OPERATOR_BY_TYPE => {
+const mapColumnTypeToCategory = (
+  columnType: string
+): keyof typeof OPERATOR_BY_TYPE => {
   const type = columnType.toLowerCase();
-  
+
   if (
     type.includes(ColumnDataType.Integer) ||
     type.includes(ColumnDataType.BigInt) ||
@@ -190,14 +202,21 @@ const mapColumnTypeToCategory = (columnType: string): keyof typeof OPERATOR_BY_T
     return "date";
   } else if (type.includes(ColumnDataType.Boolean)) {
     return "boolean";
-  } else if (type.includes(ColumnDataType.JSON) || type.includes(ColumnDataType.JSONB)) {
+  } else if (
+    type.includes(ColumnDataType.JSON) ||
+    type.includes(ColumnDataType.JSONB)
+  ) {
     return "json";
   } else if (type.includes(ColumnDataType.Array) || type.endsWith("[]")) {
     return "array";
-  } else if (type.includes("range") || type.includes("tsrange") || type.includes("daterange")) {
+  } else if (
+    type.includes("range") ||
+    type.includes("tsrange") ||
+    type.includes("daterange")
+  ) {
     return "range";
   }
-  
+
   // Default to text for unknown types
   return "text";
 };
@@ -260,15 +279,15 @@ const formatFilterValueForDisplay = (filter: FilterCriteria): string => {
     if (filter.value === false || filter.value === "false") return "False";
     return "Null";
   }
-  
+
   if (filter.type === "date" && filter.value instanceof Date) {
     return format(filter.value, "PPP");
   }
-  
+
   if (Array.isArray(filter.value)) {
     return filter.value.join(", ");
   }
-  
+
   return String(filter.value);
 };
 
@@ -285,26 +304,28 @@ export const buildPostgrestFilterParams = (
   if (filters.length === 1) {
     const filter = filters[0];
     const { column, operator, value } = filter;
-    
+
     // Handle different value formats based on operator and type
     if (operator === FilterOperator.In) {
       const values = Array.isArray(value) ? value : value.toString().split(",");
-      const formatted = `(${values.map(v => {
-        // Quote string values inside the in() operator
-        if (filter.type === "text" && typeof v === "string") {
-          // Escape quotes inside the string
-          const escaped = v.trim().replace(/"/g, '\\"');
-          return `"${escaped}"`;
-        }
-        return v;
-      }).join(",")})`;
+      const formatted = `(${values
+        .map((v) => {
+          // Quote string values inside the in() operator
+          if (filter.type === "text" && typeof v === "string") {
+            // Escape quotes inside the string
+            const escaped = v.trim().replace(/"/g, '\\"');
+            return `"${escaped}"`;
+          }
+          return v;
+        })
+        .join(",")})`;
       return { [column]: `${operator}.${formatted}` };
     }
-    
+
     if (filter.type === "boolean" && operator === FilterOperator.Is) {
       return { [column]: `${operator}.${value}` };
     }
-    
+
     if (filter.type === "date") {
       const dateValue = value instanceof Date ? value : new Date(value);
       return { [column]: `${operator}.${format(dateValue, "yyyy-MM-dd")}` };
@@ -312,19 +333,32 @@ export const buildPostgrestFilterParams = (
 
     if (operator === FilterOperator.Like || operator === FilterOperator.ILike) {
       // Replace * with % for PostgREST pattern matching
-      const formattedValue = String(value).replace(/\*/g, '%');
+      const formattedValue = String(value).replace(/\*/g, "%");
       return { [column]: `${operator}.${formattedValue}` };
     }
-    
+
     // Handle Full-Text Search operators
-    if ([FilterOperator.FTS, FilterOperator.PlainFTS, FilterOperator.PhraseFTS, FilterOperator.WebFTS].includes(operator as FilterOperator)) {
+    if (
+      [
+        FilterOperator.FTS,
+        FilterOperator.PlainFTS,
+        FilterOperator.PhraseFTS,
+        FilterOperator.WebFTS,
+      ].includes(operator as FilterOperator)
+    ) {
       // For full-text search, we can optionally specify the language like "fts(english).query"
       const language = "english"; // Default language, could be made configurable
       return { [column]: `${operator}(${language}).${value}` };
     }
-    
-    if (["array", "json"].includes(filter.type) && 
-        [FilterOperator.Contains, FilterOperator.ContainedIn, FilterOperator.Overlap].includes(operator as FilterOperator)) {
+
+    if (
+      ["array", "json"].includes(filter.type) &&
+      [
+        FilterOperator.Contains,
+        FilterOperator.ContainedIn,
+        FilterOperator.Overlap,
+      ].includes(operator as FilterOperator)
+    ) {
       // Format for array operators: column=cs.{val1,val2}
       let arrayValue = value;
       if (typeof value === "string") {
@@ -333,87 +367,109 @@ export const buildPostgrestFilterParams = (
           arrayValue = JSON.parse(value);
         } catch (e) {
           // If parsing fails, split by comma
-          arrayValue = value.split(",").map(v => v.trim());
+          arrayValue = value.split(",").map((v) => v.trim());
         }
       }
-      
+
       if (!Array.isArray(arrayValue)) {
         arrayValue = [arrayValue];
       }
-      
+
       return { [column]: `${operator}.{${arrayValue.join(",")}}` };
     }
-    
+
     // Default case
     return { [column]: `${operator}.${value}` };
   }
-  
+
   // Multiple filters handling with AND/OR
-  const filterStr = filters.map(filter => {
-    const { column, operator, value } = filter;
-    
-    // Format each individual filter condition
-    if (filter.type === "boolean" && operator === FilterOperator.Is) {
+  const filterStr = filters
+    .map((filter) => {
+      const { column, operator, value } = filter;
+
+      // Format each individual filter condition
+      if (filter.type === "boolean" && operator === FilterOperator.Is) {
+        return `${column}.${operator}.${value}`;
+      }
+
+      if (filter.type === "date") {
+        const dateValue = value instanceof Date ? value : new Date(value);
+        return `${column}.${operator}.${format(dateValue, "yyyy-MM-dd")}`;
+      }
+
+      if (operator === FilterOperator.In) {
+        const values = Array.isArray(value)
+          ? value
+          : value.toString().split(",");
+        const formatted = `(${values
+          .map((v) => {
+            if (filter.type === "text" && typeof v === "string") {
+              const escaped = v.trim().replace(/"/g, '\\"');
+              return `"${escaped}"`;
+            }
+            return v;
+          })
+          .join(",")})`;
+        return `${column}.${operator}.${formatted}`;
+      }
+
+      if (
+        operator === FilterOperator.Like ||
+        operator === FilterOperator.ILike
+      ) {
+        const formattedValue = String(value).replace(/\*/g, "%");
+        return `${column}.${operator}.${formattedValue}`;
+      }
+
+      // Handle Full-Text Search operators in logical combinations
+      if (
+        [
+          FilterOperator.FTS,
+          FilterOperator.PlainFTS,
+          FilterOperator.PhraseFTS,
+          FilterOperator.WebFTS,
+        ].includes(operator as FilterOperator)
+      ) {
+        const language = "english"; // Default language
+        return `${column}.${operator}(${language}).${value}`;
+      }
+
+      if (
+        ["array", "json"].includes(filter.type) &&
+        [
+          FilterOperator.Contains,
+          FilterOperator.ContainedIn,
+          FilterOperator.Overlap,
+        ].includes(operator as FilterOperator)
+      ) {
+        let arrayValue = value;
+        if (typeof value === "string") {
+          try {
+            arrayValue = JSON.parse(value);
+          } catch (e) {
+            arrayValue = value.split(",").map((v) => v.trim());
+          }
+        }
+
+        if (!Array.isArray(arrayValue)) {
+          arrayValue = [arrayValue];
+        }
+
+        return `${column}.${operator}.{${arrayValue.join(",")}}`;
+      }
+
+      // Default format
       return `${column}.${operator}.${value}`;
-    }
-    
-    if (filter.type === "date") {
-      const dateValue = value instanceof Date ? value : new Date(value);
-      return `${column}.${operator}.${format(dateValue, "yyyy-MM-dd")}`;
-    }
-    
-    if (operator === FilterOperator.In) {
-      const values = Array.isArray(value) ? value : value.toString().split(",");
-      const formatted = `(${values.map(v => {
-        if (filter.type === "text" && typeof v === "string") {
-          const escaped = v.trim().replace(/"/g, '\\"');
-          return `"${escaped}"`;
-        }
-        return v;
-      }).join(",")})`;
-      return `${column}.${operator}.${formatted}`;
-    }
-    
-    if (operator === FilterOperator.Like || operator === FilterOperator.ILike) {
-      const formattedValue = String(value).replace(/\*/g, '%');
-      return `${column}.${operator}.${formattedValue}`;
-    }
-    
-    // Handle Full-Text Search operators in logical combinations
-    if ([FilterOperator.FTS, FilterOperator.PlainFTS, FilterOperator.PhraseFTS, FilterOperator.WebFTS].includes(operator as FilterOperator)) {
-      const language = "english"; // Default language
-      return `${column}.${operator}(${language}).${value}`;
-    }
-    
-    if (["array", "json"].includes(filter.type) && 
-        [FilterOperator.Contains, FilterOperator.ContainedIn, FilterOperator.Overlap].includes(operator as FilterOperator)) {
-      let arrayValue = value;
-      if (typeof value === "string") {
-        try {
-          arrayValue = JSON.parse(value);
-        } catch (e) {
-          arrayValue = value.split(",").map(v => v.trim());
-        }
-      }
-      
-      if (!Array.isArray(arrayValue)) {
-        arrayValue = [arrayValue];
-      }
-      
-      return `${column}.${operator}.{${arrayValue.join(",")}}`;
-    }
-    
-    // Default format
-    return `${column}.${operator}.${value}`;
-  }).join(",");
-  
+    })
+    .join(",");
+
   return { [logicalOperator]: `(${filterStr})` };
 };
 
 interface SearchDataTableProps {
   columns: any[];
   projectId: string;
-  collectionId: string;
+  tableId: string;
   pagination: {
     pageIndex: number;
     pageSize: number;
@@ -425,7 +481,7 @@ interface SearchDataTableProps {
 export function SearchDataTable({
   columns,
   projectId,
-  collectionId,
+  tableId,
   pagination,
   onFilterChange,
   className,
@@ -443,7 +499,7 @@ export function SearchDataTable({
       logicalOperator: "and",
     },
   });
-  
+
   // Create a new filter form
   const addFilterForm = useForm({
     resolver: zodResolver(
@@ -459,30 +515,30 @@ export function SearchDataTable({
       value: "",
     },
   });
-  
+
   // Get selected column data
   const selectedColumnName = addFilterForm.watch("column");
   const selectedColumn = useMemo(() => {
     if (!selectedColumnName) return null;
-    return columns.find(col => col.name === selectedColumnName);
+    return columns.find((col) => col.name === selectedColumnName);
   }, [selectedColumnName, columns]);
-  
+
   // Get column type based on selected column
   const columnType = useMemo(() => {
     if (!selectedColumn) return "text";
     return mapColumnTypeToCategory(selectedColumn.type || "text");
   }, [selectedColumn]);
-  
+
   // Available operators for the current column type
   const availableOperators = useMemo(() => {
     return OPERATOR_BY_TYPE[columnType] || OPERATOR_BY_TYPE.text;
   }, [columnType]);
-  
+
   // Reset operator and value when column changes
   useEffect(() => {
     if (selectedColumn) {
       addFilterForm.setValue("operator", availableOperators[0].value);
-      
+
       // Set default value based on column type
       if (columnType === "boolean") {
         addFilterForm.setValue("value", "true");
@@ -493,23 +549,23 @@ export function SearchDataTable({
       }
     }
   }, [selectedColumn, columnType, addFilterForm, availableOperators]);
-  
+
   // Add a new filter
   const handleAddFilter = useCallback(() => {
     const values = addFilterForm.getValues();
-    
+
     // Skip if empty values or no column selected
     if (!values.column) return;
-    
+
     // Skip empty values (except for boolean)
     if (values.value === "" && columnType !== "boolean") {
       // toast({ title: "Error", description: "Please enter a value for the filter", variant: "destructive" });
       return;
     }
-    
+
     // Process the value based on column type
     let processedValue = values.value;
-    
+
     if (columnType === "number") {
       // Convert to number if possible
       const num = parseFloat(values.value);
@@ -524,10 +580,10 @@ export function SearchDataTable({
     } else if (values.operator === FilterOperator.In) {
       // Convert comma-separated values to array
       if (typeof values.value === "string") {
-        processedValue = values.value.split(",").map(v => v.trim());
+        processedValue = values.value.split(",").map((v) => v.trim());
       }
     }
-    
+
     // Create the filter criteria
     const newFilter: FilterCriteria = {
       column: values.column,
@@ -535,60 +591,76 @@ export function SearchDataTable({
       value: processedValue,
       type: columnType as any,
     };
-    
+
     // Update the filters
     const updatedFilters = [...activeFilters, newFilter];
     setActiveFilters(updatedFilters);
-    
+
     // Update form state
     form.setValue("filters", updatedFilters);
     form.setValue("logicalOperator", logicalOperator);
-    
+
     // Build PostgREST filter parameters
-    const filterParams = buildPostgrestFilterParams(updatedFilters, logicalOperator);
+    const filterParams = buildPostgrestFilterParams(
+      updatedFilters,
+      logicalOperator
+    );
     onFilterChange(filterParams);
-    
+
     // Show success feedback
     // Use toast notification if available in your UI library
     // toast({ title: "Filter applied", description: `Filtering by ${filter.column} ${filter.operator} ${filter.value}` });
-    
+
     // Reset the add filter form
     addFilterForm.reset({
       column: "",
       operator: FilterOperator.Equals,
       value: "",
     });
-  }, [addFilterForm, form, activeFilters, columnType, logicalOperator, onFilterChange]);
-  
+  }, [
+    addFilterForm,
+    form,
+    activeFilters,
+    columnType,
+    logicalOperator,
+    onFilterChange,
+  ]);
+
   // Remove a filter
-  const handleRemoveFilter = useCallback((index: number) => {
-    const updatedFilters = activeFilters.filter((_, i) => i !== index);
-    setActiveFilters(updatedFilters);
-    
-    // Update form state
-    form.setValue("filters", updatedFilters);
-    
-    // Update PostgREST filter parameters
-    const filterParams = buildPostgrestFilterParams(updatedFilters, logicalOperator);
-    onFilterChange(filterParams);
-  }, [activeFilters, form, logicalOperator, onFilterChange]);
-  
+  const handleRemoveFilter = useCallback(
+    (index: number) => {
+      const updatedFilters = activeFilters.filter((_, i) => i !== index);
+      setActiveFilters(updatedFilters);
+
+      // Update form state
+      form.setValue("filters", updatedFilters);
+
+      // Update PostgREST filter parameters
+      const filterParams = buildPostgrestFilterParams(
+        updatedFilters,
+        logicalOperator
+      );
+      onFilterChange(filterParams);
+    },
+    [activeFilters, form, logicalOperator, onFilterChange]
+  );
+
   // Toggle logical operator (AND/OR)
   const handleToggleLogicalOperator = useCallback(() => {
     const newOperator = logicalOperator === "and" ? "or" : "and";
     setLogicalOperator(newOperator);
-    
+
     // Update form state
     form.setValue("logicalOperator", newOperator);
-    
+
     // Update PostgREST filter parameters
     const filterParams = buildPostgrestFilterParams(activeFilters, newOperator);
     onFilterChange(filterParams);
-    
+
     // Give feedback
     // toast({ title: "Logical operator changed", description: `Using ${newOperator.toUpperCase()} between filters` });
   }, [logicalOperator, activeFilters, form, onFilterChange]);
-  
+
   // Clear all filters
   const handleClearAllFilters = useCallback(() => {
     setActiveFilters([]);
@@ -598,25 +670,25 @@ export function SearchDataTable({
     });
     setLogicalOperator("and");
     onFilterChange({});
-    
+
     // Refresh data in the table
-    if (projectId && collectionId) {
+    if (projectId && tableId) {
       queryClient.invalidateQueries({
         queryKey: [
           "rows",
           projectId,
-          collectionId,
+          tableId,
           pagination.pageSize,
           pagination.pageIndex,
         ],
       });
     }
-  }, [form, onFilterChange, queryClient, projectId, collectionId, pagination]);
-  
+  }, [form, onFilterChange, queryClient, projectId, tableId, pagination]);
+
   // Render value input based on column type and operator
   const renderValueInput = () => {
     const operator = addFilterForm.watch("operator");
-    
+
     if (columnType === "boolean" && operator === FilterOperator.Is) {
       return (
         <FormField
@@ -624,10 +696,7 @@ export function SearchDataTable({
           name="value"
           render={({ field }) => (
             <FormItem>
-              <Select
-                value={field.value}
-                onValueChange={field.onChange}
-              >
+              <Select value={field.value} onValueChange={field.onChange}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select value" />
                 </SelectTrigger>
@@ -642,7 +711,7 @@ export function SearchDataTable({
         />
       );
     }
-    
+
     if (columnType === "date") {
       return (
         <FormField
@@ -682,7 +751,9 @@ export function SearchDataTable({
                         : new Date(field.value)
                     }
                     onSelect={field.onChange}
-                    disabled={(date) => date > new Date() || date < new Date("1900-01-01")}
+                    disabled={(date) =>
+                      date > new Date() || date < new Date("1900-01-01")
+                    }
                   />
                 </PopoverContent>
               </Popover>
@@ -691,7 +762,7 @@ export function SearchDataTable({
         />
       );
     }
-    
+
     if (operator === FilterOperator.In) {
       return (
         <FormField
@@ -700,10 +771,7 @@ export function SearchDataTable({
           render={({ field }) => (
             <FormItem>
               <FormControl>
-                <Input
-                  {...field}
-                  placeholder="Values separated by commas"
-                />
+                <Input {...field} placeholder="Values separated by commas" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -711,9 +779,15 @@ export function SearchDataTable({
         />
       );
     }
-    
-    if (["array", "json"].includes(columnType) && 
-        [FilterOperator.Contains, FilterOperator.ContainedIn, FilterOperator.Overlap].includes(operator as FilterOperator)) {
+
+    if (
+      ["array", "json"].includes(columnType) &&
+      [
+        FilterOperator.Contains,
+        FilterOperator.ContainedIn,
+        FilterOperator.Overlap,
+      ].includes(operator as FilterOperator)
+    ) {
       return (
         <FormField
           control={addFilterForm.control}
@@ -723,7 +797,11 @@ export function SearchDataTable({
               <FormControl>
                 <Input
                   {...field}
-                  placeholder={columnType === "json" ? "JSON object" : "Values separated by commas"}
+                  placeholder={
+                    columnType === "json"
+                      ? "JSON object"
+                      : "Values separated by commas"
+                  }
                 />
               </FormControl>
               <FormMessage />
@@ -732,7 +810,7 @@ export function SearchDataTable({
         />
       );
     }
-    
+
     // Default input
     return (
       <FormField
@@ -753,7 +831,7 @@ export function SearchDataTable({
       />
     );
   };
-  
+
   return (
     <div className={cn("border rounded-md p-4", className)}>
       <div className="flex flex-col space-y-4">
@@ -771,11 +849,12 @@ export function SearchDataTable({
               <ChevronDown className="h-4 w-4" />
             )}
           </Button>
-          
+
           {activeFilters.length > 0 && (
             <div className="flex items-center gap-2">
               <span className="text-sm text-muted-foreground">
-                {activeFilters.length} filter{activeFilters.length !== 1 ? "s" : ""} applied
+                {activeFilters.length} filter
+                {activeFilters.length !== 1 ? "s" : ""} applied
               </span>
               <Button
                 variant="ghost"
@@ -789,7 +868,7 @@ export function SearchDataTable({
             </div>
           )}
         </div>
-        
+
         {/* Active filters display */}
         {activeFilters.length > 0 && (
           <div className="flex flex-wrap gap-2 mt-2">
@@ -800,7 +879,9 @@ export function SearchDataTable({
                 className="flex items-center gap-1 px-2 py-1"
               >
                 <span className="font-medium">{filter.column}</span>
-                <span className="text-muted-foreground mx-0.5">{filter.operator}</span>
+                <span className="text-muted-foreground mx-0.5">
+                  {filter.operator}
+                </span>
                 <span>{formatFilterValueForDisplay(filter)}</span>
                 <Button
                   variant="ghost"
@@ -812,7 +893,7 @@ export function SearchDataTable({
                 </Button>
               </Badge>
             ))}
-            
+
             {activeFilters.length > 1 && (
               <Button
                 variant="outline"
@@ -825,7 +906,7 @@ export function SearchDataTable({
             )}
           </div>
         )}
-        
+
         {/* Error message for invalid filters */}
         {isExpanded && activeFilters.length === 0 && (
           <div className="bg-destructive/10 text-destructive flex items-start p-4 mb-4 rounded-md border border-destructive/20">
@@ -838,7 +919,7 @@ export function SearchDataTable({
             </div>
           </div>
         )}
-        
+
         {/* Filter builder */}
         {isExpanded && (
           <Accordion
@@ -879,7 +960,7 @@ export function SearchDataTable({
                         </FormItem>
                       )}
                     />
-                    
+
                     {/* Operator selection */}
                     {selectedColumn && (
                       <FormField
@@ -907,7 +988,7 @@ export function SearchDataTable({
                         )}
                       />
                     )}
-                    
+
                     {/* Value input */}
                     {selectedColumn && (
                       <div>
@@ -916,19 +997,24 @@ export function SearchDataTable({
                       </div>
                     )}
                   </div>
-                  
+
                   <div className="flex justify-between">
                     <div className="text-xs text-muted-foreground">
                       {activeFilters.length > 0 && (
                         <span>
-                          Using <strong>{logicalOperator.toUpperCase()}</strong> operator between filters
+                          Using <strong>{logicalOperator.toUpperCase()}</strong>{" "}
+                          operator between filters
                         </span>
                       )}
                     </div>
                     <Button
                       type="button"
                       onClick={handleAddFilter}
-                      disabled={!selectedColumn || (addFilterForm.watch("value") === "" && columnType !== "boolean")}
+                      disabled={
+                        !selectedColumn ||
+                        (addFilterForm.watch("value") === "" &&
+                          columnType !== "boolean")
+                      }
                     >
                       Add Filter
                     </Button>

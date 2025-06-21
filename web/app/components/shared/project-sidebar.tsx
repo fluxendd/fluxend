@@ -59,7 +59,7 @@ const items = [
   },
   {
     title: "Tables",
-    url: "collections",
+    url: "tables",
     Icon: Database,
     isActive: true,
   },

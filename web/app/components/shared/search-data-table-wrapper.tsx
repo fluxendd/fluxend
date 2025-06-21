@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { cn } from "~/lib/utils";
-import { DataTable } from "~/routes/collections/data-table";
+import { DataTable } from "~/routes/tables/data-table";
 import { QuerySearchBox } from "./query-search-box";
 import type {
   ColumnDef,
@@ -19,7 +19,7 @@ interface SearchDataTableWrapperProps<TData, TValue> {
   onPaginationChange: OnChangeFn<PaginationState>;
   totalRows: number;
   projectId: string;
-  collectionId: string;
+  tableId: string;
   onFilterChange: (filters: Record<string, string>) => void;
 }
 
