@@ -40,7 +40,7 @@ export const columnsQuery = (projectId: string, collectionId: string) => ({
 
     const services = initializeServices(authToken);
 
-    const res = await services.collections.getCollectionColumns(
+    const res = await services.collections.getTableColumns(
       projectId,
       collectionId
     );
@@ -353,7 +353,7 @@ export const rowsQuery = (
     const services = initializeServices(authToken);
 
     try {
-      const res = await services.collections.getCollectionRows(
+      const res = await services.collections.getTableRows(
         projectId,
         collectionName,
         {

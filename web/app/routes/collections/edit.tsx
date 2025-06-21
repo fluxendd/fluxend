@@ -18,7 +18,7 @@ import {
 } from "~/components/ui/card";
 import type { ProjectLayoutOutletContext } from "~/components/shared/project-layout";
 
-export default function EditCollection() {
+export default function EditTable() {
   const { tableName, projectId } = useParams();
   const navigate = useNavigate();
   const [isDeleting, setIsDeleting] = useState(false);
@@ -35,7 +35,7 @@ export default function EditCollection() {
 
     setIsDeleting(true);
     try {
-      const response = await services.collections.deleteCollection(
+      const response = await services.collections.deleteTable(
         projectId,
         tableName
       );
@@ -59,7 +59,7 @@ export default function EditCollection() {
   return (
     <div className="flex flex-col h-full">
       <AppHeader
-        title={`Edit Collection: ${tableName || "Unknown"}`}
+        title={`Edit Table: ${tableName || "Unknown"}`}
         showDelete={true}
         onDelete={handleDeleteTable}
         deleteLabel={isDeleting ? "Deleting..." : "Delete Table"}
@@ -69,7 +69,7 @@ export default function EditCollection() {
         <div className="max-w-4xl mx-auto">
           <Card>
             <CardHeader>
-              <CardTitle>Edit Collection</CardTitle>
+              <CardTitle>Edit Table</CardTitle>
               <CardDescription>
                 Modify your collection settings and structure
               </CardDescription>
@@ -87,7 +87,7 @@ export default function EditCollection() {
 
               <div className="pt-4">
                 <p className="text-sm text-muted-foreground">
-                  Collection editing features are coming soon. For now, you can
+                  Table editing features are coming soon. For now, you can
                   delete this collection using the delete button in the header.
                 </p>
               </div>
@@ -97,7 +97,7 @@ export default function EditCollection() {
                   variant="outline"
                   onClick={() => navigate("/collections")}
                 >
-                  Back to Collections
+                  Back to Tables
                 </Button>
                 <Button disabled>Save Changes</Button>
               </div>

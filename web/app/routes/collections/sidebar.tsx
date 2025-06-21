@@ -18,9 +18,9 @@ import {
   SidebarInset,
   SidebarProvider,
 } from "~/components/ui/sidebar";
-import { CollectionList } from "./collection-list";
+import { TableList } from "./collection-list";
 import { PlusCircle } from "lucide-react";
-import { CollectionListSkeleton } from "~/components/shared/collection-list-skeleton";
+import { TableListSkeleton } from "~/components/shared/collection-list-skeleton";
 import { Button } from "~/components/ui/button";
 import type { ProjectLayoutOutletContext } from "~/components/shared/project-layout";
 import { getServerAuthToken } from "~/lib/auth";
@@ -46,11 +46,11 @@ export function HydrateFallback() {
         <SidebarContent>
           <SidebarGroup className="px-0">
             <SidebarGroupContent>
-              <CollectionListSkeleton count={8} />{" "}
+              <TableListSkeleton count={8} />{" "}
             </SidebarGroupContent>
           </SidebarGroup>
           <div className="mt-auto p-4 border-t">
-            <CreateCollectionButton disabled={true} />
+            <CreateTableButton disabled={true} />
           </div>
         </SidebarContent>
       </Sidebar>
@@ -63,11 +63,7 @@ export function HydrateFallback() {
   );
 }
 
-const CreateCollectionButton = ({
-  disabled = false,
-}: {
-  disabled?: boolean;
-}) => {
+const CreateTableButton = ({ disabled = false }: { disabled?: boolean }) => {
   const navigate = useNavigate();
 
   const handleClick = () => {
@@ -90,6 +86,7 @@ const CreateCollectionButton = ({
 export async function loader({ request, params }: Route.LoaderArgs) {
   const authToken = await getServerAuthToken(request.headers);
   const { projectId, collectionId } = params;
+
   if (!authToken) {
     throw new Error("Unauthorized");
   }
@@ -97,7 +94,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   const services = initializeServices(authToken);
 
   const { success, errors, content, ok, status } =
-    await services.collections.getAllCollections(projectId);
+    await services.collections.getAllTables(projectId);
 
   if (!ok) {
     const errorMessage = errors?.[0] || "Unknown error";
@@ -120,7 +117,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   return data(content, { status: 200 });
 }
 
-export default function CollectionSidebar({
+export default function TableSidebar({
   loaderData,
   params,
 }: Route.ComponentProps) {
@@ -154,7 +151,7 @@ export default function CollectionSidebar({
           <SidebarContent className="flex-1 min-h-0 flex flex-col">
             <SidebarGroup className="p-0 flex-1 overflow-hidden">
               <SidebarGroupContent className="h-full overflow-y-auto">
-                <CollectionList
+                <TableList
                   initialData={loaderData}
                   projectId={projectId}
                   searchTerm={searchTerm}
@@ -162,7 +159,7 @@ export default function CollectionSidebar({
               </SidebarGroupContent>
             </SidebarGroup>
             <div className="p-4 border-t flex-shrink-0">
-              <CreateCollectionButton />
+              <CreateTableButton />
             </div>
           </SidebarContent>
         </Sidebar>

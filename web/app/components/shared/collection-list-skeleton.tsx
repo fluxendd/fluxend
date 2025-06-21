@@ -1,13 +1,11 @@
 import { Skeleton } from "~/components/ui/skeleton";
 import { FolderIcon, HashIcon } from "lucide-react";
 
-interface CollectionListSkeletonProps {
+interface TableListSkeletonProps {
   count?: number;
 }
 
-export function CollectionListSkeleton({
-  count = 5,
-}: CollectionListSkeletonProps) {
+export function TableListSkeleton({ count = 5 }: TableListSkeletonProps) {
   return (
     <>
       {Array.from({ length: count }).map((_, index) => (
@@ -25,4 +23,3 @@ export function CollectionListSkeleton({
     </>
   );
 }
-

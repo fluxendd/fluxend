@@ -1,14 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
 import { HashIcon } from "lucide-react";
 import { useEffect, useMemo } from "react";
-import { CollectionListSkeleton } from "~/components/shared/collection-list-skeleton";
+import { TableListSkeleton } from "~/components/shared/collection-list-skeleton";
 import { href, NavLink, useNavigate, useOutletContext } from "react-router";
 import { motion } from "motion/react";
 import { InfoMessage } from "~/components/shared/info-message";
 import type { ProjectLayoutOutletContext } from "~/components/shared/project-layout";
 import type { Services } from "~/services";
 
-export type Collection = {
+export type Table = {
   name: string;
   totalSize: string;
   [key: string]: any;
@@ -25,7 +25,7 @@ const collectionsQuery = (services: Services, projectId: string) => ({
   queryKey: ["collections", projectId],
   queryFn: async () => {
     const { success, errors, content, ok, status } =
-      await services.collections.getAllCollections(projectId);
+      await services.collections.getAllTables(projectId);
 
     if (!ok) {
       const errorMessage = errors?.[0] || "Unknown error";
@@ -40,27 +40,25 @@ const collectionsQuery = (services: Services, projectId: string) => ({
   },
 });
 
-function CollectionListFallback() {
-  return <CollectionListSkeleton count={5} />;
+function TableListFallback() {
+  return <TableListSkeleton count={5} />;
 }
 
-type CollectionListProps = {
-  initialData: Collection[];
+type TableListProps = {
+  initialData: Table[];
   projectId: string;
   searchTerm?: string;
 };
 
-export const CollectionList = ({
+export const TableList = ({
   initialData,
   projectId,
   searchTerm = "",
-}: CollectionListProps) => {
+}: TableListProps) => {
   const navigate = useNavigate();
   const { services } = useOutletContext<ProjectLayoutOutletContext>();
 
-  const { isLoading, isFetching, isError, data, error } = useQuery<
-    Collection[]
-  >({
+  const { isLoading, isFetching, isError, data, error } = useQuery<Table[]>({
     initialData: initialData,
     ...collectionsQuery(services, projectId),
   });
@@ -86,7 +84,7 @@ export const CollectionList = ({
   }, [searchTerm, data]);
 
   if (isLoading) {
-    return <CollectionListFallback />;
+    return <TableListFallback />;
   }
 
   if (isError) {
