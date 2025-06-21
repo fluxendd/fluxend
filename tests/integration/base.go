@@ -6,9 +6,11 @@ import (
 	"encoding/json"
 	"fluxend/internal/app/commands"
 	"fmt"
+	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"testing"
 	"time"
 
 	"fluxend/internal/app"
@@ -68,47 +70,67 @@ func (ts *TestServer) AddCleanup(fn func() error) {
 }
 
 // PostJSON sends a POST request with JSON body
-func (ts *TestServer) PostJSON(endpoint string, data interface{}) *http.Response {
-	jsonData, _ := json.Marshal(data)
-	resp, _ := ts.Client.Post(ts.BaseURL+endpoint, "application/json", bytes.NewBuffer(jsonData))
+func (ts *TestServer) PostJSON(t *testing.T, endpoint string, data interface{}) *http.Response {
+	jsonData, err := json.Marshal(data)
+	assert.NoError(t, err, "Failed to marshal JSON data")
+
+	resp, err := ts.Client.Post(ts.BaseURL+endpoint, "application/json", bytes.NewBuffer(jsonData))
+	assert.NoError(t, err, "Failed to send POST request")
+
 	return resp
 }
 
-func (ts *TestServer) PutJSON(endpoint string, data interface{}) *http.Response {
-	jsonData, _ := json.Marshal(data)
-	req, _ := http.NewRequest("PUT", ts.BaseURL+endpoint, bytes.NewBuffer(jsonData))
+func (ts *TestServer) PutJSON(t *testing.T, endpoint string, data interface{}) *http.Response {
+	jsonData, err := json.Marshal(data)
+	assert.NoError(t, err, "Failed to marshal JSON data")
+
+	req, err := http.NewRequest("PUT", ts.BaseURL+endpoint, bytes.NewBuffer(jsonData))
+	assert.NoError(t, err, "Failed to create PUT request")
+
 	req.Header.Set("Content-Type", "application/json")
-	resp, _ := ts.Client.Do(req)
+	resp, err := ts.Client.Do(req)
+	assert.NoError(t, err, "Failed to send PUT request")
+
 	return resp
 }
 
-// GetWithAuth sends a GET request with Authorization header
-func (ts *TestServer) GetWithAuth(endpoint, token string) *http.Response {
-	req, _ := http.NewRequest("GET", ts.BaseURL+endpoint, nil)
+func (ts *TestServer) GetWithAuth(t *testing.T, endpoint, token string) *http.Response {
+	req, err := http.NewRequest("GET", ts.BaseURL+endpoint, nil)
+	assert.NoError(t, err, "Failed to create GET request")
+
 	req.Header.Set("Authorization", "Bearer "+token)
-	resp, _ := ts.Client.Do(req)
+	resp, err := ts.Client.Do(req)
+	assert.NoError(t, err, "Failed to send GET request")
+
 	return resp
 }
 
-// PutJSONWithAuth sends a PUT request with JSON body and Authorization header
-func (ts *TestServer) PutJSONWithAuth(endpoint, token string, data interface{}) *http.Response {
-	jsonData, _ := json.Marshal(data)
-	req, _ := http.NewRequest("PUT", ts.BaseURL+endpoint, bytes.NewBuffer(jsonData))
+func (ts *TestServer) PutJSONWithAuth(t *testing.T, endpoint, token string, data interface{}) *http.Response {
+	jsonData, err := json.Marshal(data)
+	assert.NoError(t, err, "Failed to marshal JSON data")
+
+	req, err := http.NewRequest("PUT", ts.BaseURL+endpoint, bytes.NewBuffer(jsonData))
+	assert.NoError(t, err, "Failed to create PUT request")
+
 	req.Header.Set("Authorization", "Bearer "+token)
 	req.Header.Set("Content-Type", "application/json")
-	resp, _ := ts.Client.Do(req)
+	resp, err := ts.Client.Do(req)
+	assert.NoError(t, err, "Failed to send PUT request")
+
 	return resp
 }
 
-// PostWithAuth sends a POST request with Authorization header
-func (ts *TestServer) PostWithAuth(endpoint, token string) *http.Response {
-	req, _ := http.NewRequest("POST", ts.BaseURL+endpoint, nil)
+func (ts *TestServer) PostWithAuth(t *testing.T, endpoint, token string) *http.Response {
+	req, err := http.NewRequest("POST", ts.BaseURL+endpoint, nil)
+	assert.NoError(t, err, "Failed to create POST request")
+
 	req.Header.Set("Authorization", "Bearer "+token)
-	resp, _ := ts.Client.Do(req)
+	resp, err := ts.Client.Do(req)
+	assert.NoError(t, err, "Failed to send POST request")
+
 	return resp
 }
 
-// CleanupUser removes a user and related data from the database
 func (ts *TestServer) CleanupUser(userUUID uuid.UUID) error {
 	// Clean up JWT versions
 	_, err := ts.DB.Exec("DELETE FROM authentication.jwt_versions WHERE user_id = $1", userUUID)
