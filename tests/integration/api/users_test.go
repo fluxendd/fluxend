@@ -2,7 +2,8 @@ package api
 
 import (
 	"encoding/json"
-	"fluxend/internal/api/dto/user"
+	userDto "fluxend/internal/api/dto/user"
+	"fluxend/pkg"
 	"fmt"
 	"net/http"
 	"testing"
@@ -16,15 +17,15 @@ import (
 type userResponse struct {
 	integration.APIResponse
 	Content struct {
-		User  user.Response `json:"user"`
-		Token string        `json:"token,omitempty"`
+		User  userDto.Response `json:"user"`
+		Token string           `json:"token,omitempty"`
 	}
 }
 
 type userProfileResponse struct {
 	integration.APIResponse
 	Content struct {
-		user.Response
+		userDto.Response
 	}
 }
 
@@ -33,14 +34,9 @@ func TestUserRegistration_Suite(t *testing.T) {
 	defer server.Close()
 
 	t.Run("successful registration", func(t *testing.T) {
-		userInput := map[string]interface{}{
-			"username": "testuser123",
-			"email":    "test@example.com",
-			"password": "password123",
-			"bio":      "Test user bio",
-		}
+		userInput := getFakeUserData()
 
-		resp := server.PostJSON("/users/register", userInput)
+		resp := server.PostJSON(t, "/users/register", userInput)
 		defer resp.Body.Close()
 
 		// Assert response status
@@ -62,9 +58,9 @@ func TestUserRegistration_Suite(t *testing.T) {
 		require.NoError(t, err)
 
 		// Assert user data
-		assert.Equal(t, userInput["username"], createdUser.Username)
-		assert.Equal(t, userInput["email"], createdUser.Email)
-		assert.Equal(t, userInput["bio"], createdUser.Bio)
+		assert.Equal(t, userInput.Username, createdUser.Username)
+		assert.Equal(t, userInput.Email, createdUser.Email)
+		assert.Equal(t, userInput.Bio, createdUser.Bio)
 
 		// Verify user exists in database
 		var dbUser struct {
@@ -75,8 +71,8 @@ func TestUserRegistration_Suite(t *testing.T) {
 		}
 		err = server.DB.Get(&dbUser, "SELECT uuid, username, email, bio FROM authentication.users WHERE uuid = $1", userUUID)
 		require.NoError(t, err)
-		assert.Equal(t, "testuser123", dbUser.Username)
-		assert.Equal(t, "test@example.com", dbUser.Email)
+		assert.Equal(t, userInput.Username, dbUser.Username)
+		assert.Equal(t, userInput.Email, dbUser.Email)
 
 		// Register cleanup
 		server.AddCleanup(func() error {
@@ -86,13 +82,9 @@ func TestUserRegistration_Suite(t *testing.T) {
 
 	t.Run("duplicate email registration fails", func(t *testing.T) {
 		// First registration
-		userInputA := map[string]interface{}{
-			"username": "user1",
-			"email":    "duplicate@example.com",
-			"password": "password123",
-		}
+		userInputA := getFakeUserData()
 
-		responseA := server.PostJSON("/users/register", userInputA)
+		responseA := server.PostJSON(t, "/users/register", userInputA)
 		defer responseA.Body.Close()
 		assert.Equal(t, http.StatusCreated, responseA.StatusCode)
 
@@ -103,13 +95,10 @@ func TestUserRegistration_Suite(t *testing.T) {
 		require.NoError(t, err)
 
 		// Second registration with same email
-		userInputB := map[string]interface{}{
-			"username": "user2",
-			"email":    "duplicate@example.com",
-			"password": "password123",
-		}
+		userInputB := userInputA
+		userInputB.Username = pkg.Faker.Person().FirstName()
 
-		responseB := server.PostJSON("/users/register", userInputB)
+		responseB := server.PostJSON(t, "/users/register", userInputB)
 		defer responseB.Body.Close()
 		assert.Equal(t, http.StatusBadRequest, responseB.StatusCode)
 
@@ -126,13 +115,10 @@ func TestUserRegistration_Suite(t *testing.T) {
 
 	t.Run("duplicate username registration fails", func(t *testing.T) {
 		// First registration
-		userInputA := map[string]interface{}{
-			"username": "duplicateuser",
-			"email":    "user1@example.com",
-			"password": "password123",
-		}
+		userInputA := getFakeUserData()
+		fmt.Println(userInputA)
 
-		responseA := server.PostJSON("/users/register", userInputA)
+		responseA := server.PostJSON(t, "/users/register", userInputA)
 		defer responseA.Body.Close()
 		assert.Equal(t, http.StatusCreated, responseA.StatusCode)
 
@@ -143,13 +129,10 @@ func TestUserRegistration_Suite(t *testing.T) {
 		require.NoError(t, err)
 
 		// Second registration with same username
-		userInputB := map[string]interface{}{
-			"username": "duplicateuser",
-			"email":    "user2@example.com",
-			"password": "password123",
-		}
+		userInputB := userInputA
+		userInputB.Email = pkg.Faker.Internet().Email()
 
-		responseB := server.PostJSON("/users/register", userInputB)
+		responseB := server.PostJSON(t, "/users/register", userInputB)
 		defer responseB.Body.Close()
 		assert.Equal(t, http.StatusBadRequest, responseB.StatusCode)
 
@@ -180,7 +163,7 @@ func TestUserLogin_Suite(t *testing.T) {
 		"password": password,
 	}
 
-	resp := server.PostJSON("/users/register", userInput)
+	resp := server.PostJSON(t, "/users/register", userInput)
 	defer resp.Body.Close()
 	require.Equal(t, http.StatusCreated, resp.StatusCode)
 
@@ -200,7 +183,7 @@ func TestUserLogin_Suite(t *testing.T) {
 			"password": password,
 		}
 
-		loginResponse := server.PostJSON("/users/login", loginData)
+		loginResponse := server.PostJSON(t, "/users/login", loginData)
 		defer loginResponse.Body.Close()
 
 		assert.Equal(t, http.StatusOK, loginResponse.StatusCode)
@@ -225,7 +208,7 @@ func TestUserLogin_Suite(t *testing.T) {
 			"password": "wrongpassword",
 		}
 
-		logInTryResponse := server.PostJSON("/users/login", loginData)
+		logInTryResponse := server.PostJSON(t, "/users/login", loginData)
 		defer resp.Body.Close()
 
 		assert.Equal(t, http.StatusUnauthorized, logInTryResponse.StatusCode)
@@ -237,7 +220,7 @@ func TestUserLogin_Suite(t *testing.T) {
 			"password": "password123",
 		}
 
-		resp := server.PostJSON("/users/login", loginData)
+		resp := server.PostJSON(t, "/users/login", loginData)
 		defer resp.Body.Close()
 
 		assert.Equal(t, http.StatusNotFound, resp.StatusCode)
@@ -249,14 +232,9 @@ func TestUserProfile_Suite(t *testing.T) {
 	defer server.Close()
 
 	// Create and login user
-	userInput := map[string]interface{}{
-		"username": "profileuser",
-		"email":    "profile@example.com",
-		"password": "password123",
-		"bio":      "Profile test user",
-	}
+	userInput := getFakeUserData()
 
-	resp := server.PostJSON("/users/register", userInput)
+	resp := server.PostJSON(t, "/users/register", userInput)
 	defer resp.Body.Close()
 	require.Equal(t, http.StatusCreated, resp.StatusCode)
 
@@ -273,7 +251,7 @@ func TestUserProfile_Suite(t *testing.T) {
 	})
 
 	t.Run("get user profile with valid token", func(t *testing.T) {
-		validProfileWithTokenResponse := server.GetWithAuth(fmt.Sprintf("/users/%s", userUUID), token)
+		validProfileWithTokenResponse := server.GetWithAuth(t, fmt.Sprintf("/users/%s", userUUID), token)
 		defer validProfileWithTokenResponse.Body.Close()
 
 		assert.Equal(t, http.StatusOK, validProfileWithTokenResponse.StatusCode)
@@ -284,9 +262,9 @@ func TestUserProfile_Suite(t *testing.T) {
 		assert.True(t, currentUser.Success)
 
 		userProfile := currentUser.Content
-		assert.Equal(t, userInput["username"], userProfile.Username)
-		assert.Equal(t, userInput["email"], userProfile.Email)
-		assert.Equal(t, userInput["bio"], userProfile.Bio)
+		assert.Equal(t, userInput.Username, userProfile.Username)
+		assert.Equal(t, userInput.Email, userProfile.Email)
+		assert.Equal(t, userInput.Bio, userProfile.Bio)
 	})
 
 	t.Run("get user profile without token fails", func(t *testing.T) {
@@ -302,7 +280,7 @@ func TestUserProfile_Suite(t *testing.T) {
 			"bio": "Updated bio for profile user",
 		}
 
-		validProfileUpdateResponse := server.PutJSONWithAuth(fmt.Sprintf("/users/%s", userUUID), token, updateData)
+		validProfileUpdateResponse := server.PutJSONWithAuth(t, fmt.Sprintf("/users/%s", userUUID), token, updateData)
 		defer validProfileUpdateResponse.Body.Close()
 
 		assert.Equal(t, http.StatusOK, validProfileUpdateResponse.StatusCode)
@@ -327,7 +305,7 @@ func TestUserProfile_Suite(t *testing.T) {
 			"bio": "Should not update",
 		}
 
-		forbiddenProfileResponse := server.PutJSON(fmt.Sprintf("/users/%s", userUUID), updateData)
+		forbiddenProfileResponse := server.PutJSON(t, fmt.Sprintf("/users/%s", userUUID), updateData)
 		defer forbiddenProfileResponse.Body.Close()
 
 		assert.Equal(t, http.StatusUnauthorized, forbiddenProfileResponse.StatusCode)
@@ -339,20 +317,20 @@ func TestUserProfileAccess_Suite(t *testing.T) {
 	defer server.Close()
 
 	// Create two users
-	userInputA := map[string]interface{}{
+	userInputA := map[string]string{
 		"username": "user1",
 		"email":    "user1@example.com",
 		"password": "password123",
 	}
 
-	userInputB := map[string]interface{}{
+	userInputB := map[string]string{
 		"username": "user2",
 		"email":    "user2@example.com",
 		"password": "password123",
 	}
 
 	// Register first user
-	responseA := server.PostJSON("/users/register", userInputA)
+	responseA := server.PostJSON(t, "/users/register", userInputA)
 	defer responseA.Body.Close()
 	require.Equal(t, http.StatusCreated, responseA.StatusCode)
 
@@ -362,7 +340,7 @@ func TestUserProfileAccess_Suite(t *testing.T) {
 	userTokenA := userResponseA.Content.Token
 
 	// Register second user
-	responseB := server.PostJSON("/users/register", userInputB)
+	responseB := server.PostJSON(t, "/users/register", userInputB)
 	defer responseB.Body.Close()
 	require.Equal(t, http.StatusCreated, responseB.StatusCode)
 
@@ -381,10 +359,19 @@ func TestUserProfileAccess_Suite(t *testing.T) {
 			"bio": "Trying to update someone else's profile",
 		}
 
-		resp := server.PutJSONWithAuth(fmt.Sprintf("/users/%s", userUUIDB), userTokenA, updateData)
+		resp := server.PutJSONWithAuth(t, fmt.Sprintf("/users/%s", userUUIDB), userTokenA, updateData)
 		defer resp.Body.Close()
 
 		// Should fail due to policy check
 		assert.Equal(t, http.StatusForbidden, resp.StatusCode)
 	})
+}
+
+func getFakeUserData() userDto.CreateRequest {
+	return userDto.CreateRequest{
+		Username: pkg.Faker.Person().FirstName(),
+		Email:    pkg.Faker.RandomStringWithLength(10) + "@gmail.com",
+		Password: pkg.Faker.Internet().Password(),
+		Bio:      pkg.Faker.RandomStringWithLength(20),
+	}
 }

@@ -161,7 +161,7 @@ print_status "Starting Fluxend setup..."
 
 # Step 1: Download the archive
 print_status "Downloading fluxend.zip..."
-curl -L -o fluxend.zip https://github.com/fluxendd/fluxend/archive/refs/heads/master.zip
+curl -L -o fluxend.zip https://github.com/fluxendd/fluxend/archive/refs/heads/main.zip
 
 # Step 2: Extract the archive
 print_status "Extracting archive..."
@@ -178,7 +178,7 @@ fi
 
 # Step 3: Change to directory
 print_status "Changing to fluxend directory..."
-cd fluxend-master
+cd fluxend-main
 
 # Step 4: Check and install missing requirements
 print_status "Checking requirements..."
