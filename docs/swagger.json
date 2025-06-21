@@ -4919,9 +4919,6 @@
                 },
                 "name": {
                     "type": "string"
-                },
-                "projectUUID": {
-                    "type": "string"
                 }
             }
         },
@@ -5022,9 +5019,6 @@
                         "$ref": "#/definitions/database.functionParameter"
                     }
                 },
-                "projectUUID": {
-                    "type": "string"
-                },
                 "return_type": {
                     "type": "string"
                 }
@@ -5043,9 +5037,6 @@
                     "type": "boolean"
                 },
                 "name": {
-                    "type": "string"
-                },
-                "projectUUID": {
                     "type": "string"
                 }
             }
@@ -5078,9 +5069,6 @@
             "properties": {
                 "name": {
                     "type": "string"
-                },
-                "projectUUID": {
-                    "type": "string"
                 }
             }
         },
@@ -5088,9 +5076,6 @@
             "type": "object",
             "properties": {
                 "name": {
-                    "type": "string"
-                },
-                "projectUUID": {
                     "type": "string"
                 }
             }
@@ -5138,20 +5123,12 @@
             }
         },
         "file.CreateRequest": {
-            "type": "object",
-            "properties": {
-                "projectUUID": {
-                    "type": "string"
-                }
-            }
+            "type": "object"
         },
         "file.RenameRequest": {
             "type": "object",
             "properties": {
                 "full_file_name": {
-                    "type": "string"
-                },
-                "projectUUID": {
                     "type": "string"
                 }
             }
@@ -5197,9 +5174,6 @@
                     "items": {
                         "$ref": "#/definitions/form.FieldRequest"
                     }
-                },
-                "projectUUID": {
-                    "type": "string"
                 }
             }
         },
@@ -5211,18 +5185,12 @@
                 },
                 "name": {
                     "type": "string"
-                },
-                "projectUUID": {
-                    "type": "string"
                 }
             }
         },
         "form.CreateResponseRequest": {
             "type": "object",
             "properties": {
-                "projectUUID": {
-                    "type": "string"
-                },
                 "response": {
                     "type": "object",
                     "additionalProperties": true
@@ -5454,9 +5422,6 @@
                 "pattern": {
                     "type": "string"
                 },
-                "projectUUID": {
-                    "type": "string"
-                },
                 "start_date": {
                     "description": "only applicable for date types",
                     "type": "string"
@@ -5506,18 +5471,12 @@
             "properties": {
                 "name": {
                     "type": "string"
-                },
-                "projectUUID": {
-                    "type": "string"
                 }
             }
         },
         "organization.MemberCreateRequest": {
             "type": "object",
             "properties": {
-                "projectUUID": {
-                    "type": "string"
-                },
                 "user_id": {
                     "type": "string"
                 }
@@ -5556,9 +5515,6 @@
                     "type": "string"
                 },
                 "organization_uuid": {
-                    "type": "string"
-                },
-                "projectUUID": {
                     "type": "string"
                 }
             }
@@ -5605,9 +5561,6 @@
                     "type": "string"
                 },
                 "name": {
-                    "type": "string"
-                },
-                "projectUUID": {
                     "type": "string"
                 }
             }
@@ -5664,9 +5617,6 @@
         "setting.UpdateRequest": {
             "type": "object",
             "properties": {
-                "projectUUID": {
-                    "type": "string"
-                },
                 "settings": {
                     "type": "array",
                     "items": {
@@ -5764,9 +5714,6 @@
                 "password": {
                     "type": "string"
                 },
-                "projectUUID": {
-                    "type": "string"
-                },
                 "username": {
                     "type": "string"
                 }
@@ -5779,9 +5726,6 @@
                     "type": "string"
                 },
                 "password": {
-                    "type": "string"
-                },
-                "projectUUID": {
                     "type": "string"
                 }
             }
@@ -5822,9 +5766,6 @@
             "type": "object",
             "properties": {
                 "bio": {
-                    "type": "string"
-                },
-                "projectUUID": {
                     "type": "string"
                 }
             }

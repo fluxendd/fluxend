@@ -1,7 +1,6 @@
 package dto
 
 import (
-	"errors"
 	"fluxend/internal/config/constants"
 	"fluxend/internal/domain/shared"
 	"fmt"
@@ -49,18 +48,6 @@ var (
 )
 
 type BaseRequest struct {
-	ProjectUUID uuid.UUID `json:"projectUUID,omitempty"`
-}
-
-func (r *BaseRequest) WithProjectHeader(c echo.Context) error {
-	projectUUID, err := uuid.Parse(c.Request().Header.Get("X-Project"))
-	if err != nil {
-		return errors.New("invalid project UUID")
-	}
-
-	r.ProjectUUID = projectUUID
-
-	return nil
 }
 
 func (r *BaseRequest) ExtractValidationErrors(err error) []string {
