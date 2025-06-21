@@ -64,24 +64,6 @@ func (s *ServiceImpl) getUnusedIndexes(databaseName string) ([]UnusedIndex, erro
 	return dbStatsRepo.GetUnusedIndexes()
 }
 
-func (s *ServiceImpl) getSlowQueries(databaseName string) ([]SlowQuery, error) {
-	dbStatsRepo, _, err := s.getClientStatsRepo(databaseName)
-	if err != nil {
-		return []SlowQuery{}, err
-	}
-
-	return dbStatsRepo.GetSlowQueries()
-}
-
-func (s *ServiceImpl) getIndexScansPerTable(databaseName string) ([]IndexScan, error) {
-	dbStatsRepo, _, err := s.getClientStatsRepo(databaseName)
-	if err != nil {
-		return []IndexScan{}, err
-	}
-
-	return dbStatsRepo.GetIndexScansPerTable()
-}
-
 func (s *ServiceImpl) getSizePerTable(databaseName string) ([]TableSize, error) {
 	dbStatsRepo, _, err := s.getClientStatsRepo(databaseName)
 	if err != nil {

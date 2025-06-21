@@ -205,15 +205,6 @@ func (a *Adapter) WithTransaction(fn func(tx shared.Tx) error) error {
 
 // === Helper methods for scanning ===
 
-// scanRowsIntoSlice scans regular sql.Rows into a slice using reflection
-func (a *Adapter) scanRowsIntoSlice(dest interface{}, rows *sql.Rows) error {
-	// This would need to use reflection to dynamically scan into the slice
-	// For now, we'll use sqlx's functionality by converting to sqlx.Rows
-	sqlxRows := &sqlx.Rows{Rows: rows}
-
-	return a.scanSqlxRowsIntoSlice(dest, sqlxRows)
-}
-
 // scanSqlxRowsIntoSlice scans sqlx.Rows into a slice using StructScan
 func (a *Adapter) scanSqlxRowsIntoSlice(dest interface{}, rows *sqlx.Rows) error {
 	// Use sqlx's built-in StructScan functionality

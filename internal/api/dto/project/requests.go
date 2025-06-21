@@ -49,7 +49,7 @@ func (r *CreateRequest) BindAndValidate(c echo.Context) []string {
 			validation.By(func(value interface{}) error {
 				if uuidValue, ok := value.(uuid.UUID); ok {
 					if uuidValue == uuid.Nil {
-						return fmt.Errorf("Organization UUID is required")
+						return fmt.Errorf("organization UUID is required")
 					}
 				}
 				return nil

@@ -21,7 +21,7 @@ func NewBackblazeProvider(injector *do.Injector) (Provider, error) {
 	applicationKey := os.Getenv("BACKBLAZE_APPLICATION_KEY")
 
 	if applicationKeyID == "" || applicationKey == "" {
-		return nil, fmt.Errorf("Backblaze credentials not found in environment variables")
+		return nil, fmt.Errorf("backblaze credentials not found in environment variables")
 	}
 
 	service := &BackblazeServiceImpl{

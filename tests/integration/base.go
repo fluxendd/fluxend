@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fluxend/internal/app/commands"
 	"fmt"
+	"github.com/rs/zerolog/log"
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
@@ -59,7 +60,10 @@ func NewTestServer() *TestServer {
 func (ts *TestServer) Close() {
 	// Run cleanup functions in reverse order
 	for i := len(ts.cleanupFuncs) - 1; i >= 0; i-- {
-		ts.cleanupFuncs[i]()
+		err := ts.cleanupFuncs[i]()
+		if err != nil {
+			log.Logger.Warn().Msg("Failed to run cleanup function: " + err.Error())
+		}
 	}
 	ts.Server.Close()
 }

@@ -52,7 +52,7 @@ func TestCreateRequest_BindAndValidate_Suite(t *testing.T) {
 					"name": "SomeName",
 				},
 				expected: []string{
-					"Organization UUID is required",
+					"organization UUID is required",
 				},
 			},
 			{

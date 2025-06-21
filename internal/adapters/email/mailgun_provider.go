@@ -57,7 +57,7 @@ func (m *MailgunServiceImpl) Send(to, subject, body string) error {
 		return fmt.Errorf("mailgunEmailSource is required")
 	}
 
-	message := m.client.NewMessage(
+	message := mailgun.NewMessage(
 		from,
 		subject,
 		body,

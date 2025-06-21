@@ -268,8 +268,12 @@ func TestUserProfile_Suite(t *testing.T) {
 	})
 
 	t.Run("get user profile without token fails", func(t *testing.T) {
-		req, _ := http.NewRequest("GET", server.BaseURL+fmt.Sprintf("/users/%s", userUUID), nil)
-		profileWithoutTokenResponse, _ := server.Client.Do(req)
+		req, err := http.NewRequest("GET", server.BaseURL+fmt.Sprintf("/users/%s", userUUID), nil)
+		require.NoError(t, err)
+
+		profileWithoutTokenResponse, err := server.Client.Do(req)
+		require.NoError(t, err)
+
 		defer profileWithoutTokenResponse.Body.Close()
 
 		assert.Equal(t, http.StatusUnauthorized, profileWithoutTokenResponse.StatusCode)
