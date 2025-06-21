@@ -25,6 +25,8 @@ definitions:
         type: integer
       name:
         type: string
+      projectUUID:
+        type: string
     type: object
   container.Response:
     properties:
@@ -90,6 +92,8 @@ definitions:
         items:
           $ref: '#/definitions/database.functionParameter'
         type: array
+      projectUUID:
+        type: string
       return_type:
         type: string
     type: object
@@ -102,6 +106,8 @@ definitions:
       is_unique:
         type: boolean
       name:
+        type: string
+      projectUUID:
         type: string
     type: object
   database.CreateTableRequest:
@@ -123,10 +129,14 @@ definitions:
     properties:
       name:
         type: string
+      projectUUID:
+        type: string
     type: object
   database.RenameTableRequest:
     properties:
       name:
+        type: string
+      projectUUID:
         type: string
     type: object
   database.TableResponse:
@@ -157,10 +167,15 @@ definitions:
         type: string
     type: object
   file.CreateRequest:
+    properties:
+      projectUUID:
+        type: string
     type: object
   file.RenameRequest:
     properties:
       full_file_name:
+        type: string
+      projectUUID:
         type: string
     type: object
   file.Response:
@@ -191,6 +206,8 @@ definitions:
         items:
           $ref: '#/definitions/form.FieldRequest'
         type: array
+      projectUUID:
+        type: string
     type: object
   form.CreateRequest:
     properties:
@@ -198,9 +215,13 @@ definitions:
         type: string
       name:
         type: string
+      projectUUID:
+        type: string
     type: object
   form.CreateResponseRequest:
     properties:
+      projectUUID:
+        type: string
       response:
         additionalProperties: true
         type: object
@@ -357,6 +378,8 @@ definitions:
         type: string
       pattern:
         type: string
+      projectUUID:
+        type: string
       start_date:
         description: only applicable for date types
         type: string
@@ -419,6 +442,8 @@ definitions:
         type: string
       organization_uuid:
         type: string
+      projectUUID:
+        type: string
     type: object
   project.Response:
     properties:
@@ -448,6 +473,8 @@ definitions:
       description:
         type: string
       name:
+        type: string
+      projectUUID:
         type: string
     type: object
   response.Response:

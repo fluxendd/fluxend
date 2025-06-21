@@ -4919,6 +4919,9 @@
                 },
                 "name": {
                     "type": "string"
+                },
+                "projectUUID": {
+                    "type": "string"
                 }
             }
         },
@@ -5019,6 +5022,9 @@
                         "$ref": "#/definitions/database.functionParameter"
                     }
                 },
+                "projectUUID": {
+                    "type": "string"
+                },
                 "return_type": {
                     "type": "string"
                 }
@@ -5037,6 +5043,9 @@
                     "type": "boolean"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "projectUUID": {
                     "type": "string"
                 }
             }
@@ -5069,6 +5078,9 @@
             "properties": {
                 "name": {
                     "type": "string"
+                },
+                "projectUUID": {
+                    "type": "string"
                 }
             }
         },
@@ -5076,6 +5088,9 @@
             "type": "object",
             "properties": {
                 "name": {
+                    "type": "string"
+                },
+                "projectUUID": {
                     "type": "string"
                 }
             }
@@ -5123,12 +5138,20 @@
             }
         },
         "file.CreateRequest": {
-            "type": "object"
+            "type": "object",
+            "properties": {
+                "projectUUID": {
+                    "type": "string"
+                }
+            }
         },
         "file.RenameRequest": {
             "type": "object",
             "properties": {
                 "full_file_name": {
+                    "type": "string"
+                },
+                "projectUUID": {
                     "type": "string"
                 }
             }
@@ -5174,6 +5197,9 @@
                     "items": {
                         "$ref": "#/definitions/form.FieldRequest"
                     }
+                },
+                "projectUUID": {
+                    "type": "string"
                 }
             }
         },
@@ -5185,12 +5211,18 @@
                 },
                 "name": {
                     "type": "string"
+                },
+                "projectUUID": {
+                    "type": "string"
                 }
             }
         },
         "form.CreateResponseRequest": {
             "type": "object",
             "properties": {
+                "projectUUID": {
+                    "type": "string"
+                },
                 "response": {
                     "type": "object",
                     "additionalProperties": true
@@ -5422,6 +5454,9 @@
                 "pattern": {
                     "type": "string"
                 },
+                "projectUUID": {
+                    "type": "string"
+                },
                 "start_date": {
                     "description": "only applicable for date types",
                     "type": "string"
@@ -5516,6 +5551,9 @@
                 },
                 "organization_uuid": {
                     "type": "string"
+                },
+                "projectUUID": {
+                    "type": "string"
                 }
             }
         },
@@ -5561,6 +5599,9 @@
                     "type": "string"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "projectUUID": {
                     "type": "string"
                 }
             }

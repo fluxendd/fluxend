@@ -4922,6 +4922,9 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
+                },
+                "projectUUID": {
+                    "type": "string"
                 }
             }
         },
@@ -5022,6 +5025,9 @@ const docTemplate = `{
                         "$ref": "#/definitions/database.functionParameter"
                     }
                 },
+                "projectUUID": {
+                    "type": "string"
+                },
                 "return_type": {
                     "type": "string"
                 }
@@ -5040,6 +5046,9 @@ const docTemplate = `{
                     "type": "boolean"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "projectUUID": {
                     "type": "string"
                 }
             }
@@ -5072,6 +5081,9 @@ const docTemplate = `{
             "properties": {
                 "name": {
                     "type": "string"
+                },
+                "projectUUID": {
+                    "type": "string"
                 }
             }
         },
@@ -5079,6 +5091,9 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "name": {
+                    "type": "string"
+                },
+                "projectUUID": {
                     "type": "string"
                 }
             }
@@ -5126,12 +5141,20 @@ const docTemplate = `{
             }
         },
         "file.CreateRequest": {
-            "type": "object"
+            "type": "object",
+            "properties": {
+                "projectUUID": {
+                    "type": "string"
+                }
+            }
         },
         "file.RenameRequest": {
             "type": "object",
             "properties": {
                 "full_file_name": {
+                    "type": "string"
+                },
+                "projectUUID": {
                     "type": "string"
                 }
             }
@@ -5177,6 +5200,9 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/form.FieldRequest"
                     }
+                },
+                "projectUUID": {
+                    "type": "string"
                 }
             }
         },
@@ -5188,12 +5214,18 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
+                },
+                "projectUUID": {
+                    "type": "string"
                 }
             }
         },
         "form.CreateResponseRequest": {
             "type": "object",
             "properties": {
+                "projectUUID": {
+                    "type": "string"
+                },
                 "response": {
                     "type": "object",
                     "additionalProperties": true
@@ -5425,6 +5457,9 @@ const docTemplate = `{
                 "pattern": {
                     "type": "string"
                 },
+                "projectUUID": {
+                    "type": "string"
+                },
                 "start_date": {
                     "description": "only applicable for date types",
                     "type": "string"
@@ -5519,6 +5554,9 @@ const docTemplate = `{
                 },
                 "organization_uuid": {
                     "type": "string"
+                },
+                "projectUUID": {
+                    "type": "string"
                 }
             }
         },
@@ -5564,6 +5602,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "projectUUID": {
                     "type": "string"
                 }
             }
