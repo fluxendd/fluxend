@@ -1,21 +1,14 @@
 export type ColumnType =
-  | "serial"
-  | "text"
-  | "varchar"
   | "integer"
-  | "bigint"
+  | "serial"
+  | "varchar"
+  | "text"
   | "boolean"
-  | "timestamp"
-  | "timestamptz"
   | "date"
-  | "decimal"
-  | "numeric"
-  | "real"
-  | "double"
-  | "json"
-  | "jsonb"
+  | "timestamp"
+  | "float"
   | "uuid"
-  | "bytea";
+  | "json";
 
 export interface TableColumn {
   name: string;
@@ -34,21 +27,14 @@ export interface CreateTableFormData {
 }
 
 export const COLUMN_TYPE_OPTIONS: { value: ColumnType; label: string; description: string }[] = [
-  { value: "serial", label: "Serial", description: "Auto-incrementing integer" },
-  { value: "text", label: "Text", description: "Variable-length text" },
-  { value: "varchar", label: "Varchar", description: "Variable-length character string" },
   { value: "integer", label: "Integer", description: "32-bit integer" },
-  { value: "bigint", label: "Big Integer", description: "64-bit integer" },
+  { value: "serial", label: "Serial", description: "Auto-incrementing integer" },
+  { value: "varchar", label: "Varchar", description: "Variable-length character string" },
+  { value: "text", label: "Text", description: "Variable-length text" },
   { value: "boolean", label: "Boolean", description: "True/false value" },
-  { value: "timestamp", label: "Timestamp", description: "Date and time" },
-  { value: "timestamptz", label: "Timestamp with Timezone", description: "Date and time with timezone" },
   { value: "date", label: "Date", description: "Date only" },
-  { value: "decimal", label: "Decimal", description: "Exact numeric value" },
-  { value: "numeric", label: "Numeric", description: "Exact numeric value" },
-  { value: "real", label: "Real", description: "Single precision floating-point" },
-  { value: "double", label: "Double", description: "Double precision floating-point" },
-  { value: "json", label: "JSON", description: "JSON data" },
-  { value: "jsonb", label: "JSONB", description: "Binary JSON data" },
+  { value: "timestamp", label: "Timestamp", description: "Date and time" },
+  { value: "float", label: "Float", description: "Floating-point number" },
   { value: "uuid", label: "UUID", description: "Universally unique identifier" },
-  { value: "bytea", label: "Bytea", description: "Binary data" },
+  { value: "json", label: "JSON", description: "JSON data" },
 ];

@@ -6,6 +6,10 @@ import {
   MoreVertical,
   RotateCcw,
   Circle,
+  ToggleLeft,
+  Calendar,
+  FileJson,
+  Shuffle,
 } from "lucide-react";
 import type { ColumnDef, PaginationState, Row } from "@tanstack/react-table";
 import { Button } from "~/components/ui/button";
@@ -68,9 +72,15 @@ const mockDeleteRow = (rowId: string) => {
 
 enum ColumnType {
   Integer = "integer",
+  Serial = "serial",
+  Varchar = "varchar",
   Text = "text",
-  Varchar = "character varying",
+  Boolean = "boolean",
+  Date = "date",
   Timestamp = "timestamp",
+  Float = "float",
+  UUID = "uuid",
+  JSON = "json",
 }
 
 interface ColumnIconProps {
@@ -84,14 +94,32 @@ const ColumnIcon: React.FC<ColumnIconProps> = ({ type }) => {
     case ColumnType.Integer:
       Icon = Hash;
       break;
+    case ColumnType.Serial:
+      Icon = Hash;
+      break;
     case ColumnType.Varchar:
       Icon = Text;
       break;
     case ColumnType.Text:
       Icon = AlignLeft;
       break;
+    case ColumnType.Boolean:
+      Icon = ToggleLeft;
+      break;
+    case ColumnType.Date:
+      Icon = Calendar;
+      break;
     case ColumnType.Timestamp:
       Icon = Clock;
+      break;
+    case ColumnType.Float:
+      Icon = Hash;
+      break;
+    case ColumnType.UUID:
+      Icon = Shuffle;
+      break;
+    case ColumnType.JSON:
+      Icon = FileJson;
       break;
     default:
       Icon = Circle;
