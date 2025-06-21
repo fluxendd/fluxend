@@ -66,7 +66,7 @@ const createTableSchema = z.object({
 
 type CreateTableFormData = z.infer<typeof createTableSchema>;
 
-export default function CreateCollection() {
+export default function CreateTable() {
   const navigate = useNavigate();
   const { projectId } = useParams();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -108,7 +108,7 @@ export default function CreateCollection() {
         columns: data.columns,
       };
 
-      const response = await services.collections.createCollection(
+      const response = await services.collections.createTable(
         projectId,
         requestBody
       );
@@ -138,13 +138,13 @@ export default function CreateCollection() {
 
   return (
     <div className="flex flex-col h-full">
-      <AppHeader title="Create Collection" />
+      <AppHeader title="Create Table" />
       <div className="flex-1 p-6">
         <div className="max-w-4xl mx-auto">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
               <CardHeader>
-                <CardTitle>Create New Collection</CardTitle>
+                <CardTitle>Create New Table</CardTitle>
                 <CardDescription>
                   Define your table name and column structure
                 </CardDescription>
@@ -209,6 +209,10 @@ export default function CreateCollection() {
                                       <Input
                                         placeholder="Column name"
                                         {...field}
+                                        disabled={index === 0}
+                                        className={
+                                          index === 0 ? "bg-muted" : ""
+                                        }
                                       />
                                     </FormControl>
                                     <FormMessage />
@@ -225,9 +229,14 @@ export default function CreateCollection() {
                                     <Select
                                       onValueChange={field.onChange}
                                       defaultValue={field.value}
+                                      disabled={index === 0}
                                     >
                                       <FormControl className="w-[90%]">
-                                        <SelectTrigger>
+                                        <SelectTrigger
+                                          className={
+                                            index === 0 ? "bg-muted" : ""
+                                          }
+                                        >
                                           <SelectValue placeholder="Select type" />
                                         </SelectTrigger>
                                       </FormControl>
@@ -265,7 +274,10 @@ export default function CreateCollection() {
                                         <Checkbox
                                           checked={field.value}
                                           onCheckedChange={field.onChange}
-                                          className="cursor-pointer"
+                                          disabled={index === 0}
+                                          className={
+                                            index === 0 ? "" : "cursor-pointer"
+                                          }
                                         />
                                       </div>
                                     </FormControl>
@@ -280,10 +292,8 @@ export default function CreateCollection() {
                                 variant="ghost"
                                 size="icon"
                                 onClick={() => removeColumn(index)}
-                                disabled={
-                                  fields.length === 1 || field.name === "id"
-                                }
-                                className="cursor-pointer"
+                                disabled={index === 0}
+                                className={index === 0 ? "" : "cursor-pointer"}
                               >
                                 <Trash2 className="w-4 h-4" />
                               </Button>

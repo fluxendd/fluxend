@@ -30,9 +30,7 @@ type PaginationType = {
   pageSize: number;
 };
 
-export default function CollectionPageContent({
-  params,
-}: Route.ComponentProps) {
+export default function TablePageContent({ params }: Route.ComponentProps) {
   const { projectId, collectionId } = params;
   const { projectDetails, services } =
     useOutletContext<ProjectLayoutOutletContext>();
@@ -149,7 +147,7 @@ export default function CollectionPageContent({
   const handleDeleteTable = useCallback(async () => {
     if (!collectionId || !projectId) return;
 
-    const response = await services.collections.deleteCollection(
+    const response = await services.collections.deleteTable(
       projectId,
       collectionId
     );
@@ -168,17 +166,17 @@ export default function CollectionPageContent({
     }
   }, [collectionId, projectId, queryClient, navigate]);
 
-  const noCollectionSelected = !collectionId;
+  const noTableSelected = !collectionId;
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
       <div className="border-b px-4 py-2 mb-2 flex-shrink-0">
         <div className="flex items-center justify-between">
           <div className="text-base font-bold text-foreground h-[32px] flex flex-col justify-center">
-            Collections / {collectionId && `${collectionId}`}
+            Tables / {collectionId && `${collectionId}`}
           </div>
           <div className="flex items-center gap-2">
-            {!noCollectionSelected && (
+            {!noTableSelected && (
               <AlertDialog>
                 <AlertDialogTrigger>
                   <Button
@@ -222,7 +220,7 @@ export default function CollectionPageContent({
                 projectId,
                 queryClient,
               ])}
-              title="Refresh Collections and Collection Data"
+              title="Refresh Tables and Table Data"
             />
           </div>
         </div>
@@ -266,7 +264,7 @@ export default function CollectionPageContent({
           </div>
         )}
 
-      {noCollectionSelected && !isInitialLoading && (
+      {noTableSelected && !isInitialLoading && (
         <div className="flex-1 min-h-0 flex items-center justify-center mx-4">
           <div className="text-md text-muted-foreground border rounded-md p-8 bg-muted/10">
             Please select a collection from the sidebar

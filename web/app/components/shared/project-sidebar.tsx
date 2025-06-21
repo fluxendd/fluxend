@@ -58,7 +58,7 @@ const items = [
     Icon: LayoutDashboard,
   },
   {
-    title: "Collections",
+    title: "Tables",
     url: "collections",
     Icon: Database,
     isActive: true,

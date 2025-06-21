@@ -1,10 +1,10 @@
 import type { APIResponse } from "~/lib/types";
 import { getTypedResponseData } from "~/lib/utils";
-import type { Collection } from "~/routes/collections/collection-list";
+import type { Table } from "~/routes/collections/collection-list";
 import { get, post, del, type APIRequestOptions } from "~/tools/fetch";
 
-export function createCollectionsService(authToken: string) {
-  const getAllCollections = async (projectId: string) => {
+export function createTablesService(authToken: string) {
+  const getAllTables = async (projectId: string) => {
     const fetchOptions: RequestInit = {
       headers: {
         "X-Project": projectId,
@@ -19,10 +19,7 @@ export function createCollectionsService(authToken: string) {
     return data;
   };
 
-  const getCollectionColumns = async (
-    projectId: string,
-    collectionName: string
-  ) => {
+  const getTableColumns = async (projectId: string, collectionName: string) => {
     const fetchOptions: RequestInit = {
       headers: {
         "X-Project": projectId,
@@ -34,7 +31,7 @@ export function createCollectionsService(authToken: string) {
     return get(`/tables/public.${collectionName}/columns`, fetchOptions);
   };
 
-  const getCollectionRows = async (
+  const getTableRows = async (
     projectId: string,
     collectionName: string,
     options?: {
@@ -57,7 +54,7 @@ export function createCollectionsService(authToken: string) {
     return get(collectionName, fetchOptions);
   };
 
-  const createCollection = async (projectId: string, data: any) => {
+  const createTable = async (projectId: string, data: any) => {
     const fetchOptions: RequestInit = {
       headers: {
         "X-Project": projectId,
@@ -69,7 +66,7 @@ export function createCollectionsService(authToken: string) {
     return post("/tables", data, fetchOptions);
   };
 
-  const deleteCollection = async (projectId: string, tableName: string) => {
+  const deleteTable = async (projectId: string, tableName: string) => {
     const fetchOptions: RequestInit = {
       headers: {
         "X-Project": projectId,
@@ -84,12 +81,12 @@ export function createCollectionsService(authToken: string) {
   };
 
   return {
-    getAllCollections,
-    getCollectionColumns,
-    getCollectionRows,
-    createCollection,
-    deleteCollection,
+    getAllTables,
+    getTableColumns,
+    getTableRows,
+    createTable,
+    deleteTable,
   };
 }
 
-export type CollectionsService = ReturnType<typeof createCollectionsService>;
+export type TablesService = ReturnType<typeof createTablesService>;
