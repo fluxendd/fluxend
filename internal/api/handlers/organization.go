@@ -72,10 +72,10 @@ func (oh *OrganizationHandler) List(c echo.Context) error {
 // @Param organization_id path string true "Organization ID"
 //
 // @Success 200 {object} response.Response{content=organization.Response} "Organization details"
-// @Failure 422 "Unprocessable entity"
-// @Failure 400 "Invalid input"
-// @Failure 401 "Unauthorized"
-// @Failure 500 "Internal server error"
+// @Failure 422 {object} response.UnprocessableErrorResponse "Unprocessable input response"
+// @Failure 400 {object} response.BadRequestErrorResponse "Bad request response"
+// @Failure 401 {object} response.UnauthorizedErrorResponse "Unauthorized response"
+// @Failure 500 {object} response.InternalServerErrorResponse "Internal server error response"
 //
 // @Router /organizations/{organizationUUID} [get]
 func (oh *OrganizationHandler) Show(c echo.Context) error {
@@ -112,10 +112,10 @@ func (oh *OrganizationHandler) Show(c echo.Context) error {
 // @Param organization body organization.CreateRequest true "Organization name"
 //
 // @Success 201 {object} response.Response{content=organization.Response} "Organization created"
-// @Failure 422 "Unprocessable entity"
-// @Failure 400 "Invalid input"
-// @Failure 401 "Unauthorized"
-// @Failure 500 "Internal server error"
+// @Failure 422 {object} response.UnprocessableErrorResponse "Unprocessable input response"
+// @Failure 400 {object} response.BadRequestErrorResponse "Bad request response"
+// @Failure 401 {object} response.UnauthorizedErrorResponse "Unauthorized response"
+// @Failure 500 {object} response.InternalServerErrorResponse "Internal server error response"
 //
 // @Router /organizations [post]
 func (oh *OrganizationHandler) Store(c echo.Context) error {
@@ -151,10 +151,10 @@ func (oh *OrganizationHandler) Store(c echo.Context) error {
 // @Param organization body organization.CreateRequest true "Updated organization details"
 //
 // @Success 200 {object} response.Response{content=organization.Response} "Organization updated"
-// @Failure 422 "Unprocessable entity"
-// @Failure 400 "Invalid input"
-// @Failure 401 "Unauthorized"
-// @Failure 500 "Internal server error"
+// @Failure 422 {object} response.UnprocessableErrorResponse "Unprocessable input response"
+// @Failure 400 {object} response.BadRequestErrorResponse "Bad request response"
+// @Failure 401 {object} response.UnauthorizedErrorResponse "Unauthorized response"
+// @Failure 500 {object} response.InternalServerErrorResponse "Internal server error response"
 //
 // @Router /organizations/{organizationUUID} [put]
 func (oh *OrganizationHandler) Update(c echo.Context) error {

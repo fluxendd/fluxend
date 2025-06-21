@@ -116,10 +116,10 @@ func (fh *FormHandler) Show(c echo.Context) error {
 // @Param form body form.CreateRequest true "Form name and description"
 //
 // @Success 201 {object} response.Response{content=form.Response} "Form created"
-// @Failure 422 "Unprocessable entity"
-// @Failure 400 "Invalid input"
-// @Failure 401 "Unauthorized"
-// @Failure 500 "Internal server error"
+// @Failure 422 {object} response.UnprocessableErrorResponse "Unprocessable input response"
+// @Failure 400 {object} response.BadRequestErrorResponse "Bad request response"
+// @Failure 401 {object} response.UnauthorizedErrorResponse "Unauthorized response"
+// @Failure 500 {object} response.InternalServerErrorResponse "Internal server error response"
 //
 // @Router /forms [post]
 func (fh *FormHandler) Store(c echo.Context) error {
@@ -154,10 +154,10 @@ func (fh *FormHandler) Store(c echo.Context) error {
 // @Param form body form.CreateRequest true "Form name and description"
 //
 // @Success 200 {object} response.Response{content=form.Response} "Form updated"
-// @Failure 422 "Unprocessable entity"
-// @Failure 400 "Invalid input"
-// @Failure 401 "Unauthorized"
-// @Failure 500 "Internal server error"
+// @Failure 422 {object} response.UnprocessableErrorResponse "Unprocessable input response"
+// @Failure 400 {object} response.BadRequestErrorResponse "Bad request response"
+// @Failure 401 {object} response.UnauthorizedErrorResponse "Unauthorized response"
+// @Failure 500 {object} response.InternalServerErrorResponse "Internal server error response"
 //
 // @Router /forms/{formUUID} [put]
 func (fh *FormHandler) Update(c echo.Context) error {

@@ -7,7 +7,7 @@ import (
 )
 
 func BadRequestResponse(c echo.Context, error string) error {
-	response := Response{
+	response := BadRequestErrorResponse{
 		Success: false,
 		Errors:  []string{message.Message(error)},
 		Content: nil,

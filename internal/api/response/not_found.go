@@ -7,7 +7,7 @@ import (
 )
 
 func NotFoundResponse(c echo.Context, error string) error {
-	response := Response{
+	response := NotFoundErrorResponse{
 		Success: false,
 		Errors:  []string{message.Message(error)},
 		Content: nil,

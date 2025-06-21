@@ -114,10 +114,10 @@ func (ffh *FormFieldHandler) Show(c echo.Context) error {
 // @Param formUUID path string true "Form UUID"
 //
 // @Success 201 {object} response.Response{content=form.FieldResponseApi} "Field created"
-// @Failure 422 "Unprocessable entity"
-// @Failure 400 "Invalid input"
-// @Failure 401 "Unauthorized"
-// @Failure 500 "Internal server error"
+// @Failure 422 {object} response.UnprocessableErrorResponse "Unprocessable input response"
+// @Failure 400 {object} response.BadRequestErrorResponse "Bad request response"
+// @Failure 401 {object} response.UnauthorizedErrorResponse "Unauthorized response"
+// @Failure 500 {object} response.InternalServerErrorResponse "Internal server error response"
 //
 // @Router /forms/{formUUID}/fields [post]
 func (ffh *FormFieldHandler) Store(c echo.Context) error {
@@ -156,10 +156,10 @@ func (ffh *FormFieldHandler) Store(c echo.Context) error {
 // @Param fieldUUID path string true "Field UUID"
 //
 // @Success 200 {object} response.Response{content=form.FieldResponseApi} "Field updated"
-// @Failure 422 "Unprocessable entity"
-// @Failure 400 "Invalid input"
-// @Failure 401 "Unauthorized"
-// @Failure 500 "Internal server error"
+// @Failure 422 {object} response.UnprocessableErrorResponse "Unprocessable input response"
+// @Failure 400 {object} response.BadRequestErrorResponse "Bad request response"
+// @Failure 401 {object} response.UnauthorizedErrorResponse "Unauthorized response"
+// @Failure 500 {object} response.InternalServerErrorResponse "Internal server error response"
 //
 // @Router /forms/{formUUID}/fields/{fieldUUID} [put]
 func (ffh *FormFieldHandler) Update(c echo.Context) error {

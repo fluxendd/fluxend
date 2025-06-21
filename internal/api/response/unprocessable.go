@@ -6,7 +6,7 @@ import (
 )
 
 func UnprocessableResponse(c echo.Context, errors []string) error {
-	response := Response{
+	response := UnprocessableErrorResponse{
 		Success: false,
 		Errors:  errors,
 		Content: nil,

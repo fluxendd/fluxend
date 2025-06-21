@@ -108,10 +108,10 @@ func (bh *BackupHandler) Show(c echo.Context) error {
 // @Param backup body dto.DefaultRequestWithProjectHeader true "Project UUID"
 //
 // @Success 201 {object} response.Response{content=backup.Response} "Backup created"
-// @Failure 422 "Unprocessable entity"
-// @Failure 400 "Invalid input"
-// @Failure 401 "Unauthorized"
-// @Failure 500 "Internal server error"
+// @Failure 422 {object} response.UnprocessableErrorResponse "Unprocessable input response"
+// @Failure 400 {object} response.BadRequestErrorResponse "Bad request response"
+// @Failure 401 {object} response.UnauthorizedErrorResponse "Unauthorized response"
+// @Failure 500 {object} response.InternalServerErrorResponse "Internal server error response"
 //
 // @Router /backups [post]
 func (bh *BackupHandler) Store(c echo.Context) error {

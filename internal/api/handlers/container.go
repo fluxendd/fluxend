@@ -39,9 +39,9 @@ func NewContainerHandler(injector *do.Injector) (*ContainerHandler, error) {
 // @Param order query string false "Sort order (asc or desc)"
 //
 // @Success 200 {object} response.Response{content=[]container.Response} "List of container"
-// @Failure 400 "Invalid input"
-// @Failure 401 "Unauthorized"
-// @Failure 500 "Internal server error"
+// @Failure 400 {object} response.BadRequestErrorResponse "Invalid input response"
+// @Failure 401 {object} response.UnauthorizedErrorResponse "Unauthorized response"
+// @Failure 500 {object} response.InternalServerErrorResponse "Internal server error response"
 //
 // @Router /storage [get]
 func (ch *ContainerHandler) List(c echo.Context) error {
@@ -76,10 +76,10 @@ func (ch *ContainerHandler) List(c echo.Context) error {
 // @Param containerUUID path string true "Container UUID"
 //
 // @Success 200 {object} response.Response{content=container.Response} "Container details"
-// @Failure 422 "Unprocessable entity"
-// @Failure 400 "Invalid input"
-// @Failure 401 "Unauthorized"
-// @Failure 500 "Internal server error"
+// @Failure 422 {object} response.UnprocessableErrorResponse "Invalid input response"
+// @Failure 400 {object} response.BadRequestErrorResponse "Bad request response"
+// @Failure 401 {object} response.UnauthorizedErrorResponse "Unauthorized response"
+// @Failure 500 {object} response.InternalServerErrorResponse "Internal server error response"
 //
 // @Router /storage/containers/{containerUUID} [get]
 func (ch *ContainerHandler) Show(c echo.Context) error {
@@ -114,10 +114,10 @@ func (ch *ContainerHandler) Show(c echo.Context) error {
 // @Param container body container.CreateRequest true "Container details"
 //
 // @Success 201 {object} response.Response{content=container.Response} "Container created"
-// @Failure 422 "Unprocessable entity"
-// @Failure 400 "Invalid input"
-// @Failure 401 "Unauthorized"
-// @Failure 500 "Internal server error"
+// @Failure 422 {object} response.UnprocessableErrorResponse "Invalid input response"
+// @Failure 400 {object} response.BadRequestErrorResponse "Bad request response"
+// @Failure 401 {object} response.UnauthorizedErrorResponse "Unauthorized response"
+// @Failure 500 {object} response.InternalServerErrorResponse "Internal server error response"
 //
 // @Router /storage [post]
 func (ch *ContainerHandler) Store(c echo.Context) error {
@@ -152,10 +152,10 @@ func (ch *ContainerHandler) Store(c echo.Context) error {
 // @Param container body container.CreateRequest true "Container details"
 //
 // @Success 200 {object} response.Response{content=container.Response} "Container updated"
-// @Failure 422 "Unprocessable entity"
-// @Failure 400 "Invalid input"
-// @Failure 401 "Unauthorized"
-// @Failure 500 "Internal server error"
+// @Failure 422 {object} response.UnprocessableErrorResponse "Unprocessable input response"
+// @Failure 400 {object} response.BadRequestErrorResponse "Bad request response"
+// @Failure 401 {object} response.UnauthorizedErrorResponse "Unauthorized response"
+// @Failure 500 {object} response.InternalServerErrorResponse "Internal server error response"
 //
 // @Router /storage/containers/{containerUUID} [put]
 func (ch *ContainerHandler) Update(c echo.Context) error {

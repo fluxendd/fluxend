@@ -3187,13 +3187,22 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Invalid input response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
                     }
                 }
             },
@@ -5609,6 +5618,50 @@ const docTemplate = `{
                 }
             }
         },
+        "response.BadRequestErrorResponse": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string",
+                    "example": "null"
+                },
+                "errors": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "Invalid input parameter"
+                    ]
+                },
+                "success": {
+                    "type": "boolean",
+                    "example": false
+                }
+            }
+        },
+        "response.InternalServerErrorResponse": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string",
+                    "example": "null"
+                },
+                "errors": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "Internal server error"
+                    ]
+                },
+                "success": {
+                    "type": "boolean",
+                    "example": false
+                }
+            }
+        },
         "response.Response": {
             "type": "object",
             "properties": {
@@ -5621,6 +5674,28 @@ const docTemplate = `{
                 },
                 "success": {
                     "type": "boolean"
+                }
+            }
+        },
+        "response.UnauthorizedErrorResponse": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string",
+                    "example": "null"
+                },
+                "errors": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "Unauthorized access"
+                    ]
+                },
+                "success": {
+                    "type": "boolean",
+                    "example": false
                 }
             }
         },

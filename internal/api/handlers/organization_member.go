@@ -34,10 +34,10 @@ func NewOrganizationMemberHandler(injector *do.Injector) (*OrganizationMemberHan
 // @Param organization_id path string true "Organization ID"
 //
 // @Success 201 {object} response.Response{content=[]user.Response} "User created"
-// @Failure 422 "Unprocessable entity"
-// @Failure 400 "Invalid input"
-// @Failure 401 "Unauthorized"
-// @Failure 500 "Internal server error"
+// @Failure 422 {object} response.UnprocessableErrorResponse "Unprocessable input response"
+// @Failure 400 {object} response.BadRequestErrorResponse "Bad request response"
+// @Failure 401 {object} response.UnauthorizedErrorResponse "Unauthorized response"
+// @Failure 500 {object} response.InternalServerErrorResponse "Internal server error response"
 //
 // @Router /organizations/{organizationUUID}/users [get]
 func (omh *OrganizationMemberHandler) List(c echo.Context) error {
@@ -75,10 +75,10 @@ func (omh *OrganizationMemberHandler) List(c echo.Context) error {
 // @Param user body organization.MemberCreateRequest true "User ID JSON"
 //
 // @Success 201 {object} response.Response{content=user.Response} "User created"
-// @Failure 422 "Unprocessable entity"
-// @Failure 400 "Invalid input"
-// @Failure 401 "Unauthorized"
-// @Failure 500 "Internal server error"
+// @Failure 422 {object} response.UnprocessableErrorResponse "Unprocessable input response"
+// @Failure 400 {object} response.BadRequestErrorResponse "Bad request response"
+// @Failure 401 {object} response.UnauthorizedErrorResponse "Unauthorized response"
+// @Failure 500 {object} response.InternalServerErrorResponse "Internal server error response"
 //
 // @Router /organizations/{organizationUUID}/users [post]
 func (omh *OrganizationMemberHandler) Store(c echo.Context) error {
@@ -116,10 +116,10 @@ func (omh *OrganizationMemberHandler) Store(c echo.Context) error {
 // @Param user_id path string true "User ID"
 //
 // @Success 204 {object} nil "User deleted"
-// @Failure 422 "Unprocessable entity"
-// @Failure 400 "Invalid input"
-// @Failure 401 "Unauthorized"
-// @Failure 500 "Internal server error"
+// @Failure 422 {object} response.UnprocessableErrorResponse "Unprocessable input response"
+// @Failure 400 {object} response.BadRequestErrorResponse "Bad request response"
+// @Failure 401 {object} response.UnauthorizedErrorResponse "Unauthorized response"
+// @Failure 500 {object} response.InternalServerErrorResponse "Internal server error response"
 //
 // @Router /organizations/{organizationUUID}/users/{userUUID} [delete]
 func (omh *OrganizationMemberHandler) Delete(c echo.Context) error {

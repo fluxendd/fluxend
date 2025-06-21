@@ -7,7 +7,7 @@ import (
 )
 
 func UnauthorizedResponse(c echo.Context, error string) error {
-	response := Response{
+	response := UnauthorizedErrorResponse{
 		Success: false,
 		Errors:  []string{message.Message(error)},
 		Content: nil,

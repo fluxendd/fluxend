@@ -190,10 +190,10 @@ func (uh *UserHandler) Store(c echo.Context) error {
 // @Param user body user.UpdateRequest true "User details"
 //
 // @Success 200 {object} response.Response{content=user.Response} "User updated"
-// @Failure 422 "Unprocessable entity"
-// @Failure 400 "Invalid input"
-// @Failure 401 "Unauthorized"
-// @Failure 500 "Internal server error"
+// @Failure 422 {object} response.UnprocessableErrorResponse "Unprocessable input response"
+// @Failure 400 {object} response.BadRequestErrorResponse "Bad request response"
+// @Failure 401 {object} response.UnauthorizedErrorResponse "Unauthorized response"
+// @Failure 500 {object} response.InternalServerErrorResponse "Internal server error response"
 //
 // @Router /users/{userUUID} [put]
 func (uh *UserHandler) Update(c echo.Context) error {
