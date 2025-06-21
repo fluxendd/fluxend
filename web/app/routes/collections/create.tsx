@@ -27,6 +27,11 @@ import {
   FormMessage,
 } from "~/components/ui/form";
 import { Checkbox } from "~/components/ui/checkbox";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "~/components/ui/hover-card";
 import { AppHeader } from "~/components/shared/header";
 import { Plus, Trash2 } from "lucide-react";
 import { useParams, useNavigate, useOutletContext } from "react-router";
@@ -203,64 +208,99 @@ export default function CreateTable() {
                               <FormField
                                 control={form.control}
                                 name={`columns.${index}.name`}
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormControl>
-                                      <Input
-                                        placeholder="Column name"
-                                        {...field}
-                                        disabled={index === 0}
-                                        className={
-                                          index === 0 ? "bg-muted" : ""
-                                        }
-                                      />
-                                    </FormControl>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
+                                render={({ field, fieldState }) => {
+                                  const hasError = fieldState.error;
+
+                                  return (
+                                    <FormItem>
+                                      <FormControl>
+                                        <HoverCard>
+                                          <HoverCardTrigger asChild>
+                                            <Input
+                                              placeholder="Column name"
+                                              {...field}
+                                              disabled={index === 0}
+                                              className={`${
+                                                index === 0 ? "bg-muted" : ""
+                                              } ${
+                                                hasError ? "border-red-500" : ""
+                                              }`}
+                                            />
+                                          </HoverCardTrigger>
+                                          {hasError && (
+                                            <HoverCardContent className="w-80">
+                                              <p className="text-sm text-destructive">
+                                                {fieldState.error?.message}
+                                              </p>
+                                            </HoverCardContent>
+                                          )}
+                                        </HoverCard>
+                                      </FormControl>
+                                    </FormItem>
+                                  );
+                                }}
                               />
                             </div>
                             <div className="col-span-4">
                               <FormField
                                 control={form.control}
                                 name={`columns.${index}.type`}
-                                render={({ field }) => (
-                                  <FormItem className="w-full">
-                                    <Select
-                                      onValueChange={field.onChange}
-                                      defaultValue={field.value}
-                                      disabled={index === 0}
+                                render={({ field, fieldState }) => {
+                                  const hasError = fieldState.error;
+                                  const selectTrigger = (
+                                    <SelectTrigger
+                                      className={`${
+                                        index === 0 ? "bg-muted" : ""
+                                      } ${hasError ? "border-red-500" : ""}`}
                                     >
-                                      <FormControl className="w-[90%]">
-                                        <SelectTrigger
-                                          className={
-                                            index === 0 ? "bg-muted" : ""
-                                          }
-                                        >
-                                          <SelectValue placeholder="Select type" />
-                                        </SelectTrigger>
-                                      </FormControl>
-                                      <SelectContent>
-                                        {COLUMN_TYPE_OPTIONS.map((option) => (
-                                          <SelectItem
-                                            key={option.value}
-                                            value={option.value}
-                                          >
-                                            <div>
-                                              <div className="font-medium">
-                                                {option.label}
+                                      <SelectValue placeholder="Select type" />
+                                    </SelectTrigger>
+                                  );
+
+                                  return (
+                                    <FormItem className="w-full">
+                                      <Select
+                                        onValueChange={field.onChange}
+                                        defaultValue={field.value}
+                                        disabled={index === 0}
+                                      >
+                                        <FormControl className="w-[90%]">
+                                          {hasError ? (
+                                            <HoverCard>
+                                              <HoverCardTrigger asChild>
+                                                {selectTrigger}
+                                              </HoverCardTrigger>
+                                              <HoverCardContent className="w-80">
+                                                <p className="text-sm text-destructive">
+                                                  {fieldState.error?.message}
+                                                </p>
+                                              </HoverCardContent>
+                                            </HoverCard>
+                                          ) : (
+                                            selectTrigger
+                                          )}
+                                        </FormControl>
+                                        <SelectContent>
+                                          {COLUMN_TYPE_OPTIONS.map((option) => (
+                                            <SelectItem
+                                              key={option.value}
+                                              value={option.value}
+                                            >
+                                              <div>
+                                                <div className="font-medium">
+                                                  {option.label}
+                                                </div>
+                                                <div className="text-xs text-muted-foreground">
+                                                  {option.description}
+                                                </div>
                                               </div>
-                                              <div className="text-xs text-muted-foreground">
-                                                {option.description}
-                                              </div>
-                                            </div>
-                                          </SelectItem>
-                                        ))}
-                                      </SelectContent>
-                                    </Select>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
+                                            </SelectItem>
+                                          ))}
+                                        </SelectContent>
+                                      </Select>
+                                    </FormItem>
+                                  );
+                                }}
                               />
                             </div>
                             <div className="col-span-2">
@@ -281,7 +321,6 @@ export default function CreateTable() {
                                         />
                                       </div>
                                     </FormControl>
-                                    <FormMessage />
                                   </FormItem>
                                 )}
                               />
