@@ -16,8 +16,7 @@ func (r *DefaultRequestWithProjectHeader) BindAndValidate(c echo.Context) []stri
 		return []string{"Invalid request payload"}
 	}
 
-	err := r.WithProjectHeader(c)
-	if err != nil {
+	if err := r.WithProjectHeader(c); err != nil {
 		return []string{err.Error()}
 	}
 

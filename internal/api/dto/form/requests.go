@@ -72,12 +72,11 @@ func (r *CreateRequest) BindAndValidate(c echo.Context) []string {
 		return []string{"Invalid request payload"}
 	}
 
-	err := r.WithProjectHeader(c)
-	if err != nil {
+	if err := r.WithProjectHeader(c); err != nil {
 		return []string{err.Error()}
 	}
 
-	err = validation.ValidateStruct(r,
+	err := validation.ValidateStruct(r,
 		validation.Field(
 			&r.Name,
 			validation.Required.Error("Name is required"),
@@ -104,12 +103,11 @@ func (r *CreateFormFieldsRequest) BindAndValidate(c echo.Context) []string {
 		return []string{"Invalid request payload: " + err.Error()}
 	}
 
-	err := r.WithProjectHeader(c)
-	if err != nil {
+	if err := r.WithProjectHeader(c); err != nil {
 		return []string{err.Error()}
 	}
 
-	err = validation.ValidateStruct(r,
+	err := validation.ValidateStruct(r,
 		validation.Field(&r.Fields, validation.Required.Error("Fields array is required"), validation.Each(
 			validation.By(validateField),
 		)),
@@ -161,8 +159,7 @@ func (r *CreateResponseRequest) BindAndValidate(c echo.Context) []string {
 		return []string{"Invalid request payload"}
 	}
 
-	err := r.WithProjectHeader(c)
-	if err != nil {
+	if err := r.WithProjectHeader(c); err != nil {
 		return []string{err.Error()}
 	}
 
@@ -174,8 +171,7 @@ func (r *UpdateFormFieldRequest) BindAndValidate(c echo.Context) []string {
 		return []string{"Invalid request payload" + err.Error()}
 	}
 
-	err := r.WithProjectHeader(c)
-	if err != nil {
+	if err := r.WithProjectHeader(c); err != nil {
 		return []string{err.Error()}
 	}
 

@@ -25,12 +25,11 @@ func (r *CreateRequest) BindAndValidate(c echo.Context) []string {
 		return []string{"Invalid request payload"}
 	}
 
-	err := r.WithProjectHeader(c)
-	if err != nil {
+	if err := r.WithProjectHeader(c); err != nil {
 		return []string{err.Error()}
 	}
 
-	err = validation.ValidateStruct(r,
+	err := validation.ValidateStruct(r,
 		validation.Field(
 			&r.FullFileName,
 			validation.Required.Error("full_file_name is required"),
@@ -54,12 +53,11 @@ func (r *RenameRequest) BindAndValidate(c echo.Context) []string {
 		return []string{"Invalid request payload"}
 	}
 
-	err := r.WithProjectHeader(c)
-	if err != nil {
+	if err := r.WithProjectHeader(c); err != nil {
 		return []string{err.Error()}
 	}
 
-	err = validation.ValidateStruct(r,
+	err := validation.ValidateStruct(r,
 		validation.Field(
 			&r.FullFileName,
 			validation.Required.Error("Name is required"),

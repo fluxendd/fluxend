@@ -22,14 +22,13 @@ func (r *CreateIndexRequest) BindAndValidate(c echo.Context) []string {
 		return []string{"Invalid request payload"}
 	}
 
-	err := r.WithProjectHeader(c)
-	if err != nil {
+	if err := r.WithProjectHeader(c); err != nil {
 		return []string{err.Error()}
 	}
 
 	var errors []string
 
-	err = validation.ValidateStruct(r,
+	err := validation.ValidateStruct(r,
 		validation.Field(
 			&r.Name,
 			validation.Required.Error("Index name is required"),
