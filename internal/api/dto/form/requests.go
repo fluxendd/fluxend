@@ -22,7 +22,7 @@ var allowedFieldTypes = []interface{}{
 }
 
 type CreateRequest struct {
-	dto.BaseRequest
+	dto.DefaultRequestWithProjectHeader
 	Name        string `json:"name"`
 	Description string `json:"description"`
 }
@@ -53,17 +53,17 @@ type FieldRequest struct {
 
 // CreateFormFieldsRequest represents multiple fields in a request
 type CreateFormFieldsRequest struct {
-	dto.BaseRequest
+	dto.DefaultRequestWithProjectHeader
 	Fields []FieldRequest `json:"fields"`
 }
 
 type UpdateFormFieldRequest struct {
-	dto.BaseRequest
+	dto.DefaultRequestWithProjectHeader
 	FieldRequest
 }
 
 type CreateResponseRequest struct {
-	dto.BaseRequest
+	dto.DefaultRequestWithProjectHeader
 	Response map[string]interface{} `json:"response"`
 }
 

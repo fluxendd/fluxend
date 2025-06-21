@@ -14,18 +14,18 @@ import (
 )
 
 type CreateTableRequest struct {
-	dto.BaseRequest
+	dto.DefaultRequestWithProjectHeader
 	Name    string                `json:"name"`
 	Columns []columnDomain.Column `json:"columns"`
 }
 
 type RenameTableRequest struct {
-	dto.BaseRequest
+	dto.DefaultRequestWithProjectHeader
 	Name string `json:"name"`
 }
 
 type UploadTableRequest struct {
-	dto.BaseRequest
+	dto.DefaultRequestWithProjectHeader
 	Name string                `form:"name"`
 	File *multipart.FileHeader `form:"file"`
 }

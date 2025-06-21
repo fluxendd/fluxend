@@ -10,13 +10,13 @@ import (
 )
 
 type CreateRequest struct {
-	dto.BaseRequest
+	dto.DefaultRequestWithProjectHeader
 	FullFileName string                `json:"-" form:"full_file_name"`
 	File         *multipart.FileHeader `json:"-" form:"file"`
 }
 
 type RenameRequest struct {
-	dto.BaseRequest
+	dto.DefaultRequestWithProjectHeader
 	FullFileName string `json:"full_file_name"`
 }
 
