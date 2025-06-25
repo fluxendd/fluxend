@@ -72,7 +72,7 @@ func (s *ServiceImpl) Pulse(authUser auth.User) (Health, error) {
 		CPUCores:      runtime.NumCPU(),
 	}
 
-	allProjects, err := s.projectRepo.List(shared.PaginationParams{})
+	allProjects, err := s.projectRepo.List(shared.PaginationParams{Page: 1, Limit: 1000})
 	if err != nil {
 		response.DatabaseStatus = statusError
 
@@ -80,6 +80,8 @@ func (s *ServiceImpl) Pulse(authUser auth.User) (Health, error) {
 	} else {
 		for _, currentProject := range allProjects {
 			if !s.postgrestService.HasContainer(currentProject.DBName) {
+				log.Error().Msgf("Expected PostgREST container for project %s does not exist", currentProject.DBName)
+
 				response.PostgrestStatus = statusError
 				break
 			}
