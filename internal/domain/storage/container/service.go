@@ -90,8 +90,7 @@ func (s *ServiceImpl) Create(request *CreateContainerInput, authUser auth.User) 
 		return Container{}, errors.NewForbiddenError("container.error.createForbidden")
 	}
 
-	err = s.validateNameForDuplication(request.Name, request.ProjectUUID)
-	if err != nil {
+	if err = s.validateNameForDuplication(request.Name, request.ProjectUUID); err != nil {
 		return Container{}, err
 	}
 
@@ -143,16 +142,14 @@ func (s *ServiceImpl) Update(containerUUID uuid.UUID, authUser auth.User, reques
 		return &Container{}, errors.NewForbiddenError("container.error.updateForbidden")
 	}
 
-	err = fetchedContainer.PopulateModel(&fetchedContainer, request)
-	if err != nil {
+	if err = fetchedContainer.PopulateModel(&fetchedContainer, request); err != nil {
 		return nil, err
 	}
 
 	fetchedContainer.UpdatedAt = time.Now()
 	fetchedContainer.UpdatedBy = authUser.Uuid
 
-	err = s.validateNameForDuplication(request.Name, fetchedContainer.ProjectUuid)
-	if err != nil {
+	if err = s.validateNameForDuplication(request.Name, fetchedContainer.ProjectUuid); err != nil {
 		return &Container{}, err
 	}
 
@@ -182,8 +179,8 @@ func (s *ServiceImpl) Delete(containerUUID uuid.UUID, authUser auth.User) (bool,
 	if err != nil {
 		return false, err
 	}
-	err = storageService.DeleteContainer(fetchedContainer.NameKey)
-	if err != nil {
+
+	if err = storageService.DeleteContainer(fetchedContainer.NameKey); err != nil {
 		return false, err
 	}
 

@@ -243,9 +243,8 @@ func (uh *UserHandler) Logout(c echo.Context) error {
 		return response.UnauthorizedResponse(c, err.Error())
 	}
 
-	err = uh.userService.Logout(userUUID)
-	if err != nil {
-		return response.ErrorResponse(c, err)
+	if logoutError := uh.userService.Logout(userUUID); logoutError != nil {
+		return response.ErrorResponse(c, logoutError)
 	}
 
 	return response.DeletedResponse(c, nil)

@@ -77,8 +77,7 @@ func (s *ServiceImpl) Create(request *CreateFormInput, authUser auth.User) (Form
 		return Form{}, errors.NewForbiddenError("form.error.createForbidden")
 	}
 
-	err = s.validateNameForDuplication(request.Name, request.ProjectUUID)
-	if err != nil {
+	if err = s.validateNameForDuplication(request.Name, request.ProjectUUID); err != nil {
 		return Form{}, err
 	}
 
@@ -114,16 +113,14 @@ func (s *ServiceImpl) Update(formUUID uuid.UUID, authUser auth.User, request *Cr
 		return &Form{}, errors.NewForbiddenError("form.error.updateForbidden")
 	}
 
-	err = fetchedForm.PopulateModel(&fetchedForm, request)
-	if err != nil {
+	if err = fetchedForm.PopulateModel(&fetchedForm, request); err != nil {
 		return nil, err
 	}
 
 	fetchedForm.UpdatedAt = time.Now()
 	fetchedForm.UpdatedBy = authUser.Uuid
 
-	err = s.validateNameForDuplication(request.Name, fetchedForm.ProjectUuid)
-	if err != nil {
+	if err = s.validateNameForDuplication(request.Name, fetchedForm.ProjectUuid); err != nil {
 		return &Form{}, err
 	}
 

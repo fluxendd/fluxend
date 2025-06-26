@@ -73,8 +73,7 @@ func (s *WorkflowServiceImpl) Create(databaseName string, backupUUID uuid.UUID) 
 	}
 
 	// 4. Upload backup to S3
-	err = s.uploadBackup(databaseName, backupUUID, fileBytes)
-	if err != nil {
+	if err = s.uploadBackup(databaseName, backupUUID, fileBytes); err != nil {
 		s.handleBackupFailure(backupUUID, constants.BackupStatusCreatingFailed, err.Error())
 
 		return
@@ -87,8 +86,7 @@ func (s *WorkflowServiceImpl) Create(databaseName string, backupUUID uuid.UUID) 
 	}
 
 	// 6. Remove backup file from app container
-	err = os.Remove(backupFilePath)
-	if err != nil {
+	if err = os.Remove(backupFilePath); err != nil {
 		log.Error().
 			Str("action", constants.ActionBackup).
 			Str("db", databaseName).
@@ -114,11 +112,10 @@ func (s *WorkflowServiceImpl) Delete(databaseName string, backupUUID uuid.UUID) 
 		return
 	}
 
-	err = storageService.DeleteFile(storage.FileInput{
+	if err = storageService.DeleteFile(storage.FileInput{
 		ContainerName: constants.BackupContainerName,
 		FileName:      filePath,
-	})
-	if err != nil {
+	}); err != nil {
 		s.handleBackupFailure(backupUUID, constants.BackupStatusDeletingFailed, err.Error())
 	}
 
@@ -146,8 +143,7 @@ func (s *WorkflowServiceImpl) executePgDump(databaseName, backupFilePath string)
 		"-f", backupFilePath,
 	}
 
-	err := pkg.ExecuteCommand(command)
-	if err != nil {
+	if err := pkg.ExecuteCommand(command); err != nil {
 		log.Error().
 			Str("action", constants.ActionBackup).
 			Str("db", databaseName).
@@ -157,7 +153,7 @@ func (s *WorkflowServiceImpl) executePgDump(databaseName, backupFilePath string)
 		return err
 	}
 
-	return err
+	return nil
 }
 
 func (s *WorkflowServiceImpl) copyBackupToAppContainer(backupFilePath string, backupUUID uuid.UUID) error {
@@ -168,15 +164,16 @@ func (s *WorkflowServiceImpl) copyBackupToAppContainer(backupFilePath string, ba
 		fmt.Sprintf("/tmp/%s.sql", backupUUID),                                     // Destination inside app container
 	}
 
-	err := pkg.ExecuteCommand(dockerCpCommand)
-	if err != nil {
+	if err := pkg.ExecuteCommand(dockerCpCommand); err != nil {
 		log.Error().
 			Str("action", constants.ActionBackup).
 			Str("backup_uuid", backupUUID.String()).
 			Msg("failed to copy backup file from fluxend_db to fluxend_app container")
+
+		return err
 	}
 
-	return err
+	return nil
 }
 
 func (s *WorkflowServiceImpl) ensureBackupContainerExists() error {

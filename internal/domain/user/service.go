@@ -148,8 +148,7 @@ func (s *ServiceImpl) Update(userUUID, authUserUUID uuid.UUID, request *UpdateUs
 		return nil, err
 	}
 
-	err = fetchedUser.PopulateModel(&fetchedUser, request)
-	if err != nil {
+	if err = fetchedUser.PopulateModel(&fetchedUser, request); err != nil {
 		return nil, err
 	}
 

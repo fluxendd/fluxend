@@ -94,8 +94,7 @@ func (s *FieldServiceImpl) CreateMany(formUUID uuid.UUID, request *CreateFormFie
 		return []Field{}, errors.NewForbiddenError("formField.error.createForbidden")
 	}
 
-	err = s.validateManyForLabelDuplication(request, formUUID)
-	if err != nil {
+	if err = s.validateManyForLabelDuplication(request, formUUID); err != nil {
 		return []Field{}, err
 	}
 
@@ -138,15 +137,13 @@ func (s *FieldServiceImpl) Update(formUUID, fieldUUID uuid.UUID, authUser auth.U
 		return &Field{}, err
 	}
 
-	err = formField.PopulateModel(&formField, request.FieldInput)
-	if err != nil {
+	if err = formField.PopulateModel(&formField, request.FieldInput); err != nil {
 		return nil, err
 	}
 
 	formField.UpdatedAt = time.Now()
 
-	err = s.validateOneForLabelDuplication(request.Label, formField.FormUuid)
-	if err != nil {
+	if err = s.validateOneForLabelDuplication(request.Label, formField.FormUuid); err != nil {
 		return &Field{}, err
 	}
 

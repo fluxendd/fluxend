@@ -154,8 +154,7 @@ func (s *ServiceImpl) CreateUser(userUUID uuid.UUID, organizationUUID uuid.UUID,
 		return user.User{}, errors.NewUnprocessableError("organization.error.userAlreadyExists")
 	}
 
-	err = s.organizationRepo.CreateUser(organizationUUID, userUUID)
-	if err != nil {
+	if err = s.organizationRepo.CreateUser(organizationUUID, userUUID); err != nil {
 		return user.User{}, err
 	}
 

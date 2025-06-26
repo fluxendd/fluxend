@@ -116,8 +116,7 @@ func (s *FunctionServiceImpl) Create(schema string, request CreateFunctionInput,
 		return Function{}, err
 	}
 
-	err = clientFunctionRepo.Create(definitionQuery)
-	if err != nil {
+	if err = clientFunctionRepo.Create(definitionQuery); err != nil {
 		return Function{}, err
 	}
 
@@ -145,8 +144,7 @@ func (s *FunctionServiceImpl) Delete(schema, name string, projectUUID uuid.UUID,
 	}
 	defer connection.Close()
 
-	err = clientFunctionRepo.Delete(schema, name)
-	if err != nil {
+	if err = clientFunctionRepo.Delete(schema, name); err != nil {
 		return false, err
 	}
 

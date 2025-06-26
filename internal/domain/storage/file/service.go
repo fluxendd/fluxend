@@ -111,8 +111,7 @@ func (s *ServiceImpl) Create(containerUUID uuid.UUID, request *CreateFileInput, 
 		return File{}, errors.NewForbiddenError("file.error.createForbidden")
 	}
 
-	err = s.validate(request, fetchedContainer)
-	if err != nil {
+	if err = s.validate(request, fetchedContainer); err != nil {
 		return File{}, err
 	}
 
@@ -151,8 +150,7 @@ func (s *ServiceImpl) Create(containerUUID uuid.UUID, request *CreateFileInput, 
 		return File{}, err
 	}
 
-	err = s.containerRepo.IncrementTotalFiles(containerUUID)
-	if err != nil {
+	if err = s.containerRepo.IncrementTotalFiles(containerUUID); err != nil {
 		return File{}, err
 	}
 
@@ -179,8 +177,7 @@ func (s *ServiceImpl) Rename(fileUUID, containerUUID uuid.UUID, authUser auth.Us
 		return &File{}, errors.NewForbiddenError("file.error.updateForbidden")
 	}
 
-	err = s.validateNameForDuplication(request.FullFileName, fetchedContainer.Uuid)
-	if err != nil {
+	if err = s.validateNameForDuplication(request.FullFileName, fetchedContainer.Uuid); err != nil {
 		return &File{}, err
 	}
 
@@ -276,13 +273,11 @@ func (s *ServiceImpl) validate(request *CreateFileInput, container container.Con
 		return err
 	}
 
-	err = s.validateFileSize(fileSize, container)
-	if err != nil {
+	if err = s.validateFileSize(fileSize, container); err != nil {
 		return err
 	}
 
-	err = s.validateNameForDuplication(request.FullFileName, container.Uuid)
-	if err != nil {
+	if err = s.validateNameForDuplication(request.FullFileName, container.Uuid); err != nil {
 		return err
 	}
 

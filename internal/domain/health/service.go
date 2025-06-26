@@ -93,8 +93,7 @@ func (s *ServiceImpl) Pulse(authUser auth.User) (Health, error) {
 
 func (s *ServiceImpl) getDiskStats(path string) (total, available, used uint64, err error) {
 	var stat syscall.Statfs_t
-	err = syscall.Statfs(path, &stat)
-	if err != nil {
+	if err = syscall.Statfs(path, &stat); err != nil {
 		return 0, 0, 0, err
 	}
 

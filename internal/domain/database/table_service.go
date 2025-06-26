@@ -110,13 +110,11 @@ func (s *TableServiceImpl) Create(request CreateTableInput, authUser auth.User) 
 	}
 	defer connection.Close()
 
-	err = s.validateNameForDuplication(request.Name, clientTableRepo)
-	if err != nil {
+	if err = s.validateNameForDuplication(request.Name, clientTableRepo); err != nil {
 		return Table{}, err
 	}
 
-	err = clientTableRepo.Create(request.Name, request.Columns)
-	if err != nil {
+	if err = clientTableRepo.Create(request.Name, request.Columns); err != nil {
 		return Table{}, err
 	}
 
@@ -139,8 +137,7 @@ func (s *TableServiceImpl) Upload(request UploadTableInput, authUser auth.User) 
 	}
 	defer connection.Close()
 
-	err = s.validateNameForDuplication(request.Name, clientTableRepo)
-	if err != nil {
+	if err = s.validateNameForDuplication(request.Name, clientTableRepo); err != nil {
 		return Table{}, err
 	}
 
@@ -161,13 +158,11 @@ func (s *TableServiceImpl) Upload(request UploadTableInput, authUser auth.User) 
 		return Table{}, err
 	}
 
-	err = clientTableRepo.Create(request.Name, columns)
-	if err != nil {
+	if err = clientTableRepo.Create(request.Name, columns); err != nil {
 		return Table{}, err
 	}
 
-	err = clientRowRepo.CreateMany(request.Name, columns, values)
-	if err != nil {
+	if err = clientRowRepo.CreateMany(request.Name, columns, values); err != nil {
 		return Table{}, err
 	}
 
@@ -190,8 +185,7 @@ func (s *TableServiceImpl) Duplicate(fullTableName string, authUser auth.User, r
 	}
 	defer connection.Close()
 
-	err = s.validateNameForDuplication(request.Name, clientTableRepo)
-	if err != nil {
+	if err = s.validateNameForDuplication(request.Name, clientTableRepo); err != nil {
 		return &Table{}, err
 	}
 
@@ -200,8 +194,7 @@ func (s *TableServiceImpl) Duplicate(fullTableName string, authUser auth.User, r
 		return &Table{}, err
 	}
 
-	err = clientTableRepo.Duplicate(fetchedTable.Name, request.Name)
-	if err != nil {
+	if err = clientTableRepo.Duplicate(fetchedTable.Name, request.Name); err != nil {
 		return &Table{}, err
 	}
 
@@ -226,8 +219,7 @@ func (s *TableServiceImpl) Rename(fullTableName string, authUser auth.User, requ
 	}
 	defer connection.Close()
 
-	err = s.validateNameForDuplication(request.Name, clientTableRepo)
-	if err != nil {
+	if err = s.validateNameForDuplication(request.Name, clientTableRepo); err != nil {
 		return Table{}, err
 	}
 
@@ -236,8 +228,7 @@ func (s *TableServiceImpl) Rename(fullTableName string, authUser auth.User, requ
 		return Table{}, err
 	}
 
-	err = clientTableRepo.Rename(fetchedTable.Name, request.Name)
-	if err != nil {
+	if err = clientTableRepo.Rename(fetchedTable.Name, request.Name); err != nil {
 		return Table{}, err
 	}
 
@@ -262,8 +253,7 @@ func (s *TableServiceImpl) Delete(fullTableName string, projectUUID uuid.UUID, a
 	}
 	defer connection.Close()
 
-	err = clientTableRepo.DropIfExists(fullTableName)
-	if err != nil {
+	if err = clientTableRepo.DropIfExists(fullTableName); err != nil {
 		return false, err
 	}
 

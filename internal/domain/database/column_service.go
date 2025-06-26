@@ -105,8 +105,7 @@ func (s *ColumnServiceImpl) CreateMany(fullTableName string, request CreateColum
 		return []Column{}, errors.NewUnprocessableError("column.error.someAlreadyExist")
 	}
 
-	err = clientColumnRepo.CreateMany(table.Name, request.Columns)
-	if err != nil {
+	if err = clientColumnRepo.CreateMany(table.Name, request.Columns); err != nil {
 		return []Column{}, err
 	}
 
@@ -148,8 +147,7 @@ func (s *ColumnServiceImpl) AlterMany(fullTableName string, request CreateColumn
 		return []Column{}, errors.NewNotFoundError("column.error.someNotFound")
 	}
 
-	err = clientColumnRepo.AlterMany(table.Name, request.Columns)
-	if err != nil {
+	if err = clientColumnRepo.AlterMany(table.Name, request.Columns); err != nil {
 		return []Column{}, err
 	}
 
@@ -191,8 +189,7 @@ func (s *ColumnServiceImpl) Rename(columnName string, fullTableName string, requ
 		return []Column{}, errors.NewNotFoundError("column.error.notFound")
 	}
 
-	err = clientColumnRepo.Rename(table.Name, columnName, request.Name)
-	if err != nil {
+	if err = clientColumnRepo.Rename(table.Name, columnName, request.Name); err != nil {
 		return []Column{}, err
 	}
 
@@ -224,8 +221,7 @@ func (s *ColumnServiceImpl) Delete(columnName, fullTableName string, projectUUID
 		return false, errors.NewNotFoundError("column.error.notFound")
 	}
 
-	err = clientColumnRepo.Drop(fullTableName, columnName)
-	if err != nil {
+	if err = clientColumnRepo.Drop(fullTableName, columnName); err != nil {
 		return false, err
 	}
 

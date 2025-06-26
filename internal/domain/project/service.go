@@ -122,16 +122,14 @@ func (s *ServiceImpl) Update(projectUUID uuid.UUID, authUser auth.User, request 
 		return &Project{}, errors.NewForbiddenError("project.error.updateForbidden")
 	}
 
-	err = fetchedProject.PopulateModel(&fetchedProject, request)
-	if err != nil {
+	if err = fetchedProject.PopulateModel(&fetchedProject, request); err != nil {
 		return nil, err
 	}
 
 	fetchedProject.UpdatedAt = time.Now()
 	fetchedProject.UpdatedBy = authUser.Uuid
 
-	err = s.validateNameForDuplication(request.Name, fetchedProject.OrganizationUuid)
-	if err != nil {
+	if err = s.validateNameForDuplication(request.Name, fetchedProject.OrganizationUuid); err != nil {
 		return &Project{}, err
 	}
 
@@ -148,8 +146,7 @@ func (s *ServiceImpl) Delete(projectUUID uuid.UUID, authUser auth.User) (bool, e
 		return false, errors.NewForbiddenError("project.error.updateForbidden")
 	}
 
-	err = s.databaseRepo.DropIfExists(fetchedProject.DBName)
-	if err != nil {
+	if err = s.databaseRepo.DropIfExists(fetchedProject.DBName); err != nil {
 		return false, err
 	}
 
