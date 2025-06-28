@@ -31,7 +31,7 @@ export function DataTableWrapper<TData, TValue>({
   return (
     <div
       className={cn(
-        "rounded-md overflow-hidden flex flex-col h-full min-h-0 max-h-full",
+        "rounded-lg overflow-hidden flex flex-col h-full min-h-0 max-h-full",
         isLoading ? "animate-pulse-border" : "border",
         className
       )}

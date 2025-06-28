@@ -547,7 +547,7 @@ export function QuerySearchBox({
               width: `${suggestionPosition.width}px`,
               maxHeight: `${suggestionPosition.maxHeight}px`,
             }}
-            className="mt-1 bg-background border rounded-md shadow-lg overflow-auto"
+            className="mt-1 bg-background border rounded-lg shadow-lg overflow-auto"
           >
             <div className="p-1">
               <div className="px-2 py-1 text-xs text-muted-foreground font-medium bg-muted/50 sticky top-0">
@@ -607,7 +607,7 @@ export function QuerySearchBox({
             },
           }}
         >
-          <div className="bg-muted/30 rounded-md border p-3 border-border/40">
+          <div className="bg-muted/30 rounded-lg border p-3 border-border/40">
             <h4 className="text-sm font-medium mb-2">Query Examples:</h4>
             <ScrollArea className="h-[150px]">
               <ul className="text-xs space-y-2 text-muted-foreground">

@@ -14,7 +14,7 @@ const ProjectsList = ({ projects, isLoading = false }: ProjectsListProps) => {
         {[...Array(4)].map((_, index) => (
           <div
             key={index}
-            className="rounded-md border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800"
+            className="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800"
           >
             <div className="animate-pulse">
               <div className="h-5 bg-gray-200 rounded w-3/4 mb-4 dark:bg-gray-700"></div>

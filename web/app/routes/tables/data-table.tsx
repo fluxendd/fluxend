@@ -46,6 +46,7 @@ interface DataTableProps<TData, TValue> {
   pagination: PaginationState;
   totalRows: number;
   onPaginationChange: OnChangeFn<PaginationState>;
+  onRowClick?: (row: TData) => void;
 }
 
 export function DataTable<TData, TValue>({
@@ -55,6 +56,7 @@ export function DataTable<TData, TValue>({
   pagination,
   totalRows,
   onPaginationChange,
+  onRowClick,
 }: DataTableProps<TData, TValue>) {
   const tableRef = useRef<HTMLTableElement>(null);
 
@@ -78,9 +80,9 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className="flex flex-col h-full">
-      <div className="flex-grow overflow-auto min-h-0">
+      <div className="flex-grow overflow-auto min-h-0 rounded-lg">
         <Table ref={tableRef}>
-          <TableHeader className="sticky top-0 z-20">
+          <TableHeader className="sticky top-0 z-10 [&_tr:first-child_th:first-child]:rounded-tl-lg [&_tr:first-child_th:last-child]:rounded-tr-lg">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
@@ -117,7 +119,15 @@ export function DataTable<TData, TValue>({
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
-                  className="data-table-row"
+                  className={cn("data-table-row", onRowClick && "cursor-pointer")}
+                  onClick={() => onRowClick?.(row.original)}
+                  tabIndex={onRowClick ? 0 : undefined}
+                  onKeyDown={(e) => {
+                    if (onRowClick && (e.key === 'Enter' || e.key === ' ')) {
+                      e.preventDefault();
+                      onRowClick(row.original);
+                    }
+                  }}
                 >
                   {row.getVisibleCells().map((cell) => {
                     return (
@@ -157,7 +167,7 @@ export function DataTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-between px-4 py-2 border-t bg-background sticky bottom-0 z-20">
+      <div className="flex items-center justify-between px-4 py-2 border-t bg-background sticky bottom-0 z-10 rounded-b-lg">
         <div className="hidden flex-1 text-sm text-muted-foreground lg:flex">
           {table.getFilteredSelectedRowModel().rows.length > 0 &&
             `${
