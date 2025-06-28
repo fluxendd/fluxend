@@ -92,6 +92,27 @@ export function createTablesService(authToken: string) {
     return put(`/tables/public.${tableName}/columns`, data, fetchOptions);
   };
 
+  const updateTableRow = async (
+    projectId: string, 
+    tableId: string, 
+    rowId: string, 
+    data: any,
+    options?: {
+      baseUrl?: string;
+    }
+  ) => {
+    const fetchOptions: APIRequestOptions = {
+      headers: {
+        "X-Project": projectId,
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authToken}`,
+      },
+      baseUrl: options?.baseUrl,
+    };
+
+    return put(`${tableId}/${rowId}`, data, fetchOptions);
+  };
+
   return {
     getAllTables,
     getTableColumns,
@@ -99,6 +120,7 @@ export function createTablesService(authToken: string) {
     createTable,
     deleteTable,
     updateTableColumns,
+    updateTableRow,
   };
 }
 

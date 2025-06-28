@@ -138,7 +138,8 @@ const ColumnIcon: React.FC<ColumnIconProps> = ({ type }) => {
 
 export const prepareColumns = (
   columns: any[] | undefined | null,
-  collectionName?: string
+  collectionName?: string,
+  onEditRow?: (row: any) => void
 ): ColumnDef<any>[] => {
   if (!columns || !Array.isArray(columns) || columns.length === 0) {
     return [];
@@ -236,7 +237,7 @@ export const prepareColumns = (
     cell: ({ row }) => {
       return (
         <div className="flex justify-end pr-6">
-          <DropdownMenu>
+          <DropdownMenu modal={false}>
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
@@ -248,6 +249,16 @@ export const prepareColumns = (
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-[160px]">
+              {onEditRow && (
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onEditRow(row.original || row);
+                  }}
+                >
+                  Edit
+                </DropdownMenuItem>
+              )}
               <DropdownMenuItem
                 onClick={() =>
                   mockDeleteRow(String(row.original?.id || row.id))

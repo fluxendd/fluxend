@@ -21,6 +21,7 @@ import {
 import { Button } from "~/components/ui/button";
 import { Trash2, Pencil } from "lucide-react";
 import { toast } from "sonner";
+import { EditRowSheet } from "~/components/tables/edit-row-sheet";
 
 const DEFAULT_PAGE_SIZE = 50;
 const DEFAULT_PAGE_INDEX = 0;
@@ -41,6 +42,8 @@ export default function TablePageContent({ params }: Route.ComponentProps) {
     pageIndex: DEFAULT_PAGE_INDEX,
     pageSize: DEFAULT_PAGE_SIZE,
   });
+  const [editingRow, setEditingRow] = useState<any>(null);
+  const [isEditSheetOpen, setIsEditSheetOpen] = useState(false);
 
   const {
     isLoading: isColumnsLoading,
@@ -49,13 +52,18 @@ export default function TablePageContent({ params }: Route.ComponentProps) {
     error: columnsError,
   } = useQuery(columnsQuery(projectId, tableId)) || { data: [] };
 
+  const handleEditRow = useCallback((row: any) => {
+    setEditingRow(row);
+    setIsEditSheetOpen(true);
+  }, []);
+
   const columns = useMemo(() => {
     if (!columnsData || !Array.isArray(columnsData)) {
       return [];
     }
 
-    return prepareColumns(columnsData, tableId);
-  }, [columnsData, tableId]);
+    return prepareColumns(columnsData, tableId, handleEditRow);
+  }, [columnsData, tableId, handleEditRow]);
 
   const [filterParams, setFilterParams] = useState<Record<string, string>>({});
 
@@ -278,6 +286,31 @@ export default function TablePageContent({ params }: Route.ComponentProps) {
             Please select a collection from the sidebar
           </div>
         </div>
+      )}
+
+      {editingRow && columnsData && (
+        <EditRowSheet
+          open={isEditSheetOpen}
+          onOpenChange={(open) => {
+            setIsEditSheetOpen(open);
+            if (!open) {
+              setEditingRow(null);
+            }
+          }}
+          row={editingRow}
+          columns={columnsData}
+          tableId={tableId}
+          projectId={projectId}
+          dbId={projectDetails?.dbName || ""}
+          services={services}
+          onSuccess={() => {
+            queryClient.invalidateQueries({
+              queryKey: ["rows", projectId, tableId],
+            });
+            setEditingRow(null);
+            setIsEditSheetOpen(false);
+          }}
+        />
       )}
     </div>
   );
