@@ -130,7 +130,7 @@ func TestUserRegistration_Suite(t *testing.T) {
 
 		// Second registration with same username
 		userInputB := userInputA
-		userInputB.Email = pkg.Faker.Internet().Email()
+		userInputB.Email = pkg.Faker.RandomStringWithLength(10) + "@gmail.com"
 
 		responseB := server.PostJSON(t, "/users/register", userInputB)
 		defer responseB.Body.Close()
