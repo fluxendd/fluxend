@@ -14,6 +14,8 @@ setup: ## Interactive setup for new users
 	@make check-deps
 	@make setup-env
 	@make up
+	@make migration.up
+	@make seed.fresh
 	@make verify-setup
 
 check-deps: ## Check if required dependencies are installed

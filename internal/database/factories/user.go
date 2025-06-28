@@ -74,3 +74,9 @@ func (f *UserFactory) WithEmail(email string) UserOption {
 		user.Email = email
 	}
 }
+
+func (f *UserFactory) WithPassword(password string) UserOption {
+	return func(user *user.User) {
+		user.Password = password
+	}
+}

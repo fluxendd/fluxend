@@ -14,9 +14,10 @@ func Users(container *do.Injector) {
 	userFactory := do.MustInvoke[*factories.UserFactory](container)
 
 	_, err := userFactory.Create(
-		userFactory.WithUsername("superman"),
+		userFactory.WithUsername(os.Getenv("SUPERUSER_USERNAME")),
+		userFactory.WithEmail(os.Getenv("SUPERUSER_EMAIL")),
+		userFactory.WithPassword(os.Getenv("SUPERUSER_PASSWORD")),
 		userFactory.WithRole(constants.UserRoleSuperman),
-		userFactory.WithEmail("superman@fluxend.app"),
 	)
 	if err != nil {
 		log.Error().
