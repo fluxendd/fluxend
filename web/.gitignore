@@ -6,3 +6,6 @@
 /build/
 
 .env
+
+# Project-specific
+CLAUDE.md
