@@ -76,3 +76,7 @@ VITE_FLX_DEFAULT_CONTENT_TYPE=application/json
 - React Hook Form with Zod validation
 - Zustand for client state
 - Node.js 20.16.0 (Volta managed)
+
+## Commit Guidelines
+
+- Never add "Coauthored by Claude" in commits
