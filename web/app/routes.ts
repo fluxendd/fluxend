@@ -20,10 +20,9 @@ export default [
     layout("./components/shared/project-layout.tsx", [
       route("dashboard", "./routes/dashboard/page.tsx"),
       route("tables/create", "./routes/tables/create.tsx"),
+      route("tables/:tableId/edit", "./routes/tables/edit.tsx"),
       route("tables", "./routes/tables/sidebar.tsx", [
-        route(":tableId", "./routes/tables/page.tsx", [
-          route("edit", "./routes/tables/edit.tsx"),
-        ]),
+        route(":tableId", "./routes/tables/page.tsx"),
       ]),
       routeFolder("functions", "./routes/functions/"),
       routeFolder("storage", "./routes/storage/"),

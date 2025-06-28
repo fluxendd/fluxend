@@ -1,7 +1,7 @@
 import type { APIResponse } from "~/lib/types";
 import { getTypedResponseData } from "~/lib/utils";
 import type { Table } from "~/routes/tables/table-list";
-import { get, post, del, type APIRequestOptions } from "~/tools/fetch";
+import { get, post, del, put, type APIRequestOptions } from "~/tools/fetch";
 
 export function createTablesService(authToken: string) {
   const getAllTables = async (projectId: string) => {
@@ -80,12 +80,25 @@ export function createTablesService(authToken: string) {
     return data;
   };
 
+  const updateTableColumns = async (projectId: string, tableName: string, data: any) => {
+    const fetchOptions: RequestInit = {
+      headers: {
+        "X-Project": projectId,
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authToken}`,
+      },
+    };
+
+    return put(`/tables/public.${tableName}/columns`, data, fetchOptions);
+  };
+
   return {
     getAllTables,
     getTableColumns,
     getTableRows,
     createTable,
     deleteTable,
+    updateTableColumns,
   };
 }
 
