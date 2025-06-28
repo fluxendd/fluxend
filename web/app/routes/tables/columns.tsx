@@ -196,7 +196,7 @@ export const prepareColumns = (
             </div>
             <DropdownMenuSeparator />
             {Array.isArray(table.getAllColumns())
-              ? table.getAllColumns().map((column) => {
+              ? table.getAllColumns().map((column: any) => {
                   if (!column) return null;
 
                   return (
