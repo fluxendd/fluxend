@@ -30,6 +30,7 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import type { User } from "~/services/user";
+import { ThemeToggle } from "./theme-toggle";
 
 type AppSidebarProps = {
   userDetails: User;
@@ -103,6 +104,8 @@ export const AppSidebar = memo(
                       </NavLink>
                     </DropdownMenuItem>
                   </DropdownMenuGroup>
+                  <DropdownMenuSeparator />
+                  <ThemeToggle />
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
                     <NavLink to="/logout">

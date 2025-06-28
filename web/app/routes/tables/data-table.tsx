@@ -96,7 +96,7 @@ export function DataTable<TData, TValue>({
                         "bg-background":
                           header.column.columnDef.meta &&
                           (header.column.columnDef.meta as any)?.isEven,
-                        "bg-[#141414]":
+                        "bg-muted/50":
                           header.column.columnDef.meta &&
                           !(header.column.columnDef.meta as any)?.isEven,
                       })}
@@ -140,7 +140,7 @@ export function DataTable<TData, TValue>({
                           "bg-background":
                             cell.column.columnDef.meta &&
                             (cell.column.columnDef.meta as any)?.isEven,
-                          "bg-[#141414]":
+                          "bg-muted/50":
                             cell.column.columnDef.meta &&
                             !(cell.column.columnDef.meta as any)?.isEven,
                         })}

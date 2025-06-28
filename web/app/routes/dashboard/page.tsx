@@ -90,39 +90,6 @@ function MetricCard({
       </CardHeader>
       <CardFooter className="pt-0">
         <div className="w-full">
-          {/* Simple line chart using SVG */}
-          <div className="h-8 w-full mb-2">
-            <svg className="w-full h-full" viewBox="0 0 200 32">
-              <polyline
-                fill="none"
-                stroke="hsl(var(--primary))"
-                strokeWidth="2"
-                points={data
-                  .map((point, index) => {
-                    const x = (index / (data.length - 1)) * 200;
-                    const y =
-                      32 -
-                      ((point - minValue) / (maxValue - minValue || 1)) * 32;
-                    return `${x},${y}`;
-                  })
-                  .join(" ")}
-              />
-              {data.map((point, index) => {
-                const x = (index / (data.length - 1)) * 200;
-                const y =
-                  32 - ((point - minValue) / (maxValue - minValue || 1)) * 32;
-                return (
-                  <circle
-                    key={index}
-                    cx={x}
-                    cy={y}
-                    r="2"
-                    fill="hsl(var(--primary))"
-                  />
-                );
-              })}
-            </svg>
-          </div>
           {subtitle && (
             <div className="text-xs text-muted-foreground">{subtitle}</div>
           )}

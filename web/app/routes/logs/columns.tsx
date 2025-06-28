@@ -23,7 +23,7 @@ import { useState, useEffect, useRef } from "react";
 // Copy indicator component
 const CopyIndicator = ({ text, label }: { text: string; label: string }) => {
   const [copied, setCopied] = useState(false);
-  const timeoutRef = useRef<NodeJS.Timeout>();
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   
   const handleClick = async (e: React.MouseEvent) => {
     e.stopPropagation();
