@@ -110,10 +110,10 @@ export const TableList = ({
           key={table.name}
           className={({ isActive }) =>
             [
-              `relative flex flex-col items-start whitespace-nowrap p-2 rounded-lg mx-2  text-sm leading-tight hover:text-primary cursor-pointer ${
+              `relative flex flex-col items-start whitespace-nowrap p-2 rounded-lg mx-2  text-sm leading-tight hover:text-foreground/70 cursor-pointer ${
                 isFetching ? "opacity-60" : ""
               }`,
-              isActive ? "text-primary" : "",
+              isActive ? "dark:text-primary" : "",
             ].join(" ")
           }
         >
@@ -123,7 +123,7 @@ export const TableList = ({
                 {isActive && (
                   <motion.div
                     layoutId="tableId"
-                    className="absolute inset-0 bg-primary/10 rounded-lg"
+                    className="absolute inset-0 bg-primary/30 dark:bg-primary/10 rounded-lg"
                     transition={{
                       type: "spring",
                       bounce: 0.2,

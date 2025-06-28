@@ -44,6 +44,7 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import type { User } from "~/services/user";
+import { ThemeToggle } from "./theme-toggle";
 
 type AppSidebarItem = {
   title: string;
@@ -119,7 +120,7 @@ export const ProjectSidebar = memo(
                         {isActive && (
                           <motion.div
                             layoutId="sidebarItemId"
-                            className="absolute inset-0 bg-sidebar-accent text-sidebar-accent-foreground rounded-lg"
+                            className="absolute inset-0 bg-primary/30 dark:bg-primary/10 rounded-lg"
                             transition={{
                               type: "spring",
                               bounce: 0.2,
@@ -131,7 +132,7 @@ export const ProjectSidebar = memo(
                           asChild
                           isActive={isActive}
                           // tooltip={item.title}
-                          className="isolate hover:bg-transparent active:bg-transparent data-[active=true]:bg-transparent active:text-primary data-[active=true]:text-primary hover:text-primary transition-colors duration-300"
+                          className="isolate hover:bg-transparent active:bg-transparent data-[active=true]:bg-transparent dark:active:text-primary dark:data-[active=true]:text-primary hover:text-foreground/70 transition-colors duration-300"
                         >
                           <item.Icon />
                         </SidebarMenuButton>
@@ -187,6 +188,8 @@ export const ProjectSidebar = memo(
                     </NavLink>
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
+                <DropdownMenuSeparator />
+                <ThemeToggle />
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
                   <NavLink to="/logout">

@@ -35,7 +35,7 @@ const getStatusInfo = (status: number) => {
 // Copy button component for sheet
 const SheetCopyButton = ({ text, label }: { text: string; label: string }) => {
   const [copied, setCopied] = useState(false);
-  const timeoutRef = useRef<NodeJS.Timeout>();
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   
   const handleCopy = async () => {
     try {

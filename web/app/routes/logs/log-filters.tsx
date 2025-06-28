@@ -37,7 +37,7 @@ export function LogFilters({ onFiltersChange }: LogFiltersProps) {
     const newFilters = { ...filters };
     
     if (value) {
-      newFilters[key] = value;
+      (newFilters as any)[key] = value;
     } else {
       delete newFilters[key];
     }

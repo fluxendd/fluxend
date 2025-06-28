@@ -9,13 +9,8 @@ import {
 
 import type { Route } from "./+types/root";
 import "./globals.css";
-import { useTheme } from "./hooks/use-theme";
+import { ThemeProvider } from "./contexts/theme-context";
 import { Toaster } from "./components/ui/sonner";
-
-function ThemeProvider({ children }: { children: React.ReactNode }) {
-  useTheme();
-  return <>{children}</>;
-}
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -32,12 +27,24 @@ export const links: Route.LinksFunction = () => [
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         <Links />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              try {
+                const theme = localStorage.getItem('fluxend-theme') || 'system';
+                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                const resolvedTheme = theme === 'system' ? (prefersDark ? 'dark' : 'light') : theme;
+                document.documentElement.classList.add(resolvedTheme);
+              } catch (e) {}
+            `,
+          }}
+        />
       </head>
       <body>
         <ThemeProvider>{children}</ThemeProvider>
