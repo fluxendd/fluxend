@@ -40,7 +40,7 @@ export function SearchDataTableWrapper<TData, TValue>({
       <QuerySearchBox columns={rawColumns} onQueryChange={onFilterChange} />
       <div
         className={cn(
-          "rounded-md overflow-hidden flex flex-col h-full min-h-0 max-h-full flex-1",
+          "rounded-lg overflow-hidden flex flex-col h-full min-h-0 max-h-full flex-1",
           isFetching ? "animate-pulse-border" : "border",
           className
         )}

@@ -243,7 +243,7 @@ export default function TablePageContent({ params }: Route.ComponentProps) {
       </div>
 
       {isInitialLoading && (
-        <div className="rounded-md border mx-4 py-4">
+        <div className="rounded-lg border mx-4 py-4">
           <DataTableSkeleton columns={5} rows={8} />
         </div>
       )}
@@ -274,7 +274,7 @@ export default function TablePageContent({ params }: Route.ComponentProps) {
         (!Array.isArray(columns) || columns.length === 0) &&
         tableId && (
           <div className="flex-1 min-h-0 flex items-center justify-center mx-4">
-            <div className="text-md text-muted-foreground border rounded-md p-8 bg-muted/10">
+            <div className="text-md text-muted-foreground border rounded-lg p-8 bg-muted/10">
               No Table Data Found
             </div>
           </div>
@@ -282,7 +282,7 @@ export default function TablePageContent({ params }: Route.ComponentProps) {
 
       {noTableSelected && !isInitialLoading && (
         <div className="flex-1 min-h-0 flex items-center justify-center mx-4">
-          <div className="text-md text-muted-foreground border rounded-md p-8 bg-muted/10">
+          <div className="text-md text-muted-foreground border rounded-lg p-8 bg-muted/10">
             Please select a collection from the sidebar
           </div>
         </div>

@@ -127,7 +127,7 @@ export default function EditTable() {
       <div className="flex flex-col h-full">
         <AppHeader title={`Edit Table: ${tableId || "Loading..."}`} />
         <div className="flex-1 p-6">
-          <div className="max-w-4xl mx-auto rounded-md border p-4">
+          <div className="max-w-4xl mx-auto rounded-lg border p-4">
             <DataTableSkeleton columns={3} rows={5} />
           </div>
         </div>
@@ -141,7 +141,7 @@ export default function EditTable() {
         <AppHeader title={`Edit Table: ${tableId || "Unknown"}`} />
         <div className="flex-1 p-6">
           <div className="max-w-4xl mx-auto">
-            <div className="text-center p-8 border rounded-md bg-destructive/10">
+            <div className="text-center p-8 border rounded-lg bg-destructive/10">
               <p className="text-destructive">
                 Failed to load table columns. Please try again.
               </p>

@@ -2,6 +2,7 @@ import {
   BadgeCheck,
   Bell,
   ChevronsUpDown,
+  ChartSpline,
   CreditCard,
   Database,
   EllipsisIcon,
@@ -69,11 +70,11 @@ const items = [
   //   Icon: Parentheses,
   // },
   // { title: "Storage", url: "storage", Icon: PackageOpen },
-  // {
-  //   title: "Logs",
-  //   url: "logs",
-  //   Icon: Scroll,
-  // },
+  {
+    title: "Logs",
+    url: "logs",
+    Icon: ChartSpline,
+  },
   // {
   //   title: "Settings",
   //   url: "settings",

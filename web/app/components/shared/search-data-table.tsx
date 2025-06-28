@@ -833,7 +833,7 @@ export function SearchDataTable({
   };
 
   return (
-    <div className={cn("border rounded-md p-4", className)}>
+    <div className={cn("border rounded-lg p-4", className)}>
       <div className="flex flex-col space-y-4">
         <div className="flex items-center justify-between">
           <Button
@@ -909,7 +909,7 @@ export function SearchDataTable({
 
         {/* Error message for invalid filters */}
         {isExpanded && activeFilters.length === 0 && (
-          <div className="bg-destructive/10 text-destructive flex items-start p-4 mb-4 rounded-md border border-destructive/20">
+          <div className="bg-destructive/10 text-destructive flex items-start p-4 mb-4 rounded-lg border border-destructive/20">
             <AlertCircle className="h-4 w-4 mr-2 mt-0.5" />
             <div>
               <h5 className="font-medium mb-1">No filters applied</h5>

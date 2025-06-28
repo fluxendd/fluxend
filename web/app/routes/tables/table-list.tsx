@@ -110,7 +110,7 @@ export const TableList = ({
           key={table.name}
           className={({ isActive }) =>
             [
-              `relative flex flex-col items-start whitespace-nowrap p-2 rounded-md mx-2  text-sm leading-tight hover:text-primary cursor-pointer ${
+              `relative flex flex-col items-start whitespace-nowrap p-2 rounded-lg mx-2  text-sm leading-tight hover:text-primary cursor-pointer ${
                 isFetching ? "opacity-60" : ""
               }`,
               isActive ? "text-primary" : "",

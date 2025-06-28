@@ -97,7 +97,7 @@ export default function SignUp() {
       <div className="bg-background flex min-h-svh  items-center justify-center gap-6 p-6 md:p-10">
         <div className="flex w-full max-w-sm flex-col gap-6">
           <div className="flex items-center gap-2 self-center font-medium">
-            <div className="bg-muted flex py-1 px-2 items-center justify-center rounded-md">
+            <div className="bg-muted flex py-1 px-2 items-center justify-center rounded-lg">
               <Logo className="size-4" />
               <p className="ml-1">Fluxend</p>
             </div>
