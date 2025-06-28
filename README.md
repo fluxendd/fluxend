@@ -1,6 +1,12 @@
 # ⚡️ Fluxend
-**Fluxend** is a **blazing-fast, self-hosted BaaS** built with Go — no fluff, no bloat, no lock-in. Ship production-grade backends in minutes with full control over your data, logic, and storage. It's your backend. Done your way.
+**Fluxend** is a **blazing-fast, self-hosted BaaS** built with Go — no lock-in. Ship production-grade backends with full control over your data
 
+- ✅ Fully open-source
+- 🧠 Built with Go for max performance
+- 🔩 Dead-simple setup with Docker
+- 🧱 Modular & extendable
+- 🧨 Ready for production on Day 1
+  
 <div align="center">
 <a href="https://fluxend.app/">
   <img src="https://img.shields.io/badge/demo-FF6B6B?style=flat&logo=rocket&logoColor=white" alt="Demo" />
@@ -21,15 +27,6 @@
   <img src="https://img.shields.io/badge/🛠️_troubleshoot-F7DC6F?style=flat&logo=tools&logoColor=white" alt="Troubleshooting" />
 </a>
 </div>
-
-## 🚀 Why Fluxend?
-Tired of Firebase’s handcuffs? Supabase too slow or limited? Fluxend doesn’t babysit you — it gives you raw backend firepower out of the box:
-
-- ✅ Fully open-source
-- 🧠 Built with Go for max performance
-- 🔩 Dead-simple setup with Docker
-- 🧱 Modular & extendable
-- 🧨 Ready for production on Day 1
 
 ## 🔥 Features
 | Feature | Description |
