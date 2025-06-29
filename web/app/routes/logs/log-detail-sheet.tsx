@@ -222,7 +222,7 @@ export function LogDetailSheet({ log, open, onOpenChange }: LogDetailSheetProps)
                 <Separator />
                 <div>
                   <h3 className="text-sm font-semibold mb-3">Request Body</h3>
-                  <pre className="bg-muted p-3 rounded-lg overflow-x-auto text-xs">
+                  <pre className="bg-muted p-3 rounded-lg overflow-x-auto text-xs whitespace-pre-wrap break-all">
                     {JSON.stringify(log.body, null, 2)}
                   </pre>
                 </div>
@@ -235,7 +235,7 @@ export function LogDetailSheet({ log, open, onOpenChange }: LogDetailSheetProps)
                 <Separator />
                 <div>
                   <h3 className="text-sm font-semibold mb-3">Query Parameters</h3>
-                  <pre className="bg-muted p-3 rounded-lg overflow-x-auto text-xs">
+                  <pre className="bg-muted p-3 rounded-lg overflow-x-auto text-xs whitespace-pre-wrap break-all">
                     {JSON.stringify(log.params, null, 2)}
                   </pre>
                 </div>
