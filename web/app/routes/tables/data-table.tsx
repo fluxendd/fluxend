@@ -93,12 +93,6 @@ export function DataTable<TData, TValue>({
                         "sticky-column":
                           header.column.columnDef.meta &&
                           (header.column.columnDef.meta as any).isSticky,
-                        "bg-background":
-                          header.column.columnDef.meta &&
-                          (header.column.columnDef.meta as any)?.isEven,
-                        "bg-muted/50":
-                          header.column.columnDef.meta &&
-                          !(header.column.columnDef.meta as any)?.isEven,
                       })}
                     >
                       {header.isPlaceholder
@@ -137,12 +131,6 @@ export function DataTable<TData, TValue>({
                           "sticky-column":
                             cell.column.columnDef.meta &&
                             (cell.column.columnDef.meta as any).isSticky,
-                          "bg-background":
-                            cell.column.columnDef.meta &&
-                            (cell.column.columnDef.meta as any)?.isEven,
-                          "bg-muted/50":
-                            cell.column.columnDef.meta &&
-                            !(cell.column.columnDef.meta as any)?.isEven,
                         })}
                       >
                         {flexRender(

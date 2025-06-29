@@ -274,14 +274,12 @@ export const prepareColumns = (
     },
     meta: {
       isSticky: true,
-      isEven: false,
     },
   };
 
   // Create the data columns
   const dataColumns = Array.isArray(columns)
     ? columns.filter(Boolean).map((column, index) => {
-        const isEvenColumn = index % 2 === 0;
         const dataType = column.type || "";
         const isTimestamp = dataType.includes("timestamp");
         const columnId = column.name;
@@ -354,7 +352,6 @@ export const prepareColumns = (
             );
           },
           meta: {
-            isEven: isEvenColumn,
             collectionName,
           },
         };
