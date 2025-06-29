@@ -84,11 +84,35 @@ const SheetCopyButton = ({ text, label }: { text: string; label: string }) => {
   );
 };
 
+// Helper function to parse JSON body if it's a string
+const parseJsonBody = (body: any) => {
+  if (!body) return null;
+  
+  // If it's already an object, return as is
+  if (typeof body === 'object') {
+    return body;
+  }
+  
+  // If it's a string, try to parse it
+  if (typeof body === 'string') {
+    try {
+      return JSON.parse(body);
+    } catch (e) {
+      // If parsing fails, return the original string
+      return body;
+    }
+  }
+  
+  return body;
+};
+
 export function LogDetailSheet({ log, open, onOpenChange }: LogDetailSheetProps) {
   if (!log) return null;
 
   const statusInfo = getStatusInfo(log.status);
   const formattedDate = format(new Date(log.createdAt), "PPpp");
+  const parsedBody = parseJsonBody(log.body);
+  const parsedParams = parseJsonBody(log.params);
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -217,26 +241,26 @@ export function LogDetailSheet({ log, open, onOpenChange }: LogDetailSheetProps)
             </div>
 
             {/* Request Body */}
-            {log.body && Object.keys(log.body).length > 0 && (
+            {parsedBody && (typeof parsedBody === 'object' ? Object.keys(parsedBody).length > 0 : true) && (
               <>
                 <Separator />
                 <div>
                   <h3 className="text-sm font-semibold mb-3">Request Body</h3>
                   <pre className="bg-muted p-3 rounded-lg overflow-x-auto text-xs whitespace-pre-wrap break-all">
-                    {JSON.stringify(log.body, null, 2)}
+                    {typeof parsedBody === 'string' ? parsedBody : JSON.stringify(parsedBody, null, 2)}
                   </pre>
                 </div>
               </>
             )}
 
             {/* Query Parameters */}
-            {log.params && Object.keys(log.params).length > 0 && (
+            {parsedParams && (typeof parsedParams === 'object' ? Object.keys(parsedParams).length > 0 : true) && (
               <>
                 <Separator />
                 <div>
                   <h3 className="text-sm font-semibold mb-3">Query Parameters</h3>
                   <pre className="bg-muted p-3 rounded-lg overflow-x-auto text-xs whitespace-pre-wrap break-all">
-                    {JSON.stringify(log.params, null, 2)}
+                    {typeof parsedParams === 'string' ? parsedParams : JSON.stringify(parsedParams, null, 2)}
                   </pre>
                 </div>
               </>
