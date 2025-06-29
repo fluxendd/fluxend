@@ -14,9 +14,20 @@ import (
 	"time"
 )
 
+var skippableEndpoints = []string{
+	"/admin/logs", // There is no need to be on logging page and seeing request poll logs
+}
+
 func RequestLogger(requestLogRepo logging.Repository) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
+			// Skip logging for certain endpoints to avoid cluttering the logs
+			for _, endpoint := range skippableEndpoints {
+				if c.Request().URL.Path == endpoint {
+					return next(c)
+				}
+			}
+
 			request := c.Request()
 			requestBody := readBody(request)
 
