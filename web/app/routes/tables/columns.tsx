@@ -294,7 +294,7 @@ export const prepareColumns = (
           header: () => (
             <div className="inline-flex items-center whitespace-nowrap">
               <ColumnIcon type={column.type} />
-              <span className="truncate font-medium">
+              <span className="truncate font-medium block max-w-[200px]">
                 {column && column.name ? column.name : ""}
               </span>
             </div>
@@ -348,7 +348,7 @@ export const prepareColumns = (
             }
 
             return (
-              <span>
+              <span className="block truncate max-w-[300px]" title={value !== null && value !== undefined ? String(value) : ""}>
                 {value !== null && value !== undefined ? String(value) : ""}
               </span>
             );

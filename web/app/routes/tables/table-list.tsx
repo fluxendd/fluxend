@@ -110,7 +110,7 @@ export const TableList = ({
           key={table.name}
           className={({ isActive }) =>
             [
-              `relative flex flex-col items-start whitespace-nowrap p-2 rounded-lg mx-2  text-sm leading-tight hover:text-foreground/70 cursor-pointer ${
+              `relative flex flex-col items-start p-2 rounded-lg mx-2 text-sm leading-tight hover:text-foreground/70 cursor-pointer overflow-hidden ${
                 isFetching ? "opacity-60" : ""
               }`,
               isActive ? "dark:text-primary" : "",
@@ -132,9 +132,9 @@ export const TableList = ({
                     }}
                   />
                 )}
-                <HashIcon size={12} />
-                <span className="">{table.name}</span>
-                <span className="ml-auto text-xs">{table.totalSize}</span>
+                <HashIcon size={12} className="flex-shrink-0" />
+                <span className="truncate flex-1 min-w-0">{table.name}</span>
+                <span className="ml-auto text-xs flex-shrink-0">{table.totalSize}</span>
               </div>
             </>
           )}

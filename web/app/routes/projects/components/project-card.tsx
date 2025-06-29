@@ -51,7 +51,7 @@ const ProjectCard = ({ project, onClick }: ProjectCardProps) => {
 
       {/* Card Footer - Actions */}
       <div className="mt-3 pt-3 border-t border-muted flex items-center justify-between">
-        <p className="text-xs text-gray-400 dark:text-gray-500 font-mono truncate">
+        <p className="text-xs text-gray-400 dark:text-gray-500 font-mono truncate max-w-[200px]" title={project.uuid}>
           {project.uuid}
         </p>
         {/* <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">

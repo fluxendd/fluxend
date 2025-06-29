@@ -124,8 +124,8 @@ export function LogDetailSheet({ log, open, onOpenChange }: LogDetailSheetProps)
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex items-center">
-                          <Badge variant="outline" className="font-mono max-w-full">
-                            <span className="truncate">{log.endpoint}</span>
+                          <Badge variant="outline" className="font-mono max-w-full overflow-hidden">
+                            <span className="truncate block">{log.endpoint}</span>
                           </Badge>
                           <SheetCopyButton text={log.endpoint} label="endpoint" />
                         </div>
@@ -195,8 +195,8 @@ export function LogDetailSheet({ log, open, onOpenChange }: LogDetailSheetProps)
                         </td>
                         <td className="px-4 py-3">
                           <div className="flex items-center">
-                            <Badge variant="outline" className="font-mono text-xs max-w-full">
-                              <span className="truncate">{log.userUuid}</span>
+                            <Badge variant="outline" className="font-mono text-xs max-w-full overflow-hidden">
+                              <span className="truncate block">{log.userUuid}</span>
                             </Badge>
                             <SheetCopyButton text={log.userUuid} label="user ID" />
                           </div>
@@ -208,7 +208,7 @@ export function LogDetailSheet({ log, open, onOpenChange }: LogDetailSheetProps)
                         User Agent
                       </td>
                       <td className="px-4 py-3">
-                        <div className="text-sm break-all">{log.userAgent}</div>
+                        <div className="text-sm break-words overflow-wrap-anywhere">{log.userAgent}</div>
                       </td>
                     </tr>
                   </tbody>

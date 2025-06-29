@@ -398,3 +398,13 @@ th[data-column-type="timestamp"] {
   contain: layout style paint;
   will-change: scroll-position;
 }
+
+/* Text overflow utilities */
+.text-wrap-anywhere {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.overflow-wrap-anywhere {
+  overflow-wrap: anywhere;
+}
