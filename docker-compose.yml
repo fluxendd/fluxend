@@ -23,10 +23,14 @@ services:
       - "./letsencrypt:/letsencrypt"
     networks:
       - fluxend_network
+    depends_on:
+      - fluxend_app
+      - fluxend_frontend
 
   fluxend_db:
     image: postgres:latest
     container_name: fluxend_db
+    restart: always
     environment:
       - POSTGRES_USER=${DATABASE_USER:-postgres}
       - POSTGRES_PASSWORD=${DATABASE_PASSWORD:-yourpassword}
