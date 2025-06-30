@@ -19,5 +19,9 @@ goose postgres "user=${DATABASE_USER} password=${DATABASE_PASSWORD} dbname=${DAT
 echo "✅ Migrations completed successfully!"
 
 # Start the application
-echo "🎯 Starting Fluxend server..."
-exec ./bin/fluxend seed settings && ./bin/fluxend server
+echo "Starting database seeding..."
+./bin/fluxend seed settings
+echo "Seeding completed successfully"
+
+echo "Starting server..."
+exec ./bin/fluxend server

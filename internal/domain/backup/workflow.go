@@ -92,7 +92,7 @@ func (s *WorkflowServiceImpl) Create(databaseName string, backupUUID uuid.UUID) 
 			Str("db", databaseName).
 			Str("backup_uuid", backupUUID.String()).
 			Str("error", err.Error()).
-			Msg("failed to remove backup file from fluxend_app container")
+			Msg("failed to remove backup file from fluxend_api container")
 	}
 }
 
@@ -168,7 +168,7 @@ func (s *WorkflowServiceImpl) copyBackupToAppContainer(backupFilePath string, ba
 		log.Error().
 			Str("action", constants.ActionBackup).
 			Str("backup_uuid", backupUUID.String()).
-			Msg("failed to copy backup file from fluxend_db to fluxend_app container")
+			Msg("failed to copy backup file from fluxend_db to fluxend_api container")
 
 		return err
 	}
@@ -211,7 +211,7 @@ func (s *WorkflowServiceImpl) readBackupFile(backupUUID uuid.UUID) ([]byte, erro
 			Str("action", constants.ActionBackup).
 			Str("backup_uuid", backupUUID.String()).
 			Str("error", err.Error()).
-			Msg("failed to read backup file from fluxend_app container")
+			Msg("failed to read backup file from fluxend_api container")
 
 		return nil, err
 	}
