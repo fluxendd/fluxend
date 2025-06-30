@@ -7,6 +7,7 @@ import {
   CheckCircle,
   XCircle,
   Check,
+  Copy,
 } from "lucide-react";
 import type { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "~/components/ui/badge";
@@ -19,13 +20,14 @@ import { formatTimestamp } from "~/lib/utils";
 import { cn } from "~/lib/utils";
 import type { LogEntry } from "~/services/logs";
 import { useState, useEffect, useRef } from "react";
+import { Button } from "~/components/ui/button";
 
 // Copy indicator component
 const CopyIndicator = ({ text, label }: { text: string; label: string }) => {
   const [copied, setCopied] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   
-  const handleClick = async (e: React.MouseEvent) => {
+  const handleCopy = async (e: React.MouseEvent) => {
     e.stopPropagation();
     try {
       await navigator.clipboard.writeText(text);
@@ -35,7 +37,7 @@ const CopyIndicator = ({ text, label }: { text: string; label: string }) => {
         clearTimeout(timeoutRef.current);
       }
       
-      timeoutRef.current = setTimeout(() => setCopied(false), 5000);
+      timeoutRef.current = setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       console.error('Failed to copy:', err);
     }
@@ -50,29 +52,28 @@ const CopyIndicator = ({ text, label }: { text: string; label: string }) => {
   }, []);
   
   return (
-    <div className="flex items-center gap-1 -m-2 p-2" data-no-row-click>
+    <div className="group flex items-center gap-1 -m-2 p-2" data-no-row-click>
       {label === "IP Address" ? (
-        <Badge variant="outline" className="font-mono cursor-pointer" onClick={handleClick}>
+        <Badge variant="outline" className="font-mono">
           {text}
         </Badge>
       ) : (
-        <span 
-          className="font-mono text-sm truncate cursor-pointer"
-          onClick={handleClick}
-        >
+        <span className="font-mono text-sm truncate">
           {text}
         </span>
       )}
-      <div className="w-3 h-3 flex-shrink-0 relative">
-        <Check 
-          className={cn(
-            "h-3 w-3 text-green-600 absolute inset-0 transition-all duration-300",
-            copied 
-              ? "opacity-100 scale-100" 
-              : "opacity-0 scale-50"
-          )}
-        />
-      </div>
+      <Button
+        variant="ghost"
+        size="icon"
+        className="h-6 w-6 p-0 transition-all duration-200 opacity-0 scale-75 group-hover:opacity-100 group-hover:scale-100"
+        onClick={handleCopy}
+      >
+        {copied ? (
+          <Check className="h-3 w-3 text-green-600" />
+        ) : (
+          <Copy className="h-3 w-3" />
+        )}
+      </Button>
     </div>
   );
 };
