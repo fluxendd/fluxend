@@ -24,7 +24,7 @@ services:
     networks:
       - fluxend_network
     depends_on:
-      - fluxend_app
+      - fluxend_api
       - fluxend_frontend
 
   fluxend_db:
@@ -48,11 +48,11 @@ services:
       start_period: 30s
       timeout: 5s
 
-  fluxend_app:
+  fluxend_api:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: fluxend_app
+    container_name: fluxend_api
     environment:
       - APP_ENV=${APP_ENV:-development}
       - DATABASE_URL=postgres://${DATABASE_USER:-postgres}:${DATABASE_PASSWORD:-yourpassword}@fluxend_db:5432/${DATABASE_NAME:-fluxend_db}
@@ -68,11 +68,11 @@ services:
       - fluxend_network
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.fluxend_app.rule=Host(`${API_SUB_DOMAIN}.${BASE_DOMAIN}`)"
-      - "traefik.http.routers.fluxend_app.entrypoints=websecure"
-      - "traefik.http.services.fluxend_app.loadbalancer.server.port=8080"
-      - "traefik.http.routers.fluxend_app.tls=true"
-      - "traefik.http.routers.fluxend_app.tls.certresolver=le"
+      - "traefik.http.routers.fluxend_api.rule=Host(`${API_SUB_DOMAIN}.${BASE_DOMAIN}`)"
+      - "traefik.http.routers.fluxend_api.entrypoints=websecure"
+      - "traefik.http.services.fluxend_api.loadbalancer.server.port=8080"
+      - "traefik.http.routers.fluxend_api.tls=true"
+      - "traefik.http.routers.fluxend_api.tls.certresolver=le"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock # TODO: Figure out a better way to handle this
 
@@ -84,12 +84,12 @@ services:
     env_file:
       - .env
     depends_on:
-      - fluxend_app
+      - fluxend_api
     networks:
       - fluxend_network
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.fluxend_frontend.rule=Host(`${APP_SUB_DOMAIN}.${BASE_DOMAIN}`)"
+      - "traefik.http.routers.fluxend_frontend.rule=Host(`${CONSOLE_SUB_DOMAIN}.${BASE_DOMAIN}`)"
       - "traefik.http.routers.fluxend_frontend.entrypoints=websecure"
       - "traefik.http.services.fluxend_frontend.loadbalancer.server.port=3000"
       - "traefik.http.routers.fluxend_frontend.tls=true"

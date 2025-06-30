@@ -45,11 +45,11 @@ build: ## Build the project with all containers
 	@make down
 	@$(DOCKER_COMPOSE) up -d --build
 
-build.app: ## Rebuild the app container only
-	@$(DOCKER_COMPOSE) stop $${APP_CONTAINER_NAME}
-	@$(DOCKER_COMPOSE) rm -f $${APP_CONTAINER_NAME}
-	@$(DOCKER_COMPOSE) build $${APP_CONTAINER_NAME}
-	@$(DOCKER_COMPOSE) up -d $${APP_CONTAINER_NAME}
+build.api: ## Rebuild the api container only
+	@$(DOCKER_COMPOSE) stop $${API_CONTAINER_NAME}
+	@$(DOCKER_COMPOSE) rm -f $${API_CONTAINER_NAME}
+	@$(DOCKER_COMPOSE) build $${API_CONTAINER_NAME}
+	@$(DOCKER_COMPOSE) up -d $${API_CONTAINER_NAME}
 
 build.binary: ## Build the binary for the app
 	@CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -trimpath -o bin/fluxend cmd/main.go
@@ -61,10 +61,10 @@ up: ## Start the project
 down: ## Stop the project
 	@$(DOCKER_COMPOSE) down
 
-login.app: ## Login to fluxend container
-	@docker exec -it $${APP_CONTAINER_NAME} /bin/sh
+login.api: ## Login to API container
+	@docker exec -it $${API_CONTAINER_NAME} /bin/sh
 
-login.frontend: ## Login to fluxend container
+login.frontend: ## Login to frontend container
 	@docker exec -it $${FRONTEND_CONTAINER_NAME} /bin/sh
 
 login.db: ## Login to database container

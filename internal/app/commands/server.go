@@ -121,9 +121,9 @@ func validateEnvVariables() {
 	requiredVars := []string{
 		"APP_ENV",
 		"BASE_URL",
-		"APP_URL",
+		"CONSOLE_URL",
 		"API_URL",
-		"APP_CONTAINER_NAME",
+		"API_CONTAINER_NAME",
 		"DATABASE_CONTAINER_NAME",
 		"FRONTEND_CONTAINER_NAME",
 		"VITE_FLX_INTERNAL_URL",
@@ -158,7 +158,7 @@ func isOriginAllowed(origin string) bool {
 	customOrigins := strings.Split(os.Getenv("CUSTOM_ORIGINS"), ",")
 
 	allowedOrigins := []string{
-		os.Getenv("APP_URL"),
+		os.Getenv("CONSOLE_URL"),
 		os.Getenv("BASE_URL"),
 	}
 

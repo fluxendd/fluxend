@@ -161,9 +161,9 @@ func setTestEnvVars() {
 	testEnvVars := map[string]string{
 		"APP_ENV":                 "test",
 		"BASE_URL":                "http://localhost:8080",
-		"APP_URL":                 "http://localhost:3000",
+		"CONSOLE_URL":             "http://localhost:3000",
 		"API_URL":                 "http://localhost:8080",
-		"APP_CONTAINER_NAME":      "test-app",
+		"API_CONTAINER_NAME":      "test-app",
 		"DATABASE_CONTAINER_NAME": "test-db",
 		"FRONTEND_CONTAINER_NAME": "test-frontend",
 		"VITE_FLX_INTERNAL_URL":   "http://localhost:8080",
