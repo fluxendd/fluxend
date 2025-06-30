@@ -1,35 +1,24 @@
-import { useState, useCallback, useMemo, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useState, useCallback, useMemo } from "react";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { useOutletContext } from "react-router";
 import { DataTableSkeleton } from "~/components/shared/data-table-skeleton";
 import { RefreshButton } from "~/components/shared/refresh-button";
 import { Button } from "~/components/ui/button";
 import { RefreshCw, Pause, Play } from "lucide-react";
 import type { ProjectLayoutOutletContext } from "~/components/shared/project-layout";
-import { DataTable } from "~/routes/tables/data-table";
+import { InfiniteLogsTable } from "./infinite-logs-table";
 import { createLogsColumns } from "./columns";
 import { LogFilters } from "./log-filters";
 import { LogDetailSheet } from "./log-detail-sheet";
 import type { LogsFilters, LogEntry } from "~/services/logs";
 
-const DEFAULT_PAGE_SIZE = 50;
-const DEFAULT_PAGE_INDEX = 0;
-
-type PaginationType = {
-  pageIndex: number;
-  pageSize: number;
-};
+const LOGS_PER_PAGE = 50;
 
 export default function Logs() {
   const { projectDetails, services } = useOutletContext<ProjectLayoutOutletContext>();
   const projectId = projectDetails?.uuid;
   
   const columns = useMemo(() => createLogsColumns(), []);
-
-  const [pagination, setPagination] = useState<PaginationType>({
-    pageIndex: DEFAULT_PAGE_INDEX,
-    pageSize: DEFAULT_PAGE_SIZE,
-  });
 
   const [filters, setFilters] = useState<LogsFilters>({});
   const [autoRefresh, setAutoRefresh] = useState(false);
@@ -42,36 +31,47 @@ export default function Logs() {
   // Build query filters
   const queryFilters = useMemo(() => ({
     ...filters,
-    page: pagination.pageIndex + 1, // API uses 1-based pagination
-    limit: pagination.pageSize,
-    order: 'desc' as const,
+    limit: LOGS_PER_PAGE,
     sort: 'createdAt',
-  }), [filters, pagination]);
+    order: 'desc',
+  }), [filters]);
 
   const {
-    data: logsData,
+    data,
     isLoading,
-    isFetching,
+    isFetchingNextPage,
     error,
     refetch,
-  } = useQuery({
+    fetchNextPage,
+    hasNextPage,
+  } = useInfiniteQuery({
     queryKey: ["logs", projectId, queryFilters],
-    queryFn: async () => {
+    queryFn: async ({ pageParam = 0 }) => {
       if (!projectId) throw new Error("Project ID required");
-      return services.logs.getLogs(projectId, queryFilters);
+      return services.logs.getLogs(projectId, {
+        ...queryFilters,
+        offset: pageParam,
+      });
     },
     enabled: !!projectId,
     refetchInterval: autoRefresh ? refreshInterval : false,
+    getNextPageParam: (lastPage, pages) => {
+      const loadedCount = pages.reduce((acc, page) => acc + page.content.length, 0);
+      return loadedCount < lastPage.totalCount ? loadedCount : undefined;
+    },
+    initialPageParam: 0,
+    // Keep existing data when refetching
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
   });
 
-  const handlePaginationChange = useCallback((updaterOrValue: PaginationType | ((old: PaginationType) => PaginationType)) => {
-    setPagination(updaterOrValue);
-  }, []);
+  // Flatten all pages of data
+  const allLogs = useMemo(() => {
+    return data?.pages.flatMap(page => page.content) ?? [];
+  }, [data]);
 
   const handleFilterChange = useCallback((newFilters: LogsFilters) => {
     setFilters(newFilters);
-    // Reset to first page when filters change
-    setPagination(prev => ({ ...prev, pageIndex: 0 }));
   }, []);
 
   const handleRefresh = useCallback(() => {
@@ -138,27 +138,27 @@ export default function Logs() {
 
       <LogFilters onFiltersChange={handleFilterChange} />
 
-      {isLoading && (
-        <div className="rounded-lg border mx-4 py-4 mt-4">
-          <DataTableSkeleton columns={7} rows={8} />
-        </div>
-      )}
-
-      {!isLoading && logsData && (
-        <div className="flex-1 min-h-0 p-4 overflow-hidden">
+      <div className="flex-1 min-h-0 p-4 overflow-hidden">
+        {isLoading && allLogs.length === 0 ? (
+          <div className="rounded-lg border">
+            <div className="p-4">
+              <DataTableSkeleton columns={7} rows={8} />
+            </div>
+          </div>
+        ) : (
           <div className="rounded-lg border h-full">
-            <DataTable
+            <InfiniteLogsTable
               columns={columns}
-              data={logsData.content || []}
-              pagination={pagination}
-              onPaginationChange={handlePaginationChange}
-              totalRows={logsData.totalCount}
-              emptyMessage="No logs found."
+              data={allLogs}
               onRowClick={handleRowClick}
+              fetchNextPage={fetchNextPage}
+              hasNextPage={hasNextPage ?? false}
+              isFetchingNextPage={isFetchingNextPage}
+              isLoading={isLoading}
             />
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
       <LogDetailSheet
         log={sheetState.log}

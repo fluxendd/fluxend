@@ -50,7 +50,7 @@ const CopyIndicator = ({ text, label }: { text: string; label: string }) => {
   }, []);
   
   return (
-    <div className="flex items-center gap-1 -m-2 p-2">
+    <div className="flex items-center gap-1 -m-2 p-2" data-no-row-click>
       {label === "IP Address" ? (
         <Badge variant="outline" className="font-mono cursor-pointer" onClick={handleClick}>
           {text}
@@ -93,6 +93,7 @@ const getStatusInfo = (status: number) => {
 export const createLogsColumns = (): ColumnDef<LogEntry>[] => [
   {
     accessorKey: "createdAt",
+    size: 150,
     header: () => (
       <div className="flex items-center gap-2">
         <Clock className="h-3 w-3" />
@@ -120,6 +121,7 @@ export const createLogsColumns = (): ColumnDef<LogEntry>[] => [
   },
   {
     accessorKey: "method",
+    size: 80,
     header: "Method",
     cell: ({ row }) => {
       const method = row.getValue("method") as string;
@@ -134,6 +136,7 @@ export const createLogsColumns = (): ColumnDef<LogEntry>[] => [
   },
   {
     accessorKey: "endpoint",
+    size: 300,
     header: () => (
       <div className="flex items-center gap-2">
         <FileText className="h-3 w-3" />
@@ -152,6 +155,7 @@ export const createLogsColumns = (): ColumnDef<LogEntry>[] => [
   },
   {
     accessorKey: "status",
+    size: 80,
     header: "Status",
     cell: ({ row }) => {
       const status = row.getValue("status") as number;
@@ -175,6 +179,7 @@ export const createLogsColumns = (): ColumnDef<LogEntry>[] => [
   },
   {
     accessorKey: "ipAddress",
+    size: 120,
     header: () => (
       <div className="flex items-center gap-2">
         <Globe className="h-3 w-3" />
@@ -188,6 +193,7 @@ export const createLogsColumns = (): ColumnDef<LogEntry>[] => [
   },
   {
     accessorKey: "userAgent",
+    size: 200,
     header: "User Agent",
     cell: ({ row }) => {
       const userAgent = row.getValue("userAgent") as string;
@@ -211,6 +217,7 @@ export const createLogsColumns = (): ColumnDef<LogEntry>[] => [
   },
   {
     id: "details",
+    size: 100,
     header: "Details",
     cell: ({ row }) => {
       const hasBody = row.original.body && Object.keys(row.original.body).length > 0;
