@@ -25,7 +25,6 @@ import { Button } from "~/components/ui/button";
 // Copy indicator component
 const CopyIndicator = ({ text, label }: { text: string; label: string }) => {
   const [copied, setCopied] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   
   const handleCopy = async (e: React.MouseEvent) => {
@@ -53,12 +52,7 @@ const CopyIndicator = ({ text, label }: { text: string; label: string }) => {
   }, []);
   
   return (
-    <div 
-      className="group flex items-center gap-1 -m-2 p-2" 
-      data-no-row-click
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
+    <div className="group flex items-center gap-1 -m-2 p-2" data-no-row-click>
       {label === "IP Address" ? (
         <Badge variant="outline" className="font-mono">
           {text}
@@ -71,10 +65,7 @@ const CopyIndicator = ({ text, label }: { text: string; label: string }) => {
       <Button
         variant="ghost"
         size="icon"
-        className={cn(
-          "h-6 w-6 p-0 transition-all duration-200",
-          isHovered ? "opacity-100 scale-100" : "opacity-0 scale-75"
-        )}
+        className="h-6 w-6 p-0 transition-all duration-200 opacity-0 scale-75 group-hover:opacity-100 group-hover:scale-100"
         onClick={handleCopy}
       >
         {copied ? (
