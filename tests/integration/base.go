@@ -184,7 +184,7 @@ func setTestEnvVars() {
 		"POSTGREST_DB_PASSWORD":    "test_password",
 		"POSTGREST_DEFAULT_SCHEMA": "public",
 		"POSTGREST_DEFAULT_ROLE":   "test_role",
-		"CUSTOM_ORIGINS":           "http://localhost:3000,http://api.fluxend.localhost",
+		"CUSTOM_ORIGINS":           "http://localhost:3000,http://api.localhost",
 	}
 
 	for key, value := range testEnvVars {
