@@ -20,4 +20,4 @@ echo "✅ Migrations completed successfully!"
 
 # Start the application
 echo "🎯 Starting Fluxend server..."
-exec ./bin/fluxend server
+exec ./bin/fluxend seed settings && ./bin/fluxend server

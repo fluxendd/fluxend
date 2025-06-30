@@ -37,13 +37,13 @@ func runSeeders(customSeeders map[string]bool) {
 	log.Info().Msg("Database seeding started")
 
 	seedersToRun := map[string]func(*do.Injector){
-		"setting": seeders.Settings,
-		"user":    seeders.Users,
+		"settings": seeders.Settings,
+		"users":    seeders.Users,
 	}
 
 	for name, seeder := range seedersToRun {
 		if len(customSeeders) > 0 && !customSeeders[name] {
-			log.Info().Str("seeder", name).Msg("Skipping seeder as it is not specified in the arguments")
+			log.Info().Str("seeder", name).Msg("Skipping seeder (not requested)")
 			continue
 		}
 
@@ -51,5 +51,5 @@ func runSeeders(customSeeders map[string]bool) {
 		seeder(container)
 	}
 
-	log.Info().Msg("Database seeding completed")
+	log.Info().Msg("All requested seeders have been executed")
 }
