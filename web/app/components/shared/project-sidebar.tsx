@@ -131,7 +131,7 @@ export const ProjectSidebar = memo(
                         <SidebarMenuButton
                           asChild
                           isActive={isActive}
-                          // tooltip={item.title}
+                          tooltip={item.title}
                           className="isolate hover:bg-transparent active:bg-transparent data-[active=true]:bg-transparent dark:active:text-primary dark:data-[active=true]:text-primary hover:text-foreground/70 transition-colors duration-300"
                         >
                           <item.Icon />
