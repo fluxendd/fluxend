@@ -13,6 +13,18 @@ func Settings(container *do.Injector) {
 	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
 
 	settingsService := do.MustInvoke[setting.Repository](container)
+	existingSettings, err := settingsService.List()
+	if err != nil {
+		log.Error().
+			Str("error", err.Error()).
+			Msg("Error fetching existing settings")
+		return
+	}
+
+	if len(existingSettings) > 0 {
+		log.Info().Msg("Settings already exist, skipping seeding")
+		return
+	}
 
 	settings := []setting.Setting{
 		// General settings
@@ -53,7 +65,7 @@ func Settings(container *do.Injector) {
 		{Name: "mailgunRegion", Value: os.Getenv("MAILGUN_REGION"), DefaultValue: "us"},
 	}
 
-	_, err := settingsService.CreateMany(settings)
+	_, err = settingsService.CreateMany(settings)
 	if err != nil {
 		log.Error().
 			Str("error", err.Error()).
