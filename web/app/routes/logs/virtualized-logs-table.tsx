@@ -1,4 +1,4 @@
-import { useRef, useEffect, useCallback, useMemo } from "react";
+import { useRef, useEffect, useCallback, useMemo, memo } from "react";
 import { flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import type { ColumnDef } from "@tanstack/react-table";
@@ -16,6 +16,44 @@ interface VirtualizedLogsTableProps {
   isFetchingNextPage: boolean;
   isLoading: boolean;
 }
+
+// Memoized table row component
+const VirtualRow = memo(({ 
+  row, 
+  onRowClick 
+}: { 
+  row: any; 
+  onRowClick?: (row: LogEntry) => void;
+}) => {
+  const handleClick = useCallback((e: React.MouseEvent) => {
+    const target = e.target as HTMLElement;
+    if (target.closest('[data-no-row-click]')) {
+      return;
+    }
+    onRowClick?.(row.original);
+  }, [onRowClick, row.original]);
+
+  return (
+    <TableRow
+      className={cn(
+        "cursor-pointer hover:bg-muted/50",
+        "data-[state=selected]:bg-muted"
+      )}
+      onClick={handleClick}
+    >
+      {row.getVisibleCells().map((cell: any) => (
+        <TableCell 
+          key={cell.id}
+          style={{ width: cell.column.getSize() }}
+        >
+          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+        </TableCell>
+      ))}
+    </TableRow>
+  );
+});
+
+VirtualRow.displayName = "VirtualRow";
 
 export function VirtualizedLogsTable({
   columns,
@@ -37,12 +75,13 @@ export function VirtualizedLogsTable({
 
   const { rows } = table.getRowModel();
 
-  // Row virtualizer
+  // Row virtualizer with optimized settings
   const rowVirtualizer = useVirtualizer({
     count: rows.length,
     getScrollElement: () => scrollContainerRef.current,
-    estimateSize: () => 48, // Estimated row height
-    overscan: 10,
+    estimateSize: useCallback(() => 48, []), // Estimated row height
+    overscan: 5, // Reduced overscan for better performance
+    scrollMargin: scrollContainerRef.current?.offsetTop ?? 0,
   });
 
   const virtualRows = rowVirtualizer.getVirtualItems();
@@ -118,30 +157,11 @@ export function VirtualizedLogsTable({
               {virtualRows.map((virtualRow) => {
                 const row = rows[virtualRow.index];
                 return (
-                  <TableRow
+                  <VirtualRow
                     key={row.id}
-                    className={cn(
-                      "cursor-pointer hover:bg-muted/50",
-                      "data-[state=selected]:bg-muted"
-                    )}
-                    onClick={(e) => {
-                      // Don't trigger row click if clicking on a clickable element
-                      const target = e.target as HTMLElement;
-                      if (target.closest('[data-no-row-click]')) {
-                        return;
-                      }
-                      onRowClick?.(row.original);
-                    }}
-                  >
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell 
-                        key={cell.id}
-                        style={{ width: cell.column.getSize() }}
-                      >
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                      </TableCell>
-                    ))}
-                  </TableRow>
+                    row={row}
+                    onRowClick={onRowClick}
+                  />
                 );
               })}
               {paddingBottom > 0 && (

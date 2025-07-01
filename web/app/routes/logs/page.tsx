@@ -7,7 +7,7 @@ import { Button } from "~/components/ui/button";
 import { RefreshCw, Pause, Play } from "lucide-react";
 import type { ProjectLayoutOutletContext } from "~/components/shared/project-layout";
 import { VirtualizedLogsTable } from "./virtualized-logs-table";
-import { createLogsColumns } from "./columns";
+import { createLogsColumnsVirtualized } from "./columns";
 import { LogFilters } from "./log-filters";
 import { LogDetailSheet } from "./log-detail-sheet";
 import type { LogsFilters, LogEntry } from "~/services/logs";
@@ -18,7 +18,7 @@ export default function Logs() {
   const { projectDetails, services } = useOutletContext<ProjectLayoutOutletContext>();
   const projectId = projectDetails?.uuid;
   
-  const columns = useMemo(() => createLogsColumns(), []);
+  const columns = useMemo(() => createLogsColumnsVirtualized(), []);
 
   const [filters, setFilters] = useState<LogsFilters>({});
   const [autoRefresh, setAutoRefresh] = useState(false);

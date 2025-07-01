@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback, memo } from "react";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import {
@@ -29,11 +29,11 @@ const STATUS_CODES = [
   { value: "503", label: "503 Service Unavailable" },
 ];
 
-export function LogFilters({ onFiltersChange }: LogFiltersProps) {
+export const LogFilters = memo(({ onFiltersChange }: LogFiltersProps) => {
   const [filters, setFilters] = useState<LogsFilters>({});
   const [endpointSearch, setEndpointSearch] = useState("");
 
-  const handleFilterChange = (key: keyof LogsFilters, value: string | undefined) => {
+  const handleFilterChange = useCallback((key: keyof LogsFilters, value: string | undefined) => {
     const newFilters = { ...filters };
     
     if (value) {
@@ -44,17 +44,17 @@ export function LogFilters({ onFiltersChange }: LogFiltersProps) {
     
     setFilters(newFilters);
     onFiltersChange(newFilters);
-  };
+  }, [filters, onFiltersChange]);
 
-  const handleEndpointSearch = () => {
+  const handleEndpointSearch = useCallback(() => {
     handleFilterChange("endpoint", endpointSearch || undefined);
-  };
+  }, [handleFilterChange, endpointSearch]);
 
-  const clearFilters = () => {
+  const clearFilters = useCallback(() => {
     setFilters({});
     setEndpointSearch("");
     onFiltersChange({});
-  };
+  }, [onFiltersChange]);
 
   const hasActiveFilters = Object.keys(filters).length > 0;
 
@@ -135,4 +135,6 @@ export function LogFilters({ onFiltersChange }: LogFiltersProps) {
       )}
     </div>
   );
-}
+});
+
+LogFilters.displayName = "LogFilters";

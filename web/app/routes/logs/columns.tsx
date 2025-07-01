@@ -19,11 +19,11 @@ import {
 import { formatTimestamp } from "~/lib/utils";
 import { cn } from "~/lib/utils";
 import type { LogEntry } from "~/services/logs";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, memo } from "react";
 import { Button } from "~/components/ui/button";
 
-// Copy indicator component
-const CopyIndicator = ({ text, label }: { text: string; label: string }) => {
+// Copy indicator component - Memoized to prevent unnecessary re-renders
+const CopyIndicator = memo(({ text, label }: { text: string; label: string }) => {
   const [copied, setCopied] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   
@@ -76,7 +76,9 @@ const CopyIndicator = ({ text, label }: { text: string; label: string }) => {
       </Button>
     </div>
   );
-};
+});
+
+CopyIndicator.displayName = "CopyIndicator";
 
 // Helper function to get status color and icon
 const getStatusInfo = (status: number) => {
@@ -90,6 +92,139 @@ const getStatusInfo = (status: number) => {
   return { color: "text-gray-600", bg: "bg-gray-50", Icon: Hash };
 };
 
+
+// Memoized timestamp cell component for better performance
+const TimestampCell = memo(({ timestamp }: { timestamp: string }) => {
+  const { date, time } = formatTimestamp(timestamp);
+  
+  return (
+    <div className="-m-2 p-2">
+      <div className="text-sm font-medium">{date}</div>
+      <div className="text-xs text-muted-foreground">{time}</div>
+    </div>
+  );
+});
+
+TimestampCell.displayName = "TimestampCell";
+
+// Create simplified columns for virtualization - no tooltips for better performance
+export const createLogsColumnsVirtualized = (): ColumnDef<LogEntry>[] => [
+  {
+    accessorKey: "createdAt",
+    size: 150,
+    header: () => (
+      <div className="flex items-center gap-2">
+        <Clock className="h-3 w-3" />
+        <span>Timestamp</span>
+      </div>
+    ),
+    cell: ({ row }) => <TimestampCell timestamp={row.getValue("createdAt")} />,
+  },
+  {
+    accessorKey: "method",
+    size: 80,
+    header: "Method",
+    cell: ({ row }) => {
+      const method = row.getValue("method") as string;
+      return (
+        <div className="-m-2 p-2">
+          <Badge variant="outline" className="font-mono">
+            {method}
+          </Badge>
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "endpoint",
+    size: 300,
+    header: () => (
+      <div className="flex items-center gap-2">
+        <FileText className="h-3 w-3" />
+        <span>Endpoint</span>
+      </div>
+    ),
+    cell: ({ row }) => (
+      <div className="-m-2 p-2">
+        <CopyIndicator text={row.getValue("endpoint")} label="Endpoint" />
+      </div>
+    ),
+  },
+  {
+    accessorKey: "status",
+    size: 80,
+    header: "Status",
+    cell: ({ row }) => {
+      const status = row.getValue("status") as number;
+      
+      return (
+        <div className="-m-2 p-2">
+          <Badge 
+            variant="outline" 
+            className={cn(
+              "font-mono",
+              status >= 200 && status < 300 && "border-green-600 text-green-600",
+              status >= 400 && status < 500 && "border-yellow-600 text-yellow-600",
+              status >= 500 && "border-red-600 text-red-600"
+            )}
+          >
+            {status}
+          </Badge>
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "ipAddress",
+    size: 120,
+    header: () => (
+      <div className="flex items-center gap-2">
+        <Globe className="h-3 w-3" />
+        <span>IP Address</span>
+      </div>
+    ),
+    cell: ({ row }) => <CopyIndicator text={row.getValue("ipAddress")} label="IP Address" />,
+  },
+  {
+    accessorKey: "userAgent",
+    size: 200,
+    header: "User Agent",
+    cell: ({ row }) => {
+      const userAgent = row.getValue("userAgent") as string;
+      const shortAgent = userAgent?.split(" ")[0] || userAgent;
+      
+      return (
+        <div className="text-sm truncate max-w-[200px] -m-2 p-2">
+          {shortAgent}
+        </div>
+      );
+    },
+  },
+  {
+    id: "details",
+    size: 100,
+    header: "Details",
+    cell: ({ row }) => {
+      const hasBody = row.original.body && Object.keys(row.original.body).length > 0;
+      const hasParams = row.original.params && Object.keys(row.original.params).length > 0;
+      
+      if (!hasBody && !hasParams) {
+        return (
+          <div className="-m-2 p-2">
+            <span className="text-xs text-muted-foreground">No data</span>
+          </div>
+        );
+      }
+      
+      return (
+        <div className="flex gap-2 -m-2 p-2">
+          {hasBody && <Badge variant="outline" className="text-xs">Body</Badge>}
+          {hasParams && <Badge variant="outline" className="text-xs">Params</Badge>}
+        </div>
+      );
+    },
+  },
+];
 
 export const createLogsColumns = (): ColumnDef<LogEntry>[] => [
   {
