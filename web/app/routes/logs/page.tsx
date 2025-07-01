@@ -6,7 +6,7 @@ import { RefreshButton } from "~/components/shared/refresh-button";
 import { Button } from "~/components/ui/button";
 import { RefreshCw, Pause, Play } from "lucide-react";
 import type { ProjectLayoutOutletContext } from "~/components/shared/project-layout";
-import { InfiniteLogsTable } from "./infinite-logs-table";
+import { VirtualizedLogsTable } from "./virtualized-logs-table";
 import { createLogsColumns } from "./columns";
 import { LogFilters } from "./log-filters";
 import { LogDetailSheet } from "./log-detail-sheet";
@@ -150,7 +150,7 @@ export default function Logs() {
           </div>
         ) : (
           <div className="rounded-lg border h-full">
-            <InfiniteLogsTable
+            <VirtualizedLogsTable
               columns={columns}
               data={allLogs}
               onRowClick={handleRowClick}
