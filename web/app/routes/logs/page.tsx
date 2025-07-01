@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useOutletContext } from "react-router";
 import { DataTableSkeleton } from "~/components/shared/data-table-skeleton";
@@ -12,7 +12,8 @@ import { LogFilters } from "./log-filters";
 import { LogDetailSheet } from "./log-detail-sheet";
 import type { LogsFilters, LogEntry } from "~/services/logs";
 
-const LOGS_PER_PAGE = 100; // Fetch more logs per request to reduce API calls
+const LOGS_PER_PAGE = 100;
+const MAX_PAGES_IN_MEMORY = 5; // Keep maximum 5 pages (500 logs) in memory
 
 export default function Logs() {
   const { projectDetails, services } = useOutletContext<ProjectLayoutOutletContext>();
@@ -71,9 +72,28 @@ export default function Logs() {
     refetchOnReconnect: false,
   });
 
-  // Flatten all pages of data
-  const allLogs = useMemo(() => {
-    return data?.pages.flatMap(page => page.content) ?? [];
+  // Implement windowed pagination - keep only MAX_PAGES_IN_MEMORY pages
+  const windowedData = useMemo(() => {
+    if (!data?.pages) return { logs: [], startIndex: 0 };
+    
+    const totalPages = data.pages.length;
+    
+    // If we have more than MAX_PAGES_IN_MEMORY, create a window
+    if (totalPages > MAX_PAGES_IN_MEMORY) {
+      // Keep the most recent MAX_PAGES_IN_MEMORY pages
+      const startPageIndex = totalPages - MAX_PAGES_IN_MEMORY;
+      const windowedPages = data.pages.slice(startPageIndex);
+      const logs = windowedPages.flatMap(page => page.content);
+      const startIndex = startPageIndex * LOGS_PER_PAGE;
+      
+      return { logs, startIndex };
+    }
+    
+    // Otherwise, return all logs
+    return { 
+      logs: data.pages.flatMap(page => page.content),
+      startIndex: 0
+    };
   }, [data]);
 
   const handleFilterChange = useCallback((newFilters: LogsFilters) => {
@@ -145,7 +165,7 @@ export default function Logs() {
       <LogFilters onFiltersChange={handleFilterChange} />
 
       <div className="flex-1 min-h-0 p-4 overflow-hidden">
-        {isLoading && allLogs.length === 0 ? (
+        {isLoading && windowedData.logs.length === 0 ? (
           <div className="rounded-lg border">
             <div className="p-4">
               <DataTableSkeleton columns={7} rows={8} />
@@ -155,12 +175,13 @@ export default function Logs() {
           <div className="rounded-lg border h-full">
             <VirtualizedLogsTable
               columns={columns}
-              data={allLogs}
+              data={windowedData.logs}
               onRowClick={handleRowClick}
               fetchNextPage={fetchNextPage}
               hasNextPage={hasNextPage ?? false}
               isFetchingNextPage={isFetchingNextPage}
               isLoading={isLoading}
+              windowStartIndex={windowedData.startIndex}
             />
           </div>
         )}
