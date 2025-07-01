@@ -8,31 +8,48 @@ import (
 	"github.com/samber/do"
 	"github.com/spf13/cobra"
 	"os"
+	"strings"
 )
 
 // seedCmd represents the command to seed the database
 var seedCmd = &cobra.Command{
-	Use:   "seed",
+	Use:   "seed [seeder1,seeder2,...]",
 	Short: "Seed the database with initial data",
+	Args:  cobra.MaximumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
 
-		runSeeders()
+		var customSeeders map[string]bool
+		if len(args) > 0 {
+			customSeeders = make(map[string]bool)
+			crumbs := strings.Split(args[0], ",")
+			for _, seeder := range crumbs {
+				customSeeders[strings.TrimSpace(seeder)] = true
+			}
+		}
+
+		runSeeders(customSeeders)
 	},
 }
 
-func runSeeders() {
+func runSeeders(customSeeders map[string]bool) {
 	container := app.InitializeContainer()
 	log.Info().Msg("Database seeding started")
 
-	seedersToRun := []func(*do.Injector){
-		seeders.Settings,
-		seeders.Users,
+	seedersToRun := map[string]func(*do.Injector){
+		"settings": seeders.Settings,
+		"users":    seeders.Users,
 	}
 
-	for _, seeder := range seedersToRun {
+	for name, seeder := range seedersToRun {
+		if len(customSeeders) > 0 && !customSeeders[name] {
+			log.Info().Str("seeder", name).Msg("Skipping seeder (not requested)")
+			continue
+		}
+
+		log.Info().Str("seeder", name).Msg("Running seeder")
 		seeder(container)
 	}
 
-	log.Info().Msg("Database seeding completed")
+	log.Info().Msg("All requested seeders have been executed")
 }

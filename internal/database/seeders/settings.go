@@ -13,11 +13,23 @@ func Settings(container *do.Injector) {
 	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
 
 	settingsService := do.MustInvoke[setting.Repository](container)
+	existingSettings, err := settingsService.List()
+	if err != nil {
+		log.Error().
+			Str("error", err.Error()).
+			Msg("Error fetching existing settings")
+		return
+	}
+
+	if len(existingSettings) > 0 {
+		log.Info().Msg("Settings already exist, skipping seeding")
+		return
+	}
 
 	settings := []setting.Setting{
 		// General settings
 		{Name: "appTitle", Value: os.Getenv("APP_TITLE"), DefaultValue: os.Getenv("APP_TITLE")},
-		{Name: "appUrl", Value: os.Getenv("APP_URL"), DefaultValue: os.Getenv("APP_URL")},
+		{Name: "appUrl", Value: os.Getenv("CONSOLE_URL"), DefaultValue: os.Getenv("CONSOLE_URL")},
 		{Name: "jwtSecret", Value: os.Getenv("JWT_SECRET"), DefaultValue: os.Getenv("JWT_SECRET")},
 		{Name: "storageDriver", Value: os.Getenv("STORAGE_DRIVER"), DefaultValue: constants.StorageDriverFilesystem},
 		{Name: "maxProjectsPerOrg", Value: "10", DefaultValue: "10"},
@@ -53,7 +65,7 @@ func Settings(container *do.Injector) {
 		{Name: "mailgunRegion", Value: os.Getenv("MAILGUN_REGION"), DefaultValue: "us"},
 	}
 
-	_, err := settingsService.CreateMany(settings)
+	_, err = settingsService.CreateMany(settings)
 	if err != nil {
 		log.Error().
 			Str("error", err.Error()).

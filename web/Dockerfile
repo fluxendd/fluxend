@@ -13,6 +13,17 @@ RUN yarn install --frozen-lockfile --production
 # Stage 3: Build app
 FROM node:20-alpine AS build-env
 WORKDIR /app
+
+ARG VITE_FLX_INTERNAL_URL
+ARG VITE_FLX_API_URL
+ARG VITE_FLX_BASE_DOMAIN
+ARG VITE_FLX_HTTP_SCHEME
+
+ENV VITE_FLX_INTERNAL_URL=$VITE_FLX_INTERNAL_URL
+ENV VITE_FLX_API_URL=$VITE_FLX_API_URL
+ENV VITE_FLX_BASE_DOMAIN=$VITE_FLX_BASE_DOMAIN
+ENV VITE_FLX_HTTP_SCHEME=$VITE_FLX_HTTP_SCHEME
+
 COPY . .
 COPY --from=development-dependencies-env /app/node_modules ./node_modules
 RUN yarn build

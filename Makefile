@@ -6,6 +6,14 @@ DATABASE_CONNECTION="user=${DATABASE_USER} password=${DATABASE_PASSWORD} dbname=
 # Include other files
 include scripts/makefiles/*.mk
 
+ifeq ($(URL_SCHEME),https)
+    COMPOSE_FILES = -f docker-compose.yml -f docker-compose.ssl.yml
+else
+    COMPOSE_FILES = -f docker-compose.yml
+endif
+
+DOCKER_COMPOSE = docker-compose $(COMPOSE_FILES)
+
 help: ## Shows this help
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_\-\.]+:.*?## / {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
@@ -35,33 +43,33 @@ setup-env:
 verify-setup:
 	@echo "🔍 Verifying setup..."
 	@sleep 5
-	@docker-compose ps
+	@$(DOCKER_COMPOSE) ps
 	@echo "✅ Setup complete! Fluxend is flying."
 
 build: ## Build the project with all containers
 	@make down
-	@docker-compose up -d --build
+	@$(DOCKER_COMPOSE) up -d --build
 
-build.app: ## Rebuild the app container only
-	@docker-compose stop $${APP_CONTAINER_NAME}
-	@docker-compose rm -f $${APP_CONTAINER_NAME}
-	@docker-compose build $${APP_CONTAINER_NAME}
-	@docker-compose up -d $${APP_CONTAINER_NAME}
+build.api: ## Rebuild the api container only
+	@$(DOCKER_COMPOSE) stop $${API_CONTAINER_NAME}
+	@$(DOCKER_COMPOSE) rm -f $${API_CONTAINER_NAME}
+	@$(DOCKER_COMPOSE) build $${API_CONTAINER_NAME}
+	@$(DOCKER_COMPOSE) up -d $${API_CONTAINER_NAME}
 
 build.binary: ## Build the binary for the app
 	@CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -trimpath -o bin/fluxend cmd/main.go
 
 up: ## Start the project
 	@make down
-	@docker-compose up -d
+	@$(DOCKER_COMPOSE) up -d
 
 down: ## Stop the project
-	@docker-compose down
+	@$(DOCKER_COMPOSE) down
 
-login.app: ## Login to fluxend container
-	@docker exec -it $${APP_CONTAINER_NAME} /bin/sh
+login.api: ## Login to API container
+	@docker exec -it $${API_CONTAINER_NAME} /bin/sh
 
-login.frontend: ## Login to fluxend container
+login.frontend: ## Login to frontend container
 	@docker exec -it $${FRONTEND_CONTAINER_NAME} /bin/sh
 
 login.db: ## Login to database container
