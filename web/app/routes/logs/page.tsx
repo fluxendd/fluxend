@@ -6,18 +6,19 @@ import { RefreshButton } from "~/components/shared/refresh-button";
 import { Button } from "~/components/ui/button";
 import { RefreshCw, Pause, Play } from "lucide-react";
 import type { ProjectLayoutOutletContext } from "~/components/shared/project-layout";
-import { SimpleVirtualLogsTable } from "./simple-virtual-logs-table";
+import { VirtualizedLogsTable } from "./virtualized-logs-table";
+import { createLogsColumnsVirtualized } from "./columns";
 import { LogFilters } from "./log-filters";
 import { LogDetailSheet } from "./log-detail-sheet";
 import type { LogsFilters, LogEntry } from "~/services/logs";
 
 const LOGS_PER_PAGE = 50;
-const MAX_LOGS_IN_MEMORY = 500; // Limit total logs to prevent memory issues
 
 export default function Logs() {
   const { projectDetails, services } = useOutletContext<ProjectLayoutOutletContext>();
   const projectId = projectDetails?.uuid;
   
+  const columns = useMemo(() => createLogsColumnsVirtualized(), []);
 
   const [filters, setFilters] = useState<LogsFilters>({});
   const [autoRefresh, setAutoRefresh] = useState(false);
@@ -67,11 +68,9 @@ export default function Logs() {
     refetchOnWindowFocus: false,
   });
 
-  // Flatten all pages of data with memory limit
+  // Flatten all pages of data
   const allLogs = useMemo(() => {
-    const logs = data?.pages.flatMap(page => page.content) ?? [];
-    // Limit logs to prevent memory issues
-    return logs.slice(0, MAX_LOGS_IN_MEMORY);
+    return data?.pages.flatMap(page => page.content) ?? [];
   }, [data]);
 
   const handleFilterChange = useCallback((newFilters: LogsFilters) => {
@@ -151,7 +150,8 @@ export default function Logs() {
           </div>
         ) : (
           <div className="rounded-lg border h-full">
-            <SimpleVirtualLogsTable
+            <VirtualizedLogsTable
+              columns={columns}
               data={allLogs}
               onRowClick={handleRowClick}
               fetchNextPage={fetchNextPage}
