@@ -88,10 +88,16 @@ export function VirtualizedLogsTable({
   const virtualRows = rowVirtualizer.getVirtualItems();
   const totalSize = rowVirtualizer.getTotalSize();
 
-  // Handle infinite scroll with debounce
-  const lastItemIndex = virtualRows[virtualRows.length - 1]?.index ?? -1;
+  // Track if we've already triggered a fetch for the current position
+  const hasFetchedRef = useRef(false);
+  
+  // Handle infinite scroll with proper debounce
   useEffect(() => {
-    if (lastItemIndex < 0) return;
+    const lastItem = virtualRows[virtualRows.length - 1];
+    if (!lastItem) {
+      hasFetchedRef.current = false;
+      return;
+    }
 
     // Clear any existing timeout
     if (fetchTimeoutRef.current) {
@@ -99,15 +105,21 @@ export function VirtualizedLogsTable({
     }
 
     // Only fetch when we're within 10 rows of the end
-    if (
-      lastItemIndex >= rows.length - 10 &&
+    const shouldFetch = 
+      lastItem.index >= rows.length - 10 &&
       hasNextPage &&
-      !isFetchingNextPage
-    ) {
+      !isFetchingNextPage &&
+      !hasFetchedRef.current;
+
+    if (shouldFetch) {
+      hasFetchedRef.current = true;
       // Debounce the fetch to prevent rapid fire
       fetchTimeoutRef.current = setTimeout(() => {
         fetchNextPage();
-      }, 300); // 300ms debounce
+      }, 500); // Increased debounce to 500ms
+    } else if (lastItem.index < rows.length - 20) {
+      // Reset the flag when scrolled away from bottom
+      hasFetchedRef.current = false;
     }
 
     return () => {
@@ -115,7 +127,7 @@ export function VirtualizedLogsTable({
         clearTimeout(fetchTimeoutRef.current);
       }
     };
-  }, [lastItemIndex, rows.length, hasNextPage, fetchNextPage, isFetchingNextPage]);
+  }, [virtualRows, rows.length, hasNextPage, fetchNextPage, isFetchingNextPage]);
 
   const paddingTop = virtualRows.length > 0 ? virtualRows[0]?.start || 0 : 0;
   const paddingBottom =

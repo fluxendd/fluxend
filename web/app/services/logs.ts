@@ -43,6 +43,11 @@ export function createLogsService(authToken: string) {
 
     // Build query params - API expects page, limit, sort, order
     const params: any = { ...filters };
+    
+    // Ensure limit is set
+    if (!params.limit) {
+      params.limit = 100; // Default limit
+    }
 
     const fetchOptions: APIRequestOptions = {
       headers,
