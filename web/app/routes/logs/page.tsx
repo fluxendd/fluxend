@@ -56,15 +56,10 @@ export default function Logs() {
     },
     enabled: !!projectId,
     refetchInterval: autoRefresh ? refreshInterval : false,
+    retry: 1, // Only retry once on failure
     getNextPageParam: (lastPage, pages) => {
-      console.log('getNextPageParam:', {
-        lastPageLength: lastPage.content.length,
-        LOGS_PER_PAGE,
-        totalPages: pages.length,
-        willFetchMore: lastPage.content.length >= LOGS_PER_PAGE
-      });
-      // If we got a full page or close to it, there might be more
-      if (lastPage.content.length >= LOGS_PER_PAGE - 10) {
+      // If we got a full page, there might be more
+      if (lastPage.content.length === LOGS_PER_PAGE) {
         return pages.length + 1;
       }
       return undefined;
@@ -188,6 +183,7 @@ export default function Logs() {
               isFetchingNextPage={isFetchingNextPage}
               isLoading={isLoading}
               windowStartIndex={windowedData.startIndex}
+              error={error}
             />
           </div>
         )}

@@ -16,6 +16,7 @@ interface VirtualizedLogsTableProps {
   isFetchingNextPage: boolean;
   isLoading: boolean;
   windowStartIndex?: number;
+  error?: Error | null;
 }
 
 // Memoized table row component
@@ -65,6 +66,7 @@ export function VirtualizedLogsTable({
   isFetchingNextPage,
   isLoading,
   windowStartIndex = 0,
+  error,
 }: VirtualizedLogsTableProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const tableContainerRef = useRef<HTMLDivElement>(null);
@@ -89,31 +91,29 @@ export function VirtualizedLogsTable({
   const virtualRows = rowVirtualizer.getVirtualItems();
   const totalSize = rowVirtualizer.getTotalSize();
 
-  // Track last visible index for infinite scroll
-  const lastVisibleIndex = virtualRows[virtualRows.length - 1]?.index ?? -1;
+  // Use a ref to track if we're already fetching
+  const isFetchingRef = useRef(false);
   
-  // Handle infinite scroll
-  useEffect(() => {
-    if (lastVisibleIndex < 0) return;
+  // Handle scroll events
+  const handleScroll = useCallback(() => {
+    if (!scrollContainerRef.current) return;
     
-    // Check if we're near the end of the data
-    const remainingItems = data.length - lastVisibleIndex;
-    const shouldFetch = remainingItems <= 20 && hasNextPage && !isFetchingNextPage;
+    const container = scrollContainerRef.current;
+    const { scrollTop, scrollHeight, clientHeight } = container;
+    const scrolledToBottom = scrollHeight - scrollTop - clientHeight < 1000; // 1000px threshold
     
-    console.log('Infinite scroll check:', {
-      lastVisibleIndex,
-      dataLength: data.length,
-      remainingItems,
-      shouldFetch,
-      hasNextPage,
-      isFetchingNextPage
-    });
-    
-    if (shouldFetch) {
-      console.log('Fetching next page...');
-      fetchNextPage();
+    // Only fetch if:
+    // 1. We're near the bottom
+    // 2. We have more pages
+    // 3. We're not already fetching
+    // 4. We're not in an error state
+    if (scrolledToBottom && hasNextPage && !isFetchingRef.current && !isFetchingNextPage && !error) {
+      isFetchingRef.current = true;
+      fetchNextPage().finally(() => {
+        isFetchingRef.current = false;
+      });
     }
-  }, [lastVisibleIndex, data.length, hasNextPage, isFetchingNextPage, fetchNextPage]);
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage, error]);
 
   const paddingTop = virtualRows.length > 0 ? virtualRows[0]?.start || 0 : 0;
   const paddingBottom =
@@ -143,6 +143,7 @@ export function VirtualizedLogsTable({
       <div 
         ref={scrollContainerRef}
         className="flex-1 overflow-auto"
+        onScroll={handleScroll}
       >
         <div ref={tableContainerRef}>
           <Table>
@@ -190,7 +191,23 @@ export function VirtualizedLogsTable({
         
         {/* Loading indicator at the bottom */}
         <div className="border-t bg-background">
-          {isFetchingNextPage && (
+          {error && (
+            <div className="py-4 flex flex-col items-center justify-center gap-2">
+              <span className="text-sm text-destructive">Failed to load more logs</span>
+              <button
+                onClick={() => {
+                  isFetchingRef.current = true;
+                  fetchNextPage().finally(() => {
+                    isFetchingRef.current = false;
+                  });
+                }}
+                className="text-sm text-primary hover:underline"
+              >
+                Try again
+              </button>
+            </div>
+          )}
+          {!error && isFetchingNextPage && (
             <div className="py-4 flex items-center justify-center">
               <div className="flex items-center gap-2">
                 <Loader2 className="h-4 w-4 animate-spin text-primary" />
@@ -198,12 +215,12 @@ export function VirtualizedLogsTable({
               </div>
             </div>
           )}
-          {!hasNextPage && !isFetchingNextPage && data.length > 0 && (
+          {!error && !hasNextPage && !isFetchingNextPage && data.length > 0 && (
             <div className="py-3 flex items-center justify-center">
               <span className="text-sm text-muted-foreground">No more logs to load</span>
             </div>
           )}
-          {hasNextPage && !isFetchingNextPage && (
+          {!error && hasNextPage && !isFetchingNextPage && (
             <div className="py-3 flex items-center justify-center">
               <span className="text-sm text-muted-foreground">Scroll to load more</span>
             </div>
