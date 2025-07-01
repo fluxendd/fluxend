@@ -12,7 +12,7 @@ import { LogFilters } from "./log-filters";
 import { LogDetailSheet } from "./log-detail-sheet";
 import type { LogsFilters, LogEntry } from "~/services/logs";
 
-const LOGS_PER_PAGE = 50;
+const LOGS_PER_PAGE = 100; // Fetch more logs per request to reduce API calls
 
 export default function Logs() {
   const { projectDetails, services } = useOutletContext<ProjectLayoutOutletContext>();
@@ -63,9 +63,12 @@ export default function Logs() {
       return undefined;
     },
     initialPageParam: 1,
-    // Keep existing data when refetching
+    // Prevent unnecessary refetches
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes (was cacheTime)
     refetchOnMount: false,
     refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   });
 
   // Flatten all pages of data

@@ -66,6 +66,7 @@ export function VirtualizedLogsTable({
 }: VirtualizedLogsTableProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const tableContainerRef = useRef<HTMLDivElement>(null);
+  const fetchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const table = useReactTable({
     data,
@@ -87,19 +88,34 @@ export function VirtualizedLogsTable({
   const virtualRows = rowVirtualizer.getVirtualItems();
   const totalSize = rowVirtualizer.getTotalSize();
 
-  // Handle infinite scroll
-  const lastItem = virtualRows[virtualRows.length - 1];
+  // Handle infinite scroll with debounce
+  const lastItemIndex = virtualRows[virtualRows.length - 1]?.index ?? -1;
   useEffect(() => {
-    if (!lastItem) return;
+    if (lastItemIndex < 0) return;
 
+    // Clear any existing timeout
+    if (fetchTimeoutRef.current) {
+      clearTimeout(fetchTimeoutRef.current);
+    }
+
+    // Only fetch when we're within 10 rows of the end
     if (
-      lastItem.index >= rows.length - 1 &&
+      lastItemIndex >= rows.length - 10 &&
       hasNextPage &&
       !isFetchingNextPage
     ) {
-      fetchNextPage();
+      // Debounce the fetch to prevent rapid fire
+      fetchTimeoutRef.current = setTimeout(() => {
+        fetchNextPage();
+      }, 300); // 300ms debounce
     }
-  }, [hasNextPage, fetchNextPage, isFetchingNextPage, lastItem, rows.length]);
+
+    return () => {
+      if (fetchTimeoutRef.current) {
+        clearTimeout(fetchTimeoutRef.current);
+      }
+    };
+  }, [lastItemIndex, rows.length, hasNextPage, fetchNextPage, isFetchingNextPage]);
 
   const paddingTop = virtualRows.length > 0 ? virtualRows[0]?.start || 0 : 0;
   const paddingBottom =
