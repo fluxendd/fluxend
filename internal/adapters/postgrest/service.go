@@ -25,6 +25,7 @@ type Config struct {
 	JWTSecret     string
 	BaseDomain    string
 	CustomOrigins string
+	URLScheme     string
 }
 
 type ServiceImpl struct {
@@ -46,6 +47,7 @@ func NewPostgrestService(injector *do.Injector) (shared.PostgrestService, error)
 		DBRole:        os.Getenv("POSTGREST_DEFAULT_ROLE"),
 		JWTSecret:     os.Getenv("JWT_SECRET"),
 		BaseDomain:    os.Getenv("BASE_DOMAIN"),
+		URLScheme:     os.Getenv("URL_SCHEME"),
 		CustomOrigins: corsOrigins,
 	}
 
@@ -144,7 +146,7 @@ func (s *ServiceImpl) HasContainer(dbName string) bool {
 }
 
 func (s *ServiceImpl) buildStartCommand(dbName string) []string {
-	return []string{
+	response := []string{
 		"docker", "run", "-d", "--name", s.getContainerName(dbName),
 		"--network", "fluxend_network",
 		"-e", fmt.Sprintf("PGRST_DB_URI=postgres://%s:%s@%s/%s", s.config.DBUser, s.config.DBPassword, s.config.DBHost, dbName),
@@ -157,11 +159,21 @@ func (s *ServiceImpl) buildStartCommand(dbName string) []string {
 		"--label", "traefik.enable=true",
 		"--label", fmt.Sprintf("traefik.http.routers.%s.rule=Host(`%s.%s`)", dbName, dbName, s.config.BaseDomain),
 		"--label", fmt.Sprintf("traefik.http.services.%s.loadbalancer.server.port=3000", dbName),
-		"--label", fmt.Sprintf("traefik.http.routers.%s.entrypoints=websecure", dbName),
-		"--label", fmt.Sprintf("traefik.http.routers.%s.tls=true", dbName),
-		"--label", fmt.Sprintf("traefik.http.routers.%s.tls.certresolver=le", dbName),
-		ImageName,
 	}
+
+	if s.config.URLScheme == "https" {
+		response = append(response,
+			"--label", fmt.Sprintf("traefik.http.routers.%s.tls=true", dbName),
+			"--label", fmt.Sprintf("traefik.http.routers.%s.tls.certresolver=le", dbName),
+			"--label", fmt.Sprintf("traefik.http.routers.%s.entrypoints=websecure", dbName),
+		)
+	} else {
+		response = append(response, "--label", fmt.Sprintf("traefik.http.routers.%s.entrypoints=web", dbName))
+	}
+
+	response = append(response, ImageName)
+
+	return response
 }
 
 func (s *ServiceImpl) getContainerName(dbName string) string {

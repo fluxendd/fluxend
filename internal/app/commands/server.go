@@ -40,13 +40,13 @@ func SetupServer(container *do.Injector) *echo.Echo {
 	e := echo.New()
 
 	// Middleware
-	e.Use(middleware.Recover())
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOriginFunc: func(origin string) (bool, error) {
-			if isOriginAllowed(origin) {
+			/*if isOriginAllowed(origin) {
 				return true, nil
 			}
-			return false, nil
+			return false, nil*/
+			return true, nil
 		},
 		AllowMethods: []string{
 			echo.GET, echo.POST, echo.PUT, echo.DELETE, echo.OPTIONS,
@@ -65,6 +65,7 @@ func SetupServer(container *do.Injector) *echo.Echo {
 		},
 		AllowCredentials: true,
 	}))
+	e.Use(middleware.Recover())
 
 	if os.Getenv("SENTRY_DSN") != "" {
 		if err := sentry.Init(sentry.ClientOptions{
@@ -126,10 +127,6 @@ func validateEnvVariables() {
 		"API_CONTAINER_NAME",
 		"DATABASE_CONTAINER_NAME",
 		"FRONTEND_CONTAINER_NAME",
-		"VITE_FLX_INTERNAL_URL",
-		"VITE_FLX_API_URL",
-		"VITE_FLX_BASE_DOMAIN",
-		"VITE_FLX_HTTP_SCHEME",
 		"DATABASE_HOST",
 		"DATABASE_USER",
 		"DATABASE_PASSWORD",
@@ -164,11 +161,25 @@ func isOriginAllowed(origin string) bool {
 
 	allowedOrigins = append(allowedOrigins, customOrigins...)
 
+	// Add this logging
+	log.Info().
+		Str("origin", origin).
+		Strs("allowedOrigins", allowedOrigins).
+		Str("CONSOLE_URL", os.Getenv("CONSOLE_URL")).
+		Str("CUSTOM_ORIGINS", os.Getenv("CUSTOM_ORIGINS")).
+		Msg("CORS origin check")
+
 	for _, allowedOrigin := range allowedOrigins {
 		allowedOrigin = strings.TrimSpace(allowedOrigin)
 		if allowedOrigin == "" {
 			continue
 		}
+
+		log.Info().
+			Str("checking", allowedOrigin).
+			Str("against", origin).
+			Bool("exact_match", origin == allowedOrigin).
+			Msg("CORS comparison")
 
 		if origin == allowedOrigin || strings.HasSuffix(origin, allowedOrigin) {
 			return true

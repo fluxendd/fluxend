@@ -11,9 +11,16 @@ services:
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
+      #- "--entrypoints.web.http.redirections.entryPoint.to=websecure"
+      #- "--entrypoints.web.http.redirections.entryPoint.scheme=https"
+      #- "--entrypoints.websecure.address=:443"
+      #- "--certificatesresolvers.le.acme.tlschallenge=true"
+      #- "--certificatesresolvers.le.acme.email=hello@fluxend.app"
+      #- "--certificatesresolvers.le.acme.storage=/letsencrypt/acme.json"
       - "--log.level=DEBUG"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "./letsencrypt:/letsencrypt"
     networks:
       - fluxend_network
     depends_on:
@@ -25,9 +32,9 @@ services:
     container_name: fluxend_db
     restart: always
     environment:
-      - POSTGRES_USER=${DATABASE_USER}
-      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
-      - POSTGRES_DB=${DATABASE_NAME}
+      - POSTGRES_USER=${DATABASE_USER:-postgres}
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD:-yourpassword}
+      - POSTGRES_DB=${DATABASE_NAME:-fluxend_db}
     volumes:
       - fluxend_db_data:/var/lib/postgresql/data
     ports:
@@ -47,11 +54,11 @@ services:
       dockerfile: Dockerfile
     container_name: fluxend_api
     environment:
-      - APP_ENV=${APP_ENV}
+      - APP_ENV=${APP_ENV:-development}
       - DATABASE_HOST=fluxend_db
-      - DATABASE_USER=${DATABASE_USER}
-      - DATABASE_PASSWORD=${DATABASE_PASSWORD}
-      - DATABASE_NAME=${DATABASE_NAME}
+      - DATABASE_USER=${DATABASE_USER:-postgres}
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD:-yourpassword}
+      - DATABASE_NAME=${DATABASE_NAME:-fluxend_db}
       - DATABASE_SSL_MODE=disable
     depends_on:
       fluxend_db:
@@ -61,8 +68,10 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.fluxend_api.rule=Host(`${API_SUB_DOMAIN}.${BASE_DOMAIN}`)"
-      - "traefik.http.routers.fluxend_api.entrypoints=web"
+      #- "traefik.http.routers.fluxend_api.entrypoints=websecure"
       - "traefik.http.services.fluxend_api.loadbalancer.server.port=8080"
+      #- "traefik.http.routers.fluxend_api.tls=true"
+      #- "traefik.http.routers.fluxend_api.tls.certresolver=le"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock # TODO: Figure out a better way to handle this
 
@@ -71,13 +80,14 @@ services:
       context: ./web
       dockerfile: Dockerfile
       args:
-        - VITE_FLX_INTERNAL_URL=${INTERNAL_URL}
-        - VITE_FLX_API_URL=${API_URL}
-        - VITE_FLX_BASE_DOMAIN=${BASE_DOMAIN}
-        - VITE_FLX_HTTP_SCHEME=${URL_SCHEME}
+        - API_URL="${URL_SCHEME}://${API_PATH}.${BASE_DOMAIN}"
+        - BASE_DOMAIN=localhost
+        - INTERNAL_URL="http://${API_CONTAINER_NAME}:8080"
+        - VITE_FLX_INTERNAL_URL="http://${API_CONTAINER_NAME}:8080" # when running in docker
+        - VITE_FLX_API_URL="${API_URL}"
+        - VITE_FLX_BASE_DOMAIN="${BASE_DOMAIN}"
+        - VITE_FLX_HTTP_SCHEME="${URL_SCHEME}"
     container_name: fluxend_frontend
-    environment:
-      - VITE_FLX_INTERNAL_URL=${INTERNAL_URL}
     depends_on:
       - fluxend_api
     networks:
@@ -85,8 +95,10 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.fluxend_frontend.rule=Host(`${CONSOLE_SUB_DOMAIN}.${BASE_DOMAIN}`)"
-      - "traefik.http.routers.fluxend_frontend.entrypoints=web"
+    #  - "traefik.http.routers.fluxend_frontend.entrypoints=websecure"
       - "traefik.http.services.fluxend_frontend.loadbalancer.server.port=3000"
+    #  - "traefik.http.routers.fluxend_frontend.tls=true"
+    #  - "traefik.http.routers.fluxend_frontend.tls.certresolver=le"
 
 networks:
   fluxend_network:
