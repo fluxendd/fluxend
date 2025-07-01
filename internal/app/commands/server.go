@@ -58,6 +58,7 @@ func SetupServer(container *do.Injector) *echo.Echo {
 			constants.ProjectHeaderKey,
 			"Content-Range",
 			"Range-Unit",
+			"Prefer",
 		},
 		ExposeHeaders: []string{
 			echo.HeaderContentLength, echo.HeaderContentType,
