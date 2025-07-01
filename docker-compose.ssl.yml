@@ -1,109 +1,35 @@
 services:
   traefik:
-    image: traefik:v2.11
-    container_name: traefik
-    restart: always
-    ports:
-      - "80:80"
-      - "443:443"
     command:
       - "--api.dashboard=true"
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
-      #- "--entrypoints.web.http.redirections.entryPoint.to=websecure"
-      #- "--entrypoints.web.http.redirections.entryPoint.scheme=https"
-      #- "--entrypoints.websecure.address=:443"
-      #- "--certificatesresolvers.le.acme.tlschallenge=true"
-      #- "--certificatesresolvers.le.acme.email=hello@fluxend.app"
-      #- "--certificatesresolvers.le.acme.storage=/letsencrypt/acme.json"
+      - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.le.acme.tlschallenge=true"
+      - "--certificatesresolvers.le.acme.email=hello@fluxend.app"
+      - "--certificatesresolvers.le.acme.storage=/letsencrypt/acme.json"
       - "--log.level=DEBUG"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - "./letsencrypt:/letsencrypt"
-    networks:
-      - fluxend_network
-    depends_on:
-      - fluxend_api
-      - fluxend_frontend
-
-  fluxend_db:
-    image: postgres:latest
-    container_name: fluxend_db
-    restart: always
-    environment:
-      - POSTGRES_USER=${DATABASE_USER:-postgres}
-      - POSTGRES_PASSWORD=${DATABASE_PASSWORD:-yourpassword}
-      - POSTGRES_DB=${DATABASE_NAME:-fluxend_db}
-    volumes:
-      - fluxend_db_data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
-    networks:
-      - fluxend_network
-    healthcheck:
-      test: [ "CMD", "pg_isready", "-U", "${DATABASE_USER:-postgres}" ]
-      interval: 10s
-      retries: 5
-      start_period: 30s
-      timeout: 5s
 
   fluxend_api:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: fluxend_api
-    environment:
-      - APP_ENV=${APP_ENV:-development}
-      - DATABASE_HOST=fluxend_db
-      - DATABASE_USER=${DATABASE_USER:-postgres}
-      - DATABASE_PASSWORD=${DATABASE_PASSWORD:-yourpassword}
-      - DATABASE_NAME=${DATABASE_NAME:-fluxend_db}
-      - DATABASE_SSL_MODE=disable
-    depends_on:
-      fluxend_db:
-        condition: service_healthy
-    networks:
-      - fluxend_network
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.fluxend_api.rule=Host(`${API_SUB_DOMAIN}.${BASE_DOMAIN}`)"
-      #- "traefik.http.routers.fluxend_api.entrypoints=websecure"
+      - "traefik.http.routers.fluxend_api.entrypoints=websecure"
       - "traefik.http.services.fluxend_api.loadbalancer.server.port=8080"
-      #- "traefik.http.routers.fluxend_api.tls=true"
-      #- "traefik.http.routers.fluxend_api.tls.certresolver=le"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock # TODO: Figure out a better way to handle this
+      - "traefik.http.routers.fluxend_api.tls=true"
+      - "traefik.http.routers.fluxend_api.tls.certresolver=le"
 
   fluxend_frontend:
-    build:
-      context: ./web
-      dockerfile: Dockerfile
-      args:
-        - API_URL="${URL_SCHEME}://${API_PATH}.${BASE_DOMAIN}"
-        - BASE_DOMAIN=localhost
-        - INTERNAL_URL="http://${API_CONTAINER_NAME}:8080"
-        - VITE_FLX_INTERNAL_URL="http://${API_CONTAINER_NAME}:8080" # when running in docker
-        - VITE_FLX_API_URL="${API_URL}"
-        - VITE_FLX_BASE_DOMAIN="${BASE_DOMAIN}"
-        - VITE_FLX_HTTP_SCHEME="${URL_SCHEME}"
-    container_name: fluxend_frontend
-    depends_on:
-      - fluxend_api
-    networks:
-      - fluxend_network
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.fluxend_frontend.rule=Host(`${CONSOLE_SUB_DOMAIN}.${BASE_DOMAIN}`)"
-    #  - "traefik.http.routers.fluxend_frontend.entrypoints=websecure"
+      - "traefik.http.routers.fluxend_frontend.entrypoints=websecure"
       - "traefik.http.services.fluxend_frontend.loadbalancer.server.port=3000"
-    #  - "traefik.http.routers.fluxend_frontend.tls=true"
-    #  - "traefik.http.routers.fluxend_frontend.tls.certresolver=le"
-
-networks:
-  fluxend_network:
-    name: fluxend_network
-    driver: bridge
-
-volumes:
-  fluxend_db_data:
+      - "traefik.http.routers.fluxend_frontend.tls=true"
+      - "traefik.http.routers.fluxend_frontend.tls.certresolver=le"

@@ -6,7 +6,12 @@ DATABASE_CONNECTION="user=${DATABASE_USER} password=${DATABASE_PASSWORD} dbname=
 # Include other files
 include scripts/makefiles/*.mk
 
-COMPOSE_FILES = -f docker-compose.yml # TODO: Add more compose files if needed
+ifeq ($(URL_SCHEME),https)
+    COMPOSE_FILES = -f docker-compose.yml -f docker-compose.ssl.yml
+else
+    COMPOSE_FILES = -f docker-compose.yml
+endif
+
 DOCKER_COMPOSE = docker-compose $(COMPOSE_FILES)
 
 help: ## Shows this help
