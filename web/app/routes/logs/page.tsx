@@ -6,7 +6,7 @@ import { RefreshButton } from "~/components/shared/refresh-button";
 import { Button } from "~/components/ui/button";
 import { RefreshCw, Pause, Play } from "lucide-react";
 import type { ProjectLayoutOutletContext } from "~/components/shared/project-layout";
-import { InfiniteLogsTable } from "./infinite-logs-table";
+import { VirtualizedLogsTable } from "./virtualized-logs-table";
 import { createLogsColumns } from "./columns";
 import { LogFilters } from "./log-filters";
 import { LogDetailSheet } from "./log-detail-sheet";
@@ -46,20 +46,23 @@ export default function Logs() {
     hasNextPage,
   } = useInfiniteQuery({
     queryKey: ["logs", projectId, queryFilters],
-    queryFn: async ({ pageParam = 0 }) => {
+    queryFn: async ({ pageParam = 1 }) => {
       if (!projectId) throw new Error("Project ID required");
       return services.logs.getLogs(projectId, {
         ...queryFilters,
-        offset: pageParam,
+        page: pageParam,
       });
     },
     enabled: !!projectId,
     refetchInterval: autoRefresh ? refreshInterval : false,
     getNextPageParam: (lastPage, pages) => {
-      const loadedCount = pages.reduce((acc, page) => acc + page.content.length, 0);
-      return loadedCount < lastPage.totalCount ? loadedCount : undefined;
+      // If we got a full page of results, there might be more
+      if (lastPage.content.length === LOGS_PER_PAGE) {
+        return pages.length + 1;
+      }
+      return undefined;
     },
-    initialPageParam: 0,
+    initialPageParam: 1,
     // Keep existing data when refetching
     refetchOnMount: false,
     refetchOnWindowFocus: false,
@@ -147,7 +150,7 @@ export default function Logs() {
           </div>
         ) : (
           <div className="rounded-lg border h-full">
-            <InfiniteLogsTable
+            <VirtualizedLogsTable
               columns={columns}
               data={allLogs}
               onRowClick={handleRowClick}
