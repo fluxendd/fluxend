@@ -42,11 +42,10 @@ func SetupServer(container *do.Injector) *echo.Echo {
 	// Middleware
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOriginFunc: func(origin string) (bool, error) {
-			/*if isOriginAllowed(origin) {
+			if isOriginAllowed(origin) {
 				return true, nil
 			}
-			return false, nil*/
-			return true, nil
+			return false, nil
 		},
 		AllowMethods: []string{
 			echo.GET, echo.POST, echo.PUT, echo.DELETE, echo.OPTIONS,
