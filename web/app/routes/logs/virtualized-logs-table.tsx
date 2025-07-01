@@ -89,18 +89,31 @@ export function VirtualizedLogsTable({
   const virtualRows = rowVirtualizer.getVirtualItems();
   const totalSize = rowVirtualizer.getTotalSize();
 
-  // Simple scroll-based infinite loading
-  const handleScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
-    if (!hasNextPage || isFetchingNextPage) return;
+  // Track last visible index for infinite scroll
+  const lastVisibleIndex = virtualRows[virtualRows.length - 1]?.index ?? -1;
+  
+  // Handle infinite scroll
+  useEffect(() => {
+    if (lastVisibleIndex < 0) return;
     
-    const element = e.currentTarget;
-    const scrollBottom = element.scrollHeight - element.scrollTop - element.clientHeight;
+    // Check if we're near the end of the data
+    const remainingItems = data.length - lastVisibleIndex;
+    const shouldFetch = remainingItems <= 20 && hasNextPage && !isFetchingNextPage;
     
-    // Trigger when we're within 20 rows (approximately 960px) from the bottom
-    if (scrollBottom < 20 * 48) {
+    console.log('Infinite scroll check:', {
+      lastVisibleIndex,
+      dataLength: data.length,
+      remainingItems,
+      shouldFetch,
+      hasNextPage,
+      isFetchingNextPage
+    });
+    
+    if (shouldFetch) {
+      console.log('Fetching next page...');
       fetchNextPage();
     }
-  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+  }, [lastVisibleIndex, data.length, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   const paddingTop = virtualRows.length > 0 ? virtualRows[0]?.start || 0 : 0;
   const paddingBottom =
@@ -130,7 +143,6 @@ export function VirtualizedLogsTable({
       <div 
         ref={scrollContainerRef}
         className="flex-1 overflow-auto"
-        onScroll={handleScroll}
       >
         <div ref={tableContainerRef}>
           <Table>

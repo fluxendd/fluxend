@@ -57,8 +57,14 @@ export default function Logs() {
     enabled: !!projectId,
     refetchInterval: autoRefresh ? refreshInterval : false,
     getNextPageParam: (lastPage, pages) => {
-      // If we got a full page of results, there might be more
-      if (lastPage.content.length === LOGS_PER_PAGE) {
+      console.log('getNextPageParam:', {
+        lastPageLength: lastPage.content.length,
+        LOGS_PER_PAGE,
+        totalPages: pages.length,
+        willFetchMore: lastPage.content.length >= LOGS_PER_PAGE
+      });
+      // If we got a full page or close to it, there might be more
+      if (lastPage.content.length >= LOGS_PER_PAGE - 10) {
         return pages.length + 1;
       }
       return undefined;
