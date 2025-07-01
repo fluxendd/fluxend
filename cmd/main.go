@@ -1,7 +1,6 @@
 package main
 
 import (
-	_ "fluxend/docs"
 	"fluxend/internal/app/commands"
 	"github.com/joho/godotenv"
 	"github.com/labstack/gommon/log"
