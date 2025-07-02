@@ -1,4 +1,4 @@
-import { useRef, useCallback, memo } from "react";
+import { useRef, useCallback, memo, useState, useEffect } from "react";
 import { flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import type { ColumnDef } from "@tanstack/react-table";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "~/components/ui/table";
@@ -20,26 +20,37 @@ interface LogsTableProps {
 // Memoized table row component
 const VirtualRow = memo(({ 
   row, 
-  onRowClick 
+  onRowClick,
+  isSelected,
+  onKeyDown
 }: { 
   row: ReturnType<ReturnType<typeof useReactTable<LogEntry>>['getRowModel']>['rows'][0]; 
   onRowClick?: (row: LogEntry) => void;
+  isSelected?: boolean;
+  onKeyDown?: (e: React.KeyboardEvent) => void;
 }) => {
   const handleClick = useCallback((e: React.MouseEvent) => {
     const target = e.target as HTMLElement;
     if (target.closest('[data-no-row-click]')) {
       return;
     }
+    // Focus the row when clicked for keyboard navigation
+    (e.currentTarget as HTMLTableRowElement).focus();
     onRowClick?.(row.original);
   }, [onRowClick, row.original]);
 
   return (
     <TableRow
+      id={`row-${row.id}`}
+      tabIndex={0}
       className={cn(
         "cursor-pointer hover:bg-muted/50",
-        "data-[state=selected]:bg-muted"
+        "focus:outline-none focus:bg-muted/60",
+        isSelected && "bg-muted/50"
       )}
       onClick={handleClick}
+      onKeyDown={onKeyDown}
+      aria-selected={isSelected}
     >
       {row.getVisibleCells().map((cell) => (
         <TableCell 
@@ -65,6 +76,8 @@ export function LogsTable({
   isLoading,
   error,
 }: LogsTableProps) {
+  const tbodyRef = useRef<HTMLTableSectionElement>(null);
+  const [selectedRowIndex, setSelectedRowIndex] = useState<number | null>(null);
 
   const table = useReactTable({
     data,
@@ -77,12 +90,70 @@ export function LogsTable({
   // Since we're using manual pagination, we don't need complex virtualization
   // Just render all rows from the current pages
 
+  // Handle keyboard navigation
+  const handleKeyDown = useCallback((e: React.KeyboardEvent, rowIndex: number) => {
+    const tbody = tbodyRef.current;
+    if (!tbody) return;
+
+    const currentRow = tbody.children[rowIndex] as HTMLTableRowElement;
+    let targetRow: HTMLTableRowElement | null = null;
+
+    switch (e.key) {
+      case 'ArrowUp':
+        e.preventDefault();
+        if (rowIndex > 0) {
+          targetRow = tbody.children[rowIndex - 1] as HTMLTableRowElement;
+          setSelectedRowIndex(rowIndex - 1);
+        }
+        break;
+      case 'ArrowDown':
+        e.preventDefault();
+        if (rowIndex < rows.length - 1) {
+          targetRow = tbody.children[rowIndex + 1] as HTMLTableRowElement;
+          setSelectedRowIndex(rowIndex + 1);
+        }
+        break;
+      case 'Enter':
+      case ' ':
+        e.preventDefault();
+        if (onRowClick && rows[rowIndex]) {
+          onRowClick(rows[rowIndex].original);
+        }
+        break;
+      case 'Home':
+        e.preventDefault();
+        if (rows.length > 0) {
+          targetRow = tbody.children[0] as HTMLTableRowElement;
+          setSelectedRowIndex(0);
+        }
+        break;
+      case 'End':
+        e.preventDefault();
+        if (rows.length > 0) {
+          targetRow = tbody.children[rows.length - 1] as HTMLTableRowElement;
+          setSelectedRowIndex(rows.length - 1);
+        }
+        break;
+    }
+
+    if (targetRow) {
+      targetRow.focus();
+      // Ensure the focused row is visible
+      targetRow.scrollIntoView({ block: 'nearest' });
+    }
+  }, [rows, onRowClick]);
+
   // Handle load more click
   const handleLoadMore = useCallback(() => {
     if (!isFetchingNextPage && hasNextPage) {
       fetchNextPage();
     }
   }, [isFetchingNextPage, hasNextPage, fetchNextPage]);
+
+  // Reset selected row when data changes
+  useEffect(() => {
+    setSelectedRowIndex(null);
+  }, [data]);
 
 
   if (isLoading && data.length === 0) {
@@ -103,8 +174,8 @@ export function LogsTable({
 
   return (
     <div className="h-full rounded-lg border">
-      <div className="h-full overflow-y-auto rounded-lg">
-        <Table>
+      <div className="h-full overflow-y-auto rounded-lg" role="region" aria-label="Logs table">
+        <Table role="table" aria-label="Logs entries">
           <TableHeader className="sticky top-0 z-10 bg-background border-b">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
@@ -121,12 +192,14 @@ export function LogsTable({
               </TableRow>
             ))}
           </TableHeader>
-          <TableBody>
-              {rows.map((row) => (
+          <TableBody ref={tbodyRef}>
+              {rows.map((row, index) => (
                 <VirtualRow
                   key={row.id}
                   row={row}
                   onRowClick={onRowClick}
+                  isSelected={selectedRowIndex === index}
+                  onKeyDown={(e) => handleKeyDown(e, index)}
                 />
               ))}
               {/* Load more row */}
@@ -136,6 +209,13 @@ export function LogsTable({
                     <div 
                       className="py-4 flex items-center justify-center cursor-pointer hover:bg-muted/50 transition-colors"
                       onClick={handleLoadMore}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          handleLoadMore();
+                        }
+                      }}
+                      tabIndex={0}
                     >
                       {isFetchingNextPage ? (
                         <div className="flex items-center gap-2">
