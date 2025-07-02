@@ -2876,13 +2876,17 @@ paths:
         in: query
         name: ipAddress
         type: string
-      - description: Filter by start date (MM-DD-YYYY)
+      - description: Filter after a unix timestamp
         in: query
-        name: dateStart
+        name: startTime
         type: string
-      - description: Filter by end date (MM-DD-YYYY)
+      - description: Filter before a unix timestamp
         in: query
-        name: dateEnd
+        name: endTime
+        type: string
+      - description: Filter before a unix timestamp
+        in: query
+        name: endTime
         type: string
       - description: Page number for pagination
         in: query
