@@ -9,6 +9,7 @@ import (
 func RegisterProjectRoutes(e *echo.Echo, container *do.Injector, authMiddleware echo.MiddlewareFunc, allowProjectMiddleware echo.MiddlewareFunc) {
 	projectController := do.MustInvoke[*handlers.ProjectHandler](container)
 	statHandler := do.MustInvoke[*handlers.StatHandler](container)
+	logHandler := do.MustInvoke[*handlers.LogHandler](container)
 
 	projectsGroup := e.Group("projects", authMiddleware, allowProjectMiddleware)
 
@@ -19,4 +20,5 @@ func RegisterProjectRoutes(e *echo.Echo, container *do.Injector, authMiddleware 
 	projectsGroup.DELETE("/:projectUUID", projectController.Delete)
 
 	projectsGroup.GET("/:projectUUID/stats", statHandler.Retrieve)
+	projectsGroup.GET("/:projectUUID/logs", logHandler.List)
 }
