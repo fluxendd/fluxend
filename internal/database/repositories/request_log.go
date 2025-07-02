@@ -26,6 +26,11 @@ func (r *RequestLogRepository) List(input *logging.ListInput, paginationParams s
 		"offset": offset,
 	}
 
+	if input.ProjectUuid.Valid {
+		filters = append(filters, "project_uuid = :project_uuid")
+		params["project_uuid"] = input.ProjectUuid.UUID.String()
+	}
+
 	if input.UserUuid.Valid {
 		filters = append(filters, "user_uuid = :user_uuid")
 		params["user_uuid"] = input.UserUuid.UUID.String()

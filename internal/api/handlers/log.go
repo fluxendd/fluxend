@@ -6,6 +6,7 @@ import (
 	"fluxend/internal/api/response"
 	"fluxend/internal/domain/logging"
 	"fluxend/pkg/auth"
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
 )
@@ -56,8 +57,14 @@ func (lh *LogHandler) List(c echo.Context) error {
 
 	authUser, _ := auth.NewAuth(c).User()
 
+	projectUUID, err := request.GetUUIDPathParam(c, "projectUUID", true)
+	if err != nil {
+		return response.BadRequestResponse(c, err.Error())
+	}
+
 	paginationParams := request.ExtractPaginationParams(c)
-	logs, err := lh.logService.List(loggingDto.ToLogListInput(&request), paginationParams, authUser)
+	input := loggingDto.ToLogListInput(&request, uuid.NullUUID{Valid: true, UUID: projectUUID})
+	logs, err := lh.logService.List(input, paginationParams, authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}

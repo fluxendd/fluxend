@@ -6,9 +6,10 @@ import (
 )
 
 type ListInput struct {
-	UserUuid  uuid.NullUUID `query:"userUuid"`
-	Status    null.String   `query:"status"`
-	Method    null.String   `query:"method"`
-	Endpoint  null.String   `query:"endpoint"`
-	IPAddress null.String   `query:"ipAddress"`
+	ProjectUuid uuid.NullUUID `query:"projectUuid"`
+	UserUuid    uuid.NullUUID `query:"userUuid"`
+	Status      null.String   `query:"status"`
+	Method      null.String   `query:"method"`
+	Endpoint    null.String   `query:"endpoint"`
+	IPAddress   null.String   `query:"ipAddress"`
 }
