@@ -19,17 +19,11 @@ func Users(container *do.Injector) {
 		userFactory.WithPassword(os.Getenv("SUPERUSER_PASSWORD")),
 		userFactory.WithRole(constants.UserRoleSuperman),
 	)
+
 	if err != nil {
 		log.Error().
 			Str("error", err.Error()).
 			Msg("Error creating superman user")
-	}
-
-	_, err = userFactory.CreateMany(3)
-	if err != nil {
-		log.Error().
-			Str("error", err.Error()).
-			Msg("Error creating users")
 	}
 
 	log.Info().

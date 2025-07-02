@@ -56,8 +56,8 @@ func (r *RequestLogRepository) buildFilters(input *logging.ListInput) (string, m
 		{input.Method.Valid, "method = :method", "method", input.Method},
 		{input.Endpoint.Valid, "endpoint = :endpoint", "endpoint", input.Endpoint},
 		{input.IPAddress.Valid, "ip_address = :ip_address", "ip_address", input.IPAddress},
-		{input.DateStart != nil, "created_at >= :date_start", "date_start", input.DateStart},
-		{input.DateEnd != nil, "created_at <= :date_end", "date_end", input.DateEnd},
+		{!input.StartTime.IsZero(), "created_at >= :date_start", "date_start", input.StartTime},
+		{!input.EndTime.IsZero(), "created_at <= :date_end", "date_end", input.EndTime},
 	}
 
 	for _, mapping := range filterMappings {

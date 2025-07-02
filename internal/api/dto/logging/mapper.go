@@ -13,7 +13,7 @@ func ToLogListInput(request *ListRequest, projectUUID uuid.NullUUID) *logging.Li
 		Method:      request.Method,
 		Endpoint:    request.Endpoint,
 		IPAddress:   request.IPAddress,
-		DateStart:   request.ParsedDateStart,
-		DateEnd:     request.ParsedDateEnd,
+		StartTime:   request.StartTime,
+		EndTime:     request.EndTime,
 	}
 }

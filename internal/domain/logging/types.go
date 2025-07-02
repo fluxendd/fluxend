@@ -13,6 +13,6 @@ type ListInput struct {
 	Method      null.String   `query:"method"`
 	Endpoint    null.String   `query:"endpoint"`
 	IPAddress   null.String   `query:"ipAddress"`
-	DateStart   *time.Time    `query:"dateStart"`
-	DateEnd     *time.Time    `query:"dateEnd"`
+	StartTime   time.Time     `query:"startTime"`
+	EndTime     time.Time     `query:"endTime"`
 }

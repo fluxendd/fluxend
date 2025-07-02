@@ -5,6 +5,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/guregu/null/v6"
 	"github.com/labstack/echo/v4"
+	"strconv"
 	"time"
 )
 
@@ -15,17 +16,13 @@ type ListRequest struct {
 	Method    null.String   `query:"method"`
 	Endpoint  null.String   `query:"endpoint"`
 	IPAddress null.String   `query:"ipAddress"`
-	DateStart null.String   `query:"dateStart"`
-	DateEnd   null.String   `query:"dateEnd"`
+	StartTime time.Time     // Will be populated from timestamp parsing
+	EndTime   time.Time     // Will be populated from timestamp parsing
 
 	Limit int    `query:"limit"`
 	Page  int    `query:"page"`
 	Sort  string `query:"sort"`
 	Order string `query:"order"`
-
-	// Add parsed time fields for internal use
-	ParsedDateStart *time.Time
-	ParsedDateEnd   *time.Time
 }
 
 func (r *ListRequest) BindAndValidate(c echo.Context) []string {
@@ -33,35 +30,27 @@ func (r *ListRequest) BindAndValidate(c echo.Context) []string {
 		return []string{"Invalid request payload"}
 	}
 
-	var dateStart, dateEnd time.Time
-	var hasDateStart, hasDateEnd bool
-
-	if r.DateStart.Valid {
-		parsed, err := time.Parse("02-01-2006", r.DateStart.String)
+	if startTimeStr := c.QueryParam("startTime"); startTimeStr != "" {
+		timestamp, err := strconv.ParseInt(startTimeStr, 10, 64)
 		if err != nil {
-			return []string{"Invalid dateStart format, expected DD-MM-YYYY"}
+			return []string{"Invalid startTime format, expected Unix timestamp"}
 		}
 
-		dateStart = parsed
-		r.ParsedDateStart = &dateStart
-		hasDateStart = true
+		r.StartTime = time.Unix(timestamp, 0)
 	}
 
-	if r.DateEnd.Valid {
-		parsed, err := time.Parse("02-01-2006", r.DateEnd.String)
+	if endTimeStr := c.QueryParam("endTime"); endTimeStr != "" {
+		timestamp, err := strconv.ParseInt(endTimeStr, 10, 64)
 		if err != nil {
-			return []string{"Invalid dateEnd format, expected DD-MM-YYYY"}
+			return []string{"Invalid endTime format, expected Unix timestamp"}
 		}
 
-		dateEnd = parsed
-		r.ParsedDateEnd = &dateEnd
-		hasDateEnd = true
+		r.EndTime = time.Unix(timestamp, 0)
 	}
 
-	// Check if dateEnd is after dateStart (only if both are valid)
-	if hasDateStart && hasDateEnd {
-		if !dateEnd.After(dateStart) && !dateEnd.Equal(dateStart) {
-			return []string{"dateEnd must be after dateStart"}
+	if !r.StartTime.IsZero() && !r.EndTime.IsZero() {
+		if r.EndTime.Before(r.StartTime) {
+			return []string{"endTime must be after or equal to startTime"}
 		}
 	}
 
