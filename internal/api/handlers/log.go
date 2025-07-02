@@ -67,10 +67,10 @@ func (lh *LogHandler) List(c echo.Context) error {
 	paginationParams := request.ExtractPaginationParams(c)
 	input := loggingDto.ToLogListInput(&request, uuid.NullUUID{Valid: true, UUID: projectUUID})
 
-	logs, err := lh.logService.List(input, paginationParams, authUser)
+	logs, paginationDetails, err := lh.logService.List(input, paginationParams, authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.SuccessResponse(c, mapper.ToLoggingResourceCollection(logs))
+	return response.SuccessResponseWithPagination(c, mapper.ToLoggingResourceCollection(logs), paginationDetails)
 }

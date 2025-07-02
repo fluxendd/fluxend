@@ -17,74 +17,103 @@ func NewRequestLogRepository(injector *do.Injector) (logging.Repository, error) 
 	return &RequestLogRepository{db: db}, nil
 }
 
-func (r *RequestLogRepository) List(input *logging.ListInput, paginationParams shared.PaginationParams) ([]logging.RequestLog, error) {
+func (r *RequestLogRepository) List(
+	input *logging.ListInput,
+	paginationParams shared.PaginationParams,
+) ([]logging.RequestLog, shared.PaginationDetails, error) {
+	whereClause, params := r.buildFilters(input)
+
+	total, err := r.getFilteredCount(whereClause, params)
+	if err != nil {
+		return nil, shared.PaginationDetails{}, fmt.Errorf("failed to get total count of request logs: %w", err)
+	}
+
+	requestLogs, err := r.getFilteredLogs(whereClause, params, paginationParams)
+	if err != nil {
+		return nil, shared.PaginationDetails{}, fmt.Errorf("failed to get request logs: %w", err)
+	}
+
+	return requestLogs, shared.PaginationDetails{
+		Total: total,
+		Page:  paginationParams.Page,
+		Limit: paginationParams.Limit,
+	}, nil
+}
+
+func (r *RequestLogRepository) buildFilters(input *logging.ListInput) (string, map[string]interface{}) {
 	var filters []string
+	params := make(map[string]interface{})
 
-	offset := (paginationParams.Page - 1) * paginationParams.Limit
-	params := map[string]interface{}{
-		"limit":  paginationParams.Limit,
-		"offset": offset,
+	filterMappings := []struct {
+		condition bool
+		clause    string
+		paramName string
+		value     interface{}
+	}{
+		{input.ProjectUuid.Valid, "project_uuid = :project_uuid", "project_uuid", input.ProjectUuid.UUID.String()},
+		{input.UserUuid.Valid, "user_uuid = :user_uuid", "user_uuid", input.UserUuid.UUID.String()},
+		{input.Status.Valid, "status = :status", "status", input.Status},
+		{input.Method.Valid, "method = :method", "method", input.Method},
+		{input.Endpoint.Valid, "endpoint = :endpoint", "endpoint", input.Endpoint},
+		{input.IPAddress.Valid, "ip_address = :ip_address", "ip_address", input.IPAddress},
+		{input.DateStart != nil, "created_at >= :date_start", "date_start", input.DateStart},
+		{input.DateEnd != nil, "created_at <= :date_end", "date_end", input.DateEnd},
 	}
 
-	if input.ProjectUuid.Valid {
-		filters = append(filters, "project_uuid = :project_uuid")
-		params["project_uuid"] = input.ProjectUuid.UUID.String()
+	for _, mapping := range filterMappings {
+		if mapping.condition {
+			filters = append(filters, mapping.clause)
+			params[mapping.paramName] = mapping.value
+		}
 	}
 
-	if input.UserUuid.Valid {
-		filters = append(filters, "user_uuid = :user_uuid")
-		params["user_uuid"] = input.UserUuid.UUID.String()
-	}
-
-	if input.Status.Valid {
-		filters = append(filters, "status = :status")
-		params["status"] = input.Status
-	}
-
-	if input.Method.Valid {
-		filters = append(filters, "method = :method")
-		params["method"] = input.Method
-	}
-
-	if input.Endpoint.Valid {
-		filters = append(filters, "endpoint = :endpoint")
-		params["endpoint"] = input.Endpoint
-	}
-
-	if input.IPAddress.Valid {
-		filters = append(filters, "ip_address = :ip_address")
-		params["ip_address"] = input.IPAddress
-	}
-
-	if input.DateStart != nil {
-		filters = append(filters, "created_at >= :date_start")
-		params["date_start"] = input.DateStart
-	}
-
-	if input.DateEnd != nil {
-		filters = append(filters, "created_at <= :date_end")
-		params["date_end"] = input.DateEnd
-	}
-
-	query := `SELECT * FROM fluxend.api_logs`
+	whereClause := ""
 	if len(filters) > 0 {
-		query += " WHERE " + strings.Join(filters, " AND ")
+		whereClause = "WHERE " + strings.Join(filters, " AND ")
 	}
 
+	return whereClause, params
+}
+
+func (r *RequestLogRepository) getFilteredCount(whereClause string, params map[string]interface{}) (int, error) {
+	query := fmt.Sprintf("SELECT COUNT(*) FROM fluxend.api_logs %s", whereClause)
+
+	var count int
+	err := r.db.Get(&count, query, params)
+	return count, err
+}
+
+func (r *RequestLogRepository) getFilteredLogs(whereClause string, params map[string]interface{}, paginationParams shared.PaginationParams) ([]logging.RequestLog, error) {
+	// Add pagination parameters
+	offset := (paginationParams.Page - 1) * paginationParams.Limit
+	params["limit"] = paginationParams.Limit
+	params["offset"] = offset
+
+	sortColumn := r.validateSortColumn(paginationParams.Sort)
+
+	// Build final query
+	query := fmt.Sprintf(
+		"SELECT * FROM fluxend.api_logs %s ORDER BY %s DESC LIMIT :limit OFFSET :offset",
+		whereClause,
+		sortColumn,
+	)
+
+	var requestLogs []logging.RequestLog
+	err := r.db.SelectNamedList(&requestLogs, query, params)
+	return requestLogs, err
+}
+
+func (r *RequestLogRepository) validateSortColumn(sort string) string {
 	allowedSorts := map[string]bool{
 		"created_at": true,
 		"status":     true,
 		"method":     true,
 	}
-	sortColumn := "created_at" // default
-	if allowedSorts[paginationParams.Sort] {
-		sortColumn = paginationParams.Sort
+
+	if allowedSorts[sort] {
+		return sort
 	}
-
-	query += fmt.Sprintf(" ORDER BY %s DESC LIMIT :limit OFFSET :offset", sortColumn)
-
-	var requestLogs []logging.RequestLog
-	return requestLogs, r.db.SelectNamedList(&requestLogs, query, params)
+	return "created_at" // default
 }
 
 func (r *RequestLogRepository) Create(requestLog *logging.RequestLog) (*logging.RequestLog, error) {
