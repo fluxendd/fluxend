@@ -37,6 +37,8 @@ func NewLogHandler(injector *do.Injector) (*LogHandler, error) {
 // @Param method query string false "Filter by HTTP method"
 // @Param endpoint query string false "Filter by endpoint"
 // @Param ipAddress query string false "Filter by IP address"
+// @Param dateStart query string false "Filter by start date (YYYY-MM-DD) Requires dateEnd to be set"
+// @Param dateEnd query string false "Filter by end date (YYYY-MM-DD) Requires dateStart to be set"
 //
 // @Param page query string false "Page number for pagination"
 // @Param limit query string false "Number of items per page"
@@ -48,7 +50,7 @@ func NewLogHandler(injector *do.Injector) (*LogHandler, error) {
 // @Failure 401 {object} response.UnauthorizedErrorResponse "Unauthorized response"
 // @Failure 500 {object} response.InternalServerErrorResponse "Internal server error response"
 //
-// @Router /admin/logs [get]
+// @Router /projects/{projectUUID}/logs [get]
 func (lh *LogHandler) List(c echo.Context) error {
 	var request loggingDto.ListRequest
 	if err := request.BindAndValidate(c); err != nil {
@@ -64,6 +66,7 @@ func (lh *LogHandler) List(c echo.Context) error {
 
 	paginationParams := request.ExtractPaginationParams(c)
 	input := loggingDto.ToLogListInput(&request, uuid.NullUUID{Valid: true, UUID: projectUUID})
+
 	logs, err := lh.logService.List(input, paginationParams, authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)

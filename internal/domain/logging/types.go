@@ -12,4 +12,6 @@ type ListInput struct {
 	Method      null.String   `query:"method"`
 	Endpoint    null.String   `query:"endpoint"`
 	IPAddress   null.String   `query:"ipAddress"`
+	DateStart   null.String   `query:"dateStart"`
+	DateEnd     null.String   `query:"dateEnd"`
 }
