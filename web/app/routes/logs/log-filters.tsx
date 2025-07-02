@@ -39,7 +39,7 @@ interface LogFiltersProps {
   onFiltersChange: (filters: LogsFilters) => void;
 }
 
-const HTTP_METHODS = ["GET", "POST", "PUT", "DELETE", "PATCH"];
+const HTTP_METHODS = ["GET", "POST", "PUT", "DELETE", "PATCH"] as const;
 const STATUS_CODES = [
   { value: "200", label: "200 OK" },
   { value: "201", label: "201 Created" },

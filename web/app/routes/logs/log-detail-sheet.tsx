@@ -11,7 +11,7 @@ import { Separator } from "~/components/ui/separator";
 import { ScrollArea } from "~/components/ui/scroll-area";
 import { Button } from "~/components/ui/button";
 import { Copy, Check } from "lucide-react";
-import type { LogEntry } from "~/services/logs";
+import type { LogEntry, HttpStatusCode } from "~/services/logs";
 import { cn } from "~/lib/utils";
 import { useState, useEffect, useRef } from "react";
 
@@ -21,7 +21,7 @@ interface LogDetailSheetProps {
   onOpenChange: (open: boolean) => void;
 }
 
-const getStatusInfo = (status: number) => {
+const getStatusInfo = (status: HttpStatusCode) => {
   if (status >= 200 && status < 300) {
     return { color: "text-green-600", bg: "bg-green-100" };
   } else if (status >= 400 && status < 500) {
@@ -84,26 +84,23 @@ const SheetCopyButton = ({ text, label }: { text: string; label: string }) => {
   );
 };
 
-// Helper function to parse JSON body if it's a string
-const parseJsonBody = (body: any) => {
-  if (!body) return null;
+// Type guard to check if value is an object
+const isObject = (value: unknown): value is Record<string, any> => {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+};
+
+// Helper function to safely parse JSON strings
+const parseJsonSafely = (value: string | Record<string, any>): Record<string, any> | string | null => {
+  if (!value) return null;
+  if (isObject(value)) return value;
+  if (typeof value !== 'string') return null;
   
-  // If it's already an object, return as is
-  if (typeof body === 'object') {
-    return body;
+  try {
+    const parsed = JSON.parse(value);
+    return parsed;
+  } catch {
+    return value; // Return original string if parsing fails
   }
-  
-  // If it's a string, try to parse it
-  if (typeof body === 'string') {
-    try {
-      return JSON.parse(body);
-    } catch (e) {
-      // If parsing fails, return the original string
-      return body;
-    }
-  }
-  
-  return body;
 };
 
 export function LogDetailSheet({ log, open, onOpenChange }: LogDetailSheetProps) {
@@ -111,8 +108,8 @@ export function LogDetailSheet({ log, open, onOpenChange }: LogDetailSheetProps)
 
   const statusInfo = getStatusInfo(log.status);
   const formattedDate = format(new Date(log.createdAt), "PPpp");
-  const parsedBody = parseJsonBody(log.body);
-  const parsedParams = parseJsonBody(log.params);
+  const parsedBody = parseJsonSafely(log.body);
+  const parsedParams = parseJsonSafely(log.params);
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
