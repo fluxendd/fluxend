@@ -514,6 +514,7 @@ definitions:
         items:
           type: string
         type: array
+      metadata: {}
       success:
         type: boolean
     type: object
@@ -710,84 +711,6 @@ paths:
       summary: Check system health
       tags:
       - Admin
-  /admin/logs:
-    get:
-      consumes:
-      - application/json
-      description: Get all logs
-      parameters:
-      - description: Bearer Token
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      - description: Filter by user UUID
-        in: query
-        name: userUuid
-        type: string
-      - description: Filter by status
-        in: query
-        name: status
-        type: string
-      - description: Filter by HTTP method
-        in: query
-        name: method
-        type: string
-      - description: Filter by endpoint
-        in: query
-        name: endpoint
-        type: string
-      - description: Filter by IP address
-        in: query
-        name: ipAddress
-        type: string
-      - description: Page number for pagination
-        in: query
-        name: page
-        type: string
-      - description: Number of items per page
-        in: query
-        name: limit
-        type: string
-      - description: Field to sort by
-        in: query
-        name: sort
-        type: string
-      - description: Sort order (asc or desc)
-        in: query
-        name: order
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: List of files
-          schema:
-            items:
-              allOf:
-              - $ref: '#/definitions/response.Response'
-              - properties:
-                  content:
-                    items:
-                      $ref: '#/definitions/logging.Response'
-                    type: array
-                type: object
-            type: array
-        "400":
-          description: Bad request response
-          schema:
-            $ref: '#/definitions/response.BadRequestErrorResponse'
-        "401":
-          description: Unauthorized response
-          schema:
-            $ref: '#/definitions/response.UnauthorizedErrorResponse'
-        "500":
-          description: Internal server error response
-          schema:
-            $ref: '#/definitions/response.InternalServerErrorResponse'
-      summary: List logs
-      tags:
-      - Logs
   /admin/settings:
     get:
       consumes:
@@ -2922,6 +2845,92 @@ paths:
       summary: Update project
       tags:
       - Projects
+  /projects/{projectUUID}/logs:
+    get:
+      consumes:
+      - application/json
+      description: Get all logs
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Filter by user UUID
+        in: query
+        name: userUuid
+        type: string
+      - description: Filter by status
+        in: query
+        name: status
+        type: string
+      - description: Filter by HTTP method
+        in: query
+        name: method
+        type: string
+      - description: Filter by endpoint
+        in: query
+        name: endpoint
+        type: string
+      - description: Filter by IP address
+        in: query
+        name: ipAddress
+        type: string
+      - description: Filter by start date (MM-DD-YYYY)
+        in: query
+        name: dateStart
+        type: string
+      - description: Filter by end date (MM-DD-YYYY)
+        in: query
+        name: dateEnd
+        type: string
+      - description: Page number for pagination
+        in: query
+        name: page
+        type: string
+      - description: Number of items per page
+        in: query
+        name: limit
+        type: string
+      - description: Field to sort by
+        in: query
+        name: sort
+        type: string
+      - description: Sort order (asc or desc)
+        in: query
+        name: order
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of logs
+          schema:
+            items:
+              allOf:
+              - $ref: '#/definitions/response.Response'
+              - properties:
+                  content:
+                    items:
+                      $ref: '#/definitions/logging.Response'
+                    type: array
+                type: object
+            type: array
+        "400":
+          description: Bad request response
+          schema:
+            $ref: '#/definitions/response.BadRequestErrorResponse'
+        "401":
+          description: Unauthorized response
+          schema:
+            $ref: '#/definitions/response.UnauthorizedErrorResponse'
+        "500":
+          description: Internal server error response
+          schema:
+            $ref: '#/definitions/response.InternalServerErrorResponse'
+      summary: List logs
+      tags:
+      - Logs
   /projects/{projectUUID}/stats:
     get:
       consumes:
