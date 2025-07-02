@@ -2,16 +2,25 @@ import type { APIResponse } from "~/lib/types";
 import { getTypedResponseData } from "~/lib/utils";
 import { get, type APIRequestOptions } from "~/tools/fetch";
 
+export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'HEAD' | 'OPTIONS';
+
+// Common HTTP status codes as a union type for better type safety
+export type HttpStatusCode = number; // Allow any number but provide common ones for documentation
+export type CommonHttpStatusCode = 
+  | 200 | 201 | 204 // Success
+  | 400 | 401 | 403 | 404 // Client errors
+  | 500 | 502 | 503; // Server errors
+
 export interface LogEntry {
   uuid: string;
   userUuid: string;
-  method: string;
+  method: HttpMethod;
   endpoint: string;
-  status: number;
+  status: HttpStatusCode;
   ipAddress: string;
   userAgent: string;
-  body: string;
-  params: string;
+  body: string | Record<string, any>;
+  params: string | Record<string, any>;
   createdAt: string;
 }
 
