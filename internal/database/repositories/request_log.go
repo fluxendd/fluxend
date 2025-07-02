@@ -79,7 +79,16 @@ func (r *RequestLogRepository) getFilteredCount(whereClause string, params map[s
 	query := fmt.Sprintf("SELECT COUNT(*) FROM fluxend.api_logs %s", whereClause)
 
 	var count int
-	err := r.db.Get(&count, query, params)
+	rows, err := r.db.NamedQuery(query, params)
+	if err != nil {
+		return 0, err
+	}
+	defer rows.Close()
+
+	if rows.Next() {
+		err = rows.Scan(&count)
+	}
+
 	return count, err
 }
 
@@ -120,15 +129,16 @@ func (r *RequestLogRepository) Create(requestLog *logging.RequestLog) (*logging.
 	return requestLog, r.db.WithTransaction(func(tx shared.Tx) error {
 		query := `
         INSERT INTO fluxend.api_logs (
-            user_uuid, api_key, method, status, endpoint, ip_address, user_agent, params, body
+            project_uuid, user_uuid, api_key, method, status, endpoint, ip_address, user_agent, params, body
         ) VALUES (
-            $1, $2, $3, $4, $5, $6, $7, $8, $9
+            $1, $2, $3, $4, $5, $6, $7, $8, $9, $10
         )
         RETURNING uuid
         `
 
 		return tx.QueryRowx(
 			query,
+			requestLog.ProjectUuid,
 			requestLog.UserUuid,
 			requestLog.APIKey,
 			requestLog.Method,
