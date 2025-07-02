@@ -18,7 +18,7 @@ import {
 } from "~/components/ui/tooltip";
 import { formatTimestamp } from "~/lib/utils";
 import { cn } from "~/lib/utils";
-import type { LogEntry } from "~/services/logs";
+import type { LogEntry, HttpMethod, HttpStatusCode } from "~/services/logs";
 import { useState, useEffect, useRef } from "react";
 import { Button } from "~/components/ui/button";
 
@@ -78,8 +78,26 @@ const CopyIndicator = ({ text, label }: { text: string; label: string }) => {
   );
 };
 
+// Type guard to check if value is an object
+const isObject = (value: unknown): value is Record<string, any> => {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+};
+
+// Helper function to safely parse JSON strings
+const parseJsonSafely = (value: string | Record<string, any>): Record<string, any> | null => {
+  if (isObject(value)) return value;
+  if (typeof value !== 'string') return null;
+  
+  try {
+    const parsed = JSON.parse(value);
+    return isObject(parsed) ? parsed : null;
+  } catch {
+    return null;
+  }
+};
+
 // Helper function to get status color and icon
-const getStatusInfo = (status: number) => {
+const getStatusInfo = (status: HttpStatusCode) => {
   if (status >= 200 && status < 300) {
     return { color: "text-green-600", bg: "bg-green-50", Icon: CheckCircle };
   } else if (status >= 400 && status < 500) {
@@ -102,7 +120,7 @@ export const createLogsColumns = (): ColumnDef<LogEntry>[] => [
       </div>
     ),
     cell: ({ row }) => {
-      const timestamp = row.getValue("createdAt") as string;
+      const timestamp = row.getValue<string>("createdAt");
       const { date, time, relativeTime } = formatTimestamp(timestamp);
       
       return (
@@ -125,7 +143,7 @@ export const createLogsColumns = (): ColumnDef<LogEntry>[] => [
     size: 80,
     header: "Method",
     cell: ({ row }) => {
-      const method = row.getValue("method") as string;
+      const method = row.getValue<HttpMethod>("method");
       return (
         <div className="-m-2 p-2">
           <Badge variant="outline" className="font-mono">
@@ -145,7 +163,7 @@ export const createLogsColumns = (): ColumnDef<LogEntry>[] => [
       </div>
     ),
     cell: ({ row }) => {
-      const endpoint = row.getValue("endpoint") as string;
+      const endpoint = row.getValue<string>("endpoint");
       
       return (
         <div className="-m-2 p-2">
@@ -159,7 +177,8 @@ export const createLogsColumns = (): ColumnDef<LogEntry>[] => [
     size: 80,
     header: "Status",
     cell: ({ row }) => {
-      const status = row.getValue("status") as number;
+      const status = row.getValue<HttpStatusCode>("status");
+      const statusInfo = getStatusInfo(status);
       
       return (
         <div className="-m-2 p-2">
@@ -188,7 +207,7 @@ export const createLogsColumns = (): ColumnDef<LogEntry>[] => [
       </div>
     ),
     cell: ({ row }) => {
-      const ip = row.getValue("ipAddress") as string;
+      const ip = row.getValue<string>("ipAddress");
       return <CopyIndicator text={ip} label="IP Address" />;
     },
   },
@@ -197,8 +216,8 @@ export const createLogsColumns = (): ColumnDef<LogEntry>[] => [
     size: 200,
     header: "User Agent",
     cell: ({ row }) => {
-      const userAgent = row.getValue("userAgent") as string;
-      const shortAgent = userAgent?.split(" ")[0] || userAgent;
+      const userAgent = row.getValue<string>("userAgent");
+      const shortAgent = userAgent?.split(" ")[0] || userAgent || "Unknown";
       
       return (
         <Tooltip>
@@ -210,7 +229,7 @@ export const createLogsColumns = (): ColumnDef<LogEntry>[] => [
             </div>
           </TooltipTrigger>
           <TooltipContent className="max-w-[500px]">
-            <div className="text-xs break-all">{userAgent}</div>
+            <div className="text-xs break-all">{userAgent || "No user agent"}</div>
           </TooltipContent>
         </Tooltip>
       );
@@ -221,8 +240,11 @@ export const createLogsColumns = (): ColumnDef<LogEntry>[] => [
     size: 100,
     header: "Details",
     cell: ({ row }) => {
-      const hasBody = row.original.body && Object.keys(row.original.body).length > 0;
-      const hasParams = row.original.params && Object.keys(row.original.params).length > 0;
+      const bodyData = parseJsonSafely(row.original.body);
+      const paramsData = parseJsonSafely(row.original.params);
+      
+      const hasBody = bodyData && Object.keys(bodyData).length > 0;
+      const hasParams = paramsData && Object.keys(paramsData).length > 0;
       
       if (!hasBody && !hasParams) {
         return (
@@ -247,7 +269,7 @@ export const createLogsColumns = (): ColumnDef<LogEntry>[] => [
               </TooltipTrigger>
               <TooltipContent className="max-w-[400px]">
                 <pre className="text-xs">
-                  {JSON.stringify(row.original.body, null, 2)}
+                  {JSON.stringify(bodyData, null, 2)}
                 </pre>
               </TooltipContent>
             </Tooltip>
@@ -261,7 +283,7 @@ export const createLogsColumns = (): ColumnDef<LogEntry>[] => [
               </TooltipTrigger>
               <TooltipContent className="max-w-[400px]">
                 <pre className="text-xs">
-                  {JSON.stringify(row.original.params, null, 2)}
+                  {JSON.stringify(paramsData, null, 2)}
                 </pre>
               </TooltipContent>
             </Tooltip>
