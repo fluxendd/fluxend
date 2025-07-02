@@ -6,35 +6,38 @@ import { RefreshButton } from "~/components/shared/refresh-button";
 import { Button } from "~/components/ui/button";
 import { RefreshCw, Pause, Play } from "lucide-react";
 import type { ProjectLayoutOutletContext } from "~/components/shared/project-layout";
-import { VirtualizedLogsTable } from "./virtualized-logs-table";
+import { LogsTable } from "./logs-table";
 import { createLogsColumns } from "./columns";
 import { LogFilters } from "./log-filters";
 import { LogDetailSheet } from "./log-detail-sheet";
 import type { LogsFilters, LogEntry } from "~/services/logs";
 
-const LOGS_PER_PAGE = 50;
+const LOGS_PER_PAGE = 100;
+const MAX_PAGES_IN_MEMORY = 5; // Keep maximum 5 pages (500 logs) in memory
 
 export default function Logs() {
-  const { projectDetails, services } = useOutletContext<ProjectLayoutOutletContext>();
+  const { projectDetails, services } =
+    useOutletContext<ProjectLayoutOutletContext>();
   const projectId = projectDetails?.uuid;
-  
+
   const columns = useMemo(() => createLogsColumns(), []);
 
   const [filters, setFilters] = useState<LogsFilters>({});
   const [autoRefresh, setAutoRefresh] = useState(false);
   const [refreshInterval] = useState(5000); // 5 seconds
-  const [sheetState, setSheetState] = useState<{ log: LogEntry | null; open: boolean }>({
-    log: null,
-    open: false
-  });
+  const [selectedLog, setSelectedLog] = useState<LogEntry | null>(null);
+  const [sheetOpen, setSheetOpen] = useState(false);
 
   // Build query filters
-  const queryFilters = useMemo(() => ({
-    ...filters,
-    limit: LOGS_PER_PAGE,
-    sort: 'createdAt',
-    order: 'desc',
-  }), [filters]);
+  const queryFilters = useMemo(
+    () => ({
+      ...filters,
+      limit: LOGS_PER_PAGE,
+      sort: "createdAt",
+      order: "desc" as const,
+    }),
+    [filters]
+  );
 
   const {
     data,
@@ -54,23 +57,51 @@ export default function Logs() {
       });
     },
     enabled: !!projectId,
-    refetchInterval: autoRefresh ? refreshInterval : false,
-    getNextPageParam: (lastPage, pages) => {
-      // If we got a full page of results, there might be more
-      if (lastPage.content.length === LOGS_PER_PAGE) {
-        return pages.length + 1;
+    refetchInterval: autoRefresh && !error ? refreshInterval : false,
+    retry: 1, // Only retry once on failure
+    getNextPageParam: (lastPage) => {
+      // Use the hasMore flag from the API response
+      if (lastPage.hasMore) {
+        // API returns current page number, so next page is current + 1
+        return lastPage.metadata.page + 1;
       }
       return undefined;
     },
     initialPageParam: 1,
-    // Keep existing data when refetching
+    // Prevent unnecessary refetches
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes (was cacheTime)
     refetchOnMount: false,
     refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    // Keep only MAX_PAGES_IN_MEMORY pages
+    maxPages: MAX_PAGES_IN_MEMORY,
   });
 
-  // Flatten all pages of data
-  const allLogs = useMemo(() => {
-    return data?.pages.flatMap(page => page.content) ?? [];
+  // Flatten pages data and get pagination info
+  const { allLogs, paginationInfo } = useMemo(() => {
+    if (!data?.pages || data.pages.length === 0) {
+      return { allLogs: [], paginationInfo: null };
+    }
+    
+    const logs = data.pages.flatMap((page) => page.content);
+    const lastPage = data.pages[data.pages.length - 1];
+    
+    // Calculate total logs displayed vs total available
+    const totalDisplayed = logs.length;
+    const totalAvailable = lastPage.metadata.total;
+    const currentPage = lastPage.metadata.page;
+    const totalPages = Math.ceil(totalAvailable / lastPage.metadata.limit);
+    
+    return {
+      allLogs: logs,
+      paginationInfo: {
+        totalDisplayed,
+        totalAvailable,
+        currentPage,
+        totalPages,
+      }
+    };
   }, [data]);
 
   const handleFilterChange = useCallback((newFilters: LogsFilters) => {
@@ -82,7 +113,8 @@ export default function Logs() {
   }, [refetch]);
 
   const handleRowClick = useCallback((row: LogEntry) => {
-    setSheetState({ log: row, open: true });
+    setSelectedLog(row);
+    setSheetOpen(true);
   }, []);
 
   if (error) {
@@ -105,11 +137,18 @@ export default function Logs() {
   }
 
   return (
-    <div className="flex flex-col h-full overflow-hidden">
+    <div className="absolute inset-0 flex flex-col">
       <div className="border-b px-4 py-2 flex-shrink-0">
         <div className="flex items-center justify-between">
-          <div className="text-base font-bold text-foreground h-[32px] flex flex-col justify-center">
-            Logs
+          <div className="flex items-center gap-4">
+            <div className="text-base font-bold text-foreground h-[32px] flex flex-col justify-center">
+              Logs
+            </div>
+            {paginationInfo && (
+              <div className="text-sm text-muted-foreground">
+                Showing {paginationInfo.totalDisplayed} of {paginationInfo.totalAvailable} logs
+              </div>
+            )}
           </div>
           <div className="flex items-center gap-2">
             <Button
@@ -141,32 +180,29 @@ export default function Logs() {
 
       <LogFilters onFiltersChange={handleFilterChange} />
 
-      <div className="flex-1 min-h-0 p-4 overflow-hidden">
+      <div className="flex-1 overflow-hidden p-4">
         {isLoading && allLogs.length === 0 ? (
-          <div className="rounded-lg border">
-            <div className="p-4">
-              <DataTableSkeleton columns={7} rows={8} />
-            </div>
+          <div className="rounded-lg border h-full overflow-hidden">
+            <DataTableSkeleton columns={7} rows={10} />
           </div>
         ) : (
-          <div className="rounded-lg border h-full">
-            <VirtualizedLogsTable
-              columns={columns}
-              data={allLogs}
-              onRowClick={handleRowClick}
-              fetchNextPage={fetchNextPage}
-              hasNextPage={hasNextPage ?? false}
-              isFetchingNextPage={isFetchingNextPage}
-              isLoading={isLoading}
-            />
-          </div>
+          <LogsTable
+            columns={columns}
+            data={allLogs}
+            onRowClick={handleRowClick}
+            fetchNextPage={fetchNextPage}
+            hasNextPage={hasNextPage ?? false}
+            isFetchingNextPage={isFetchingNextPage}
+            isLoading={isLoading}
+            error={error}
+          />
         )}
       </div>
 
       <LogDetailSheet
-        log={sheetState.log}
-        open={sheetState.open}
-        onOpenChange={(open) => setSheetState(prev => ({ ...prev, open }))}
+        log={selectedLog}
+        open={sheetOpen}
+        onOpenChange={setSheetOpen}
       />
     </div>
   );
