@@ -57,7 +57,7 @@ export default function Logs() {
       });
     },
     enabled: !!projectId,
-    refetchInterval: autoRefresh && !error ? refreshInterval : false,
+    refetchInterval: autoRefresh ? refreshInterval : false,
     retry: 1, // Only retry once on failure
     getNextPageParam: (lastPage) => {
       // Use the hasMore flag from the API response
