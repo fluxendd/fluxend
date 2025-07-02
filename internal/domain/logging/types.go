@@ -3,6 +3,7 @@ package logging
 import (
 	"github.com/google/uuid"
 	"github.com/guregu/null/v6"
+	"time"
 )
 
 type ListInput struct {
@@ -12,6 +13,6 @@ type ListInput struct {
 	Method      null.String   `query:"method"`
 	Endpoint    null.String   `query:"endpoint"`
 	IPAddress   null.String   `query:"ipAddress"`
-	DateStart   null.String   `query:"dateStart"`
-	DateEnd     null.String   `query:"dateEnd"`
+	DateStart   *time.Time    `query:"dateStart"`
+	DateEnd     *time.Time    `query:"dateEnd"`
 }

@@ -37,8 +37,8 @@ func NewLogHandler(injector *do.Injector) (*LogHandler, error) {
 // @Param method query string false "Filter by HTTP method"
 // @Param endpoint query string false "Filter by endpoint"
 // @Param ipAddress query string false "Filter by IP address"
-// @Param dateStart query string false "Filter by start date (YYYY-MM-DD) Requires dateEnd to be set"
-// @Param dateEnd query string false "Filter by end date (YYYY-MM-DD) Requires dateStart to be set"
+// @Param dateStart query string false "Filter by start date (MM-DD-YYYY)"
+// @Param dateEnd query string false "Filter by end date (MM-DD-YYYY)"
 //
 // @Param page query string false "Page number for pagination"
 // @Param limit query string false "Number of items per page"

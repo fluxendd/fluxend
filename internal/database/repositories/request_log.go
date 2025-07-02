@@ -56,6 +56,16 @@ func (r *RequestLogRepository) List(input *logging.ListInput, paginationParams s
 		params["ip_address"] = input.IPAddress
 	}
 
+	if input.DateStart != nil {
+		filters = append(filters, "created_at >= :date_start")
+		params["date_start"] = input.DateStart
+	}
+
+	if input.DateEnd != nil {
+		filters = append(filters, "created_at <= :date_end")
+		params["date_end"] = input.DateEnd
+	}
+
 	query := `SELECT * FROM fluxend.api_logs`
 	if len(filters) > 0 {
 		query += " WHERE " + strings.Join(filters, " AND ")
