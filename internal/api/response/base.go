@@ -1,9 +1,10 @@
 package response
 
 type Response struct {
-	Success bool        `json:"success"`
-	Errors  []string    `json:"errors,omitempty"`
-	Content interface{} `json:"content,omitempty"`
+	Success  bool        `json:"success"`
+	Errors   []string    `json:"errors,omitempty"`
+	Content  interface{} `json:"content,omitempty"`
+	Metadata interface{} `json:"metadata,omitempty"`
 }
 
 type BadRequestErrorResponse struct {

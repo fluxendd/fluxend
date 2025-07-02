@@ -11,19 +11,21 @@ import (
 	"github.com/rs/zerolog/log"
 	"io"
 	"net/http"
+	"regexp"
+	"strings"
 	"time"
 )
 
-var skippableEndpoints = []string{
-	"/admin/logs", // There is no need to be on logging page and seeing request poll logs
+var skippableEndpointPatterns = []*regexp.Regexp{
+	regexp.MustCompile(`^/projects/[a-f0-9-]{36}/logs$`),
 }
 
 func RequestLogger(requestLogRepo logging.Repository) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			// Skip logging for certain endpoints to avoid cluttering the logs
-			for _, endpoint := range skippableEndpoints {
-				if c.Request().URL.Path == endpoint {
+			for _, pattern := range skippableEndpointPatterns {
+				if pattern.MatchString(c.Request().URL.Path) {
 					return next(c)
 				}
 			}
@@ -35,16 +37,17 @@ func RequestLogger(requestLogRepo logging.Repository) echo.MiddlewareFunc {
 			authUserUUID, _ := auth.NewAuth(c).Uuid()
 
 			logEntry := logging.RequestLog{
-				UserUuid:  authUserUUID,
-				APIKey:    uuid.MustParse("00000000-0000-0000-0000-000000000000"), // TODO: implement API key parsing/reading later
-				Method:    request.Method,
-				Status:    c.Response().Status,
-				Endpoint:  request.URL.Path,
-				IPAddress: c.RealIP(),
-				UserAgent: request.UserAgent(),
-				Params:    request.URL.RawQuery,
-				Body:      sanitizeRequestBody(requestBody),
-				CreatedAt: time.Now(),
+				ProjectUuid: extractProjectUUID(c),
+				UserUuid:    authUserUUID,
+				APIKey:      uuid.MustParse("00000000-0000-0000-0000-000000000000"), // TODO: implement API key parsing/reading later
+				Method:      request.Method,
+				Status:      c.Response().Status,
+				Endpoint:    request.URL.Path,
+				IPAddress:   c.RealIP(),
+				UserAgent:   request.UserAgent(),
+				Params:      request.URL.RawQuery,
+				Body:        sanitizeRequestBody(requestBody),
+				CreatedAt:   time.Now(),
 			}
 
 			log.Info().
@@ -62,6 +65,40 @@ func RequestLogger(requestLogRepo logging.Repository) echo.MiddlewareFunc {
 			return res
 		}
 	}
+}
+
+// extractProjectUUID attempts to extract project UUID from either X-Project header or URL path
+func extractProjectUUID(c echo.Context) uuid.UUID {
+	// First, try to get project UUID from X-Project header
+	projectHeader := c.Request().Header.Get("X-Project")
+	if projectHeader != "" {
+		if projectUUID, err := uuid.Parse(projectHeader); err == nil {
+			return projectUUID
+		}
+		log.Warn().
+			Str("header_value", projectHeader).
+			Msg("Invalid UUID format in X-Project header")
+	}
+
+	// If not found in header, try to extract from URL path
+	// Look for /projects/:projectUUID pattern
+	path := c.Request().URL.Path
+
+	// Split path by "/" and look for "projects" segment followed by UUID
+	segments := strings.Split(path, "/")
+	for i, segment := range segments {
+		if segment == "projects" && i+1 < len(segments) {
+			if projectUUID, err := uuid.Parse(segments[i+1]); err == nil {
+				return projectUUID
+			}
+			log.Warn().
+				Str("path_segment", segments[i+1]).
+				Msg("Invalid UUID format in URL path")
+			break
+		}
+	}
+
+	return uuid.Nil
 }
 
 func readBody(r *http.Request) string {

@@ -3,6 +3,7 @@
 CREATE TABLE fluxend.api_logs (
     uuid UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_uuid UUID NULL,
+    project_uuid UUID NULL,
     api_key UUID NULL,
     method VARCHAR(10) NOT NULL,
     status INTEGER NOT NULL,

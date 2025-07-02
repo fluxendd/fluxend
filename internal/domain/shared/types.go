@@ -6,3 +6,9 @@ type PaginationParams struct {
 	Sort  string
 	Order string
 }
+
+type PaginationDetails struct {
+	Total int `json:"total"`
+	Page  int `json:"page"`
+	Limit int `json:"limit"`
+}

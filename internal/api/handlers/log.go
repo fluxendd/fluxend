@@ -6,6 +6,7 @@ import (
 	"fluxend/internal/api/response"
 	"fluxend/internal/domain/logging"
 	"fluxend/pkg/auth"
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
 )
@@ -36,18 +37,20 @@ func NewLogHandler(injector *do.Injector) (*LogHandler, error) {
 // @Param method query string false "Filter by HTTP method"
 // @Param endpoint query string false "Filter by endpoint"
 // @Param ipAddress query string false "Filter by IP address"
+// @Param dateStart query string false "Filter by start date (MM-DD-YYYY)"
+// @Param dateEnd query string false "Filter by end date (MM-DD-YYYY)"
 //
 // @Param page query string false "Page number for pagination"
 // @Param limit query string false "Number of items per page"
 // @Param sort query string false "Field to sort by"
 // @Param order query string false "Sort order (asc or desc)"
 //
-// @Success 200 {array} response.Response{content=[]logging.Response} "List of files"
+// @Success 200 {array} response.Response{content=[]logging.Response} "List of logs"
 // @Failure 400 {object} response.BadRequestErrorResponse "Bad request response"
 // @Failure 401 {object} response.UnauthorizedErrorResponse "Unauthorized response"
 // @Failure 500 {object} response.InternalServerErrorResponse "Internal server error response"
 //
-// @Router /admin/logs [get]
+// @Router /projects/{projectUUID}/logs [get]
 func (lh *LogHandler) List(c echo.Context) error {
 	var request loggingDto.ListRequest
 	if err := request.BindAndValidate(c); err != nil {
@@ -56,11 +59,18 @@ func (lh *LogHandler) List(c echo.Context) error {
 
 	authUser, _ := auth.NewAuth(c).User()
 
+	projectUUID, err := request.GetUUIDPathParam(c, "projectUUID", true)
+	if err != nil {
+		return response.BadRequestResponse(c, err.Error())
+	}
+
 	paginationParams := request.ExtractPaginationParams(c)
-	logs, err := lh.logService.List(loggingDto.ToLogListInput(&request), paginationParams, authUser)
+	input := loggingDto.ToLogListInput(&request, uuid.NullUUID{Valid: true, UUID: projectUUID})
+
+	logs, paginationDetails, err := lh.logService.List(input, paginationParams, authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}
 
-	return response.SuccessResponse(c, mapper.ToLoggingResourceCollection(logs))
+	return response.SuccessResponseWithPagination(c, mapper.ToLoggingResourceCollection(logs), paginationDetails)
 }

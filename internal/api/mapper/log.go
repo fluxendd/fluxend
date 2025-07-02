@@ -20,9 +20,9 @@ func ToLoggingResource(log *logDomain.RequestLog) logDto.Response {
 	}
 }
 
-func ToLoggingResourceCollection(files []logDomain.RequestLog) []logDto.Response {
-	resourceContainers := make([]logDto.Response, len(files))
-	for i, currentFile := range files {
+func ToLoggingResourceCollection(logs []logDomain.RequestLog) []logDto.Response {
+	resourceContainers := make([]logDto.Response, len(logs))
+	for i, currentFile := range logs {
 		resourceContainers[i] = ToLoggingResource(&currentFile)
 	}
 

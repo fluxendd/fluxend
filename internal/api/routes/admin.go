@@ -9,7 +9,6 @@ import (
 func RegisterAdminRoutes(e *echo.Echo, container *do.Injector, authMiddleware echo.MiddlewareFunc) {
 	settingHandler := do.MustInvoke[*handlers.SettingHandler](container)
 	healthHandler := do.MustInvoke[*handlers.HealthHandler](container)
-	logHandler := do.MustInvoke[*handlers.LogHandler](container)
 
 	adminGroup := e.Group("admin", authMiddleware)
 
@@ -20,7 +19,4 @@ func RegisterAdminRoutes(e *echo.Echo, container *do.Injector, authMiddleware ec
 
 	// Health check
 	adminGroup.GET("/health", healthHandler.Pulse)
-
-	// Logs
-	adminGroup.GET("/logs", logHandler.List)
 }
