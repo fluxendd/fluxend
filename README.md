@@ -8,7 +8,7 @@
 - 🧨 Ready for production on Day 1
   
 <div align="center">
-<a href="https://fluxend.app/">
+<a href="https://console.fluxend.app/">
   <img src="https://img.shields.io/badge/demo-FF6B6B?style=flat&logo=rocket&logoColor=white" alt="Demo" />
 </a>
 <a href="https://docs.fluxend.app/">
