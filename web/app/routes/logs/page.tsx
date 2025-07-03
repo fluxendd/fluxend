@@ -181,21 +181,32 @@ export default function Logs() {
       <LogFilters onFiltersChange={handleFilterChange} />
 
       <div className="flex-1 overflow-hidden p-4">
+        {/* Screen reader announcement */}
+        <div className="sr-only" aria-live="polite" aria-atomic="true">
+          Use arrow keys to navigate between log entries. Press Enter or Space to view details.
+        </div>
+        
         {isLoading && allLogs.length === 0 ? (
           <div className="rounded-lg border h-full overflow-hidden">
             <DataTableSkeleton columns={7} rows={10} />
           </div>
         ) : (
-          <LogsTable
-            columns={columns}
-            data={allLogs}
-            onRowClick={handleRowClick}
-            fetchNextPage={fetchNextPage}
-            hasNextPage={hasNextPage ?? false}
-            isFetchingNextPage={isFetchingNextPage}
-            isLoading={isLoading}
-            error={error}
-          />
+          <>
+            {/* Keyboard navigation hint */}
+            <div className="text-xs text-muted-foreground mb-2">
+              Tip: Use ↑↓ arrow keys to navigate, Enter to view details, Home/End to jump to first/last
+            </div>
+            <LogsTable
+              columns={columns}
+              data={allLogs}
+              onRowClick={handleRowClick}
+              fetchNextPage={fetchNextPage}
+              hasNextPage={hasNextPage ?? false}
+              isFetchingNextPage={isFetchingNextPage}
+              isLoading={isLoading}
+              error={error}
+            />
+          </>
         )}
       </div>
 
