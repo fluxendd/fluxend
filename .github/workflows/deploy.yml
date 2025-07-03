@@ -56,6 +56,10 @@ jobs:
 
       - name: Deploy to server
         run: |
+          # Create necessary directories and upload files
+          ssh -t ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} \
+          "mkdir -p ${{ secrets.REMOTE_PATH }}/web"
+          
           # Upload backend binary
           scp bin/fluxend ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:${{ secrets.REMOTE_PATH }}
           
@@ -65,7 +69,6 @@ jobs:
           # Restart containers
           ssh -t ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} \
           "cd /var/www/html/fluxend && \
-           git pull && \
            make pgr.destroy && \
            make down && \
            make up && \
