@@ -25,8 +25,8 @@ import { NeonCard } from "~/components/shared/neon-card";
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "Frontend for Fluxend" },
-    { name: "description", content: "Login to Fluxend" },
+    { title: "Sign Up - Fluxend" },
+    { name: "description", content: "Sign up for Fluxend" },
   ];
 }
 

@@ -11,6 +11,14 @@ import { createLogsColumns } from "./columns";
 import { LogFilters } from "./log-filters";
 import { LogDetailSheet } from "./log-detail-sheet";
 import type { LogsFilters, LogEntry } from "~/services/logs";
+import type { Route } from "./+types/page";
+
+export function meta({}: Route.MetaArgs) {
+  return [
+    { title: "Logs - Fluxend" },
+    { name: "description", content: "View and manage your application logs" },
+  ];
+}
 
 const LOGS_PER_PAGE = 100;
 const MAX_PAGES_IN_MEMORY = 5; // Keep maximum 5 pages (500 logs) in memory
