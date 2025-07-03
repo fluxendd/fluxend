@@ -52,7 +52,7 @@ const CopyIndicator = ({ text, label }: { text: string; label: string }) => {
   }, []);
   
   return (
-    <div className="group flex items-center gap-1 -m-2 p-2" data-no-row-click>
+    <div className="group flex items-center gap-1 -m-2 p-2">
       {label === "IP Address" ? (
         <Badge variant="outline" className="font-mono">
           {text}
@@ -67,6 +67,7 @@ const CopyIndicator = ({ text, label }: { text: string; label: string }) => {
         size="icon"
         className="h-6 w-6 p-0 transition-all duration-200 opacity-0 scale-75 group-hover:opacity-100 group-hover:scale-100"
         onClick={handleCopy}
+        data-no-row-click
       >
         {copied ? (
           <Check className="h-3 w-3 text-green-600" />
@@ -208,7 +209,11 @@ export const createLogsColumns = (): ColumnDef<LogEntry>[] => [
     ),
     cell: ({ row }) => {
       const ip = row.getValue<string>("ipAddress");
-      return <CopyIndicator text={ip} label="IP Address" />;
+      return (
+        <div className="-m-2 p-2">
+          <CopyIndicator text={ip} label="IP Address" />
+        </div>
+      );
     },
   },
   {

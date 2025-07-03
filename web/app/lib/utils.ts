@@ -41,13 +41,16 @@ export function formatTimestamp(timestamp: string): {
   relativeTime: string;
 } {
   try {
-    const date = new Date(timestamp);
+    // Parse the timestamp - if it doesn't end with 'Z', assume it's UTC and add it
+    const utcTimestamp = timestamp.endsWith('Z') ? timestamp : `${timestamp}Z`;
+    const date = new Date(utcTimestamp);
 
     // Check if date is valid
     if (isNaN(date.getTime())) {
       return { date: "Invalid date", time: "", fullDate: "", relativeTime: "" };
     }
 
+    // Now date is in user's local timezone
     // Format date as "Mon DD, YYYY"
     const monthNames = [
       "Jan",
@@ -67,7 +70,7 @@ export function formatTimestamp(timestamp: string): {
     const day = date.getDate();
     const year = date.getFullYear();
 
-    // Format time as "HH:MM AM/PM"
+    // Format time as "HH:MM AM/PM" in local timezone
     let hours = date.getHours();
     const minutes = date.getMinutes().toString().padStart(2, "0");
     const seconds = date.getSeconds().toString().padStart(2, "0");
@@ -105,7 +108,7 @@ export function formatTimestamp(timestamp: string): {
       relativeTime = "Just now";
     }
 
-    // Full ISO date for tooltip
+    // Full date for tooltip (in local timezone)
     const fullDate = `${year}-${(date.getMonth() + 1)
       .toString()
       .padStart(2, "0")}-${day.toString().padStart(2, "0")} ${hours

@@ -48,8 +48,6 @@ export interface LogsFilters {
   method?: string;
   endpoint?: string;
   ipAddress?: string;
-  dateStart?: string;
-  dateEnd?: string;
   startTime?: number; // Unix timestamp
   endTime?: number; // Unix timestamp
   page?: number;
@@ -70,9 +68,9 @@ export function createLogsService(authToken: string) {
     const params: Record<string, string | number | undefined> = filters ? {
       ...filters,
       limit: filters.limit || 100, // Default limit
-      // Convert numbers to strings for query params
-      ...(filters.startTime && { startTime: filters.startTime.toString() }),
-      ...(filters.endTime && { endTime: filters.endTime.toString() }),
+      // Keep startTime and endTime as numbers for the API
+      ...(filters.startTime && { startTime: filters.startTime }),
+      ...(filters.endTime && { endTime: filters.endTime }),
     } : {
       limit: 100,
     };
