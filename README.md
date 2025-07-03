@@ -44,14 +44,6 @@
 | 🔁 Zapier Integration *(soon)* | Automate anything with Fluxend events |
 | 📜 Audit Logs | Every action tracked. No black boxes. |
 
-## 📚 Learn How It Works
-You can refer to [Wiki](https://github.com/fluxend/fluxend/wiki) to understand how different Fluxend components work and how they can be integrated into your existing stack. These explain basic functionality and detailed inner workings backed by flowcharts. Some of the topics include:
-- [Dynamic REST endpoints](https://github.com/fluxend/fluxend/wiki/Dynamic-REST-Endpoints)
-- [Authentication](https://github.com/fluxend/fluxend/wiki/Authentication)
-- [Forms](https://github.com/fluxend/fluxend/wiki/Forms)
-- [Storage](https://github.com/fluxend/fluxend/wiki/Storage)
-- [Backup](https://github.com/fluxend/fluxend/wiki/Backups).
-
 ## 🤝 Want to Contribute?
 We're building the most badass backend tool in the open. If you:
 
