@@ -22,6 +22,13 @@ import type { ProjectLayoutOutletContext } from "~/components/shared/project-lay
 import { getAuthToken, getClientAuthToken } from "~/lib/auth";
 import { initializeServices } from "~/services";
 
+export function meta({}: Route.MetaArgs) {
+  return [
+    { title: "Dashboard - Fluxend" },
+    { name: "description", content: "Fluxend Dashboard" },
+  ];
+}
+
 function StatusCard({
   title,
   status,
