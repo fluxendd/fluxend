@@ -1,12 +1,6 @@
 # ⚡️ Fluxend
 **Fluxend** is a **blazing-fast, self-hosted BaaS** built with Go — no lock-in. Ship production-grade backends with full control over your data
 
-- ✅ Fully open-source
-- 🧠 Built with Go for max performance
-- 🔩 Dead-simple setup with Docker
-- 🧱 Modular & extendable
-- 🧨 Ready for production on Day 1
-  
 <div align="center">
 <a href="https://console.fluxend.app/">
   <img src="https://img.shields.io/badge/demo-FF6B6B?style=flat&logo=rocket&logoColor=white" alt="Demo" />
@@ -29,30 +23,34 @@
 </div>
 
 ## 🔥 Features
-| Feature | Description |
-|--------|-------------|
-| 🧑‍💼 Org & Role Management | Built-in multi-tenant support with fine-grained RBAC |
-| 🔐 Plug-and-Play Auth | OAuth, JWT, Magic Links — pick your poison |
-| 🔄 Realtime Database | Instant updates pushed to clients |
-| 🔥 Dynamic REST APIs | Define tables, get CRUD endpoints automagically |
-| 🧮 Row-Level Permissions | Control access down to the individual row |
-| 📥 Import CSV/XLSX as APIs | Upload a file → Get a full API. Done. |
-| ⚙️ DB Triggers & Hooks | Run server-side logic without extra services |
-| 🧾 Smart Forms | Auto-generated forms with validations and logic |
-| ☁️ Multi-Driver Storage | S3, Dropbox, Backblaze, or local FS — your call |
-| 🔍 Built-in Search Engine *(soon)* | Typesense/Sphinx powered indexing and search |
-| 🔁 Zapier Integration *(soon)* | Automate anything with Fluxend events |
-| 📜 Audit Logs | Every action tracked. No black boxes. |
+
+### Authentication & Access Control
+**🔐 Plug-and-Play Auth** — OAuth, JWT, Magic Links — pick your poison  
+**🧑‍💼 Org & Role Management** — Built-in multi-tenant support with fine-grained RBAC  
+**🧮 Row-Level Permissions** — Control access down to the individual row
+
+### Database & APIs
+**🔄 Realtime Database** — Instant updates pushed to clients  
+**🔥 Dynamic REST APIs** — Define tables, get CRUD endpoints automagically  
+**📥 Import CSV/XLSX as APIs** — Upload a file → Get a full API. Done.
+
+### Backend Logic
+**⚙️ DB Triggers & Hooks** — Run server-side logic without extra services  
+**🧾 Smart Forms** — Auto-generated forms with validations and logic  
+**📜 Audit Logs** — Every action tracked. No black boxes.
+
+### Storage & Integrations
+**☁️ Multi-Driver Storage** — S3, Dropbox, Backblaze, or local FS — your call  
+**🔍 Built-in Search Engine** *(coming soon)* — Typesense/Sphinx powered indexing and search  
+**🔁 Zapier Integration** *(coming soon)* — Automate anything with Fluxend events
 
 ## 🤝 Want to Contribute?
 We're building the most badass backend tool in the open. If you:
-
 - Hate boilerplate
 - Love Go
 - Want to build the next-gen BaaS engine
 - Want influence in an early-stage rocket
 
 Then you're in the right place.
-
 - 🛠 Check out [issues](https://github.com/fluxend/fluxend/issues)
 - 📬 Drop a PR. We'll review it FAST.
