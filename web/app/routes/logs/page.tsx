@@ -5,6 +5,7 @@ import { DataTableSkeleton } from "~/components/shared/data-table-skeleton";
 import { RefreshButton } from "~/components/shared/refresh-button";
 import { Button } from "~/components/ui/button";
 import { RefreshCw, Pause, Play } from "lucide-react";
+import { ErrorBoundary, LogsErrorFallback } from "~/components/shared/error-boundary";
 import type { ProjectLayoutOutletContext } from "~/components/shared/project-layout";
 import { LogsTable } from "./logs-table";
 import { createLogsColumns } from "./columns";
@@ -15,7 +16,7 @@ import type { LogsFilters, LogEntry } from "~/services/logs";
 const LOGS_PER_PAGE = 100;
 const MAX_PAGES_IN_MEMORY = 5; // Keep maximum 5 pages (500 logs) in memory
 
-export default function Logs() {
+function LogsContent() {
   const { projectDetails, services } =
     useOutletContext<ProjectLayoutOutletContext>();
   const projectId = projectDetails?.uuid;
@@ -186,16 +187,18 @@ export default function Logs() {
             <DataTableSkeleton columns={7} rows={10} />
           </div>
         ) : (
-          <LogsTable
-            columns={columns}
-            data={allLogs}
-            onRowClick={handleRowClick}
-            fetchNextPage={fetchNextPage}
-            hasNextPage={hasNextPage ?? false}
-            isFetchingNextPage={isFetchingNextPage}
-            isLoading={isLoading}
-            error={error}
-          />
+          <ErrorBoundary fallback={LogsErrorFallback}>
+            <LogsTable
+              columns={columns}
+              data={allLogs}
+              onRowClick={handleRowClick}
+              fetchNextPage={fetchNextPage}
+              hasNextPage={hasNextPage ?? false}
+              isFetchingNextPage={isFetchingNextPage}
+              isLoading={isLoading}
+              error={error}
+            />
+          </ErrorBoundary>
         )}
       </div>
 
@@ -205,5 +208,13 @@ export default function Logs() {
         onOpenChange={setSheetOpen}
       />
     </div>
+  );
+}
+
+export default function Logs() {
+  return (
+    <ErrorBoundary fallback={LogsErrorFallback}>
+      <LogsContent />
+    </ErrorBoundary>
   );
 }
