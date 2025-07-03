@@ -107,7 +107,9 @@ export function LogDetailSheet({ log, open, onOpenChange }: LogDetailSheetProps)
   if (!log) return null;
 
   const statusInfo = getStatusInfo(log.status);
-  const formattedDate = format(new Date(log.createdAt), "PPpp");
+  // Parse the timestamp - if it doesn't end with 'Z', assume it's UTC and add it
+  const utcTimestamp = log.createdAt.endsWith('Z') ? log.createdAt : `${log.createdAt}Z`;
+  const formattedDate = format(new Date(utcTimestamp), "PPpp");
   const parsedBody = parseJsonSafely(log.body);
   const parsedParams = parseJsonSafely(log.params);
 
