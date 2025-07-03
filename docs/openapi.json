@@ -4106,7 +4106,7 @@
             "get": {
                 "description": "Get all logs",
                 "tags": [
-                    "Logs"
+                    "Projects"
                 ],
                 "summary": "List logs",
                 "parameters": [
@@ -4114,6 +4114,15 @@
                         "description": "Bearer Token",
                         "name": "Authorization",
                         "in": "header",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "Project UUID",
+                        "name": "projectUUID",
+                        "in": "path",
                         "required": true,
                         "schema": {
                             "type": "string"
@@ -4176,14 +4185,6 @@
                         }
                     },
                     {
-                        "description": "Filter before a unix timestamp",
-                        "name": "endTime",
-                        "in": "query",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
                         "description": "Page number for pagination",
                         "name": "page",
                         "in": "query",
@@ -4222,25 +4223,22 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "allOf": [
-                                            {
-                                                "$ref": "#/components/schemas/response.Response"
-                                            },
-                                            {
-                                                "type": "object",
-                                                "properties": {
-                                                    "content": {
-                                                        "type": "array",
-                                                        "items": {
-                                                            "$ref": "#/components/schemas/logging.Response"
-                                                        }
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/response.Response"
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "content": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/components/schemas/logging.Response"
                                                     }
                                                 }
                                             }
-                                        ]
-                                    }
+                                        }
+                                    ]
                                 }
                             }
                         }

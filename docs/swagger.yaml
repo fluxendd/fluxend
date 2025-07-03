@@ -2856,6 +2856,11 @@ paths:
         name: Authorization
         required: true
         type: string
+      - description: Project UUID
+        in: path
+        name: projectUUID
+        required: true
+        type: string
       - description: Filter by user UUID
         in: query
         name: userUuid
@@ -2884,10 +2889,6 @@ paths:
         in: query
         name: endTime
         type: string
-      - description: Filter before a unix timestamp
-        in: query
-        name: endTime
-        type: string
       - description: Page number for pagination
         in: query
         name: page
@@ -2910,16 +2911,14 @@ paths:
         "200":
           description: List of logs
           schema:
-            items:
-              allOf:
-              - $ref: '#/definitions/response.Response'
-              - properties:
-                  content:
-                    items:
-                      $ref: '#/definitions/logging.Response'
-                    type: array
-                type: object
-            type: array
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                content:
+                  items:
+                    $ref: '#/definitions/logging.Response'
+                  type: array
+              type: object
         "400":
           description: Bad request response
           schema:
@@ -2934,7 +2933,7 @@ paths:
             $ref: '#/definitions/response.InternalServerErrorResponse'
       summary: List logs
       tags:
-      - Logs
+      - Projects
   /projects/{projectUUID}/stats:
     get:
       consumes:

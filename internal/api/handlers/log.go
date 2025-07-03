@@ -25,12 +25,13 @@ func NewLogHandler(injector *do.Injector) (*LogHandler, error) {
 //
 // @Summary List logs
 // @Description Get all logs
-// @Tags Logs
+// @Tags Projects
 //
 // @Accept json
 // @Produce json
 //
 // @Param Authorization header string true "Bearer Token"
+// @Param projectUUID path string true "Project UUID"
 //
 // @Param userUuid query string false "Filter by user UUID"
 // @Param status query string false "Filter by status"
@@ -39,14 +40,12 @@ func NewLogHandler(injector *do.Injector) (*LogHandler, error) {
 // @Param ipAddress query string false "Filter by IP address"
 // @Param startTime query string false "Filter after a unix timestamp"
 // @Param endTime query string false "Filter before a unix timestamp"
-// @Param endTime query string false "Filter before a unix timestamp"
-//
 // @Param page query string false "Page number for pagination"
 // @Param limit query string false "Number of items per page"
 // @Param sort query string false "Field to sort by"
 // @Param order query string false "Sort order (asc or desc)"
 //
-// @Success 200 {array} response.Response{content=[]logging.Response} "List of logs"
+// @Success 200 {object} response.Response{content=[]logging.Response} "List of logs"
 // @Failure 400 {object} response.BadRequestErrorResponse "Bad request response"
 // @Failure 401 {object} response.UnauthorizedErrorResponse "Unauthorized response"
 // @Failure 500 {object} response.InternalServerErrorResponse "Internal server error response"

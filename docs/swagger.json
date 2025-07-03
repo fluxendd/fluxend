@@ -3403,7 +3403,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Logs"
+                    "Projects"
                 ],
                 "summary": "List logs",
                 "parameters": [
@@ -3412,6 +3412,13 @@
                         "description": "Bearer Token",
                         "name": "Authorization",
                         "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Project UUID",
+                        "name": "projectUUID",
+                        "in": "path",
                         "required": true
                     },
                     {
@@ -3458,12 +3465,6 @@
                     },
                     {
                         "type": "string",
-                        "description": "Filter before a unix timestamp",
-                        "name": "endTime",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
                         "description": "Page number for pagination",
                         "name": "page",
                         "in": "query"
@@ -3491,25 +3492,22 @@
                     "200": {
                         "description": "List of logs",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "allOf": [
-                                    {
-                                        "$ref": "#/definitions/response.Response"
-                                    },
-                                    {
-                                        "type": "object",
-                                        "properties": {
-                                            "content": {
-                                                "type": "array",
-                                                "items": {
-                                                    "$ref": "#/definitions/logging.Response"
-                                                }
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "content": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/logging.Response"
                                             }
                                         }
                                     }
-                                ]
-                            }
+                                }
+                            ]
                         }
                     },
                     "400": {
