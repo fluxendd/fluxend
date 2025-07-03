@@ -57,14 +57,14 @@ jobs:
       - name: Deploy to server
         run: |          
           # Upload backend binary
-          scp bin/fluxend ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:${{ secrets.REMOTE_PATH }}/
+          scp bin/fluxend ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:${{ secrets.REMOTE_PATH }}/bin/
           
           # Upload frontend build
           scp -r web/build ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:${{ secrets.REMOTE_PATH }}/web/
           
           # Restart containers
           ssh ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} \
-          "cd /var/www/html/fluxend && \
+          "cd ${{ secrets.REMOTE_PATH }} && \
            make pgr.destroy && \
            make down && \
            make up && \
