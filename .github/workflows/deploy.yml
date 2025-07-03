@@ -55,11 +55,7 @@ jobs:
           ssh-keyscan -H ${{ secrets.REMOTE_HOST }} >> ~/.ssh/known_hosts
 
       - name: Deploy to server
-        run: |
-          # Create necessary directories
-          ssh ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} \
-          "mkdir -p ${{ secrets.REMOTE_PATH }}/web"
-          
+        run: |          
           # Upload backend binary
           scp bin/fluxend ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:${{ secrets.REMOTE_PATH }}/
           
