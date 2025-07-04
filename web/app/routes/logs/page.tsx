@@ -1,6 +1,6 @@
 import { useState, useCallback, useMemo, useEffect } from "react";
-import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { useOutletContext, useSearchParams } from "react-router";
+import { useBidirectionalLogs } from "./use-bidirectional-logs";
 import { DataTableSkeleton } from "~/components/shared/data-table-skeleton";
 import { RefreshButton } from "~/components/shared/refresh-button";
 import { Button } from "~/components/ui/button";
@@ -22,13 +22,13 @@ export function meta({}: Route.MetaArgs) {
 
 const LOGS_PER_PAGE = 100;
 const MAX_PAGES_IN_MEMORY = 5; // Keep maximum 5 pages (500 logs) in memory
+const MAX_LOGS_IN_MEMORY = LOGS_PER_PAGE * MAX_PAGES_IN_MEMORY;
 
 export default function Logs() {
   const { projectDetails, services } =
     useOutletContext<ProjectLayoutOutletContext>();
   const projectId = projectDetails?.uuid;
   const [searchParams, setSearchParams] = useSearchParams();
-  const queryClient = useQueryClient();
 
   const columns = useMemo(() => createLogsColumns(), []);
 
@@ -72,74 +72,27 @@ export default function Logs() {
   );
 
   const {
-    data,
+    allLogs,
     isLoading,
     isFetchingNextPage,
+    isFetchingPreviousPage,
     error,
     refetch,
     fetchNextPage,
+    fetchPreviousPage,
     hasNextPage,
-  } = useInfiniteQuery({
-    queryKey: ["logs", projectId, queryFilters],
-    queryFn: async ({ pageParam = 1 }) => {
-      if (!projectId) throw new Error("Project ID required");
-      return services.logs.getLogs(projectId, {
-        ...queryFilters,
-        page: pageParam,
-      });
-    },
+    hasPreviousPage,
+    paginationInfo,
+  } = useBidirectionalLogs({
+    projectId,
+    filters: queryFilters,
+    services,
     enabled: !!projectId,
-    refetchInterval: autoRefresh ? refreshInterval : false,
-    retry: 1, // Only retry once on failure
-    getNextPageParam: (lastPage) => {
-      // Use the hasMore flag from the API response
-      if (lastPage.hasMore) {
-        // API returns current page number, so next page is current + 1
-        return lastPage.metadata.page + 1;
-      }
-      return undefined;
-    },
-    initialPageParam: 1,
-    // Prevent unnecessary refetches
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 10 * 60 * 1000, // 10 minutes (was cacheTime)
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    // Keep only MAX_PAGES_IN_MEMORY pages
-    maxPages: MAX_PAGES_IN_MEMORY,
+    autoRefresh,
+    refreshInterval,
+    logsPerPage: LOGS_PER_PAGE,
+    maxPagesInMemory: MAX_PAGES_IN_MEMORY,
   });
-
-  // Flatten pages data and get pagination info
-  const { allLogs, paginationInfo } = useMemo(() => {
-    if (!data?.pages || data.pages.length === 0) {
-      return { allLogs: [], paginationInfo: null };
-    }
-    
-    const logs = data.pages.flatMap((page) => page.content);
-    const firstPage = data.pages[0];
-    const lastPage = data.pages[data.pages.length - 1];
-    
-    // Calculate total logs displayed vs total available
-    const totalDisplayed = logs.length;
-    const totalAvailable = lastPage.metadata.total;
-    const currentPage = lastPage.metadata.page;
-    const totalPages = Math.ceil(totalAvailable / lastPage.metadata.limit);
-    const firstPageInMemory = firstPage.metadata.page;
-    const hasRemovedPages = firstPageInMemory > 1;
-    
-    return {
-      allLogs: logs,
-      paginationInfo: {
-        totalDisplayed,
-        totalAvailable,
-        currentPage,
-        totalPages,
-        firstPageInMemory,
-        hasRemovedPages,
-      }
-    };
-  }, [data]);
 
   const handleFilterChange = useCallback((newFilters: LogsFilters) => {
     setFilters(newFilters);
@@ -241,15 +194,13 @@ export default function Logs() {
             data={allLogs}
             onRowClick={handleRowClick}
             fetchNextPage={fetchNextPage}
-            hasNextPage={hasNextPage ?? false}
+            hasNextPage={hasNextPage}
             isFetchingNextPage={isFetchingNextPage}
             isLoading={isLoading}
             error={error}
             hasRemovedPages={paginationInfo?.hasRemovedPages ?? false}
-            onReloadFromStart={() => {
-              // Clear the query cache and refetch from the beginning
-              queryClient.resetQueries({ queryKey: ["logs", projectId, queryFilters] });
-            }}
+            onLoadPreviousPage={fetchPreviousPage}
+            isFetchingPreviousPage={isFetchingPreviousPage}
           />
         )}
       </div>

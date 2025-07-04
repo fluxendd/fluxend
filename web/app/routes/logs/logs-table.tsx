@@ -16,7 +16,8 @@ interface LogsTableProps {
   isLoading: boolean;
   error?: Error | null;
   hasRemovedPages?: boolean;
-  onReloadFromStart?: () => void;
+  onLoadPreviousPage?: () => void;
+  isFetchingPreviousPage?: boolean;
 }
 
 // Memoized table row component
@@ -67,7 +68,8 @@ export function LogsTable({
   isLoading,
   error,
   hasRemovedPages,
-  onReloadFromStart,
+  onLoadPreviousPage,
+  isFetchingPreviousPage,
 }: LogsTableProps) {
 
   const table = useReactTable({
@@ -87,6 +89,13 @@ export function LogsTable({
       fetchNextPage();
     }
   }, [isFetchingNextPage, hasNextPage, fetchNextPage]);
+
+  // Handle load previous click
+  const handleLoadPrevious = useCallback(() => {
+    if (!isFetchingPreviousPage && onLoadPreviousPage) {
+      onLoadPreviousPage();
+    }
+  }, [isFetchingPreviousPage, onLoadPreviousPage]);
 
 
   if (isLoading && data.length === 0) {
@@ -127,16 +136,23 @@ export function LogsTable({
           </TableHeader>
           <TableBody>
               {/* Load previous logs row when pages have been removed */}
-              {hasRemovedPages && onReloadFromStart && (
+              {hasRemovedPages && onLoadPreviousPage && (
                 <tr>
                   <td colSpan={columns.length}>
                     <div 
                       className="py-4 flex items-center justify-center cursor-pointer hover:bg-muted/50 transition-colors bg-muted/20"
-                      onClick={onReloadFromStart}
+                      onClick={handleLoadPrevious}
                     >
-                      <span className="text-sm text-primary font-medium hover:underline">
-                        Load previous logs (earlier logs were removed from memory)
-                      </span>
+                      {isFetchingPreviousPage ? (
+                        <div className="flex items-center gap-2">
+                          <Loader2 className="h-4 w-4 animate-spin text-primary" />
+                          <span className="text-sm font-medium">Loading previous logs...</span>
+                        </div>
+                      ) : (
+                        <span className="text-sm text-primary font-medium hover:underline">
+                          Load previous logs
+                        </span>
+                      )}
                     </div>
                   </td>
                 </tr>
