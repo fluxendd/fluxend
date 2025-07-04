@@ -80,10 +80,7 @@ jobs:
           # Restart containers
           ssh ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} "\
             cd ${{ secrets.REMOTE_PATH }} && \
-            make pgr.destroy && \
-            make down && \
-            make up && \
-            docker-compose exec -T fluxend_api ./bin/fluxend udb.restart"
+            make restart.app" 
       
 
       - name: Deployment complete

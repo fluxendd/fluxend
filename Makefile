@@ -59,9 +59,23 @@ build.api: ## Rebuild the api container only
 build.binary: ## Build the binary for the app
 	@CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -trimpath -o bin/fluxend cmd/main.go
 
-up: ## Start the project
+restart.all: ## Restart all containers
 	@make down
 	@$(DOCKER_COMPOSE) up -d
+
+restart.api: ## Restart API container only
+	@$(DOCKER_COMPOSE) stop $${API_CONTAINER_NAME}
+	@$(DOCKER_COMPOSE) rm -f $${API_CONTAINER_NAME}
+	@$(DOCKER_COMPOSE) up -d $${API_CONTAINER_NAME}
+
+restart.frontend: ## Restart frontend container only
+	@$(DOCKER_COMPOSE) stop $${FRONTEND_CONTAINER_NAME}
+	@$(DOCKER_COMPOSE) rm -f $${FRONTEND_CONTAINER_NAME}
+	@$(DOCKER_COMPOSE) up -d $${FRONTEND_CONTAINER_NAME}
+
+restart.app: ## Restart both API and frontend containers only
+	@make restart.api
+	@make restart.frontend
 
 down: ## Stop the project
 	@$(DOCKER_COMPOSE) down
