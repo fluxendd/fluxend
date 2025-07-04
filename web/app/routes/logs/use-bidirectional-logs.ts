@@ -95,6 +95,11 @@ export function useBidirectionalLogs({
     try {
       const pageData = await fetchPage(nextPage);
       
+      // Validate the response
+      if (!pageData || !pageData.logs) {
+        throw new Error('Invalid page data received');
+      }
+      
       setLoadedPages(prev => {
         const newPages = new Map(prev);
         newPages.set(nextPage, pageData);
@@ -103,15 +108,25 @@ export function useBidirectionalLogs({
         if (newPages.size > maxPagesInMemory) {
           const oldestPage = Math.min(...loadedPageNumbers);
           newPages.delete(oldestPage);
-          setLoadedPageNumbers(prev => [...prev.filter(p => p !== oldestPage), nextPage].sort((a, b) => a - b));
-        } else {
-          setLoadedPageNumbers(prev => [...prev, nextPage].sort((a, b) => a - b));
         }
         
         return newPages;
       });
       
+      // Update page numbers after setLoadedPages
+      setLoadedPageNumbers(prev => {
+        if (prev.length >= maxPagesInMemory) {
+          const oldestPage = Math.min(...prev);
+          return [...prev.filter(p => p !== oldestPage), nextPage].sort((a, b) => a - b);
+        } else {
+          return [...prev, nextPage].sort((a, b) => a - b);
+        }
+      });
+      
       setTotalAvailable(pageData.metadata.total);
+    } catch (error) {
+      console.error('Failed to load next page:', error);
+      // Don't update state on error
     } finally {
       setIsLoadingPage(false);
     }
@@ -126,16 +141,14 @@ export function useBidirectionalLogs({
     
     const previousPage = firstPage - 1;
     
-    console.log('Loading previous page:', {
-      previousPage,
-      currentPages: loadedPageNumbers,
-      firstPage,
-      maxPages: maxPagesInMemory
-    });
-    
     setIsLoadingPage(true);
     try {
       const pageData = await fetchPage(previousPage);
+      
+      // Validate the response
+      if (!pageData || !pageData.logs) {
+        throw new Error('Invalid page data received');
+      }
       
       setLoadedPages(prev => {
         const newPages = new Map(prev);
@@ -145,13 +158,23 @@ export function useBidirectionalLogs({
         if (newPages.size > maxPagesInMemory) {
           const newestPage = Math.max(...loadedPageNumbers);
           newPages.delete(newestPage);
-          setLoadedPageNumbers(prev => [previousPage, ...prev.filter(p => p !== newestPage)].sort((a, b) => a - b));
-        } else {
-          setLoadedPageNumbers(prev => [previousPage, ...prev].sort((a, b) => a - b));
         }
         
         return newPages;
       });
+      
+      // Update page numbers after setLoadedPages
+      setLoadedPageNumbers(prev => {
+        if (prev.length >= maxPagesInMemory) {
+          const newestPage = Math.max(...prev);
+          return [previousPage, ...prev.filter(p => p !== newestPage)].sort((a, b) => a - b);
+        } else {
+          return [previousPage, ...prev].sort((a, b) => a - b);
+        }
+      });
+    } catch (error) {
+      console.error('Failed to load previous page:', error);
+      // Don't update state on error
     } finally {
       setIsLoadingPage(false);
     }
@@ -173,6 +196,9 @@ export function useBidirectionalLogs({
       }
       
       setLoadedPages(newPages);
+    } catch (error) {
+      console.error('Failed to refresh logs:', error);
+      // Keep existing data on refresh error
     } finally {
       setIsLoadingPage(false);
     }
@@ -184,10 +210,10 @@ export function useBidirectionalLogs({
     const sortedPages = Array.from(loadedPages.values()).sort((a, b) => a.page - b.page);
     const logs = sortedPages.flatMap(page => page.logs);
     
-    const totalPages = Math.ceil(totalAvailable / logsPerPage);
+    const totalPages = totalAvailable > 0 ? Math.ceil(totalAvailable / logsPerPage) : 0;
     const firstPage = loadedPageNumbers.length > 0 ? Math.min(...loadedPageNumbers) : 1;
     const lastPage = loadedPageNumbers.length > 0 ? Math.max(...loadedPageNumbers) : 1;
-    const hasNext = lastPage < totalPages;
+    const hasNext = totalPages > 0 && lastPage < totalPages;
     const hasPrevious = firstPage > 1;
     
     return {
