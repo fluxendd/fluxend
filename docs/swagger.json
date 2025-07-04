@@ -4305,95 +4305,6 @@
                     }
                 }
             },
-            "put": {
-                "description": "Alter the data type of existing columns in a specified table.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Columns"
-                ],
-                "summary": "Modify columns",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer Token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Project UUID",
-                        "name": "X-Project",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Full table name",
-                        "name": "fullTableName",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Updated column definitions",
-                        "name": "columns",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/database.CreateColumnRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Columns altered",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/response.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "content": {
-                                            "$ref": "#/definitions/database.ColumnResponse"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "Bad request response",
-                        "schema": {
-                            "$ref": "#/definitions/response.BadRequestErrorResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized response",
-                        "schema": {
-                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
-                        }
-                    },
-                    "422": {
-                        "description": "Unprocessable input response",
-                        "schema": {
-                            "$ref": "#/definitions/response.UnprocessableErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error response",
-                        "schema": {
-                            "$ref": "#/definitions/response.InternalServerErrorResponse"
-                        }
-                    }
-                }
-            },
             "post": {
                 "description": "Create new columns in a specified table within a project.",
                 "consumes": [
@@ -4441,6 +4352,95 @@
                 "responses": {
                     "201": {
                         "description": "Columns created",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "content": {
+                                            "$ref": "#/definitions/database.ColumnResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable input response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnprocessableErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "description": "Update the data type of existing columns in a specified table and remove any columns not included in the request.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Columns"
+                ],
+                "summary": "Modify columns",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Project UUID",
+                        "name": "X-Project",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Full table name",
+                        "name": "fullTableName",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Updated column definitions",
+                        "name": "columns",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/database.CreateColumnRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Columns altered",
                         "schema": {
                             "allOf": [
                                 {

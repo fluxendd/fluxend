@@ -104,10 +104,10 @@ func (ch *ColumnHandler) Store(c echo.Context) error {
 	return response.CreatedResponse(c, mapper.ToColumnResourceCollection(columns))
 }
 
-// Alter modifies column types in a table.
+// Update modifies column types in a table and deletes others
 //
 // @Summary Modify columns
-// @Description Alter the data type of existing columns in a specified table.
+// @Description Update the data type of existing columns in a specified table and remove any columns not included in the request.
 // @Tags Columns
 //
 // @Accept json
@@ -125,8 +125,8 @@ func (ch *ColumnHandler) Store(c echo.Context) error {
 // @Failure 401 {object} response.UnauthorizedErrorResponse "Unauthorized response"
 // @Failure 500 {object} response.InternalServerErrorResponse "Internal server error response"
 //
-// @Router /tables/{fullTableName}/columns [put]
-func (ch *ColumnHandler) Alter(c echo.Context) error {
+// @Router /tables/{fullTableName}/columns [patch]
+func (ch *ColumnHandler) Update(c echo.Context) error {
 	var request databaseDto.CreateColumnRequest
 	if err := request.BindAndValidate(c); err != nil {
 		return response.UnprocessableResponse(c, err)
