@@ -59,20 +59,32 @@ jobs:
           ssh-keyscan -H ${{ secrets.REMOTE_HOST }} >> ~/.ssh/known_hosts
 
       - name: Deploy to server
-        run: |          
+        run: |
+          # Prepare backups on server
+          ssh ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} "\
+            mkdir -p ${{ secrets.REMOTE_PATH }}/backups && \
+            mkdir -p ${{ secrets.REMOTE_PATH }}/web/backups && \
+            if [ -f ${{ secrets.REMOTE_PATH }}/bin/fluxend ]; then \
+              mv ${{ secrets.REMOTE_PATH }}/bin/fluxend ${{ secrets.REMOTE_PATH }}/backups/fluxend_$(date +%Y%m%d%H%M%S); \
+            fi && \
+            if [ -d ${{ secrets.REMOTE_PATH }}/web/build ]; then \
+              mv ${{ secrets.REMOTE_PATH }}/web/build ${{ secrets.REMOTE_PATH }}/backups/build_$(date +%Y%m%d%H%M%S); \
+            fi"
+
           # Upload backend binary
           scp bin/fluxend ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:${{ secrets.REMOTE_PATH }}/bin/
-          
+
           # Upload frontend build
           scp -r web/build ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:${{ secrets.REMOTE_PATH }}/web/
-          
+
           # Restart containers
-          ssh ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} \
-          "cd ${{ secrets.REMOTE_PATH }} && \
-           make pgr.destroy && \
-           make down && \
-           make up && \
-           docker-compose exec -T fluxend_api ./bin/fluxend udb.restart"
+          ssh ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} "\
+            cd ${{ secrets.REMOTE_PATH }} && \
+            make pgr.destroy && \
+            make down && \
+            make up && \
+            docker-compose exec -T fluxend_api ./bin/fluxend udb.restart"
+      
 
       - name: Deployment complete
         run: echo "✅ Deployment complete to ${{ secrets.REMOTE_HOST }}"
