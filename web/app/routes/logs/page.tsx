@@ -1,6 +1,6 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { useOutletContext } from "react-router";
+import { useOutletContext, useSearchParams } from "react-router";
 import { DataTableSkeleton } from "~/components/shared/data-table-skeleton";
 import { RefreshButton } from "~/components/shared/refresh-button";
 import { Button } from "~/components/ui/button";
@@ -11,6 +11,14 @@ import { createLogsColumns } from "./columns";
 import { LogFilters } from "./log-filters";
 import { LogDetailSheet } from "./log-detail-sheet";
 import type { LogsFilters, LogEntry } from "~/services/logs";
+import type { Route } from "./+types/page";
+
+export function meta({}: Route.MetaArgs) {
+  return [
+    { title: "Logs - Fluxend" },
+    { name: "description", content: "View and manage your application logs" },
+  ];
+}
 
 const LOGS_PER_PAGE = 100;
 const MAX_PAGES_IN_MEMORY = 5; // Keep maximum 5 pages (500 logs) in memory
@@ -19,10 +27,33 @@ export default function Logs() {
   const { projectDetails, services } =
     useOutletContext<ProjectLayoutOutletContext>();
   const projectId = projectDetails?.uuid;
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const columns = useMemo(() => createLogsColumns(), []);
 
-  const [filters, setFilters] = useState<LogsFilters>({});
+  // Initialize filters from URL search params
+  const getFiltersFromSearchParams = useCallback(() => {
+    const params: LogsFilters = {};
+    
+    // Get all filter parameters from URL
+    const method = searchParams.get('method');
+    const status = searchParams.get('status');
+    const ipAddress = searchParams.get('ipAddress');
+    const endpoint = searchParams.get('endpoint');
+    const startTime = searchParams.get('startTime');
+    const endTime = searchParams.get('endTime');
+    
+    if (method) params.method = method;
+    if (status) params.status = status;
+    if (ipAddress) params.ipAddress = ipAddress;
+    if (endpoint) params.endpoint = endpoint;
+    if (startTime) params.startTime = parseInt(startTime, 10);
+    if (endTime) params.endTime = parseInt(endTime, 10);
+    
+    return params;
+  }, [searchParams]);
+
+  const [filters, setFilters] = useState<LogsFilters>(getFiltersFromSearchParams());
   const [autoRefresh, setAutoRefresh] = useState(false);
   const [refreshInterval] = useState(5000); // 5 seconds
   const [selectedLog, setSelectedLog] = useState<LogEntry | null>(null);
@@ -106,7 +137,20 @@ export default function Logs() {
 
   const handleFilterChange = useCallback((newFilters: LogsFilters) => {
     setFilters(newFilters);
-  }, []);
+    
+    // Update URL search params
+    const newSearchParams = new URLSearchParams();
+    
+    // Add all non-empty filters to URL
+    if (newFilters.method) newSearchParams.set('method', newFilters.method);
+    if (newFilters.status) newSearchParams.set('status', newFilters.status);
+    if (newFilters.ipAddress) newSearchParams.set('ipAddress', newFilters.ipAddress);
+    if (newFilters.endpoint) newSearchParams.set('endpoint', newFilters.endpoint);
+    if (newFilters.startTime !== undefined) newSearchParams.set('startTime', newFilters.startTime.toString());
+    if (newFilters.endTime !== undefined) newSearchParams.set('endTime', newFilters.endTime.toString());
+    
+    setSearchParams(newSearchParams, { replace: true });
+  }, [setSearchParams]);
 
   const handleRefresh = useCallback(() => {
     refetch();
@@ -178,7 +222,7 @@ export default function Logs() {
         </div>
       </div>
 
-      <LogFilters onFiltersChange={handleFilterChange} />
+      <LogFilters onFiltersChange={handleFilterChange} initialFilters={getFiltersFromSearchParams()} />
 
       <div className="flex-1 overflow-hidden p-4">
         {isLoading && allLogs.length === 0 ? (

@@ -37,6 +37,7 @@ import type { LogsFilters } from "~/services/logs";
 
 interface LogFiltersProps {
   onFiltersChange: (filters: LogsFilters) => void;
+  initialFilters?: LogsFilters;
 }
 
 const HTTP_METHODS = ["GET", "POST", "PUT", "DELETE", "PATCH"] as const;
@@ -53,19 +54,19 @@ const STATUS_CODES = [
   { value: "503", label: "503 Service Unavailable" },
 ];
 
-export const LogFilters = memo(({ onFiltersChange }: LogFiltersProps) => {
+export const LogFilters = memo(({ onFiltersChange, initialFilters }: LogFiltersProps) => {
   // Get user's timezone
   const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
   
   // Initialize with today's date range in user's timezone
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  const initialDateRange: DateRange = { from: today, to: today };
   
   const [filters, setFilters] = useState<LogsFilters>(() => {
+    if (initialFilters && Object.keys(initialFilters).length > 0) {
+      return initialFilters;
+    }
     // Calculate initial filters with today's date
-    const todayFormatted = format(today, "MM-dd-yyyy");
-    
     // Calculate UTC timestamps for start and end of day in user's timezone
     const startOfDayLocal = new Date(today);
     startOfDayLocal.setHours(0, 0, 0, 0);
@@ -76,28 +77,48 @@ export const LogFilters = memo(({ onFiltersChange }: LogFiltersProps) => {
     const endOfDayUTC = fromZonedTime(endOfDayLocal, userTimezone);
     
     return {
-      dateStart: todayFormatted,
-      dateEnd: todayFormatted,
       startTime: Math.floor(startOfDayUTC.getTime() / 1000),
       endTime: Math.floor(endOfDayUTC.getTime() / 1000)
     };
   });
-  const [endpointSearch, setEndpointSearch] = useState("");
-  const [dateRange, setDateRange] = useState<DateRange | undefined>(initialDateRange);
-  const [startTime, setStartTime] = useState("00:00:00");
-  const [endTime, setEndTime] = useState("23:59:59");
+
+  // Initialize states from filters
+  const getInitialDateRange = (): DateRange | undefined => {
+    if (filters.startTime && filters.endTime) {
+      const fromDate = new Date(filters.startTime * 1000);
+      const toDate = new Date(filters.endTime * 1000);
+      // Set to start of day for date comparison
+      fromDate.setHours(0, 0, 0, 0);
+      toDate.setHours(0, 0, 0, 0);
+      return { from: fromDate, to: toDate };
+    }
+    return { from: today, to: today };
+  };
+  
+  const getTimeFromTimestamp = (timestamp: number | undefined, defaultTime: string): string => {
+    if (!timestamp) return defaultTime;
+    // Convert Unix timestamp to local date
+    // The timestamp is already in UTC, so creating a Date object will automatically convert to local timezone
+    const date = new Date(timestamp * 1000);
+    return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}:${date.getSeconds().toString().padStart(2, '0')}`;
+  };
+  
+  const [endpointSearch, setEndpointSearch] = useState(filters.endpoint || "");
+  const [dateRange, setDateRange] = useState<DateRange | undefined>(getInitialDateRange());
+  const [startTime, setStartTime] = useState(getTimeFromTimestamp(filters.startTime, "00:00:00"));
+  const [endTime, setEndTime] = useState(getTimeFromTimestamp(filters.endTime, "23:59:59"));
   const [popoverOpen, setPopoverOpen] = useState(false);
-  const [pendingDateRange, setPendingDateRange] = useState<DateRange | undefined>(initialDateRange);
-  const [pendingStartTime, setPendingStartTime] = useState("00:00:00");
-  const [pendingEndTime, setPendingEndTime] = useState("23:59:59");
+  const [pendingDateRange, setPendingDateRange] = useState<DateRange | undefined>(getInitialDateRange());
+  const [pendingStartTime, setPendingStartTime] = useState(getTimeFromTimestamp(filters.startTime, "00:00:00"));
+  const [pendingEndTime, setPendingEndTime] = useState(getTimeFromTimestamp(filters.endTime, "23:59:59"));
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const handleFilterChange = useCallback(
-    (key: keyof LogsFilters, value: string | undefined) => {
+    (key: keyof LogsFilters, value: string | number | undefined) => {
       setFilters((prevFilters) => {
         const newFilters = { ...prevFilters };
 
-        if (value) {
+        if (value !== undefined) {
           (newFilters as any)[key] = value;
         } else {
           delete newFilters[key];
@@ -125,7 +146,7 @@ export const LogFilters = memo(({ onFiltersChange }: LogFiltersProps) => {
     // Debounce search
     if (value) {
       searchTimeoutRef.current = setTimeout(() => {
-        handleFilterChange("endpoint", value);
+        handleFilterChange("endpoint", value || undefined);
       }, 500);
     } else {
       handleFilterChange("endpoint", undefined);
@@ -167,9 +188,6 @@ export const LogFilters = memo(({ onFiltersChange }: LogFiltersProps) => {
           const newFilters = { ...filters };
 
           if (pendingDateRange?.from) {
-            // Format date as MM-DD-YYYY for dateStart
-            newFilters.dateStart = format(pendingDateRange.from, "MM-dd-yyyy");
-
             // Calculate Unix timestamp for startTime
             // Create date in user's timezone then convert to UTC
             const [hours, minutes, seconds] = pendingStartTime.split(":").map(Number);
@@ -180,14 +198,10 @@ export const LogFilters = memo(({ onFiltersChange }: LogFiltersProps) => {
             const utcStartTime = fromZonedTime(startDateTime, userTimezone);
             newFilters.startTime = Math.floor(utcStartTime.getTime() / 1000);
           } else {
-            delete newFilters.dateStart;
             delete newFilters.startTime;
           }
 
           if (pendingDateRange?.to) {
-            // Format date as MM-DD-YYYY for dateEnd
-            newFilters.dateEnd = format(pendingDateRange.to, "MM-dd-yyyy");
-
             // Calculate Unix timestamp for endTime
             // Create date in user's timezone then convert to UTC
             const [hours, minutes, seconds] = pendingEndTime.split(":").map(Number);
@@ -198,7 +212,6 @@ export const LogFilters = memo(({ onFiltersChange }: LogFiltersProps) => {
             const utcEndTime = fromZonedTime(endDateTime, userTimezone);
             newFilters.endTime = Math.floor(utcEndTime.getTime() / 1000);
           } else {
-            delete newFilters.dateEnd;
             delete newFilters.endTime;
           }
 
@@ -226,7 +239,6 @@ export const LogFilters = memo(({ onFiltersChange }: LogFiltersProps) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const todayRange: DateRange = { from: today, to: today };
-    const todayFormatted = format(today, "MM-dd-yyyy");
     
     // Calculate UTC timestamps for start and end of day in user's timezone
     const startOfDayLocal = new Date(today);
@@ -238,8 +250,6 @@ export const LogFilters = memo(({ onFiltersChange }: LogFiltersProps) => {
     const endOfDayUTC = fromZonedTime(endOfDayLocal, userTimezone);
     
     const defaultFilters = {
-      dateStart: todayFormatted,
-      dateEnd: todayFormatted,
       startTime: Math.floor(startOfDayUTC.getTime() / 1000),
       endTime: Math.floor(endOfDayUTC.getTime() / 1000)
     };
@@ -262,28 +272,29 @@ export const LogFilters = memo(({ onFiltersChange }: LogFiltersProps) => {
 
   // Check if we have non-default filters
   const hasActiveFilters = useMemo(() => {
-    const filterKeys = Object.keys(filters);
-    // Only date filters with default values
-    if (filterKeys.length === 4 && 
-        filters.dateStart && 
-        filters.dateEnd && 
-        filters.startTime !== undefined && 
-        filters.endTime !== undefined &&
-        !filters.method &&
-        !filters.status &&
-        !filters.ipAddress &&
-        !filters.endpoint &&
-        !filters.userUuid) {
-      return false;
-    }
-    // Has other filters beyond just dates
-    return filterKeys.some(key => 
-      key !== 'dateStart' && 
-      key !== 'dateEnd' && 
-      key !== 'startTime' && 
-      key !== 'endTime'
-    );
-  }, [filters]);
+    // Calculate today's default time range for comparison
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const startOfDayLocal = new Date(today);
+    startOfDayLocal.setHours(0, 0, 0, 0);
+    const endOfDayLocal = new Date(today);
+    endOfDayLocal.setHours(23, 59, 59, 999);
+    
+    const startOfDayUTC = fromZonedTime(startOfDayLocal, userTimezone);
+    const endOfDayUTC = fromZonedTime(endOfDayLocal, userTimezone);
+    
+    const defaultStartTime = Math.floor(startOfDayUTC.getTime() / 1000);
+    const defaultEndTime = Math.floor(endOfDayUTC.getTime() / 1000);
+    
+    // Check if current filters differ from defaults
+    const hasNonDefaultTimeFilter = filters.startTime !== defaultStartTime || filters.endTime !== defaultEndTime;
+    
+    // Has other filters beyond just times
+    const hasOtherFilters = !!(filters.method || filters.status || filters.ipAddress || filters.endpoint || filters.userUuid);
+    
+    return hasNonDefaultTimeFilter || hasOtherFilters;
+  }, [filters, userTimezone]);
 
   return (
     <div className="flex flex-wrap items-center gap-2 px-4 py-2 border-b isolate">

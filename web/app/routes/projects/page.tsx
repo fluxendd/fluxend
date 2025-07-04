@@ -18,6 +18,13 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "~/components/ui/dialog";
+
+export function meta({}: Route.MetaArgs) {
+  return [
+    { title: "Projects - Fluxend" },
+    { name: "description", content: "Manage your Fluxend projects" },
+  ];
+}
 import { Label } from "~/components/ui/label";
 import { Input } from "~/components/ui/input";
 import { useEffect, useState } from "react";

@@ -18,6 +18,13 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "~/components/ui/alert-dialog";
+
+export function meta({}: Route.MetaArgs) {
+  return [
+    { title: "Tables - Fluxend" },
+    { name: "description", content: "Manage your database tables" },
+  ];
+}
 import { Button } from "~/components/ui/button";
 import { Trash2, Pencil } from "lucide-react";
 import { toast } from "sonner";
