@@ -15,6 +15,8 @@ interface LogsTableProps {
   isFetchingNextPage: boolean;
   isLoading: boolean;
   error?: Error | null;
+  hasRemovedPages?: boolean;
+  onReloadFromStart?: () => void;
 }
 
 // Memoized table row component
@@ -64,6 +66,8 @@ export function LogsTable({
   isFetchingNextPage,
   isLoading,
   error,
+  hasRemovedPages,
+  onReloadFromStart,
 }: LogsTableProps) {
 
   const table = useReactTable({
@@ -122,6 +126,21 @@ export function LogsTable({
             ))}
           </TableHeader>
           <TableBody>
+              {/* Load previous logs row when pages have been removed */}
+              {hasRemovedPages && onReloadFromStart && (
+                <tr>
+                  <td colSpan={columns.length}>
+                    <div 
+                      className="py-4 flex items-center justify-center cursor-pointer hover:bg-muted/50 transition-colors bg-muted/20"
+                      onClick={onReloadFromStart}
+                    >
+                      <span className="text-sm text-primary font-medium hover:underline">
+                        Load previous logs (earlier logs were removed from memory)
+                      </span>
+                    </div>
+                  </td>
+                </tr>
+              )}
               {rows.map((row) => (
                 <VirtualRow
                   key={row.id}

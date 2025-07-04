@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo, useEffect } from "react";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { useOutletContext, useSearchParams } from "react-router";
 import { DataTableSkeleton } from "~/components/shared/data-table-skeleton";
 import { RefreshButton } from "~/components/shared/refresh-button";
@@ -28,6 +28,7 @@ export default function Logs() {
     useOutletContext<ProjectLayoutOutletContext>();
   const projectId = projectDetails?.uuid;
   const [searchParams, setSearchParams] = useSearchParams();
+  const queryClient = useQueryClient();
 
   const columns = useMemo(() => createLogsColumns(), []);
 
@@ -116,6 +117,7 @@ export default function Logs() {
     }
     
     const logs = data.pages.flatMap((page) => page.content);
+    const firstPage = data.pages[0];
     const lastPage = data.pages[data.pages.length - 1];
     
     // Calculate total logs displayed vs total available
@@ -123,6 +125,8 @@ export default function Logs() {
     const totalAvailable = lastPage.metadata.total;
     const currentPage = lastPage.metadata.page;
     const totalPages = Math.ceil(totalAvailable / lastPage.metadata.limit);
+    const firstPageInMemory = firstPage.metadata.page;
+    const hasRemovedPages = firstPageInMemory > 1;
     
     return {
       allLogs: logs,
@@ -131,6 +135,8 @@ export default function Logs() {
         totalAvailable,
         currentPage,
         totalPages,
+        firstPageInMemory,
+        hasRemovedPages,
       }
     };
   }, [data]);
@@ -239,6 +245,11 @@ export default function Logs() {
             isFetchingNextPage={isFetchingNextPage}
             isLoading={isLoading}
             error={error}
+            hasRemovedPages={paginationInfo?.hasRemovedPages ?? false}
+            onReloadFromStart={() => {
+              // Clear the query cache and refetch from the beginning
+              queryClient.resetQueries({ queryKey: ["logs", projectId, queryFilters] });
+            }}
           />
         )}
       </div>
