@@ -33,7 +33,7 @@ export function useBidirectionalLogs({
   
   // Track loaded pages and their data
   const [loadedPages, setLoadedPages] = useState<Map<number, PageData>>(new Map());
-  const [pageWindow, setPageWindow] = useState({ start: 1, end: 1 });
+  const [loadedPageNumbers, setLoadedPageNumbers] = useState<number[]>([]);
   const [isLoadingPage, setIsLoadingPage] = useState(false);
   const [totalAvailable, setTotalAvailable] = useState(0);
 
@@ -43,7 +43,7 @@ export function useBidirectionalLogs({
   // Reset state when filters change
   useEffect(() => {
     setLoadedPages(new Map());
-    setPageWindow({ start: 1, end: 1 });
+    setLoadedPageNumbers([]);
   }, [filters]);
 
   // Function to fetch a specific page
@@ -71,11 +71,11 @@ export function useBidirectionalLogs({
     queryFn: async () => {
       const firstPage = await fetchPage(1);
       setLoadedPages(new Map([[1, firstPage]]));
-      setPageWindow({ start: 1, end: 1 });
+      setLoadedPageNumbers([1]);
       setTotalAvailable(firstPage.metadata.total);
       return firstPage;
     },
-    enabled: enabled && loadedPages.size === 0,
+    enabled: enabled && loadedPageNumbers.length === 0,
     refetchInterval: autoRefresh ? refreshInterval : false,
     staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
@@ -83,9 +83,10 @@ export function useBidirectionalLogs({
 
   // Load next page
   const loadNextPage = useCallback(async () => {
-    if (isLoadingPage) return;
+    if (isLoadingPage || loadedPageNumbers.length === 0) return;
     
-    const nextPage = pageWindow.end + 1;
+    const lastPage = Math.max(...loadedPageNumbers);
+    const nextPage = lastPage + 1;
     const totalPages = Math.ceil(totalAvailable / logsPerPage);
     
     if (nextPage > totalPages) return;
@@ -100,11 +101,11 @@ export function useBidirectionalLogs({
         
         // Remove oldest page if we exceed the limit
         if (newPages.size > maxPagesInMemory) {
-          const oldestPage = pageWindow.start;
+          const oldestPage = Math.min(...loadedPageNumbers);
           newPages.delete(oldestPage);
-          setPageWindow(w => ({ start: w.start + 1, end: nextPage }));
+          setLoadedPageNumbers(prev => [...prev.filter(p => p !== oldestPage), nextPage].sort((a, b) => a - b));
         } else {
-          setPageWindow(w => ({ ...w, end: nextPage }));
+          setLoadedPageNumbers(prev => [...prev, nextPage].sort((a, b) => a - b));
         }
         
         return newPages;
@@ -114,13 +115,23 @@ export function useBidirectionalLogs({
     } finally {
       setIsLoadingPage(false);
     }
-  }, [isLoadingPage, pageWindow, totalAvailable, logsPerPage, fetchPage, maxPagesInMemory]);
+  }, [isLoadingPage, loadedPageNumbers, totalAvailable, logsPerPage, fetchPage, maxPagesInMemory]);
 
   // Load previous page (when scrolling up after pages were removed)
   const loadPreviousPage = useCallback(async () => {
-    if (isLoadingPage || pageWindow.start === 1) return;
+    if (isLoadingPage || loadedPageNumbers.length === 0) return;
     
-    const previousPage = pageWindow.start - 1;
+    const firstPage = Math.min(...loadedPageNumbers);
+    if (firstPage === 1) return; // Already at the beginning
+    
+    const previousPage = firstPage - 1;
+    
+    console.log('Loading previous page:', {
+      previousPage,
+      currentPages: loadedPageNumbers,
+      firstPage,
+      maxPages: maxPagesInMemory
+    });
     
     setIsLoadingPage(true);
     try {
@@ -132,11 +143,11 @@ export function useBidirectionalLogs({
         
         // Remove newest page if we exceed the limit
         if (newPages.size > maxPagesInMemory) {
-          const newestPage = pageWindow.end;
+          const newestPage = Math.max(...loadedPageNumbers);
           newPages.delete(newestPage);
-          setPageWindow(w => ({ start: previousPage, end: w.end - 1 }));
+          setLoadedPageNumbers(prev => [previousPage, ...prev.filter(p => p !== newestPage)].sort((a, b) => a - b));
         } else {
-          setPageWindow(w => ({ start: previousPage, end: w.end }));
+          setLoadedPageNumbers(prev => [previousPage, ...prev].sort((a, b) => a - b));
         }
         
         return newPages;
@@ -144,28 +155,28 @@ export function useBidirectionalLogs({
     } finally {
       setIsLoadingPage(false);
     }
-  }, [isLoadingPage, pageWindow, fetchPage, maxPagesInMemory]);
+  }, [isLoadingPage, loadedPageNumbers, fetchPage, maxPagesInMemory]);
 
   // Refresh data (reload current window)
   const refresh = useCallback(async () => {
+    if (loadedPageNumbers.length === 0) return;
+    
     setIsLoadingPage(true);
     try {
       const newPages = new Map<number, PageData>();
       
-      // Reload all pages in current window
-      for (let page = pageWindow.start; page <= pageWindow.end; page++) {
+      // Reload all currently loaded pages
+      for (const page of loadedPageNumbers) {
         const pageData = await fetchPage(page);
         newPages.set(page, pageData);
-        if (page === pageWindow.end) {
-          setTotalAvailable(pageData.metadata.total);
-        }
+        setTotalAvailable(pageData.metadata.total);
       }
       
       setLoadedPages(newPages);
     } finally {
       setIsLoadingPage(false);
     }
-  }, [pageWindow, fetchPage]);
+  }, [loadedPageNumbers, fetchPage]);
 
   // Computed values
   const { allLogs, hasNextPage, hasPreviousPage, paginationInfo } = useMemo(() => {
@@ -174,8 +185,10 @@ export function useBidirectionalLogs({
     const logs = sortedPages.flatMap(page => page.logs);
     
     const totalPages = Math.ceil(totalAvailable / logsPerPage);
-    const hasNext = pageWindow.end < totalPages;
-    const hasPrevious = pageWindow.start > 1;
+    const firstPage = loadedPageNumbers.length > 0 ? Math.min(...loadedPageNumbers) : 1;
+    const lastPage = loadedPageNumbers.length > 0 ? Math.max(...loadedPageNumbers) : 1;
+    const hasNext = lastPage < totalPages;
+    const hasPrevious = firstPage > 1;
     
     return {
       allLogs: logs,
@@ -184,15 +197,15 @@ export function useBidirectionalLogs({
       paginationInfo: {
         totalDisplayed: logs.length,
         totalAvailable,
-        currentPage: pageWindow.end,
+        currentPage: lastPage,
         totalPages,
-        firstPageInMemory: pageWindow.start,
-        lastPageInMemory: pageWindow.end,
-        hasRemovedPages: pageWindow.start > 1,
+        firstPageInMemory: firstPage,
+        lastPageInMemory: lastPage,
+        hasRemovedPages: firstPage > 1,
         hasMorePages: hasNext,
       },
     };
-  }, [loadedPages, pageWindow, totalAvailable, logsPerPage]);
+  }, [loadedPages, loadedPageNumbers, totalAvailable, logsPerPage]);
 
   return {
     data: { pages: Array.from(loadedPages.values()) },
