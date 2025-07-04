@@ -87,6 +87,8 @@ services:
       - "traefik.http.routers.fluxend_frontend.rule=Host(`${CONSOLE_SUB_DOMAIN}.${BASE_DOMAIN}`)"
       - "traefik.http.routers.fluxend_frontend.entrypoints=web"
       - "traefik.http.services.fluxend_frontend.loadbalancer.server.port=3000"
+    volumes:
+      - ./web/build:/app/build
 
 networks:
   fluxend_network:

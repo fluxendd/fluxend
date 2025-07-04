@@ -33,6 +33,6 @@ FROM node:20-alpine
 WORKDIR /app
 COPY package.json yarn.lock ./
 COPY --from=production-dependencies-env /app/node_modules ./node_modules
-COPY --from=build-env /app/build ./build
+
 EXPOSE 3000
 CMD ["yarn", "start"]
