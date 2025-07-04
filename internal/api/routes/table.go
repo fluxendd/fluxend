@@ -25,7 +25,7 @@ func RegisterTableRoutes(e *echo.Echo, container *do.Injector, authMiddleware ec
 	// column routes
 	tablesGroup.GET("/:fullTableName/columns", columnController.List)
 	tablesGroup.POST("/:fullTableName/columns", columnController.Store)
-	tablesGroup.PUT("/:fullTableName/columns", columnController.Alter)
+	tablesGroup.PATCH("/:fullTableName/columns", columnController.Update)
 	tablesGroup.PUT("/:fullTableName/columns/:columnName", columnController.Rename)
 	tablesGroup.DELETE("/:fullTableName/columns/:columnName", columnController.Delete)
 

@@ -11,6 +11,7 @@ type ColumnRepository interface {
 	AlterMany(tableName string, fields []Column) error
 	Rename(tableName, oldColumnName, newColumnName string) error
 	Drop(tableName, columnName string) error
+	DropMany(tableName string, columns []Column) error
 	BuildColumnDefinition(column Column) string
 	BuildForeignKeyConstraint(tableName string, column Column) (string, bool)
 }

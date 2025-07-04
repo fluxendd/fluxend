@@ -3373,6 +3373,64 @@ paths:
       summary: List columns
       tags:
       - Columns
+    patch:
+      consumes:
+      - application/json
+      description: Update the data type of existing columns in a specified table and
+        remove any columns not included in the request.
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Project UUID
+        in: header
+        name: X-Project
+        required: true
+        type: string
+      - description: Full table name
+        in: path
+        name: fullTableName
+        required: true
+        type: string
+      - description: Updated column definitions
+        in: body
+        name: columns
+        required: true
+        schema:
+          $ref: '#/definitions/database.CreateColumnRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Columns altered
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                content:
+                  $ref: '#/definitions/database.ColumnResponse'
+              type: object
+        "400":
+          description: Bad request response
+          schema:
+            $ref: '#/definitions/response.BadRequestErrorResponse'
+        "401":
+          description: Unauthorized response
+          schema:
+            $ref: '#/definitions/response.UnauthorizedErrorResponse'
+        "422":
+          description: Unprocessable input response
+          schema:
+            $ref: '#/definitions/response.UnprocessableErrorResponse'
+        "500":
+          description: Internal server error response
+          schema:
+            $ref: '#/definitions/response.InternalServerErrorResponse'
+      summary: Modify columns
+      tags:
+      - Columns
     post:
       consumes:
       - application/json
@@ -3428,63 +3486,6 @@ paths:
           schema:
             $ref: '#/definitions/response.InternalServerErrorResponse'
       summary: Create column
-      tags:
-      - Columns
-    put:
-      consumes:
-      - application/json
-      description: Alter the data type of existing columns in a specified table.
-      parameters:
-      - description: Bearer Token
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      - description: Project UUID
-        in: header
-        name: X-Project
-        required: true
-        type: string
-      - description: Full table name
-        in: path
-        name: fullTableName
-        required: true
-        type: string
-      - description: Updated column definitions
-        in: body
-        name: columns
-        required: true
-        schema:
-          $ref: '#/definitions/database.CreateColumnRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Columns altered
-          schema:
-            allOf:
-            - $ref: '#/definitions/response.Response'
-            - properties:
-                content:
-                  $ref: '#/definitions/database.ColumnResponse'
-              type: object
-        "400":
-          description: Bad request response
-          schema:
-            $ref: '#/definitions/response.BadRequestErrorResponse'
-        "401":
-          description: Unauthorized response
-          schema:
-            $ref: '#/definitions/response.UnauthorizedErrorResponse'
-        "422":
-          description: Unprocessable input response
-          schema:
-            $ref: '#/definitions/response.UnprocessableErrorResponse'
-        "500":
-          description: Internal server error response
-          schema:
-            $ref: '#/definitions/response.InternalServerErrorResponse'
-      summary: Modify columns
       tags:
       - Columns
   /tables/{fullTableName}/columns/{columnName}:

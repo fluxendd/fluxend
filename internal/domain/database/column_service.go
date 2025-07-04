@@ -13,7 +13,7 @@ import (
 type ColumnService interface {
 	List(fullTableName string, projectUUID uuid.UUID, authUser auth.User) ([]Column, error)
 	CreateMany(fullTableName string, request CreateColumnInput, authUser auth.User) ([]Column, error)
-	AlterMany(fullTableName string, request CreateColumnInput, authUser auth.User) ([]Column, error)
+	Update(fullTableName string, request CreateColumnInput, authUser auth.User) ([]Column, error)
 	Rename(columnName, fullTableName string, request RenameColumnInput, authUser auth.User) ([]Column, error)
 	Delete(columnName, fullTableName string, projectUUID uuid.UUID, authUser auth.User) (bool, error)
 }
@@ -112,7 +112,7 @@ func (s *ColumnServiceImpl) CreateMany(fullTableName string, request CreateColum
 	return clientColumnRepo.List(table.Name)
 }
 
-func (s *ColumnServiceImpl) AlterMany(fullTableName string, request CreateColumnInput, authUser auth.User) ([]Column, error) {
+func (s *ColumnServiceImpl) Update(fullTableName string, request CreateColumnInput, authUser auth.User) ([]Column, error) {
 	fetchedProject, err := s.projectRepo.GetByUUID(request.ProjectUUID)
 	if err != nil {
 		return []Column{}, err
@@ -147,8 +147,31 @@ func (s *ColumnServiceImpl) AlterMany(fullTableName string, request CreateColumn
 		return []Column{}, errors.NewNotFoundError("column.error.someNotFound")
 	}
 
+	existingColumns, err := clientColumnRepo.List(table.Name)
+	if err != nil {
+		return []Column{}, err
+	}
+
+	requestColumnsMap := make(map[string]Column)
+	columnsToDelete := make([]Column, 0, len(existingColumns))
+	for _, column := range request.Columns {
+		requestColumnsMap[column.Name] = column
+	}
+
+	for _, existingColumn := range existingColumns {
+		if _, exists := requestColumnsMap[existingColumn.Name]; !exists {
+			columnsToDelete = append(columnsToDelete, existingColumn)
+		}
+	}
+
 	if err = clientColumnRepo.AlterMany(table.Name, request.Columns); err != nil {
 		return []Column{}, err
+	}
+
+	if len(columnsToDelete) > 0 {
+		if err = clientColumnRepo.DropMany(table.Name, columnsToDelete); err != nil {
+			return []Column{}, err
+		}
 	}
 
 	return clientColumnRepo.List(table.Name)

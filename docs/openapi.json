@@ -5200,12 +5200,12 @@
                     }
                 }
             },
-            "put": {
-                "description": "Alter the data type of existing columns in a specified table.",
+            "post": {
+                "description": "Create new columns in a specified table within a project.",
                 "tags": [
                     "Columns"
                 ],
-                "summary": "Modify columns",
+                "summary": "Create column",
                 "parameters": [
                     {
                         "description": "Bearer Token",
@@ -5243,12 +5243,12 @@
                             }
                         }
                     },
-                    "description": "Updated column definitions",
+                    "description": "Columns JSON",
                     "required": true
                 },
                 "responses": {
-                    "200": {
-                        "description": "Columns altered",
+                    "201": {
+                        "description": "Columns created",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -5311,12 +5311,12 @@
                     }
                 }
             },
-            "post": {
-                "description": "Create new columns in a specified table within a project.",
+            "patch": {
+                "description": "Update the data type of existing columns in a specified table and remove any columns not included in the request.",
                 "tags": [
                     "Columns"
                 ],
-                "summary": "Create column",
+                "summary": "Modify columns",
                 "parameters": [
                     {
                         "description": "Bearer Token",
@@ -5354,12 +5354,12 @@
                             }
                         }
                     },
-                    "description": "Columns JSON",
+                    "description": "Updated column definitions",
                     "required": true
                 },
                 "responses": {
-                    "201": {
-                        "description": "Columns created",
+                    "200": {
+                        "description": "Columns altered",
                         "content": {
                             "application/json": {
                                 "schema": {
