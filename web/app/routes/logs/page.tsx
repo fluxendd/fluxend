@@ -147,9 +147,9 @@ export default function Logs() {
             <div className="text-base font-bold text-foreground h-[32px] flex flex-col justify-center">
               Logs
             </div>
-            {paginationInfo && (
+            {paginationInfo && paginationInfo.totalDisplayed > 0 && (
               <div className="text-sm text-muted-foreground">
-                Showing {paginationInfo.totalDisplayed} of {paginationInfo.totalAvailable} logs
+                Showing {paginationInfo.firstLogNumber}-{paginationInfo.lastLogNumber} of {paginationInfo.totalAvailable} logs
               </div>
             )}
           </div>

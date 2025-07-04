@@ -216,6 +216,10 @@ export function useBidirectionalLogs({
     const hasNext = totalPages > 0 && lastPage < totalPages;
     const hasPrevious = firstPage > 1;
     
+    // Calculate the range of logs being displayed
+    const firstLogNumber = firstPage > 0 ? ((firstPage - 1) * logsPerPage) + 1 : 0;
+    const lastLogNumber = firstPage > 0 ? firstLogNumber + logs.length - 1 : 0;
+    
     return {
       allLogs: logs,
       hasNextPage: hasNext,
@@ -229,6 +233,8 @@ export function useBidirectionalLogs({
         lastPageInMemory: lastPage,
         hasRemovedPages: firstPage > 1,
         hasMorePages: hasNext,
+        firstLogNumber,
+        lastLogNumber,
       },
     };
   }, [loadedPages, loadedPageNumbers, totalAvailable, logsPerPage]);
