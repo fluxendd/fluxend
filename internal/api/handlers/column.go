@@ -139,7 +139,7 @@ func (ch *ColumnHandler) Alter(c echo.Context) error {
 		return response.BadRequestResponse(c, "Table name is required")
 	}
 
-	columns, err := ch.columnService.AlterMany(fullTableName, databaseDto.ToCreateColumnInput(request), authUser)
+	columns, err := ch.columnService.Update(fullTableName, databaseDto.ToCreateColumnInput(request), authUser)
 	if err != nil {
 		return response.ErrorResponse(c, err)
 	}

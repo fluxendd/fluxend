@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/lib/pq"
 	"github.com/samber/do"
+	"strings"
 )
 
 type ColumnRepository struct {
@@ -123,8 +124,8 @@ func (r *ColumnRepository) AlterOne(tableName string, columns []database.Column)
 			query := fmt.Sprintf(
 				"ALTER TABLE %s ALTER COLUMN %s TYPE %s",
 				tableName,
-				pq.QuoteIdentifier(column.Name),
-				pq.QuoteIdentifier(column.Type),
+				column.Name,
+				column.Type,
 			)
 
 			if _, err := tx.Exec(query); err != nil {
@@ -160,6 +161,25 @@ func (r *ColumnRepository) Rename(tableName, oldColumnName, newColumnName string
 func (r *ColumnRepository) Drop(tableName, columnName string) error {
 	query := fmt.Sprintf("ALTER TABLE %s DROP COLUMN %s", tableName, pq.QuoteIdentifier(columnName))
 	_, err := r.db.ExecWithRowsAffected(query)
+	return err
+}
+
+func (r *ColumnRepository) DropMany(tableName string, columns []database.Column) error {
+	if len(columns) == 0 {
+		return fmt.Errorf("no columns specified")
+	}
+
+	var drops []string
+	for _, column := range columns {
+		drops = append(drops, fmt.Sprintf("DROP COLUMN %s", pq.QuoteIdentifier(column.Name)))
+	}
+
+	query := fmt.Sprintf("ALTER TABLE %s %s",
+		pq.QuoteIdentifier(tableName),
+		strings.Join(drops, ", "))
+
+	_, err := r.db.ExecWithRowsAffected(query)
+
 	return err
 }
 
