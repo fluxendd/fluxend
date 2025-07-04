@@ -135,7 +135,7 @@ export default function TableSidebar({
       <div className="flex h-screen w-full overflow-hidden">
         <Sidebar
           collapsible="none"
-          className="hidden md:flex h-full flex-shrink-0"
+          className="hidden md:flex h-full flex-shrink-0 border-r"
           variant="inset"
         >
           <SidebarHeader className="gap-3 border-b p-2 mb-2 flex-shrink-0">
