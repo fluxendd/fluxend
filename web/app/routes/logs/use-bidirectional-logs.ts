@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import type { LogsFilters, LogEntry, LogsResponse } from "~/services/logs";
 
@@ -40,6 +40,12 @@ export function useBidirectionalLogs({
   // Query key for caching
   const queryKey = ["logs", projectId, filters];
 
+  // Reset state when filters change
+  useEffect(() => {
+    setLoadedPages(new Map());
+    setPageWindow({ start: 1, end: 1 });
+  }, [filters]);
+
   // Function to fetch a specific page
   const fetchPage = useCallback(async (pageNum: number): Promise<PageData> => {
     if (!projectId) throw new Error("Project ID required");
@@ -69,7 +75,7 @@ export function useBidirectionalLogs({
       setTotalAvailable(firstPage.metadata.total);
       return firstPage;
     },
-    enabled: enabled && !loadedPages.has(1),
+    enabled: enabled && loadedPages.size === 0,
     refetchInterval: autoRefresh ? refreshInterval : false,
     staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
@@ -130,7 +136,7 @@ export function useBidirectionalLogs({
           newPages.delete(newestPage);
           setPageWindow(w => ({ start: previousPage, end: w.end - 1 }));
         } else {
-          setPageWindow(w => ({ start: previousPage, ...w }));
+          setPageWindow(w => ({ start: previousPage, end: w.end }));
         }
         
         return newPages;
