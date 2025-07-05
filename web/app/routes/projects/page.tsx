@@ -76,13 +76,13 @@ const CreateProjectDialog = ({ children }: { children: React.ReactNode }) => {
           <DialogHeader>
             <DialogTitle>Create Project</DialogTitle>
             <DialogDescription>
-              Enter a project name to create a new project.
+              Enter a name for your project
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4">
             <div className="grid gap-3">
               <Label htmlFor="name-1">Name</Label>
-              <Input id="name-1" name="name" placeholder="My New Idea" />
+              <Input id="name-1" name="name" placeholder="Dragonstone" />
             </div>
           </div>
           <DialogFooter>

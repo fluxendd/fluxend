@@ -130,6 +130,9 @@ export function TableForm({
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Table Name</FormLabel>
+                <CardDescription>
+                  Table name cannot be changed once created
+                </CardDescription>
                 <FormControl>
                   <Input
                     placeholder="e.g., users, products, orders"

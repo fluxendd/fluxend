@@ -29,7 +29,7 @@ const ProjectCard = ({ project, onClick }: ProjectCardProps) => {
     >
       <div className="flex flex-col mb-3 gap-1">
         <div className="flex items-center justify-between">
-          <h3 className="text-md font-semibold text-gray-900 dark:text-gray-100 group-hover:text-blue-600 transition-colors capitalize">
+          <h3 className="text-md font-semibold text-gray-900 dark:text-gray-100 group-hover:text-amber-500 transition-colors capitalize">
             {project.name}
           </h3>
           <ChevronRight className="h-4 w-4" />
