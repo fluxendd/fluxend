@@ -25,8 +25,10 @@ export default [
         route(":tableId", "./routes/tables/page.tsx"),
       ]),
       routeFolder("functions", "./routes/functions/"),
-      routeFolder("storage", "./routes/storage/"),
       routeFolder("logs", "./routes/logs/"),
+      routeFolder("storage", "./routes/storage/"),
+      routeFolder("forms", "./routes/forms/"),
+      routeFolder("backups", "./routes/backups/"),
     ]),
   ]),
 ] satisfies RouteConfig;

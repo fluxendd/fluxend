@@ -17,6 +17,14 @@ import {
   Settings,
   Settings2,
   Sparkles,
+  Cloudy,
+  CloudUpload,
+  Send,
+  Captions,
+  SendHorizontal,
+  MessageCircleCode,
+  MessageCircleCodeIcon,
+  DatabaseBackupIcon, LucideDatabaseBackup,
 } from "lucide-react";
 import { href, NavLink, useOutletContext, type Params } from "react-router";
 
@@ -54,33 +62,12 @@ type AppSidebarItem = {
 };
 
 const items = [
-  {
-    title: "Dashboard",
-    url: "dashboard",
-    Icon: LayoutDashboard,
-  },
-  {
-    title: "Tables",
-    url: "tables",
-    Icon: Database,
-    isActive: true,
-  },
-  // {
-  //   title: "Functions",
-  //   url: "functions",
-  //   Icon: Parentheses,
-  // },
-  // { title: "Storage", url: "storage", Icon: PackageOpen },
-  {
-    title: "Logs",
-    url: "logs",
-    Icon: ChartSpline,
-  },
-  // {
-  //   title: "Settings",
-  //   url: "settings",
-  //   Icon: Settings2,
-  // },
+  { title: "Dashboard", url: "dashboard", Icon: LayoutDashboard },
+  { title: "Tables", url: "tables", Icon: Database, isActive: true },
+  { title: "Logs", url: "logs", Icon: ChartSpline },
+  { title: "Storage", url: "storage", Icon: CloudUpload },
+  { title: "Forms", url: "forms", Icon: MessageCircleCodeIcon },
+  { title: "Backups", url: "backups", Icon: LucideDatabaseBackup },
 ] as const satisfies readonly AppSidebarItem[];
 
 type ProjectSidebarProps = {
