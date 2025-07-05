@@ -6,6 +6,7 @@ import (
 	"fluxend/internal/domain/auth"
 	"fluxend/internal/domain/database"
 	"fluxend/internal/domain/project"
+	"fluxend/pkg"
 	flxErrs "fluxend/pkg/errors"
 	"fmt"
 	"github.com/google/uuid"
@@ -331,7 +332,7 @@ func (s *ServiceImpl) createGetCollectionOperation(tableName string, columns []d
 	operation := &Operation{
 		Summary:     "Get " + tableName,
 		Description: "Retrieve records from " + tableName,
-		OperationID: "get" + strings.Title(tableName),
+		OperationID: "get" + pkg.TitleCase(tableName),
 		Tags:        []string{tableName},
 		Parameters:  s.createBaseParameters(),
 		Responses:   s.createCollectionResponses(tableName),
@@ -405,7 +406,7 @@ func (s *ServiceImpl) createPostCollectionOperation(tableName string) *Operation
 	return &Operation{
 		Summary:     "Create " + tableName,
 		Description: "Create new record in " + tableName,
-		OperationID: "create" + strings.Title(tableName),
+		OperationID: "create" + pkg.TitleCase(tableName),
 		Tags:        []string{tableName},
 		RequestBody: s.createRequestBody(tableName),
 		Responses:   s.createSingleItemResponses(tableName, "201", "Created"),
@@ -493,7 +494,7 @@ func (s *ServiceImpl) createGetSingleOperation(tableName string, parameters []Pa
 	return &Operation{
 		Summary:     "Get single " + tableName,
 		Description: "Retrieve a single record from " + tableName,
-		OperationID: "get" + strings.Title(tableName) + "ById",
+		OperationID: "get" + pkg.TitleCase(tableName) + "ById",
 		Tags:        []string{tableName},
 		Parameters:  parameters,
 		Responses:   s.createSingleItemResponses(tableName, "200", "Success"),
@@ -504,7 +505,7 @@ func (s *ServiceImpl) createPatchSingleOperation(tableName string, parameters []
 	return &Operation{
 		Summary:     "Update " + tableName,
 		Description: "Update a record in " + tableName,
-		OperationID: "update" + strings.Title(tableName),
+		OperationID: "update" + pkg.TitleCase(tableName),
 		Tags:        []string{tableName},
 		Parameters:  parameters,
 		RequestBody: &RequestBody{
@@ -525,7 +526,7 @@ func (s *ServiceImpl) createDeleteSingleOperation(tableName string, parameters [
 	return &Operation{
 		Summary:     "Delete " + tableName,
 		Description: "Delete a record from " + tableName,
-		OperationID: "delete" + strings.Title(tableName),
+		OperationID: "delete" + pkg.TitleCase(tableName),
 		Tags:        []string{tableName},
 		Parameters:  parameters,
 		Responses: map[string]Response{
