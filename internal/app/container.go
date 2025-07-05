@@ -15,6 +15,7 @@ import (
 	"fluxend/internal/domain/form"
 	"fluxend/internal/domain/health"
 	"fluxend/internal/domain/logging"
+	"fluxend/internal/domain/openapi"
 	"fluxend/internal/domain/organization"
 	"fluxend/internal/domain/project"
 	"fluxend/internal/domain/setting"
@@ -68,6 +69,7 @@ func InitializeContainer() *do.Injector {
 	do.Provide(injector, project.NewProjectPolicy)
 	do.Provide(injector, repositories.NewProjectRepository)
 	do.Provide(injector, project.NewProjectService)
+	do.Provide(injector, openapi.NewOpenApiService)
 	do.Provide(injector, handlers.NewProjectHandler)
 
 	// --- Forms ---

@@ -5,20 +5,28 @@ import (
 	projectDto "fluxend/internal/api/dto/project"
 	"fluxend/internal/api/mapper"
 	"fluxend/internal/api/response"
+	"fluxend/internal/domain/openapi"
 	"fluxend/internal/domain/project"
 	"fluxend/pkg/auth"
+	"fmt"
 	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
+	"os"
 )
 
 type ProjectHandler struct {
 	projectService project.Service
+	openApiService openapi.Service
 }
 
 func NewProjectHandler(injector *do.Injector) (*ProjectHandler, error) {
 	projectService := do.MustInvoke[project.Service](injector)
+	openApiService := do.MustInvoke[openapi.Service](injector)
 
-	return &ProjectHandler{projectService: projectService}, nil
+	return &ProjectHandler{
+		projectService: projectService,
+		openApiService: openApiService,
+	}, nil
 }
 
 // List all projects
@@ -219,4 +227,49 @@ func (ph *ProjectHandler) Delete(c echo.Context) error {
 	}
 
 	return response.DeletedResponse(c, nil)
+}
+
+// GenerateOpenAPI generate OpenAPI docs for project
+//
+// @Summary OpenAPI projects
+// @Description Generate OpenAPI documentation for a project
+// @Tags Projects
+//
+// @Accept json
+// @Produce json
+//
+// @Param Authorization header string true "Bearer Token"
+// @Param projectUUID path string true "Project UUID"
+//
+// @Param tables query string false "Comma-separated list of tables to include in OpenAPI"
+//
+// @Success 200 {object} response.Response "OpenAPI documentation response"
+// @Failure 400 {object} response.BadRequestErrorResponse "Bad request response"
+// @Failure 401 {object} response.UnauthorizedErrorResponse "Unauthorized response"
+// @Failure 500 {object} response.InternalServerErrorResponse "Internal server error response"
+//
+// @Router /projects/{projectUUID}/openapi [get]
+func (ph *ProjectHandler) GenerateOpenAPI(c echo.Context) error {
+	var request dto.DefaultRequest
+	if err := request.BindAndValidate(c); err != nil {
+		return response.UnprocessableResponse(c, err)
+	}
+
+	authUser, _ := auth.NewAuth(c).User()
+
+	projectUUID, err := request.GetUUIDPathParam(c, "projectUUID", true)
+	if err != nil {
+		return response.BadRequestResponse(c, err.Error())
+	}
+
+	requestedTables := c.QueryParam("tables")
+
+	openAPIResponse, err := ph.openApiService.Generate(projectUUID, requestedTables, authUser)
+	fmt.Println(openAPIResponse)
+	os.Exit(1)
+	if err != nil {
+		return response.ErrorResponse(c, err)
+	}
+
+	return response.SuccessResponse(c, openAPIResponse)
 }
