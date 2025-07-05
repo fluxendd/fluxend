@@ -41,7 +41,6 @@ func InitializeContainer() *do.Injector {
 	})
 
 	// --- Logging ---
-	do.Provide(injector, handlers.NewLogHandler)
 	do.Provide(injector, logging.NewLogService)
 	do.Provide(injector, repositories.NewRequestLogRepository)
 	do.Provide(injector, client.NewDatabaseRepository)
