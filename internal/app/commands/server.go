@@ -48,7 +48,7 @@ func SetupServer(container *do.Injector) *echo.Echo {
 			return false, nil
 		},
 		AllowMethods: []string{
-			echo.GET, echo.POST, echo.PUT, echo.DELETE, echo.OPTIONS,
+			echo.GET, echo.POST, echo.PUT, echo.PATCH, echo.DELETE, echo.OPTIONS,
 		},
 		AllowHeaders: []string{
 			"Origin",
