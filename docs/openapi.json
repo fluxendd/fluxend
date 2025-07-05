@@ -4108,7 +4108,7 @@
                 "tags": [
                     "Projects"
                 ],
-                "summary": "List logs",
+                "summary": "ListLogs List all logs",
                 "parameters": [
                     {
                         "description": "Bearer Token",
@@ -4239,6 +4239,85 @@
                                             }
                                         }
                                     ]
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/response.BadRequestErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/response.UnauthorizedErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/response.InternalServerErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/projects/{projectUUID}/openapi": {
+            "get": {
+                "description": "Generate OpenAPI documentation for a project",
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "OpenAPI projects",
+                "parameters": [
+                    {
+                        "description": "Bearer Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "Project UUID",
+                        "name": "projectUUID",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "Comma-separated list of tables to include in OpenAPI",
+                        "name": "tables",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OpenAPI documentation response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/response.Response"
                                 }
                             }
                         }

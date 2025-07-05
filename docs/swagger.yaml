@@ -2931,7 +2931,49 @@ paths:
           description: Internal server error response
           schema:
             $ref: '#/definitions/response.InternalServerErrorResponse'
-      summary: List logs
+      summary: ListLogs List all logs
+      tags:
+      - Projects
+  /projects/{projectUUID}/openapi:
+    get:
+      consumes:
+      - application/json
+      description: Generate OpenAPI documentation for a project
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Project UUID
+        in: path
+        name: projectUUID
+        required: true
+        type: string
+      - description: Comma-separated list of tables to include in OpenAPI
+        in: query
+        name: tables
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OpenAPI documentation response
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad request response
+          schema:
+            $ref: '#/definitions/response.BadRequestErrorResponse'
+        "401":
+          description: Unauthorized response
+          schema:
+            $ref: '#/definitions/response.UnauthorizedErrorResponse'
+        "500":
+          description: Internal server error response
+          schema:
+            $ref: '#/definitions/response.InternalServerErrorResponse'
+      summary: OpenAPI projects
       tags:
       - Projects
   /projects/{projectUUID}/stats:
