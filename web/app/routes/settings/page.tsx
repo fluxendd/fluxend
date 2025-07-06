@@ -8,7 +8,7 @@ import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { RefreshButton } from "~/components/shared/refresh-button";
-import { Save, RefreshCw, Database, Shield, Settings, Mail, Cloud, RotateCcw } from "lucide-react";
+import { Save, RefreshCw, Database, Settings, Mail, Cloud, RotateCcw } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import {
@@ -240,6 +240,8 @@ const SettingsPage = ({ loaderData }: Route.ComponentProps) => {
   ];
 
   const renderStorageConfiguration = () => {
+    const isStorageDisabled = !formData.allowStorage;
+
     switch (formData.storageDriver) {
       case "aws":
         return (
@@ -261,6 +263,7 @@ const SettingsPage = ({ loaderData }: Route.ComponentProps) => {
                       onChange={(e) => handleInputChange("awsAccessKeyId", e.target.value)}
                       placeholder="Your AWS Access Key ID"
                       className="mt-2"
+                      disabled={isStorageDisabled}
                   />
                 </div>
                 <div className="space-y-3">
@@ -275,6 +278,7 @@ const SettingsPage = ({ loaderData }: Route.ComponentProps) => {
                       onChange={(e) => handleInputChange("awsSecretAccessKey", e.target.value)}
                       placeholder="Your AWS Secret Access Key"
                       className="mt-2"
+                      disabled={isStorageDisabled}
                   />
                 </div>
                 <div className="space-y-3">
@@ -288,6 +292,7 @@ const SettingsPage = ({ loaderData }: Route.ComponentProps) => {
                       onChange={(e) => handleInputChange("awsRegion", e.target.value)}
                       placeholder="us-east-1"
                       className="mt-2"
+                      disabled={isStorageDisabled}
                   />
                 </div>
               </div>
@@ -313,6 +318,7 @@ const SettingsPage = ({ loaderData }: Route.ComponentProps) => {
                       onChange={(e) => handleInputChange("backblazeKeyId", e.target.value)}
                       placeholder="Your Backblaze Key ID"
                       className="mt-2"
+                      disabled={isStorageDisabled}
                   />
                 </div>
                 <div className="space-y-3">
@@ -327,6 +333,7 @@ const SettingsPage = ({ loaderData }: Route.ComponentProps) => {
                       onChange={(e) => handleInputChange("backblazeApplicationKey", e.target.value)}
                       placeholder="Your Backblaze Application Key"
                       className="mt-2"
+                      disabled={isStorageDisabled}
                   />
                 </div>
               </div>
@@ -352,6 +359,7 @@ const SettingsPage = ({ loaderData }: Route.ComponentProps) => {
                       onChange={(e) => handleInputChange("dropboxAccessToken", e.target.value)}
                       placeholder="Your Dropbox Access Token"
                       className="mt-2"
+                      disabled={isStorageDisabled}
                   />
                 </div>
                 <div className="space-y-3">
@@ -366,6 +374,7 @@ const SettingsPage = ({ loaderData }: Route.ComponentProps) => {
                       onChange={(e) => handleInputChange("dropboxAppKey", e.target.value)}
                       placeholder="Your Dropbox App Key"
                       className="mt-2"
+                      disabled={isStorageDisabled}
                   />
                 </div>
               </div>
@@ -526,7 +535,7 @@ const SettingsPage = ({ loaderData }: Route.ComponentProps) => {
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <fetcher.Form method="post" onSubmit={handleSubmit} className="space-y-8">
-            {/* Application & Security Settings */}
+            {/* Application Settings & API Settings */}
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
               {/* Application Settings */}
               <Card className="h-fit">
@@ -596,22 +605,7 @@ const SettingsPage = ({ loaderData }: Route.ComponentProps) => {
                         className="mt-2"
                     />
                   </div>
-                </CardContent>
-              </Card>
-
-              {/* Feature Settings */}
-              <Card className="h-fit">
-                <CardHeader>
-                  <div className="flex items-center gap-2">
-                    <Shield className="h-5 w-5 text-green-500" />
-                    <CardTitle>Feature Settings</CardTitle>
-                  </div>
-                  <CardDescription>
-                    Control which features are enabled in your application
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <div className="grid grid-cols-1 gap-6">
+                  <div className="pt-4 border-t">
                     <div className="flex items-center justify-between py-2">
                       <Label htmlFor="allowRegistrations" className="text-sm font-medium">
                         Allow Registrations
@@ -646,17 +640,6 @@ const SettingsPage = ({ loaderData }: Route.ComponentProps) => {
                       />
                     </div>
                     <div className="flex items-center justify-between py-2">
-                      <Label htmlFor="allowStorage" className="text-sm font-medium">
-                        Allow Storage
-                      </Label>
-                      <Switch
-                          id="allowStorage"
-                          name="allowStorage"
-                          checked={formData.allowStorage}
-                          onCheckedChange={(checked) => handleInputChange("allowStorage", checked)}
-                      />
-                    </div>
-                    <div className="flex items-center justify-between py-2">
                       <Label htmlFor="allowBackups" className="text-sm font-medium">
                         Allow Backups
                       </Label>
@@ -670,22 +653,32 @@ const SettingsPage = ({ loaderData }: Route.ComponentProps) => {
                   </div>
                 </CardContent>
               </Card>
-            </div>
 
-            {/* Storage Settings */}
-            <Card>
-              <CardHeader>
-                <div className="flex items-center gap-2">
-                  <Database className="h-5 w-5 text-purple-500" />
-                  <CardTitle>Storage Settings</CardTitle>
-                </div>
-                <CardDescription>
-                  Configure storage options, limits, and cloud provider settings
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-8">
-                <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-                  <div className="space-y-6">
+              {/* Storage Settings */}
+              <Card className="h-fit">
+                <CardHeader>
+                  <div className="flex items-center gap-2">
+                    <Database className="h-5 w-5 text-purple-500" />
+                    <CardTitle>Storage Settings</CardTitle>
+                  </div>
+                  <CardDescription>
+                    Configure storage options, limits, and cloud provider settings
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="flex items-center justify-between py-2">
+                    <Label htmlFor="allowStorage" className="text-sm font-medium">
+                      Allow Storage
+                    </Label>
+                    <Switch
+                        id="allowStorage"
+                        name="allowStorage"
+                        checked={formData.allowStorage}
+                        onCheckedChange={(checked) => handleInputChange("allowStorage", checked)}
+                    />
+                  </div>
+
+                  <div className="space-y-6 pt-4 border-t">
                     <div className="space-y-3">
                       <Label htmlFor="storageDriver" className="text-sm font-medium">
                         Storage Driver
@@ -693,6 +686,7 @@ const SettingsPage = ({ loaderData }: Route.ComponentProps) => {
                       <Select
                           value={formData.storageDriver}
                           onValueChange={(value) => handleInputChange("storageDriver", value)}
+                          disabled={!formData.allowStorage}
                       >
                         <SelectTrigger className="mt-2">
                           <SelectValue placeholder="Select storage driver" />
@@ -718,6 +712,7 @@ const SettingsPage = ({ loaderData }: Route.ComponentProps) => {
                           onChange={(e) => handleInputChange("storageMaxContainers", parseInt(e.target.value))}
                           min="1"
                           className="mt-2"
+                          disabled={!formData.allowStorage}
                       />
                     </div>
                     <div className="space-y-3">
@@ -732,10 +727,9 @@ const SettingsPage = ({ loaderData }: Route.ComponentProps) => {
                           onChange={(e) => handleInputChange("storageMaxFileSizeInKB", parseInt(e.target.value))}
                           min="1"
                           className="mt-2"
+                          disabled={!formData.allowStorage}
                       />
                     </div>
-                  </div>
-                  <div className="space-y-6">
                     <div className="space-y-3">
                       <Label htmlFor="storageAllowedMimes" className="text-sm font-medium">
                         Allowed MIME Types
@@ -748,27 +742,28 @@ const SettingsPage = ({ loaderData }: Route.ComponentProps) => {
                           placeholder="image/jpeg,image/png,application/pdf"
                           rows={4}
                           className="mt-2"
+                          disabled={!formData.allowStorage}
                       />
                     </div>
                   </div>
-                </div>
 
-                {/* Cloud Storage Configuration */}
-                {formData.storageDriver !== "local" && (
-                    <div className="pt-6 border-t">
-                      {renderStorageConfiguration()}
-                    </div>
-                )}
-              </CardContent>
-            </Card>
+                  {/* Cloud Storage Configuration */}
+                  {formData.storageDriver !== "local" && (
+                      <div className="pt-6 border-t">
+                        {renderStorageConfiguration()}
+                      </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
 
-            {/* API & Mail Settings */}
+            {/* Storage Settings & Mail Settings */}
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
               {/* API Settings */}
               <Card className="h-fit">
                 <CardHeader>
                   <div className="flex items-center gap-2">
-                    <Shield className="h-5 w-5 text-orange-500" />
+                    <Settings className="h-5 w-5 text-orange-500" />
                     <CardTitle>API Settings</CardTitle>
                   </div>
                   <CardDescription>
