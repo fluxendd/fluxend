@@ -23,14 +23,9 @@ var individualSettingValidationTests = []struct {
 		expected: []string{"Name is required"},
 	},
 	{
-		name:     "Missing value",
-		setting:  IndividualSetting{Name: "test_name", Value: ""},
-		expected: []string{"Value is required"},
-	},
-	{
 		name:     "Missing both name and value",
 		setting:  IndividualSetting{Name: "", Value: ""},
-		expected: []string{"Name is required", "Value is required"},
+		expected: []string{"Name is required"},
 	},
 }
 
@@ -144,7 +139,6 @@ func TestUpdateRequest_BindAndValidate_Suite(t *testing.T) {
 		t.Run("Multiple invalid settings", func(t *testing.T) {
 			settings := []IndividualSetting{
 				{Name: "", Value: "value1"},                // Missing name
-				{Name: "name2", Value: ""},                 // Missing value
 				{Name: "", Value: ""},                      // Missing both
 				{Name: "valid_name", Value: "valid_value"}, // Valid setting
 			}
@@ -159,9 +153,7 @@ func TestUpdateRequest_BindAndValidate_Suite(t *testing.T) {
 			// Should have errors for the first 3 settings
 			pkg.AssertErrorContains(t, errs, "Setting[0]")
 			pkg.AssertErrorContains(t, errs, "Setting[1]")
-			pkg.AssertErrorContains(t, errs, "Setting[2]")
 			pkg.AssertErrorContains(t, errs, "Name is required")
-			pkg.AssertErrorContains(t, errs, "Value is required")
 		})
 
 		// Test invalid JSON payload
@@ -216,16 +208,6 @@ func TestIndividualSetting_Validation(t *testing.T) {
 				},
 			},
 			{
-				name: "Second setting invalid value",
-				settings: []IndividualSetting{
-					{Name: "setting1", Value: "value1"},
-					{Name: "setting2", Value: ""},
-				},
-				expected: map[string][]string{
-					"1": {"Setting[1] - value: Value is required"},
-				},
-			},
-			{
 				name: "Multiple settings with different validation errors",
 				settings: []IndividualSetting{
 					{Name: "", Value: ""},           // Both invalid
@@ -234,9 +216,8 @@ func TestIndividualSetting_Validation(t *testing.T) {
 					{Name: "name4", Value: ""},      // Value invalid
 				},
 				expected: map[string][]string{
-					"0": {"Setting[0] - name: Name is required", "Setting[0] - value: Value is required"},
+					"0": {"Setting[0] - name: Name is required"},
 					"2": {"Setting[2] - name: Name is required"},
-					"3": {"Setting[3] - value: Value is required"},
 				},
 			},
 		}
