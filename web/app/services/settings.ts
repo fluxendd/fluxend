@@ -4,11 +4,9 @@ import { get, put, type APIRequestOptions } from "~/tools/fetch";
 
 export interface SettingResponse {
     id: string;
-    key: string;
+    name: string;
     value: string;
-    description?: string;
-    type: string;
-    category?: string;
+    defaultValue?: string;
     created_at: string;
     updated_at: string;
 }
@@ -71,9 +69,10 @@ export const createSettingsService = (authToken: string) => {
             if (result.success && result.content) {
                 // Transform array of settings into structured object
                 const settingsMap = result.content.reduce((acc, setting) => {
-                    acc[setting.key] = setting.value;
+                    acc[setting.name] = setting.value;
                     return acc;
                 }, {} as Record<string, string>);
+
 
                 // Convert string values to appropriate types and provide defaults
                 const settings: SettingsData = {
