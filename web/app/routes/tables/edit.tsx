@@ -12,6 +12,7 @@ import { DataTableSkeleton } from "~/components/shared/data-table-skeleton";
 import type { ProjectLayoutOutletContext } from "~/components/shared/project-layout";
 import type { ColumnType } from "~/types/table";
 import { queryClient } from "~/lib/query";
+import type {Route} from "../../../.react-router/types/app/routes/tables/+types/page";
 
 interface Column {
   name: string;
@@ -53,6 +54,13 @@ const mapPostgresToColumnType = (pgType: string): ColumnType => {
 
   return typeMap[baseType] || 'text';
 };
+
+export function meta({}: Route.MetaArgs) {
+  return [
+    { title: "Edit Table - Fluxend" },
+    { name: "description", content: "Edit your table structure" },
+  ];
+}
 
 export default function EditTable() {
   const { tableId, projectId } = useParams();

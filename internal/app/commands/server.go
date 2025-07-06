@@ -169,7 +169,6 @@ func isOriginAllowed(origin string) bool {
 
 	allowedOrigins = append(allowedOrigins, customOrigins...)
 
-	// Add this logging
 	log.Info().
 		Str("origin", origin).
 		Strs("allowedOrigins", allowedOrigins).
