@@ -40,7 +40,27 @@ func SetupServer(container *do.Injector) *echo.Echo {
 	e := echo.New()
 
 	// Middleware
-	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+	e.Use(middleware.CORSWithConfig(getCorsConfig()))
+	e.Use(middleware.Recover())
+
+	if os.Getenv("SENTRY_DSN") != "" {
+		if err := sentry.Init(sentry.ClientOptions{
+			Dsn:              os.Getenv("SENTRY_DSN"),
+			TracesSampleRate: 1.0,
+		}); err != nil {
+			fmt.Printf("Sentry initialization failed: %v\n", err)
+		}
+
+		e.Use(echoSentry.New(echoSentry.Options{}))
+	}
+
+	registerRoutes(e, container)
+
+	return e
+}
+
+func getCorsConfig() middleware.CORSConfig {
+	return middleware.CORSConfig{
 		AllowOriginFunc: func(origin string) (bool, error) {
 			if isOriginAllowed(origin) {
 				return true, nil
@@ -68,23 +88,7 @@ func SetupServer(container *do.Injector) *echo.Echo {
 			echo.HeaderContentLength, echo.HeaderContentType,
 		},
 		AllowCredentials: true,
-	}))
-	e.Use(middleware.Recover())
-
-	if os.Getenv("SENTRY_DSN") != "" {
-		if err := sentry.Init(sentry.ClientOptions{
-			Dsn:              os.Getenv("SENTRY_DSN"),
-			TracesSampleRate: 1.0,
-		}); err != nil {
-			fmt.Printf("Sentry initialization failed: %v\n", err)
-		}
-
-		e.Use(echoSentry.New(echoSentry.Options{}))
 	}
-
-	registerRoutes(e, container)
-
-	return e
 }
 
 func registerRoutes(e *echo.Echo, container *do.Injector) {
