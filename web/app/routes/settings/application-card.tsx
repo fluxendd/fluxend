@@ -22,7 +22,7 @@ export const ApplicationSettingsCard = ({ formData, onInputChange }: Application
         <Card className="h-fit">
             <CardHeader>
                 <div className="flex items-center gap-2">
-                    <Settings className="h-5 w-5 text-blue-500" />
+                    <Settings className="h-5 w-5 text-amber-400" />
                     <CardTitle>Application Settings</CardTitle>
                 </div>
                 <CardDescription>

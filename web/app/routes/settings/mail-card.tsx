@@ -40,7 +40,7 @@ export const MailSettingsCard = ({ formData, onInputChange }: MailSettingsCardPr
                 return (
                     <div className="space-y-6">
                         <div className="flex items-center gap-2 mb-4">
-                            <Mail className="h-4 w-4 text-blue-500" />
+                            <Mail className="h-4 w-4 text-amber-400" />
                             <h4 className="font-medium text-sm">SendGrid Configuration</h4>
                         </div>
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -79,7 +79,7 @@ export const MailSettingsCard = ({ formData, onInputChange }: MailSettingsCardPr
                 return (
                     <div className="space-y-6">
                         <div className="flex items-center gap-2 mb-4">
-                            <Mail className="h-4 w-4 text-red-500" />
+                            <Mail className="h-4 w-4 text-amber-400" />
                             <h4 className="font-medium text-sm">Mailgun Configuration</h4>
                         </div>
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -156,7 +156,7 @@ export const MailSettingsCard = ({ formData, onInputChange }: MailSettingsCardPr
         <Card className="h-fit">
             <CardHeader>
                 <div className="flex items-center gap-2">
-                    <Mail className="h-5 w-5 text-blue-500" />
+                    <Mail className="h-5 w-5 text-amber-400" />
                     <CardTitle>Mail Settings</CardTitle>
                 </div>
                 <CardDescription>

@@ -41,7 +41,7 @@ export const StorageSettingsCard = ({ formData, onInputChange }: StorageSettings
                 return (
                     <div className="space-y-6">
                         <div className="flex items-center gap-2 mb-4">
-                            <Cloud className="h-4 w-4 text-blue-500" />
+                            <Cloud className="h-4 w-4 text-amber-400" />
                             <h4 className="font-medium text-sm">AWS S3 Configuration</h4>
                         </div>
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -183,7 +183,7 @@ export const StorageSettingsCard = ({ formData, onInputChange }: StorageSettings
         <Card className="h-fit">
             <CardHeader>
                 <div className="flex items-center gap-2">
-                    <Database className="h-5 w-5 text-purple-500" />
+                    <Database className="h-5 w-5 text-amber-400" />
                     <CardTitle>Storage Settings</CardTitle>
                 </div>
                 <CardDescription>

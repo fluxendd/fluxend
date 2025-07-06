@@ -22,7 +22,7 @@ export const ApiSettingsCard = ({ formData, onInputChange }: ApiSettingsCardProp
         <Card className="h-fit">
             <CardHeader>
                 <div className="flex items-center gap-2">
-                    <Settings className="h-5 w-5 text-orange-500" />
+                    <Settings className="h-5 w-5 text-amber-400" />
                     <CardTitle>API Settings</CardTitle>
                 </div>
                 <CardDescription>
