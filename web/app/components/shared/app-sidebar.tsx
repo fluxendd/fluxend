@@ -97,12 +97,14 @@ export const AppSidebar = memo(
                         View All Projects
                       </NavLink>
                     </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <NavLink to="/settings">
-                        <Settings />
-                        Settings
-                      </NavLink>
-                    </DropdownMenuItem>
+                    {userDetails.roleId === 1 && (
+                        <DropdownMenuItem asChild>
+                          <NavLink to="/settings">
+                            <Settings />
+                            Settings
+                          </NavLink>
+                        </DropdownMenuItem>
+                    )}
                   </DropdownMenuGroup>
                   <DropdownMenuSeparator />
                   <ThemeToggle />
