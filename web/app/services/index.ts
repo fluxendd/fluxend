@@ -3,6 +3,7 @@ import { createDashboardService } from "./dashboard";
 import { createProjectsService } from "./projects";
 import { createUserService } from "./user";
 import { createLogsService } from "./logs";
+import { createSettingsService } from "./settings";
 
 export function initializeServices(authToken: string) {
   return {
@@ -11,6 +12,7 @@ export function initializeServices(authToken: string) {
     user: createUserService(authToken),
     projects: createProjectsService(authToken),
     logs: createLogsService(authToken),
+    settings: createSettingsService(authToken),
   };
 }
 

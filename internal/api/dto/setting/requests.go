@@ -33,7 +33,6 @@ func (r *UpdateRequest) BindAndValidate(c echo.Context) []string {
 	for i, setting := range r.Settings {
 		err := validation.ValidateStruct(&setting,
 			validation.Field(&setting.Name, validation.Required.Error("Name is required")),
-			validation.Field(&setting.Value, validation.Required.Error("Value is required")),
 		)
 		if err != nil {
 			if ve, ok := err.(validation.Errors); ok {

@@ -32,6 +32,7 @@ func Settings(container *do.Injector) {
 		{Name: "appUrl", Value: os.Getenv("CONSOLE_URL"), DefaultValue: os.Getenv("CONSOLE_URL")},
 		{Name: "jwtSecret", Value: os.Getenv("JWT_SECRET"), DefaultValue: os.Getenv("JWT_SECRET")},
 		{Name: "storageDriver", Value: os.Getenv("STORAGE_DRIVER"), DefaultValue: constants.StorageDriverFilesystem},
+		{Name: "mailDriver", Value: os.Getenv("MAIL_DRIVER"), DefaultValue: constants.EmailDriverSES},
 		{Name: "maxProjectsPerOrg", Value: "10", DefaultValue: "10"},
 		{Name: "allowRegistrations", Value: "yes", DefaultValue: "yes"},
 		{Name: "allowProjects", Value: "yes", DefaultValue: "yes"},

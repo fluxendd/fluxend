@@ -87,7 +87,7 @@ func (s *ServiceImpl) Update(authUser auth.User, request *setting.UpdateRequest)
 	// Loop through each setting and update the value
 	for _, currentSetting := range request.Settings {
 		for i, existingSetting := range existingSettings {
-			if existingSetting.Name == currentSetting.Name {
+			if existingSetting.Name == currentSetting.Name && existingSetting.Value != currentSetting.Value {
 				existingSettings[i].Value = currentSetting.Value
 				existingSettings[i].UpdatedAt = time.Now()
 			}
