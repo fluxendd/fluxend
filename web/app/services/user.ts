@@ -10,6 +10,7 @@ export type Organization = {
 export type Project = {
   uuid: string;
   name: string;
+  description: string;
   status: "active" | "inactive";
   dbName: string;
   organizationUuid: string;
@@ -64,7 +65,7 @@ export const createUserService = (authToken: string) => {
     return data;
   };
 
-  const createUserProject = async (name: string, organizationId: string) => {
+  const createUserProject = async (name: string, description: string, organizationId: string) => {
     const fetchOptions: RequestInit = {
       headers: {
         "Content-Type": "application/json",
@@ -74,7 +75,7 @@ export const createUserService = (authToken: string) => {
 
     const response = await post(
       `/projects`,
-      { name, organization_uuid: organizationId },
+      { name: name, description: description, organization_uuid: organizationId },
       fetchOptions
     );
 

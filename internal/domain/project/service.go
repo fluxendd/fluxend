@@ -87,6 +87,7 @@ func (s *ServiceImpl) Create(request *CreateProjectInput, authUser auth.User) (P
 
 	projectInput := Project{
 		Name:             request.Name,
+		Description:      request.Description,
 		OrganizationUuid: request.OrganizationUUID,
 		DBName:           s.generateDBName(),
 		DBPort:           s.generateDBPort(),
