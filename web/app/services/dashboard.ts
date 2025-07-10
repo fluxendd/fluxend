@@ -13,6 +13,34 @@ export interface HealthData {
   cpu_cores: number;
 }
 
+export interface UnusedIndex {
+  tableName: string;
+  indexName: string;
+  indexScans: number;
+  indexSize: string;
+}
+
+export interface TableCount {
+  TableName: string;
+  EstimatedRowCount: number;
+}
+
+export interface TableSize {
+  tableName: string;
+  totalSize: string;
+}
+
+export interface ProjectStats {
+  id: number;
+  databaseName: string;
+  totalSize: string;
+  indexSize: string;
+  unusedIndex: UnusedIndex[];
+  tableCount: TableCount[];
+  tableSize: TableSize[];
+  createdAt: string;
+}
+
 export const createDashboardService = (authToken: string) => {
   const getHealthStatus = async (): Promise<HealthData> => {
     try {
@@ -25,7 +53,7 @@ export const createDashboardService = (authToken: string) => {
 
       const response = await get("/admin/health", fetchOptions);
       const result = await getTypedResponseData<APIResponse<HealthData>>(
-        response
+          response
       );
 
       if (result.success && result.content) {
@@ -49,8 +77,29 @@ export const createDashboardService = (authToken: string) => {
     }
   };
 
+  const getProjectStats = async (projectUUID: string): Promise<ProjectStats> => {
+    const fetchOptions: APIRequestOptions = {
+      headers: {
+        "Content-Type": "application/json",
+        ...(authToken && { Authorization: `Bearer ${authToken}` }),
+      },
+    };
+
+    const response = await get(`/projects/${projectUUID}/stats`, fetchOptions);
+    const result = await getTypedResponseData<APIResponse<ProjectStats>>(
+        response
+    );
+
+    if (result.success && result.content) {
+      return result.content;
+    } else {
+      throw new Error(result.errors?.join(", ") || "Unknown error");
+    }
+  };
+
   return {
     getHealthStatus,
+    getProjectStats,
   };
 };
 
