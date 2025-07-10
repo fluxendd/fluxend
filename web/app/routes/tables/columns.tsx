@@ -290,7 +290,7 @@ export const prepareColumns = (
           accessorFn: (row: any) =>
             row && column && column.name ? row[column.name] : null,
           header: () => (
-            <div className="inline-flex items-center whitespace-nowrap">
+            <div className="inline-flex items-center whitespace-nowrap font-mono">
               <ColumnIcon type={column.type} />
               <span className="truncate font-medium block max-w-[200px]">
                 {column && column.name ? column.name : ""}
@@ -316,7 +316,7 @@ export const prepareColumns = (
               return (
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <div className="flex flex-col cursor-default hover:bg-muted/50 p-1 rounded-sm transition-colors">
+                    <div className="flex flex-col cursor-default hover:bg-muted/50 p-1 rounded-sm transition-colors font-mono">
                       <span className="text-xs font-medium text-foreground whitespace-nowrap">
                         {date}
                       </span>
@@ -346,7 +346,7 @@ export const prepareColumns = (
             }
 
             return (
-              <span className="block truncate max-w-[300px]" title={value !== null && value !== undefined ? String(value) : ""}>
+              <span className="block truncate max-w-[300px] font-mono" title={value !== null && value !== undefined ? String(value) : ""}>
                 {value !== null && value !== undefined ? String(value) : ""}
               </span>
             );

@@ -133,7 +133,7 @@ export const TableList = ({
                   />
                 )}
                 <HashIcon size={12} className="flex-shrink-0" />
-                <span className="truncate flex-1 min-w-0">{table.name}</span>
+                <span className="truncate flex-1 min-w-0 font-mono">{table.name}</span>
                 <span className="ml-auto text-xs flex-shrink-0">
                   {table.totalSize}
                 </span>
