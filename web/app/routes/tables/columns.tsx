@@ -10,6 +10,9 @@ import {
   Calendar,
   FileJson,
   Shuffle,
+  Save,
+  X,
+  Edit2,
 } from "lucide-react";
 import type { ColumnDef, PaginationState, Row } from "@tanstack/react-table";
 import { Button } from "~/components/ui/button";
@@ -33,6 +36,8 @@ import { formatTimestamp, getTypedResponseData } from "~/lib/utils";
 import type { APIResponse } from "~/lib/types";
 import { getClientAuthToken } from "~/lib/auth";
 import { initializeServices } from "~/services";
+import { OptimisticTableCell } from "~/components/tables/optimistic-table-cell";
+import type { CellValue } from "~/types/table";
 
 export const columnsQuery = (projectId: string, tableId: string) => ({
   queryKey: ["columns", projectId, tableId],
@@ -138,8 +143,7 @@ const ColumnIcon: React.FC<ColumnIconProps> = ({ type }) => {
 
 export const prepareColumns = (
   columns: any[] | undefined | null,
-  collectionName?: string,
-  onEditRow?: (row: any) => void
+  collectionName?: string
 ): ColumnDef<any>[] => {
   if (!columns || !Array.isArray(columns) || columns.length === 0) {
     return [];
@@ -234,7 +238,9 @@ export const prepareColumns = (
       <ActionsColumnHeader key="actions-column-header" table={table} />
     ),
     enableHiding: false,
-    cell: ({ row }) => {
+    cell: ({ row, table }) => {
+      const rowId = row.original?.id;
+
       return (
         <div className="flex justify-end pr-6">
           <DropdownMenu modal={false}>
@@ -249,16 +255,6 @@ export const prepareColumns = (
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-[160px]">
-              {onEditRow && (
-                <DropdownMenuItem
-                  onClick={(e) => {
-                    e.preventDefault();
-                    onEditRow(row.original || row);
-                  }}
-                >
-                  Edit
-                </DropdownMenuItem>
-              )}
               <DropdownMenuItem
                 onClick={() =>
                   mockDeleteRow(String(row.original?.id || row.id))
@@ -297,58 +293,26 @@ export const prepareColumns = (
               </span>
             </div>
           ),
-          cell: ({ row }: { row: Row<any> }) => {
+          cell: ({ row, table }: { row: Row<any>; table: any }) => {
             // Get value safely
-            let value = null;
+            let value: CellValue = null;
             try {
               if (row && column && column.name) {
-                value = row.getValue(column.name);
+                value = row.getValue(column.name) as CellValue;
               }
             } catch (e) {
               // Handle error silently
             }
-
-            // Format timestamp values
-            if (isTimestamp && value !== null && value !== undefined) {
-              const { date, time, fullDate, relativeTime } = formatTimestamp(
-                String(value)
-              );
-              return (
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div className="flex flex-col cursor-default hover:bg-muted/50 p-1 rounded-sm transition-colors">
-                      <span className="text-xs font-medium text-foreground whitespace-nowrap">
-                        {date}
-                      </span>
-                      <span className="text-xs text-muted-foreground/80 flex gap-1 items-center whitespace-nowrap">
-                        <Clock className="h-2.5 w-2.5 inline-block opacity-70 flex-shrink-0" />
-                        {time}
-                      </span>
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent
-                    sideOffset={5}
-                    className="bg-popover text-popover-foreground border border-border shadow-md p-3 text-xs max-w-[240px]"
-                  >
-                    <div className="font-semibold mb-1 flex items-center gap-1">
-                      {date} {time}
-                      <Clock className="h-3 w-3 opacity-50" />
-                    </div>
-                    <div className="text-muted-foreground text-[11px]">
-                      {relativeTime}
-                    </div>
-                    <div className="text-[10px] text-muted-foreground/70 mt-1 break-all">
-                      {fullDate}
-                    </div>
-                  </TooltipContent>
-                </Tooltip>
-              );
-            }
-
+            
             return (
-              <span className="block truncate max-w-[300px]" title={value !== null && value !== undefined ? String(value) : ""}>
-                {value !== null && value !== undefined ? String(value) : ""}
-              </span>
+              <OptimisticTableCell
+                value={value}
+                column={column}
+                rowId={row.original?.id}
+                rowData={row.original}
+                isTimestamp={isTimestamp}
+                onUpdate={table.options.meta?.onCellUpdate}
+              />
             );
           },
           meta: {
@@ -406,6 +370,7 @@ export const rowsQuery = (
           params: {
             limit,
             offset,
+            order: "updated_at.desc", // Sort by updated_at descending (newest first)
             ...filters,
           },
           baseUrl: `${httpScheme}://${dbId}.${baseDomain}/`,

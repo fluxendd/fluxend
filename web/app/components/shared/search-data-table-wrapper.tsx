@@ -21,6 +21,7 @@ interface SearchDataTableWrapperProps<TData, TValue> {
   projectId: string;
   tableId: string;
   onFilterChange: (filters: Record<string, string>) => void;
+  tableMeta?: any;
 }
 
 export function SearchDataTableWrapper<TData, TValue>({
@@ -34,6 +35,7 @@ export function SearchDataTableWrapper<TData, TValue>({
   onPaginationChange,
   totalRows,
   onFilterChange,
+  tableMeta,
 }: SearchDataTableWrapperProps<TData, TValue>) {
   return (
     <div className="flex flex-col h-full gap-4 px-4">
@@ -52,6 +54,7 @@ export function SearchDataTableWrapper<TData, TValue>({
           pagination={pagination}
           onPaginationChange={onPaginationChange}
           totalRows={totalRows}
+          tableMeta={tableMeta}
         />
       </div>
     </div>

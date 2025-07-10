@@ -18,7 +18,7 @@ import {
   ChevronsLeftIcon,
   ChevronsRightIcon,
 } from "lucide-react";
-import { useState, useEffect, useRef, useMemo, Fragment } from "react";
+import React, { useState, useEffect, useRef, useMemo, Fragment } from "react";
 import { Button } from "~/components/ui/button";
 import { Label } from "~/components/ui/label";
 import {
@@ -47,9 +47,10 @@ interface DataTableProps<TData, TValue> {
   totalRows: number;
   onPaginationChange: OnChangeFn<PaginationState>;
   onRowClick?: (row: TData) => void;
+  tableMeta?: any;
 }
 
-export function DataTable<TData, TValue>({
+export const DataTable = React.memo(<TData, TValue>({
   columns,
   data,
   emptyMessage = "No results.",
@@ -57,7 +58,8 @@ export function DataTable<TData, TValue>({
   totalRows,
   onPaginationChange,
   onRowClick,
-}: DataTableProps<TData, TValue>) {
+  tableMeta,
+}: DataTableProps<TData, TValue>) => {
   const tableRef = useRef<HTMLTableElement>(null);
 
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -76,6 +78,7 @@ export function DataTable<TData, TValue>({
       sorting,
       pagination,
     },
+    meta: tableMeta,
   });
 
   return (
@@ -113,7 +116,11 @@ export function DataTable<TData, TValue>({
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
-                  className={cn("data-table-row", onRowClick && "cursor-pointer")}
+                  className={cn(
+                    "data-table-row", 
+                    onRowClick && "cursor-pointer",
+                    (row.original as any)?.id === (table.options.meta as any)?.editingRowId && "bg-muted/50"
+                  )}
                   onClick={() => onRowClick?.(row.original)}
                   tabIndex={onRowClick ? 0 : undefined}
                   onKeyDown={(e) => {
@@ -244,4 +251,4 @@ export function DataTable<TData, TValue>({
       </div>
     </div>
   );
-}
+}) as <TData, TValue>(props: DataTableProps<TData, TValue>) => React.ReactElement;

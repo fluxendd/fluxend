@@ -62,7 +62,14 @@ export function EditRowSheet({
 }: EditRowSheetProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [jsonErrors, setJsonErrors] = useState<Record<string, string>>({});
-  const { register, handleSubmit, setValue, watch, reset, formState: { errors } } = useForm({
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    reset,
+    formState: { errors },
+  } = useForm({
     defaultValues: row,
   });
 
@@ -75,28 +82,30 @@ export function EditRowSheet({
   const onSubmit = async (data: Record<string, any>) => {
     try {
       setIsSubmitting(true);
-      
+
       // Check for JSON validation errors
-      const hasJsonErrors = Object.values(jsonErrors).some(error => error !== '');
+      const hasJsonErrors = Object.values(jsonErrors).some(
+        (error) => error !== ""
+      );
       if (hasJsonErrors) {
         toast.error("Please fix JSON validation errors before submitting");
         setIsSubmitting(false);
         return;
       }
-      
+
       // Remove id, created_at, and updated_at fields from the data to be updated
       const { id, created_at, updated_at, ...updateData } = data;
-      
+
       // Validate row ID exists
       if (!row.id) {
         toast.error("Row ID is missing");
         return;
       }
-      
+
       // Get environment variables for base URL
       const baseDomain = import.meta.env.VITE_FLX_BASE_DOMAIN;
       const httpScheme = import.meta.env.VITE_FLX_HTTP_SCHEME;
-      
+
       const response = await services.tables.updateTableRow(
         projectId,
         tableId,
@@ -115,7 +124,11 @@ export function EditRowSheet({
         let errorMessage = "Failed to update row";
         try {
           const errorData = await response.json();
-          errorMessage = errorData.message || errorData.error || errorData.errors?.[0] || errorMessage;
+          errorMessage =
+            errorData.message ||
+            errorData.error ||
+            errorData.errors?.[0] ||
+            errorMessage;
         } catch {
           // If not JSON, try text
           try {
@@ -140,13 +153,16 @@ export function EditRowSheet({
     const dataType = (column.type || "").toLowerCase();
     const isNullable = column.is_nullable === "YES";
     const isIdField = fieldName === "id";
-    const isTimestampField = fieldName === "created_at" || fieldName === "updated_at";
+    const isTimestampField =
+      fieldName === "created_at" || fieldName === "updated_at";
 
     // Common props for all inputs
     const commonProps = {
       ...register(fieldName),
       disabled: isIdField || isTimestampField || isSubmitting,
-      className: cn((isIdField || isTimestampField) && "opacity-50 cursor-not-allowed"),
+      className: cn(
+        (isIdField || isTimestampField) && "opacity-50 cursor-not-allowed"
+      ),
     };
 
     // Handle different data types
@@ -176,7 +192,8 @@ export function EditRowSheet({
               className={cn(
                 "w-full justify-start text-left font-normal",
                 !dateValue && "text-muted-foreground",
-                (isIdField || isTimestampField) && "opacity-50 cursor-not-allowed"
+                (isIdField || isTimestampField) &&
+                  "opacity-50 cursor-not-allowed"
               )}
               disabled={isIdField || isTimestampField || isSubmitting}
             >
@@ -189,7 +206,6 @@ export function EditRowSheet({
               mode="single"
               selected={dateValue ? new Date(dateValue) : undefined}
               onSelect={(date) => setValue(fieldName, date?.toISOString())}
-              initialFocus
             />
           </PopoverContent>
         </Popover>
@@ -218,18 +234,23 @@ export function EditRowSheet({
               if (value) {
                 try {
                   JSON.parse(value); // Validate JSON
-                  setJsonErrors(prev => ({ ...prev, [fieldName]: '' }));
+                  setJsonErrors((prev) => ({ ...prev, [fieldName]: "" }));
                 } catch {
-                  setJsonErrors(prev => ({ ...prev, [fieldName]: 'Invalid JSON format' }));
+                  setJsonErrors((prev) => ({
+                    ...prev,
+                    [fieldName]: "Invalid JSON format",
+                  }));
                 }
               } else {
-                setJsonErrors(prev => ({ ...prev, [fieldName]: '' }));
+                setJsonErrors((prev) => ({ ...prev, [fieldName]: "" }));
               }
               register(fieldName).onChange(e);
             }}
           />
           {jsonErrors[fieldName] && (
-            <span className="text-sm text-destructive mt-1 block">{jsonErrors[fieldName]}</span>
+            <span className="text-sm text-destructive mt-1 block">
+              {jsonErrors[fieldName]}
+            </span>
           )}
         </div>
       );
@@ -240,11 +261,11 @@ export function EditRowSheet({
       <Input
         {...commonProps}
         type={
-          dataType.includes("int") || 
-          dataType.includes("serial") || 
-          dataType.includes("float") || 
-          dataType.includes("numeric") 
-            ? "number" 
+          dataType.includes("int") ||
+          dataType.includes("serial") ||
+          dataType.includes("float") ||
+          dataType.includes("numeric")
+            ? "number"
             : "text"
         }
         placeholder={isNullable ? "Optional" : "Required"}
@@ -262,12 +283,16 @@ export function EditRowSheet({
           </SheetDescription>
         </SheetHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mt-6 px-6">
-          {columns.map((column) => (
+          {columns.map((column, index) => (
             <div key={column.name} className="space-y-2">
               <Label htmlFor={column.name}>
                 {column.name}
-                {(column.name === "id" || column.name === "created_at" || column.name === "updated_at") && (
-                  <span className="ml-2 text-xs text-muted-foreground">(Read-only)</span>
+                {(column.name === "id" ||
+                  column.name === "created_at" ||
+                  column.name === "updated_at") && (
+                  <span className="ml-2 text-xs text-muted-foreground">
+                    (Read-only)
+                  </span>
                 )}
               </Label>
               {renderField(column)}
@@ -284,8 +309,8 @@ export function EditRowSheet({
           >
             Cancel
           </Button>
-          <Button 
-            type="submit" 
+          <Button
+            type="submit"
             disabled={isSubmitting}
             onClick={handleSubmit(onSubmit)}
             className="cursor-pointer"
@@ -297,3 +322,4 @@ export function EditRowSheet({
     </Sheet>
   );
 }
+
