@@ -34,12 +34,12 @@ export function meta({}: Route.MetaArgs) {
 }
 
 function StatusCard({
-                      title,
-                      status,
-                      subtitle,
-                      icon: Icon,
-                      isStale,
-                    }: {
+    title,
+    status,
+    subtitle,
+    icon: Icon,
+    isStale,
+  }: {
   title: string;
   status: string;
   subtitle?: string;
@@ -68,13 +68,13 @@ function StatusCard({
 }
 
 function MetricCard({
-                      title,
-                      value,
-                      subtitle,
-                      icon: Icon,
-                      data,
-                      isStale,
-                    }: {
+    title,
+    value,
+    subtitle,
+    icon: Icon,
+    data,
+    isStale,
+  }: {
   title: string;
   value: string;
   subtitle?: string;
@@ -116,12 +116,12 @@ function MetricCard({
 }
 
 function StatsCard({
-                     title,
-                     value,
-                     subtitle,
-                     icon: Icon,
-                     isStale,
-                   }: {
+     title,
+     value,
+     subtitle,
+     icon: Icon,
+     isStale,
+   }: {
   title: string;
   value: string | number;
   subtitle?: string;
