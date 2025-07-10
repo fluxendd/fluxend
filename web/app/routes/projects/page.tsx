@@ -28,6 +28,7 @@ export function meta({}: Route.MetaArgs) {
 import { Label } from "~/components/ui/label";
 import { Input } from "~/components/ui/input";
 import { useEffect, useState } from "react";
+import {Textarea} from "~/components/ui/textarea";
 
 export async function loader({ request }: Route.LoaderArgs) {
   const authToken = await getServerAuthToken(request.headers);
@@ -76,13 +77,19 @@ const CreateProjectDialog = ({ children }: { children: React.ReactNode }) => {
           <DialogHeader>
             <DialogTitle>Create Project</DialogTitle>
             <DialogDescription>
-              Enter a name for your project
+              Describe your project and its purpose
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4">
             <div className="grid gap-3">
               <Label htmlFor="name-1">Name</Label>
               <Input id="name-1" name="name" placeholder="Dragonstone" />
+            </div>
+          </div>
+          <div className="grid gap-4">
+            <div className="grid gap-3">
+              <Label htmlFor="description">Description</Label>
+              <Textarea id="description" name="description" placeholder="What is this project about?" />
             </div>
           </div>
           <DialogFooter>
