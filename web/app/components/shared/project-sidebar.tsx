@@ -24,7 +24,7 @@ import {
   SendHorizontal,
   MessageCircleCode,
   MessageCircleCodeIcon,
-  DatabaseBackupIcon, LucideDatabaseBackup,
+  DatabaseBackupIcon, LucideDatabaseBackup, HelpCircle, GithubIcon,
 } from "lucide-react";
 import { href, NavLink, useOutletContext, type Params } from "react-router";
 
@@ -177,6 +177,19 @@ export const ProjectSidebar = memo(
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
                 <ThemeToggle />
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <NavLink to="https://docs.fluxend.app" target="_blank">
+                    <HelpCircle />
+                    Documentation
+                  </NavLink>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <NavLink to="https://github.com/fluxendd/fluxend" target="_blank">
+                    <GithubIcon />
+                    Github
+                  </NavLink>
+                </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
                   <NavLink to="/logout">

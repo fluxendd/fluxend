@@ -1,6 +1,6 @@
 import {
   EllipsisVertical,
-  Files,
+  Files, GithubIcon, HelpCircle,
   LogOut,
   LogOutIcon,
   Settings,
@@ -108,6 +108,19 @@ export const AppSidebar = memo(
                   </DropdownMenuGroup>
                   <DropdownMenuSeparator />
                   <ThemeToggle />
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <NavLink to="https://docs.fluxend.app" target="_blank">
+                      <HelpCircle />
+                      Documentation
+                    </NavLink>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <NavLink to="https://github.com/fluxendd/fluxend" target="_blank">
+                      <GithubIcon />
+                      Github
+                    </NavLink>
+                  </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
                     <NavLink to="/logout">
