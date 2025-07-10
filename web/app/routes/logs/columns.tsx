@@ -128,8 +128,8 @@ export const createLogsColumns = (): ColumnDef<LogEntry>[] => [
         <Tooltip>
           <TooltipTrigger asChild>
             <div className="-m-2 p-2">
-              <div className="text-sm font-medium font-mono">{date}</div>
-              <div className="text-xs text-muted-foreground font-mono">{time}</div>
+              <div className="text-sm font-medium">{date}</div>
+              <div className="text-xs text-muted-foreground">{time}</div>
             </div>
           </TooltipTrigger>
           <TooltipContent>
@@ -228,7 +228,7 @@ export const createLogsColumns = (): ColumnDef<LogEntry>[] => [
         <Tooltip>
           <TooltipTrigger asChild>
             <div 
-              className="text-sm truncate max-w-[200px] cursor-pointer -m-2 p-2 font-mono"
+              className="text-sm truncate max-w-[200px] cursor-pointer -m-2 p-2"
             >
               {shortAgent}
             </div>
@@ -256,7 +256,7 @@ export const createLogsColumns = (): ColumnDef<LogEntry>[] => [
           <div 
             className="cursor-pointer -m-2 p-2"
           >
-            <span className="text-xs text-muted-foreground font-mono">No data</span>
+            <span className="text-xs text-muted-foreground">No data</span>
           </div>
         );
       }
