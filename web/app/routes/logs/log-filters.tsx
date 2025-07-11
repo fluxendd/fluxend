@@ -300,15 +300,14 @@ export const LogFilters = memo(({ onFiltersChange, initialFilters }: LogFiltersP
   const handleDatePreset = useCallback((preset: 'today' | 'yesterday' | 'last3days') => {
     const now = new Date();
     let fromDate: Date;
-    let toDate: Date = new Date();
-    
-    // Set toDate to end of today
-    toDate.setHours(23, 59, 59, 999);
+    let toDate: Date;
     
     switch (preset) {
       case 'today':
         fromDate = new Date();
         fromDate.setHours(0, 0, 0, 0);
+        toDate = new Date();
+        toDate.setHours(23, 59, 59, 999);
         break;
       case 'yesterday':
         fromDate = subDays(now, 1);
@@ -319,6 +318,8 @@ export const LogFilters = memo(({ onFiltersChange, initialFilters }: LogFiltersP
       case 'last3days':
         fromDate = subDays(now, 2); // 3 days including today
         fromDate.setHours(0, 0, 0, 0);
+        toDate = new Date();
+        toDate.setHours(23, 59, 59, 999);
         break;
     }
     
@@ -331,17 +332,14 @@ export const LogFilters = memo(({ onFiltersChange, initialFilters }: LogFiltersP
     setEndTime("23:59:59");
     setPendingEndTime("23:59:59");
     
-    // Calculate timestamps
-    const startDateTime = new Date(fromDate);
-    startDateTime.setHours(0, 0, 0, 0);
-    const endDateTime = new Date(toDate);
-    endDateTime.setHours(23, 59, 59, 999);
+    // Calculate timestamps - use the dates with times already set
+    const utcStartTime = fromZonedTime(fromDate, userTimezone);
+    const utcEndTime = fromZonedTime(toDate, userTimezone);
     
-    const utcStartTime = fromZonedTime(startDateTime, userTimezone);
-    const utcEndTime = fromZonedTime(endDateTime, userTimezone);
-    
-    const newFilters = {
-      ...filters,
+    // Create new filters preserving only non-date filters
+    const { startTime: _, endTime: __, ...otherFilters } = filters;
+    const newFilters: LogsFilters = {
+      ...otherFilters,
       startTime: Math.floor(utcStartTime.getTime() / 1000),
       endTime: Math.floor(utcEndTime.getTime() / 1000)
     };
