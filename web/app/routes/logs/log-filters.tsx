@@ -29,7 +29,7 @@ import {
   ChevronDownIcon,
   Info,
 } from "lucide-react";
-import { format } from "date-fns";
+import { format, subDays } from "date-fns";
 import { fromZonedTime } from "date-fns-tz";
 import type { DateRange } from "react-day-picker";
 import { cn } from "~/lib/utils";
@@ -296,8 +296,129 @@ export const LogFilters = memo(({ onFiltersChange, initialFilters }: LogFiltersP
     return hasNonDefaultTimeFilter || hasOtherFilters;
   }, [filters, userTimezone]);
 
+  // Date preset handlers
+  const handleDatePreset = useCallback((preset: 'today' | 'yesterday' | 'last3days') => {
+    const now = new Date();
+    let fromDate: Date;
+    let toDate: Date = new Date();
+    
+    // Set toDate to end of today
+    toDate.setHours(23, 59, 59, 999);
+    
+    switch (preset) {
+      case 'today':
+        fromDate = new Date();
+        fromDate.setHours(0, 0, 0, 0);
+        break;
+      case 'yesterday':
+        fromDate = subDays(now, 1);
+        fromDate.setHours(0, 0, 0, 0);
+        toDate = subDays(now, 1);
+        toDate.setHours(23, 59, 59, 999);
+        break;
+      case 'last3days':
+        fromDate = subDays(now, 2); // 3 days including today
+        fromDate.setHours(0, 0, 0, 0);
+        break;
+    }
+    
+    // Update date range and times
+    const newDateRange: DateRange = { from: fromDate, to: toDate };
+    setDateRange(newDateRange);
+    setPendingDateRange(newDateRange);
+    setStartTime("00:00:00");
+    setPendingStartTime("00:00:00");
+    setEndTime("23:59:59");
+    setPendingEndTime("23:59:59");
+    
+    // Calculate timestamps
+    const startDateTime = new Date(fromDate);
+    startDateTime.setHours(0, 0, 0, 0);
+    const endDateTime = new Date(toDate);
+    endDateTime.setHours(23, 59, 59, 999);
+    
+    const utcStartTime = fromZonedTime(startDateTime, userTimezone);
+    const utcEndTime = fromZonedTime(endDateTime, userTimezone);
+    
+    const newFilters = {
+      ...filters,
+      startTime: Math.floor(utcStartTime.getTime() / 1000),
+      endTime: Math.floor(utcEndTime.getTime() / 1000)
+    };
+    
+    setFilters(newFilters);
+    onFiltersChange(newFilters);
+  }, [filters, onFiltersChange, userTimezone]);
+
+  // Check which preset is active
+  const activePreset = useMemo(() => {
+    if (!dateRange?.from || !dateRange?.to) return null;
+    
+    const now = new Date();
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const yesterday = subDays(today, 1);
+    const threeDaysAgo = subDays(today, 2);
+    
+    // Check if dates match today
+    if (
+      dateRange.from.toDateString() === today.toDateString() &&
+      dateRange.to.toDateString() === today.toDateString()
+    ) {
+      return 'today';
+    }
+    
+    // Check if dates match yesterday
+    if (
+      dateRange.from.toDateString() === yesterday.toDateString() &&
+      dateRange.to.toDateString() === yesterday.toDateString()
+    ) {
+      return 'yesterday';
+    }
+    
+    // Check if dates match last 3 days
+    if (
+      dateRange.from.toDateString() === threeDaysAgo.toDateString() &&
+      dateRange.to.toDateString() === today.toDateString()
+    ) {
+      return 'last3days';
+    }
+    
+    return null;
+  }, [dateRange]);
+
   return (
     <div className="flex flex-wrap items-center gap-2 px-4 py-2 border-b isolate">
+      {/* Date presets */}
+      <div className="flex items-center gap-1">
+        <Button
+          size="sm"
+          variant={activePreset === 'today' ? 'default' : 'outline'}
+          onClick={() => handleDatePreset('today')}
+          className="h-9"
+        >
+          Today
+        </Button>
+        <Button
+          size="sm"
+          variant={activePreset === 'yesterday' ? 'default' : 'outline'}
+          onClick={() => handleDatePreset('yesterday')}
+          className="h-9"
+        >
+          Yesterday
+        </Button>
+        <Button
+          size="sm"
+          variant={activePreset === 'last3days' ? 'default' : 'outline'}
+          onClick={() => handleDatePreset('last3days')}
+          className="h-9"
+        >
+          Last 3 Days
+        </Button>
+      </div>
+      
+      <div className="w-px h-6 bg-border" />
+      
       <Select
         value={filters.method || "all"}
         onValueChange={(value) =>
