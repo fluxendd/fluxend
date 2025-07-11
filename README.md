@@ -2,24 +2,15 @@
 **Fluxend** is a **blazing-fast, self-hosted BaaS** built with Go — no lock-in. Ship production-grade backends with full control over your data
 
 <div align="center">
-<a href="https://console.fluxend.app/">
-  <img src="https://img.shields.io/badge/demo-FF6B6B?style=flat&logo=rocket&logoColor=white" alt="Demo" />
-</a>
-<a href="https://docs.fluxend.app/">
-  <img src="https://img.shields.io/badge/docs-4ECDC4?style=flat&logo=gitbook&logoColor=white" alt="Documentation" />
-</a>
-<a href="https://docs.fluxend.app/quickstart">
-  <img src="https://img.shields.io/badge/⚡_install-45B7D1?style=flat&logo=download&logoColor=white" alt="Installation" />
-</a>
-<a href="https://docs.fluxend.app/faq">
-  <img src="https://img.shields.io/badge/❓_faq-FFA07A?style=flat&logo=question&logoColor=white" alt="FAQ" />
-</a>
-<a href="https://docs.fluxend.app/essentials/commands">
-  <img src="https://img.shields.io/badge/🔧_commands-98D8C8?style=flat&logo=terminal&logoColor=white" alt="Commands" />
-</a>
-<a href="https://docs.fluxend.app/essentials/troubleshooting">
-  <img src="https://img.shields.io/badge/🛠️_troubleshoot-F7DC6F?style=flat&logo=tools&logoColor=white" alt="Troubleshooting" />
-</a>
+  
+
+[🚀 **Demo**](https://console.fluxend.app/) • 
+[📚 **Documentation**](https://docs.fluxend.app/) • 
+[⚡ **Installation**](https://docs.fluxend.app/quickstart) • 
+[❓ **FAQ**](https://docs.fluxend.app/faq) • 
+[🔧 **Commands**](https://docs.fluxend.app/essentials/commands) • 
+[🛠️ **Troubleshooting**](https://docs.fluxend.app/essentials/troubleshooting)
+
 </div>
 
 ## 🔥 Features
