@@ -1,7 +1,7 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import type { Route } from "./+types/page";
 import { columnsQuery, rowsQuery, prepareColumns } from "./columns";
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useRef } from "react";
 import { RefreshButton } from "~/components/shared/refresh-button";
 import { SearchDataTableWrapper } from "~/components/shared/search-data-table-wrapper";
 import { DataTableSkeleton } from "~/components/shared/data-table-skeleton";
@@ -28,7 +28,7 @@ export function meta({}: Route.MetaArgs) {
 import { Button } from "~/components/ui/button";
 import { Trash2, Pencil } from "lucide-react";
 import { toast } from "sonner";
-import { EditRowSheet } from "~/components/tables/edit-row-sheet";
+import type { TableRow, CellValue } from "~/types/table";
 
 const DEFAULT_PAGE_SIZE = 50;
 const DEFAULT_PAGE_INDEX = 0;
@@ -49,8 +49,7 @@ export default function TablePageContent({ params }: Route.ComponentProps) {
     pageIndex: DEFAULT_PAGE_INDEX,
     pageSize: DEFAULT_PAGE_SIZE,
   });
-  const [editingRow, setEditingRow] = useState<any>(null);
-  const [isEditSheetOpen, setIsEditSheetOpen] = useState(false);
+  // Remove editing state as we're now handling it per cell
 
   const {
     isLoading: isColumnsLoading,
@@ -59,18 +58,64 @@ export default function TablePageContent({ params }: Route.ComponentProps) {
     error: columnsError,
   } = useQuery(columnsQuery(projectId, tableId)) || { data: [] };
 
-  const handleEditRow = useCallback((row: any) => {
-    setEditingRow(row);
-    setIsEditSheetOpen(true);
-  }, []);
+  const handleCellUpdate = useCallback(async (
+    rowId: string, 
+    columnName: string, 
+    value: CellValue,
+    rowData: TableRow
+  ): Promise<boolean> => {
+    try {
+      // Only send the field that changed
+      const updateData = {
+        [columnName]: value
+      };
+      
+      const baseDomain = import.meta.env.VITE_FLX_BASE_DOMAIN;
+      const httpScheme = import.meta.env.VITE_FLX_HTTP_SCHEME;
+      const baseUrl = `${httpScheme}://${projectDetails?.dbName}.${baseDomain}/`;
+      
+      const response = await services.tables.updateTableRow(
+        projectId,
+        tableId,
+        rowId,
+        updateData,
+        {
+          baseUrl,
+        }
+      );
+
+      if (response.ok) {
+        // Don't show toast or invalidate queries - just return success
+        // The optimistic update will remain in place
+        return true;
+      } else {
+        // Try to extract error message from response
+        try {
+          const errorData = await response.json();
+          const errorMessage = errorData?.message || errorData?.error || errorData?.detail || 'Failed to update';
+          toast.error(errorMessage);
+        } catch {
+          toast.error('Failed to update');
+        }
+        // Return false to trigger revert in OptimisticTableCell
+        return false;
+      }
+    } catch (error) {
+      // Handle network errors or other exceptions
+      const errorMessage = error instanceof Error ? error.message : 'Network error occurred';
+      toast.error(errorMessage);
+      // Return false to trigger revert in OptimisticTableCell
+      return false;
+    }
+  }, [projectId, tableId, services.tables, projectDetails?.dbName]);
 
   const columns = useMemo(() => {
     if (!columnsData || !Array.isArray(columnsData)) {
       return [];
     }
 
-    return prepareColumns(columnsData, tableId, handleEditRow);
-  }, [columnsData, tableId, handleEditRow]);
+    return prepareColumns(columnsData, tableId);
+  }, [columnsData, tableId]);
 
   const [filterParams, setFilterParams] = useState<Record<string, string>>({});
 
@@ -171,14 +216,20 @@ export default function TablePageContent({ params }: Route.ComponentProps) {
       });
 
       navigate(`/projects/${projectId}/tables`);
+      toast.success(`Table ${tableId} deleted successfully`);
     } else if (response?.errors) {
       toast.error(response?.errors[0]);
     } else {
-      throw new Error("Unknown error deleting collection");
+      // Show generic error message
+      toast.error('Failed to delete table');
     }
   }, [tableId, projectId, queryClient, navigate]);
 
   const noTableSelected = !tableId;
+
+  const tableMeta = useMemo(() => ({
+    onCellUpdate: handleCellUpdate,
+  }), [handleCellUpdate]);
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
@@ -273,6 +324,7 @@ export default function TablePageContent({ params }: Route.ComponentProps) {
               tableId={tableId}
               onFilterChange={handleFilterChange}
               onPaginationChange={onPaginationChange}
+              tableMeta={tableMeta}
             />
           </div>
         )}
@@ -295,30 +347,7 @@ export default function TablePageContent({ params }: Route.ComponentProps) {
         </div>
       )}
 
-      {editingRow && columnsData && (
-        <EditRowSheet
-          open={isEditSheetOpen}
-          onOpenChange={(open) => {
-            setIsEditSheetOpen(open);
-            if (!open) {
-              setEditingRow(null);
-            }
-          }}
-          row={editingRow}
-          columns={columnsData}
-          tableId={tableId}
-          projectId={projectId}
-          dbId={projectDetails?.dbName || ""}
-          services={services}
-          onSuccess={() => {
-            queryClient.invalidateQueries({
-              queryKey: ["rows", projectId, tableId],
-            });
-            setEditingRow(null);
-            setIsEditSheetOpen(false);
-          }}
-        />
-      )}
+      {/* EditRowSheet is no longer needed as we're using inline editing */}
     </div>
   );
 }

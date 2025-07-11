@@ -265,7 +265,7 @@ export const filterCriteriaSchema = z.discriminatedUnion("type", [
 // Filter list schema
 export const filtersSchema = z.object({
   filters: z.array(filterCriteriaSchema),
-  logicalOperator: z.enum(["and", "or"]).default("and"),
+  logicalOperator: z.enum(["and", "or"]),
 });
 
 // Type for our filter criteria
@@ -327,7 +327,7 @@ export const buildPostgrestFilterParams = (
     }
 
     if (filter.type === "date") {
-      const dateValue = value instanceof Date ? value : new Date(value);
+      const dateValue = value instanceof Date ? value : new Date(String(value));
       return { [column]: `${operator}.${format(dateValue, "yyyy-MM-dd")}` };
     }
 
@@ -393,7 +393,7 @@ export const buildPostgrestFilterParams = (
       }
 
       if (filter.type === "date") {
-        const dateValue = value instanceof Date ? value : new Date(value);
+        const dateValue = value instanceof Date ? value : new Date(String(value));
         return `${column}.${operator}.${format(dateValue, "yyyy-MM-dd")}`;
       }
 

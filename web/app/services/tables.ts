@@ -106,11 +106,15 @@ export function createTablesService(authToken: string) {
         "X-Project": projectId,
         "Content-Type": "application/json",
         Authorization: `Bearer ${authToken}`,
+        "Prefer": "return=representation", // Return the updated row
       },
       baseUrl: options?.baseUrl,
+      params: {
+        id: `eq.${rowId}` // PostgREST filter syntax
+      }
     };
 
-    return put(`${tableId}/${rowId}`, data, fetchOptions);
+    return patch(tableId, data, fetchOptions);
   };
 
   return {
