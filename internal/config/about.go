@@ -4,8 +4,8 @@ var AboutFluxend = map[string]string{
 	"author":      "Fluxend",
 	"email":       "hello@fluxend.app",
 	"website":     "https://fluxend.app",
-	"license":     "MIT",
-	"version":     "0.0.1",
+	"license":     "GPL-3.0",
+	"version":     "0.1",
 	"release":     "alpha",
-	"releaseDate": "YYYY-MM-DD",
+	"releaseDate": "12-07-2025",
 }
