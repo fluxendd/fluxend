@@ -29,14 +29,30 @@ interface QuerySearchBoxProps {
   columns: any[];
   onQueryChange: (params: Record<string, string>) => void;
   className?: string;
+  value?: string;
+  onChange?: (query: string) => void;
 }
 
 export function QuerySearchBox({
   columns,
   onQueryChange,
   className,
+  value,
+  onChange,
 }: QuerySearchBoxProps) {
-  const [query, setQuery] = useState<string>("");
+  // Use controlled mode if value and onChange are provided
+  const [internalQuery, setInternalQuery] = useState<string>("");
+  const query = value !== undefined ? value : internalQuery;
+  
+  const setQuery = useCallback((newValue: string | ((prev: string) => string)) => {
+    if (onChange) {
+      const actualValue = typeof newValue === 'function' ? newValue(query) : newValue;
+      onChange(actualValue);
+    } else {
+      setInternalQuery(newValue);
+    }
+  }, [onChange, query]);
+  
   const [activeQuery, setActiveQuery] = useState<string | null>(null);
   const [isShowingHelp, setIsShowingHelp] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -70,7 +86,7 @@ export function QuerySearchBox({
 
   // Focus the input when the component mounts
   useEffect(() => {
-    if (inputRef.current) {
+    if (inputRef.current && !query) {
       inputRef.current.focus();
     }
 
@@ -149,9 +165,11 @@ export function QuerySearchBox({
   };
 
   const parseQuery = useCallback(() => {
-    if (!query.trim()) {
+    const currentQuery = query.trim();
+    if (!currentQuery) {
       // Clear any existing filters
       onQueryChange({});
+      setActiveQuery(null);
       return;
     }
 
@@ -292,7 +310,7 @@ export function QuerySearchBox({
 
         // Apply the filter
         onQueryChange(filterParam);
-        setActiveQuery(query.trim());
+        setActiveQuery(trimmedQuery);
         setErrorMessage(null);
       } else {
         // Single condition case (original code path)
@@ -423,19 +441,25 @@ export function QuerySearchBox({
 
         // Apply the filter
         onQueryChange(filterParam);
-        setActiveQuery(query.trim());
+        setActiveQuery(trimmedQuery);
         setErrorMessage(null);
       }
     } catch (error) {
       console.error("Error parsing query:", error);
       setErrorMessage("Invalid query format. See help for examples.");
     }
-  }, [query, columns, onQueryChange]);
+  }, [query, columns, onQueryChange, setQuery]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       e.preventDefault();
       parseQuery();
+      // Keep focus on the input after parsing
+      setTimeout(() => {
+        if (inputRef.current) {
+          inputRef.current.focus();
+        }
+      }, 0);
     } else if (e.key === "Escape") {
       clearQuery();
     }
@@ -500,6 +524,7 @@ export function QuerySearchBox({
               onKeyDown={handleKeyDown}
               placeholder="Query..."
               className="pl-8 pr-[76px] w-full border focus-visible:ring-0 focus-visible:ring-offset-0 rounded-lg"
+              type="text"
             />
             <div className="absolute right-1 top-1/2 -translate-y-1/2 flex items-center space-x-1">
               {query && (
