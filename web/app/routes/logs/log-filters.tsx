@@ -301,6 +301,47 @@ export const LogFilters = memo(({ onFiltersChange, initialFilters }: LogFiltersP
     setPopoverOpen(false);
   }, [filters, onFiltersChange, userTimezone]);
 
+  // Check which preset is currently active
+  const activePreset = useMemo(() => {
+    if (!dateRange?.from || !dateRange?.to) return null;
+    
+    const today = new Date();
+    const yesterday = subDays(today, 1);
+    const threeDaysAgo = subDays(today, 2);
+    
+    // Check if dates match today
+    if (
+      dateRange.from.toDateString() === today.toDateString() &&
+      dateRange.to.toDateString() === today.toDateString() &&
+      startTime === "00:00:00" &&
+      endTime === "23:59:59"
+    ) {
+      return 'today';
+    }
+    
+    // Check if dates match yesterday
+    if (
+      dateRange.from.toDateString() === yesterday.toDateString() &&
+      dateRange.to.toDateString() === yesterday.toDateString() &&
+      startTime === "00:00:00" &&
+      endTime === "23:59:59"
+    ) {
+      return 'yesterday';
+    }
+    
+    // Check if dates match last 3 days
+    if (
+      dateRange.from.toDateString() === threeDaysAgo.toDateString() &&
+      dateRange.to.toDateString() === today.toDateString() &&
+      startTime === "00:00:00" &&
+      endTime === "23:59:59"
+    ) {
+      return 'last3days';
+    }
+    
+    return null;
+  }, [dateRange, startTime, endTime]);
+
   const hasActiveFilters = useMemo(() => {
     // Calculate today's default time range for comparison
     const today = new Date();
@@ -490,7 +531,7 @@ export const LogFilters = memo(({ onFiltersChange, initialFilters }: LogFiltersP
                 <Label className="text-sm font-medium mb-2 block">Presets</Label>
                 <div className="flex flex-wrap gap-2 w-full">
                   <Button
-                    variant="outline"
+                    variant={activePreset === 'today' ? 'default' : 'outline'}
                     size="sm"
                     className="flex-1 min-w-[80px]"
                     onClick={() => {
@@ -501,7 +542,7 @@ export const LogFilters = memo(({ onFiltersChange, initialFilters }: LogFiltersP
                     Today
                   </Button>
                   <Button
-                    variant="outline"
+                    variant={activePreset === 'yesterday' ? 'default' : 'outline'}
                     size="sm"
                     className="flex-1 min-w-[80px]"
                     onClick={() => {
@@ -512,7 +553,7 @@ export const LogFilters = memo(({ onFiltersChange, initialFilters }: LogFiltersP
                     Yesterday
                   </Button>
                   <Button
-                    variant="outline"
+                    variant={activePreset === 'last3days' ? 'default' : 'outline'}
                     size="sm"
                     className="flex-1 min-w-[80px]"
                     onClick={() => {
