@@ -270,7 +270,6 @@ export const LogFilters = memo(({ onFiltersChange, initialFilters }: LogFiltersP
     onFiltersChange(filters);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Check if we have non-default filters
   // Helper function to apply preset date range
   const applyPreset = useCallback((fromDate: Date, toDate: Date) => {
     const range: DateRange = { from: fromDate, to: toDate };
@@ -300,6 +299,47 @@ export const LogFilters = memo(({ onFiltersChange, initialFilters }: LogFiltersP
     onFiltersChange(newFilters);
     setPopoverOpen(false);
   }, [filters, onFiltersChange, userTimezone]);
+
+  // Check which preset is currently active
+  const activePreset = useMemo(() => {
+    if (!dateRange?.from || !dateRange?.to) return null;
+    
+    const today = new Date();
+    const yesterday = subDays(today, 1);
+    const threeDaysAgo = subDays(today, 2);
+    
+    // Check if dates match today
+    if (
+      dateRange.from.toDateString() === today.toDateString() &&
+      dateRange.to.toDateString() === today.toDateString() &&
+      startTime === "00:00:00" &&
+      endTime === "23:59:59"
+    ) {
+      return 'today';
+    }
+    
+    // Check if dates match yesterday
+    if (
+      dateRange.from.toDateString() === yesterday.toDateString() &&
+      dateRange.to.toDateString() === yesterday.toDateString() &&
+      startTime === "00:00:00" &&
+      endTime === "23:59:59"
+    ) {
+      return 'yesterday';
+    }
+    
+    // Check if dates match last 3 days
+    if (
+      dateRange.from.toDateString() === threeDaysAgo.toDateString() &&
+      dateRange.to.toDateString() === today.toDateString() &&
+      startTime === "00:00:00" &&
+      endTime === "23:59:59"
+    ) {
+      return 'last3days';
+    }
+    
+    return null;
+  }, [dateRange, startTime, endTime]);
 
   const hasActiveFilters = useMemo(() => {
     // Calculate today's default time range for comparison
@@ -478,7 +518,40 @@ export const LogFilters = memo(({ onFiltersChange, initialFilters }: LogFiltersP
                 </div>
                 <Button
                   size="sm"
-                  onClick={() => setPopoverOpen(false)}
+                  onClick={() => {
+                    // Apply the pending changes
+                    setDateRange(pendingDateRange);
+                    setStartTime(pendingStartTime);
+                    setEndTime(pendingEndTime);
+                    
+                    const newFilters = { ...filters };
+
+                    if (pendingDateRange?.from) {
+                      const [hours, minutes, seconds] = pendingStartTime.split(":").map(Number);
+                      const startDateTime = new Date(pendingDateRange.from);
+                      startDateTime.setHours(hours, minutes, seconds, 0);
+                      
+                      const utcStartTime = fromZonedTime(startDateTime, userTimezone);
+                      newFilters.startTime = Math.floor(utcStartTime.getTime() / 1000);
+                    } else {
+                      delete newFilters.startTime;
+                    }
+
+                    if (pendingDateRange?.to) {
+                      const [hours, minutes, seconds] = pendingEndTime.split(":").map(Number);
+                      const endDateTime = new Date(pendingDateRange.to);
+                      endDateTime.setHours(hours, minutes, seconds, 0);
+                      
+                      const utcEndTime = fromZonedTime(endDateTime, userTimezone);
+                      newFilters.endTime = Math.floor(utcEndTime.getTime() / 1000);
+                    } else {
+                      delete newFilters.endTime;
+                    }
+
+                    setFilters(newFilters);
+                    onFiltersChange(newFilters);
+                    setPopoverOpen(false);
+                  }}
                   className="px-4"
                 >
                   Apply
@@ -490,7 +563,7 @@ export const LogFilters = memo(({ onFiltersChange, initialFilters }: LogFiltersP
                 <Label className="text-sm font-medium mb-2 block">Presets</Label>
                 <div className="flex flex-wrap gap-2 w-full">
                   <Button
-                    variant="outline"
+                    variant={activePreset === 'today' ? 'default' : 'outline'}
                     size="sm"
                     className="flex-1 min-w-[80px]"
                     onClick={() => {
@@ -501,7 +574,7 @@ export const LogFilters = memo(({ onFiltersChange, initialFilters }: LogFiltersP
                     Today
                   </Button>
                   <Button
-                    variant="outline"
+                    variant={activePreset === 'yesterday' ? 'default' : 'outline'}
                     size="sm"
                     className="flex-1 min-w-[80px]"
                     onClick={() => {
@@ -512,7 +585,7 @@ export const LogFilters = memo(({ onFiltersChange, initialFilters }: LogFiltersP
                     Yesterday
                   </Button>
                   <Button
-                    variant="outline"
+                    variant={activePreset === 'last3days' ? 'default' : 'outline'}
                     size="sm"
                     className="flex-1 min-w-[80px]"
                     onClick={() => {
