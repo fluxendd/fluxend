@@ -29,14 +29,16 @@ interface QuerySearchBoxProps {
   columns: any[];
   onQueryChange: (params: Record<string, string>) => void;
   className?: string;
+  initialQuery?: string;
 }
 
 export function QuerySearchBox({
   columns,
   onQueryChange,
   className,
+  initialQuery = "",
 }: QuerySearchBoxProps) {
-  const [query, setQuery] = useState<string>("");
+  const [query, setQuery] = useState<string>(initialQuery);
   const [activeQuery, setActiveQuery] = useState<string | null>(null);
   const [isShowingHelp, setIsShowingHelp] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -70,7 +72,7 @@ export function QuerySearchBox({
 
   // Focus the input when the component mounts
   useEffect(() => {
-    if (inputRef.current) {
+    if (inputRef.current && !query) {
       inputRef.current.focus();
     }
 
@@ -152,6 +154,7 @@ export function QuerySearchBox({
     if (!query.trim()) {
       // Clear any existing filters
       onQueryChange({});
+      setActiveQuery(null);
       return;
     }
 
@@ -294,6 +297,7 @@ export function QuerySearchBox({
         onQueryChange(filterParam);
         setActiveQuery(query.trim());
         setErrorMessage(null);
+        // Keep the query in the input field - don't clear it
       } else {
         // Single condition case (original code path)
         // Basic pattern for supported queries like:
@@ -436,6 +440,10 @@ export function QuerySearchBox({
     if (e.key === "Enter") {
       e.preventDefault();
       parseQuery();
+      // Keep focus on the input after parsing
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
     } else if (e.key === "Escape") {
       clearQuery();
     }
