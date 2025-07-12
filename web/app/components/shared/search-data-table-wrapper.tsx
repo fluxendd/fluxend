@@ -34,6 +34,8 @@ export function SearchDataTableWrapper<TData, TValue>({
   pagination,
   onPaginationChange,
   totalRows,
+  projectId,
+  tableId,
   onFilterChange,
   tableMeta,
 }: SearchDataTableWrapperProps<TData, TValue>) {
