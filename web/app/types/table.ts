@@ -16,6 +16,22 @@ export interface TableColumn {
   primary: boolean;
 }
 
+export interface TableColumnMetadata {
+  name: string;
+  type: string;
+  is_nullable?: string;
+  column_default?: string | null;
+}
+
+export interface TableRow {
+  id: string;
+  created_at?: string;
+  updated_at?: string;
+  [key: string]: any;
+}
+
+export type CellValue = string | number | boolean | Date | null | undefined | Record<string, any>;
+
 export interface CreateTableRequest {
   name: string;
   columns: TableColumn[];

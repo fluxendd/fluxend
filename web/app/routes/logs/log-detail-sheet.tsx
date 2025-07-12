@@ -36,22 +36,22 @@ const getStatusInfo = (status: HttpStatusCode) => {
 const SheetCopyButton = ({ text, label }: { text: string; label: string }) => {
   const [copied, setCopied] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-
+  
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(text);
       setCopied(true);
-
+      
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
       }
-
+      
       timeoutRef.current = setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       console.error('Failed to copy:', err);
     }
   };
-
+  
   useEffect(() => {
     return () => {
       if (timeoutRef.current) {
@@ -59,7 +59,7 @@ const SheetCopyButton = ({ text, label }: { text: string; label: string }) => {
       }
     };
   }, []);
-
+  
   return (
     <button
       className="inline-flex items-center justify-center h-5 w-5 ml-2 rounded-sm transition-opacity cursor-pointer"
@@ -67,13 +67,13 @@ const SheetCopyButton = ({ text, label }: { text: string; label: string }) => {
       aria-label={`Copy ${label}`}
     >
       <div className="relative w-3 h-3">
-        <Copy
+        <Copy 
           className={cn(
             "h-3 w-3 absolute inset-0 transition-all duration-200 opacity-70",
             copied ? "opacity-0 scale-50" : "opacity-100 scale-100"
           )}
         />
-        <Check
+        <Check 
           className={cn(
             "h-3 w-3 text-green-600 absolute inset-0 transition-all duration-200",
             copied ? "opacity-100 scale-100" : "opacity-0 scale-50"
@@ -94,7 +94,7 @@ const parseJsonSafely = (value: string | Record<string, any>): Record<string, an
   if (!value) return null;
   if (isObject(value)) return value;
   if (typeof value !== 'string') return null;
-
+  
   try {
     const parsed = JSON.parse(value);
     return parsed;
@@ -159,7 +159,7 @@ export function LogDetailSheet({ log, open, onOpenChange }: LogDetailSheetProps)
                         Status
                       </td>
                       <td className="px-4 py-3">
-                        <Badge
+                        <Badge 
                           variant="outline"
                           className={cn(
                             "font-mono",
@@ -231,7 +231,7 @@ export function LogDetailSheet({ log, open, onOpenChange }: LogDetailSheetProps)
                         User Agent
                       </td>
                       <td className="px-4 py-3">
-                        <div className="text-sm break-words overflow-wrap-anywhere font-mono">{log.userAgent}</div>
+                        <div className="text-sm break-words overflow-wrap-anywhere">{log.userAgent}</div>
                       </td>
                     </tr>
                   </tbody>
