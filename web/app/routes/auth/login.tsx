@@ -123,17 +123,17 @@ export default function Login({}: Route.ComponentProps) {
           <NeonCard className="shadow-md">
             <CardHeader className="text-center">
               <CardTitle className="text-xl">Sign in to your account</CardTitle>
-              <CardDescription>
-                Or{" "}
-                <NavLink to="/signup">
-                  <Button
-                    variant="link"
-                    className="p-0 font-medium text-primary hover:text-primary/80 hover:underline cusror-pointer"
-                  >
-                    create a new account
-                  </Button>
-                </NavLink>
-              </CardDescription>
+              {/* <CardDescription> */}
+              {/*   Or{" "} */}
+              {/*   <NavLink to="/signup"> */}
+              {/*     <Button */}
+              {/*       variant="link" */}
+              {/*       className="p-0 font-medium text-primary hover:text-primary/80 hover:underline cusror-pointer" */}
+              {/*     > */}
+              {/*       create a new account */}
+              {/*     </Button> */}
+              {/*   </NavLink> */}
+              {/* </CardDescription> */}
             </CardHeader>
             <CardContent>
               <div className="grid gap-6">
