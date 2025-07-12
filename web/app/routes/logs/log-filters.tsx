@@ -271,6 +271,36 @@ export const LogFilters = memo(({ onFiltersChange, initialFilters }: LogFiltersP
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Check if we have non-default filters
+  // Helper function to apply preset date range
+  const applyPreset = useCallback((fromDate: Date, toDate: Date) => {
+    const range: DateRange = { from: fromDate, to: toDate };
+    setPendingDateRange(range);
+    setPendingStartTime("00:00:00");
+    setPendingEndTime("23:59:59");
+    // Apply immediately
+    setDateRange(range);
+    setStartTime("00:00:00");
+    setEndTime("23:59:59");
+    
+    const startDateTime = new Date(fromDate);
+    startDateTime.setHours(0, 0, 0, 0);
+    const endDateTime = new Date(toDate);
+    endDateTime.setHours(23, 59, 59, 999);
+    
+    const utcStartTime = fromZonedTime(startDateTime, userTimezone);
+    const utcEndTime = fromZonedTime(endDateTime, userTimezone);
+    
+    const newFilters = {
+      ...filters,
+      startTime: Math.floor(utcStartTime.getTime() / 1000),
+      endTime: Math.floor(utcEndTime.getTime() / 1000)
+    };
+    
+    setFilters(newFilters);
+    onFiltersChange(newFilters);
+    setPopoverOpen(false);
+  }, [filters, onFiltersChange, userTimezone]);
+
   const hasActiveFilters = useMemo(() => {
     // Calculate today's default time range for comparison
     const today = new Date();
@@ -465,32 +495,7 @@ export const LogFilters = memo(({ onFiltersChange, initialFilters }: LogFiltersP
                     className="flex-1 min-w-[80px]"
                     onClick={() => {
                       const today = new Date();
-                      const range: DateRange = { from: startOfDay(today), to: endOfDay(today) };
-                      setPendingDateRange(range);
-                      setPendingStartTime("00:00:00");
-                      setPendingEndTime("23:59:59");
-                      // Apply immediately and close popover
-                      setDateRange(range);
-                      setStartTime("00:00:00");
-                      setEndTime("23:59:59");
-                      
-                      const startDateTime = new Date(today);
-                      startDateTime.setHours(0, 0, 0, 0);
-                      const endDateTime = new Date(today);
-                      endDateTime.setHours(23, 59, 59, 999);
-                      
-                      const utcStartTime = fromZonedTime(startDateTime, userTimezone);
-                      const utcEndTime = fromZonedTime(endDateTime, userTimezone);
-                      
-                      const newFilters = {
-                        ...filters,
-                        startTime: Math.floor(utcStartTime.getTime() / 1000),
-                        endTime: Math.floor(utcEndTime.getTime() / 1000)
-                      };
-                      
-                      setFilters(newFilters);
-                      onFiltersChange(newFilters);
-                      setPopoverOpen(false);
+                      applyPreset(startOfDay(today), endOfDay(today));
                     }}
                   >
                     Today
@@ -501,32 +506,7 @@ export const LogFilters = memo(({ onFiltersChange, initialFilters }: LogFiltersP
                     className="flex-1 min-w-[80px]"
                     onClick={() => {
                       const yesterday = subDays(new Date(), 1);
-                      const range: DateRange = { from: startOfDay(yesterday), to: endOfDay(yesterday) };
-                      setPendingDateRange(range);
-                      setPendingStartTime("00:00:00");
-                      setPendingEndTime("23:59:59");
-                      // Apply immediately and close popover
-                      setDateRange(range);
-                      setStartTime("00:00:00");
-                      setEndTime("23:59:59");
-                      
-                      const startDateTime = new Date(yesterday);
-                      startDateTime.setHours(0, 0, 0, 0);
-                      const endDateTime = new Date(yesterday);
-                      endDateTime.setHours(23, 59, 59, 999);
-                      
-                      const utcStartTime = fromZonedTime(startDateTime, userTimezone);
-                      const utcEndTime = fromZonedTime(endDateTime, userTimezone);
-                      
-                      const newFilters = {
-                        ...filters,
-                        startTime: Math.floor(utcStartTime.getTime() / 1000),
-                        endTime: Math.floor(utcEndTime.getTime() / 1000)
-                      };
-                      
-                      setFilters(newFilters);
-                      onFiltersChange(newFilters);
-                      setPopoverOpen(false);
+                      applyPreset(startOfDay(yesterday), endOfDay(yesterday));
                     }}
                   >
                     Yesterday
@@ -538,32 +518,7 @@ export const LogFilters = memo(({ onFiltersChange, initialFilters }: LogFiltersP
                     onClick={() => {
                       const today = new Date();
                       const threeDaysAgo = subDays(today, 2);
-                      const range: DateRange = { from: startOfDay(threeDaysAgo), to: endOfDay(today) };
-                      setPendingDateRange(range);
-                      setPendingStartTime("00:00:00");
-                      setPendingEndTime("23:59:59");
-                      // Apply immediately and close popover
-                      setDateRange(range);
-                      setStartTime("00:00:00");
-                      setEndTime("23:59:59");
-                      
-                      const startDateTime = new Date(threeDaysAgo);
-                      startDateTime.setHours(0, 0, 0, 0);
-                      const endDateTime = new Date(today);
-                      endDateTime.setHours(23, 59, 59, 999);
-                      
-                      const utcStartTime = fromZonedTime(startDateTime, userTimezone);
-                      const utcEndTime = fromZonedTime(endDateTime, userTimezone);
-                      
-                      const newFilters = {
-                        ...filters,
-                        startTime: Math.floor(utcStartTime.getTime() / 1000),
-                        endTime: Math.floor(utcEndTime.getTime() / 1000)
-                      };
-                      
-                      setFilters(newFilters);
-                      onFiltersChange(newFilters);
-                      setPopoverOpen(false);
+                      applyPreset(startOfDay(threeDaysAgo), endOfDay(today));
                     }}
                   >
                     Last 3 Days
