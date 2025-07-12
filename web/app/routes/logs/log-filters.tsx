@@ -29,7 +29,7 @@ import {
   ChevronDownIcon,
   Info,
 } from "lucide-react";
-import { format } from "date-fns";
+import { format, subDays, startOfDay, endOfDay } from "date-fns";
 import { fromZonedTime } from "date-fns-tz";
 import type { DateRange } from "react-day-picker";
 import { cn } from "~/lib/utils";
@@ -271,6 +271,36 @@ export const LogFilters = memo(({ onFiltersChange, initialFilters }: LogFiltersP
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Check if we have non-default filters
+  // Helper function to apply preset date range
+  const applyPreset = useCallback((fromDate: Date, toDate: Date) => {
+    const range: DateRange = { from: fromDate, to: toDate };
+    setPendingDateRange(range);
+    setPendingStartTime("00:00:00");
+    setPendingEndTime("23:59:59");
+    // Apply immediately
+    setDateRange(range);
+    setStartTime("00:00:00");
+    setEndTime("23:59:59");
+    
+    const startDateTime = new Date(fromDate);
+    startDateTime.setHours(0, 0, 0, 0);
+    const endDateTime = new Date(toDate);
+    endDateTime.setHours(23, 59, 59, 999);
+    
+    const utcStartTime = fromZonedTime(startDateTime, userTimezone);
+    const utcEndTime = fromZonedTime(endDateTime, userTimezone);
+    
+    const newFilters = {
+      ...filters,
+      startTime: Math.floor(utcStartTime.getTime() / 1000),
+      endTime: Math.floor(utcEndTime.getTime() / 1000)
+    };
+    
+    setFilters(newFilters);
+    onFiltersChange(newFilters);
+    setPopoverOpen(false);
+  }, [filters, onFiltersChange, userTimezone]);
+
   const hasActiveFilters = useMemo(() => {
     // Calculate today's default time range for comparison
     const today = new Date();
@@ -295,6 +325,7 @@ export const LogFilters = memo(({ onFiltersChange, initialFilters }: LogFiltersP
     
     return hasNonDefaultTimeFilter || hasOtherFilters;
   }, [filters, userTimezone]);
+
 
   return (
     <div className="flex flex-wrap items-center gap-2 px-4 py-2 border-b isolate">
@@ -431,18 +462,68 @@ export const LogFilters = memo(({ onFiltersChange, initialFilters }: LogFiltersP
                   </div>
                 </div>
               </div>
-              <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div className="flex items-center gap-1 cursor-help">
-                      <Info className="h-3 w-3" />
-                      <span>Times are in your local timezone ({userTimezone})</span>
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent className="max-w-xs">
-                    <p>All times are displayed in your local timezone but sent to the server as UTC timestamps for consistent filtering across all users.</p>
-                  </TooltipContent>
-                </Tooltip>
+              <div className="flex items-center justify-between gap-2 w-full">
+                <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="flex items-center gap-1 cursor-help">
+                        <Info className="h-3 w-3" />
+                        <span>Times in {userTimezone}</span>
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent className="max-w-xs">
+                      <p>All times are displayed in your local timezone but sent to the server as UTC timestamps for consistent filtering across all users.</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </div>
+                <Button
+                  size="sm"
+                  onClick={() => setPopoverOpen(false)}
+                  className="px-4"
+                >
+                  Apply
+                </Button>
+              </div>
+            </CardFooter>
+            <CardFooter className="border-t px-3 py-3">
+              <div className="w-full">
+                <Label className="text-sm font-medium mb-2 block">Presets</Label>
+                <div className="flex flex-wrap gap-2 w-full">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex-1 min-w-[80px]"
+                    onClick={() => {
+                      const today = new Date();
+                      applyPreset(startOfDay(today), endOfDay(today));
+                    }}
+                  >
+                    Today
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex-1 min-w-[80px]"
+                    onClick={() => {
+                      const yesterday = subDays(new Date(), 1);
+                      applyPreset(startOfDay(yesterday), endOfDay(yesterday));
+                    }}
+                  >
+                    Yesterday
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex-1 min-w-[80px]"
+                    onClick={() => {
+                      const today = new Date();
+                      const threeDaysAgo = subDays(today, 2);
+                      applyPreset(startOfDay(threeDaysAgo), endOfDay(today));
+                    }}
+                  >
+                    Last 3 Days
+                  </Button>
+                </div>
               </div>
             </CardFooter>
           </Card>

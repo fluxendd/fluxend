@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo, useEffect } from "react";
+import { useState, useCallback, useMemo, useEffect, useRef } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import type { LogsFilters, LogEntry, LogsResponse } from "~/services/logs";
 
@@ -36,15 +36,18 @@ export function useBidirectionalLogs({
   const [loadedPageNumbers, setLoadedPageNumbers] = useState<number[]>([]);
   const [isLoadingPage, setIsLoadingPage] = useState(false);
   const [totalAvailable, setTotalAvailable] = useState(0);
+  const [filterVersion, setFilterVersion] = useState(0);
 
-  // Query key for caching
-  const queryKey = ["logs", projectId, filters];
+  // Query key for caching - include filter version to force new query
+  const queryKey = ["logs", projectId, filterVersion];
 
   // Reset state when filters change
   useEffect(() => {
     setLoadedPages(new Map());
     setLoadedPageNumbers([]);
-  }, [filters]);
+    setTotalAvailable(0);
+    setFilterVersion(v => v + 1); // Increment version to force new query
+  }, [filters.startTime, filters.endTime, filters.method, filters.status, filters.endpoint, filters.ipAddress]);
 
   // Function to fetch a specific page
   const fetchPage = useCallback(async (pageNum: number): Promise<PageData> => {
@@ -66,7 +69,7 @@ export function useBidirectionalLogs({
   }, [projectId, services.logs, filters, logsPerPage]);
 
   // Initial data fetch
-  const { isLoading: isInitialLoading, error: initialError } = useQuery({
+  const { isLoading: isInitialLoading, error: initialError, refetch: refetchInitial } = useQuery({
     queryKey: [...queryKey, "initial"],
     queryFn: async () => {
       const firstPage = await fetchPage(1);
@@ -77,8 +80,10 @@ export function useBidirectionalLogs({
     },
     enabled: enabled && loadedPageNumbers.length === 0,
     refetchInterval: autoRefresh ? refreshInterval : false,
-    staleTime: 5 * 60 * 1000,
-    gcTime: 10 * 60 * 1000,
+    staleTime: 0, // Always considered stale
+    gcTime: 0, // Don't cache at all
+    refetchOnMount: 'always',
+    refetchOnWindowFocus: false,
   });
 
   // Load next page
