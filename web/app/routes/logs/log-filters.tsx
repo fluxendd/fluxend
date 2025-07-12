@@ -29,7 +29,7 @@ import {
   ChevronDownIcon,
   Info,
 } from "lucide-react";
-import { format, subDays } from "date-fns";
+import { format, subDays, startOfDay, endOfDay } from "date-fns";
 import { fromZonedTime } from "date-fns-tz";
 import type { DateRange } from "react-day-picker";
 import { cn } from "~/lib/utils";
@@ -296,127 +296,9 @@ export const LogFilters = memo(({ onFiltersChange, initialFilters }: LogFiltersP
     return hasNonDefaultTimeFilter || hasOtherFilters;
   }, [filters, userTimezone]);
 
-  // Date preset handlers
-  const handleDatePreset = useCallback((preset: 'today' | 'yesterday' | 'last3days') => {
-    const now = new Date();
-    let fromDate: Date;
-    let toDate: Date;
-    
-    switch (preset) {
-      case 'today':
-        fromDate = new Date();
-        fromDate.setHours(0, 0, 0, 0);
-        toDate = new Date();
-        toDate.setHours(23, 59, 59, 999);
-        break;
-      case 'yesterday':
-        fromDate = subDays(now, 1);
-        fromDate.setHours(0, 0, 0, 0);
-        toDate = subDays(now, 1);
-        toDate.setHours(23, 59, 59, 999);
-        break;
-      case 'last3days':
-        fromDate = subDays(now, 2); // 3 days including today
-        fromDate.setHours(0, 0, 0, 0);
-        toDate = new Date();
-        toDate.setHours(23, 59, 59, 999);
-        break;
-    }
-    
-    // Update date range and times
-    const newDateRange: DateRange = { from: fromDate, to: toDate };
-    setDateRange(newDateRange);
-    setPendingDateRange(newDateRange);
-    setStartTime("00:00:00");
-    setPendingStartTime("00:00:00");
-    setEndTime("23:59:59");
-    setPendingEndTime("23:59:59");
-    
-    // Calculate timestamps - use the dates with times already set
-    const utcStartTime = fromZonedTime(fromDate, userTimezone);
-    const utcEndTime = fromZonedTime(toDate, userTimezone);
-    
-    // Create new filters preserving only non-date filters
-    const { startTime: _, endTime: __, ...otherFilters } = filters;
-    const newFilters: LogsFilters = {
-      ...otherFilters,
-      startTime: Math.floor(utcStartTime.getTime() / 1000),
-      endTime: Math.floor(utcEndTime.getTime() / 1000)
-    };
-    
-    setFilters(newFilters);
-    onFiltersChange(newFilters);
-  }, [filters, onFiltersChange, userTimezone]);
-
-  // Check which preset is active
-  const activePreset = useMemo(() => {
-    if (!dateRange?.from || !dateRange?.to) return null;
-    
-    const now = new Date();
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const yesterday = subDays(today, 1);
-    const threeDaysAgo = subDays(today, 2);
-    
-    // Check if dates match today
-    if (
-      dateRange.from.toDateString() === today.toDateString() &&
-      dateRange.to.toDateString() === today.toDateString()
-    ) {
-      return 'today';
-    }
-    
-    // Check if dates match yesterday
-    if (
-      dateRange.from.toDateString() === yesterday.toDateString() &&
-      dateRange.to.toDateString() === yesterday.toDateString()
-    ) {
-      return 'yesterday';
-    }
-    
-    // Check if dates match last 3 days
-    if (
-      dateRange.from.toDateString() === threeDaysAgo.toDateString() &&
-      dateRange.to.toDateString() === today.toDateString()
-    ) {
-      return 'last3days';
-    }
-    
-    return null;
-  }, [dateRange]);
 
   return (
     <div className="flex flex-wrap items-center gap-2 px-4 py-2 border-b isolate">
-      {/* Date presets */}
-      <div className="flex items-center gap-1">
-        <Button
-          size="sm"
-          variant={activePreset === 'today' ? 'default' : 'outline'}
-          onClick={() => handleDatePreset('today')}
-          className="h-9"
-        >
-          Today
-        </Button>
-        <Button
-          size="sm"
-          variant={activePreset === 'yesterday' ? 'default' : 'outline'}
-          onClick={() => handleDatePreset('yesterday')}
-          className="h-9"
-        >
-          Yesterday
-        </Button>
-        <Button
-          size="sm"
-          variant={activePreset === 'last3days' ? 'default' : 'outline'}
-          onClick={() => handleDatePreset('last3days')}
-          className="h-9"
-        >
-          Last 3 Days
-        </Button>
-      </div>
-      
-      <div className="w-px h-6 bg-border" />
-      
       <Select
         value={filters.method || "all"}
         onValueChange={(value) =>
@@ -518,6 +400,63 @@ export const LogFilters = memo(({ onFiltersChange, initialFilters }: LogFiltersP
               />
             </CardContent>
             <CardFooter className="flex flex-col gap-3 border-t px-3 py-3">
+              <div className="flex flex-wrap gap-2 w-full">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="flex-1 min-w-[80px]"
+                  onClick={() => {
+                    const today = new Date();
+                    const range: DateRange = { from: startOfDay(today), to: endOfDay(today) };
+                    setPendingDateRange(range);
+                    setPendingStartTime("00:00:00");
+                    setPendingEndTime("23:59:59");
+                  }}
+                >
+                  Today
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="flex-1 min-w-[80px]"
+                  onClick={() => {
+                    const yesterday = subDays(new Date(), 1);
+                    const range: DateRange = { from: startOfDay(yesterday), to: endOfDay(yesterday) };
+                    setPendingDateRange(range);
+                    setPendingStartTime("00:00:00");
+                    setPendingEndTime("23:59:59");
+                  }}
+                >
+                  Yesterday
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="flex-1 min-w-[80px]"
+                  onClick={() => {
+                    const today = new Date();
+                    const threeDaysAgo = subDays(today, 2);
+                    const range: DateRange = { from: startOfDay(threeDaysAgo), to: endOfDay(today) };
+                    setPendingDateRange(range);
+                    setPendingStartTime("00:00:00");
+                    setPendingEndTime("23:59:59");
+                  }}
+                >
+                  Last 3 Days
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="flex-1 min-w-[80px]"
+                  onClick={() => {
+                    setPendingDateRange(undefined);
+                    setPendingStartTime("00:00:00");
+                    setPendingEndTime("23:59:59");
+                  }}
+                >
+                  Clear
+                </Button>
+              </div>
               <div className="grid grid-cols-2 gap-4 w-full">
                 <div className="flex flex-col gap-2">
                   <Label htmlFor="start-time">Start Time</Label>
@@ -550,18 +489,27 @@ export const LogFilters = memo(({ onFiltersChange, initialFilters }: LogFiltersP
                   </div>
                 </div>
               </div>
-              <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div className="flex items-center gap-1 cursor-help">
-                      <Info className="h-3 w-3" />
-                      <span>Times are in your local timezone ({userTimezone})</span>
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent className="max-w-xs">
-                    <p>All times are displayed in your local timezone but sent to the server as UTC timestamps for consistent filtering across all users.</p>
-                  </TooltipContent>
-                </Tooltip>
+              <div className="flex items-center justify-between gap-2 w-full">
+                <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="flex items-center gap-1 cursor-help">
+                        <Info className="h-3 w-3" />
+                        <span>Times in {userTimezone}</span>
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent className="max-w-xs">
+                      <p>All times are displayed in your local timezone but sent to the server as UTC timestamps for consistent filtering across all users.</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </div>
+                <Button
+                  size="sm"
+                  onClick={() => setPopoverOpen(false)}
+                  className="px-4"
+                >
+                  Apply
+                </Button>
               </div>
             </CardFooter>
           </Card>
