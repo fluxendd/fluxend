@@ -444,18 +444,6 @@ export const LogFilters = memo(({ onFiltersChange, initialFilters }: LogFiltersP
                 >
                   Last 3 Days
                 </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="flex-1 min-w-[80px]"
-                  onClick={() => {
-                    setPendingDateRange(undefined);
-                    setPendingStartTime("00:00:00");
-                    setPendingEndTime("23:59:59");
-                  }}
-                >
-                  Clear
-                </Button>
               </div>
               <div className="grid grid-cols-2 gap-4 w-full">
                 <div className="flex flex-col gap-2">
