@@ -519,7 +519,40 @@ export const LogFilters = memo(({ onFiltersChange, initialFilters }: LogFiltersP
                 </div>
                 <Button
                   size="sm"
-                  onClick={() => setPopoverOpen(false)}
+                  onClick={() => {
+                    // Apply the pending changes
+                    setDateRange(pendingDateRange);
+                    setStartTime(pendingStartTime);
+                    setEndTime(pendingEndTime);
+                    
+                    const newFilters = { ...filters };
+
+                    if (pendingDateRange?.from) {
+                      const [hours, minutes, seconds] = pendingStartTime.split(":").map(Number);
+                      const startDateTime = new Date(pendingDateRange.from);
+                      startDateTime.setHours(hours, minutes, seconds, 0);
+                      
+                      const utcStartTime = fromZonedTime(startDateTime, userTimezone);
+                      newFilters.startTime = Math.floor(utcStartTime.getTime() / 1000);
+                    } else {
+                      delete newFilters.startTime;
+                    }
+
+                    if (pendingDateRange?.to) {
+                      const [hours, minutes, seconds] = pendingEndTime.split(":").map(Number);
+                      const endDateTime = new Date(pendingDateRange.to);
+                      endDateTime.setHours(hours, minutes, seconds, 0);
+                      
+                      const utcEndTime = fromZonedTime(endDateTime, userTimezone);
+                      newFilters.endTime = Math.floor(utcEndTime.getTime() / 1000);
+                    } else {
+                      delete newFilters.endTime;
+                    }
+
+                    setFilters(newFilters);
+                    onFiltersChange(newFilters);
+                    setPopoverOpen(false);
+                  }}
                   className="px-4"
                 >
                   Apply
