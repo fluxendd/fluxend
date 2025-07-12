@@ -39,7 +39,11 @@ export function SearchDataTableWrapper<TData, TValue>({
 }: SearchDataTableWrapperProps<TData, TValue>) {
   return (
     <div className="flex flex-col h-full gap-4 px-4">
-      <QuerySearchBox columns={rawColumns} onQueryChange={onFilterChange} />
+      <QuerySearchBox 
+        key={`query-search-${tableId}`}
+        columns={rawColumns} 
+        onQueryChange={onFilterChange} 
+      />
       <div
         className={cn(
           "rounded-lg overflow-hidden flex flex-col h-full min-h-0 max-h-full flex-1",
