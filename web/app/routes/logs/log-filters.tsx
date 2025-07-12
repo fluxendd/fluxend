@@ -399,56 +399,57 @@ export const LogFilters = memo(({ onFiltersChange, initialFilters }: LogFiltersP
                 className="bg-transparent p-0"
               />
             </CardContent>
-            <CardFooter className="flex flex-col gap-3 border-t px-3 py-3">
+            <CardFooter className="border-t px-3 py-3">
               <div className="w-full">
                 <Label className="text-sm font-medium mb-2 block">Presets</Label>
                 <div className="flex flex-wrap gap-2 w-full">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="flex-1 min-w-[80px]"
-                  onClick={() => {
-                    const today = new Date();
-                    const range: DateRange = { from: startOfDay(today), to: endOfDay(today) };
-                    setPendingDateRange(range);
-                    setPendingStartTime("00:00:00");
-                    setPendingEndTime("23:59:59");
-                  }}
-                >
-                  Today
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="flex-1 min-w-[80px]"
-                  onClick={() => {
-                    const yesterday = subDays(new Date(), 1);
-                    const range: DateRange = { from: startOfDay(yesterday), to: endOfDay(yesterday) };
-                    setPendingDateRange(range);
-                    setPendingStartTime("00:00:00");
-                    setPendingEndTime("23:59:59");
-                  }}
-                >
-                  Yesterday
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="flex-1 min-w-[80px]"
-                  onClick={() => {
-                    const today = new Date();
-                    const threeDaysAgo = subDays(today, 2);
-                    const range: DateRange = { from: startOfDay(threeDaysAgo), to: endOfDay(today) };
-                    setPendingDateRange(range);
-                    setPendingStartTime("00:00:00");
-                    setPendingEndTime("23:59:59");
-                  }}
-                >
-                  Last 3 Days
-                </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex-1 min-w-[80px]"
+                    onClick={() => {
+                      const today = new Date();
+                      const range: DateRange = { from: startOfDay(today), to: endOfDay(today) };
+                      setPendingDateRange(range);
+                      setPendingStartTime("00:00:00");
+                      setPendingEndTime("23:59:59");
+                    }}
+                  >
+                    Today
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex-1 min-w-[80px]"
+                    onClick={() => {
+                      const yesterday = subDays(new Date(), 1);
+                      const range: DateRange = { from: startOfDay(yesterday), to: endOfDay(yesterday) };
+                      setPendingDateRange(range);
+                      setPendingStartTime("00:00:00");
+                      setPendingEndTime("23:59:59");
+                    }}
+                  >
+                    Yesterday
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex-1 min-w-[80px]"
+                    onClick={() => {
+                      const today = new Date();
+                      const threeDaysAgo = subDays(today, 2);
+                      const range: DateRange = { from: startOfDay(threeDaysAgo), to: endOfDay(today) };
+                      setPendingDateRange(range);
+                      setPendingStartTime("00:00:00");
+                      setPendingEndTime("23:59:59");
+                    }}
+                  >
+                    Last 3 Days
+                  </Button>
                 </div>
               </div>
-              <div className="w-full h-px bg-border" />
+            </CardFooter>
+            <CardFooter className="flex flex-col gap-3 border-t px-3 py-3">
               <div className="grid grid-cols-2 gap-4 w-full">
                 <div className="flex flex-col gap-2">
                   <Label htmlFor="start-time">Start Time</Label>
