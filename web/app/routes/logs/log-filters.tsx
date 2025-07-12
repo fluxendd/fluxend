@@ -469,6 +469,28 @@ export const LogFilters = memo(({ onFiltersChange, initialFilters }: LogFiltersP
                       setPendingDateRange(range);
                       setPendingStartTime("00:00:00");
                       setPendingEndTime("23:59:59");
+                      // Apply immediately and close popover
+                      setDateRange(range);
+                      setStartTime("00:00:00");
+                      setEndTime("23:59:59");
+                      
+                      const startDateTime = new Date(today);
+                      startDateTime.setHours(0, 0, 0, 0);
+                      const endDateTime = new Date(today);
+                      endDateTime.setHours(23, 59, 59, 999);
+                      
+                      const utcStartTime = fromZonedTime(startDateTime, userTimezone);
+                      const utcEndTime = fromZonedTime(endDateTime, userTimezone);
+                      
+                      const newFilters = {
+                        ...filters,
+                        startTime: Math.floor(utcStartTime.getTime() / 1000),
+                        endTime: Math.floor(utcEndTime.getTime() / 1000)
+                      };
+                      
+                      setFilters(newFilters);
+                      onFiltersChange(newFilters);
+                      setPopoverOpen(false);
                     }}
                   >
                     Today
@@ -483,6 +505,28 @@ export const LogFilters = memo(({ onFiltersChange, initialFilters }: LogFiltersP
                       setPendingDateRange(range);
                       setPendingStartTime("00:00:00");
                       setPendingEndTime("23:59:59");
+                      // Apply immediately and close popover
+                      setDateRange(range);
+                      setStartTime("00:00:00");
+                      setEndTime("23:59:59");
+                      
+                      const startDateTime = new Date(yesterday);
+                      startDateTime.setHours(0, 0, 0, 0);
+                      const endDateTime = new Date(yesterday);
+                      endDateTime.setHours(23, 59, 59, 999);
+                      
+                      const utcStartTime = fromZonedTime(startDateTime, userTimezone);
+                      const utcEndTime = fromZonedTime(endDateTime, userTimezone);
+                      
+                      const newFilters = {
+                        ...filters,
+                        startTime: Math.floor(utcStartTime.getTime() / 1000),
+                        endTime: Math.floor(utcEndTime.getTime() / 1000)
+                      };
+                      
+                      setFilters(newFilters);
+                      onFiltersChange(newFilters);
+                      setPopoverOpen(false);
                     }}
                   >
                     Yesterday
@@ -498,6 +542,28 @@ export const LogFilters = memo(({ onFiltersChange, initialFilters }: LogFiltersP
                       setPendingDateRange(range);
                       setPendingStartTime("00:00:00");
                       setPendingEndTime("23:59:59");
+                      // Apply immediately and close popover
+                      setDateRange(range);
+                      setStartTime("00:00:00");
+                      setEndTime("23:59:59");
+                      
+                      const startDateTime = new Date(threeDaysAgo);
+                      startDateTime.setHours(0, 0, 0, 0);
+                      const endDateTime = new Date(today);
+                      endDateTime.setHours(23, 59, 59, 999);
+                      
+                      const utcStartTime = fromZonedTime(startDateTime, userTimezone);
+                      const utcEndTime = fromZonedTime(endDateTime, userTimezone);
+                      
+                      const newFilters = {
+                        ...filters,
+                        startTime: Math.floor(utcStartTime.getTime() / 1000),
+                        endTime: Math.floor(utcEndTime.getTime() / 1000)
+                      };
+                      
+                      setFilters(newFilters);
+                      onFiltersChange(newFilters);
+                      setPopoverOpen(false);
                     }}
                   >
                     Last 3 Days
