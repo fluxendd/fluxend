@@ -270,7 +270,6 @@ export const LogFilters = memo(({ onFiltersChange, initialFilters }: LogFiltersP
     onFiltersChange(filters);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Check if we have non-default filters
   // Helper function to apply preset date range
   const applyPreset = useCallback((fromDate: Date, toDate: Date) => {
     const range: DateRange = { from: fromDate, to: toDate };
