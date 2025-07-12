@@ -29,16 +29,30 @@ interface QuerySearchBoxProps {
   columns: any[];
   onQueryChange: (params: Record<string, string>) => void;
   className?: string;
-  initialQuery?: string;
+  value?: string;
+  onChange?: (query: string) => void;
 }
 
 export function QuerySearchBox({
   columns,
   onQueryChange,
   className,
-  initialQuery = "",
+  value,
+  onChange,
 }: QuerySearchBoxProps) {
-  const [query, setQuery] = useState<string>(initialQuery);
+  // Use controlled mode if value and onChange are provided
+  const [internalQuery, setInternalQuery] = useState<string>("");
+  const query = value !== undefined ? value : internalQuery;
+  
+  const setQuery = useCallback((newValue: string | ((prev: string) => string)) => {
+    if (onChange) {
+      const actualValue = typeof newValue === 'function' ? newValue(query) : newValue;
+      onChange(actualValue);
+    } else {
+      setInternalQuery(newValue);
+    }
+  }, [onChange, query]);
+  
   const [activeQuery, setActiveQuery] = useState<string | null>(null);
   const [isShowingHelp, setIsShowingHelp] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -434,7 +448,7 @@ export function QuerySearchBox({
       console.error("Error parsing query:", error);
       setErrorMessage("Invalid query format. See help for examples.");
     }
-  }, [query, columns, onQueryChange]);
+  }, [query, columns, onQueryChange, setQuery]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {

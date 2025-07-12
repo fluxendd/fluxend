@@ -21,6 +21,8 @@ interface SearchDataTableWrapperProps<TData, TValue> {
   projectId: string;
   tableId: string;
   onFilterChange: (filters: Record<string, string>) => void;
+  searchQuery?: string;
+  onSearchQueryChange?: (query: string) => void;
   tableMeta?: any;
 }
 
@@ -37,6 +39,8 @@ export function SearchDataTableWrapper<TData, TValue>({
   projectId,
   tableId,
   onFilterChange,
+  searchQuery,
+  onSearchQueryChange,
   tableMeta,
 }: SearchDataTableWrapperProps<TData, TValue>) {
   return (
@@ -44,7 +48,9 @@ export function SearchDataTableWrapper<TData, TValue>({
       <QuerySearchBox 
         key={`query-search-${tableId}`}
         columns={rawColumns} 
-        onQueryChange={onFilterChange} 
+        onQueryChange={onFilterChange}
+        value={searchQuery}
+        onChange={onSearchQueryChange}
       />
       <div
         className={cn(
