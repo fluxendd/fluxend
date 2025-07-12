@@ -118,6 +118,7 @@ export default function TablePageContent({ params }: Route.ComponentProps) {
   }, [columnsData, tableId]);
 
   const [filterParams, setFilterParams] = useState<Record<string, string>>({});
+  const [searchQuery, setSearchQuery] = useState<string>("");
 
   // Handle filter changes with pagination reset
   const handleFilterChange = useCallback(
@@ -323,6 +324,8 @@ export default function TablePageContent({ params }: Route.ComponentProps) {
               projectId={projectId}
               tableId={tableId}
               onFilterChange={handleFilterChange}
+              searchQuery={searchQuery}
+              onSearchQueryChange={setSearchQuery}
               onPaginationChange={onPaginationChange}
               tableMeta={tableMeta}
             />

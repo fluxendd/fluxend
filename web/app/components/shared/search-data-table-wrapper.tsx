@@ -21,6 +21,8 @@ interface SearchDataTableWrapperProps<TData, TValue> {
   projectId: string;
   tableId: string;
   onFilterChange: (filters: Record<string, string>) => void;
+  searchQuery?: string;
+  onSearchQueryChange?: (query: string) => void;
   tableMeta?: any;
 }
 
@@ -34,12 +36,22 @@ export function SearchDataTableWrapper<TData, TValue>({
   pagination,
   onPaginationChange,
   totalRows,
+  projectId,
+  tableId,
   onFilterChange,
+  searchQuery,
+  onSearchQueryChange,
   tableMeta,
 }: SearchDataTableWrapperProps<TData, TValue>) {
   return (
     <div className="flex flex-col h-full gap-4 px-4">
-      <QuerySearchBox columns={rawColumns} onQueryChange={onFilterChange} />
+      <QuerySearchBox 
+        key={`query-search-${tableId}`}
+        columns={rawColumns} 
+        onQueryChange={onFilterChange}
+        value={searchQuery}
+        onChange={onSearchQueryChange}
+      />
       <div
         className={cn(
           "rounded-lg overflow-hidden flex flex-col h-full min-h-0 max-h-full flex-1",
