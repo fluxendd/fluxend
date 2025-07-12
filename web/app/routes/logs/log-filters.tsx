@@ -400,7 +400,9 @@ export const LogFilters = memo(({ onFiltersChange, initialFilters }: LogFiltersP
               />
             </CardContent>
             <CardFooter className="flex flex-col gap-3 border-t px-3 py-3">
-              <div className="flex flex-wrap gap-2 w-full">
+              <div className="w-full">
+                <Label className="text-sm font-medium mb-2 block">Presets</Label>
+                <div className="flex flex-wrap gap-2 w-full">
                 <Button
                   variant="outline"
                   size="sm"
@@ -444,7 +446,9 @@ export const LogFilters = memo(({ onFiltersChange, initialFilters }: LogFiltersP
                 >
                   Last 3 Days
                 </Button>
+                </div>
               </div>
+              <div className="w-full h-px bg-border" />
               <div className="grid grid-cols-2 gap-4 w-full">
                 <div className="flex flex-col gap-2">
                   <Label htmlFor="start-time">Start Time</Label>
