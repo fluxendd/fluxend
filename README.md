@@ -1,6 +1,5 @@
 # ⚡️ Fluxend
 **Fluxend** is a **blazing-fast, self-hosted BaaS** built with Go — no lock-in. Ship production-grade backends with full control over your data
-
 <div align="center">
   
 
@@ -12,6 +11,10 @@
 [🛠️ **Troubleshooting**](https://docs.fluxend.app/essentials/troubleshooting)
 
 </div>
+
+<p align="center">
+  <img src="web/public/demo.gif" alt="Demo">
+</p>
 
 ## 🔥 Features
 
