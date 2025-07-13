@@ -21,7 +21,7 @@ setup: ## Interactive setup for new users
 	@echo "🚀 Setting up Fluxend..."
 	@make check-deps
 	@make setup-env
-	@make up
+	@make build
 	@make migration.up
 	@make seed.fresh
 	@make verify-setup
@@ -41,10 +41,8 @@ setup-env:
 	fi
 
 verify-setup:
-	@echo "🔍 Verifying setup..."
-	@sleep 5
-	@$(DOCKER_COMPOSE) ps
-	@echo "✅ Setup complete! Fluxend is flying."
+	@scripts/verify.sh
+
 
 build: ## Build the project with all containers
 	@make down

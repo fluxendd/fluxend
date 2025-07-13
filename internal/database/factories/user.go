@@ -2,6 +2,7 @@ package factories
 
 import (
 	"fluxend/internal/config/constants"
+	"fluxend/internal/domain/organization"
 	"fluxend/internal/domain/user"
 	"fluxend/pkg"
 	"github.com/samber/do"
@@ -13,13 +14,18 @@ const defaultPassword = "password"
 type UserOption func(user *user.User)
 
 type UserFactory struct {
-	repo user.Repository
+	userRepo         user.Repository
+	organizationRepo organization.Repository
 }
 
 func NewUserFactory(injector *do.Injector) (*UserFactory, error) {
-	repo := do.MustInvoke[user.Repository](injector)
+	userRepo := do.MustInvoke[user.Repository](injector)
+	organizationRepo := do.MustInvoke[organization.Repository](injector)
 
-	return &UserFactory{repo: repo}, nil
+	return &UserFactory{
+		userRepo:         userRepo,
+		organizationRepo: organizationRepo,
+	}, nil
 }
 
 // Create a user with options
@@ -37,7 +43,18 @@ func (f *UserFactory) Create(opts ...UserOption) (*user.User, error) {
 		opt(inputUser)
 	}
 
-	createdUser, err := f.repo.Create(inputUser)
+	createdUser, err := f.userRepo.Create(inputUser)
+	if err != nil {
+		return nil, err
+	}
+
+	inputOrganization := &organization.Organization{
+		Name:      pkg.Faker.Company().Name(),
+		CreatedBy: createdUser.Uuid,
+		UpdatedBy: createdUser.Uuid,
+	}
+
+	_, err = f.organizationRepo.Create(inputOrganization, createdUser.Uuid)
 	if err != nil {
 		return nil, err
 	}
