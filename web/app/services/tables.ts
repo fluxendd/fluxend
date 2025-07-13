@@ -80,6 +80,18 @@ export function createTablesService(authToken: string) {
     return data;
   };
 
+  const createTableColumns = async (projectId: string, tableName: string, data: any) => {
+    const fetchOptions: RequestInit = {
+      headers: {
+        "X-Project": projectId,
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authToken}`,
+      },
+    };
+
+    return post(`/tables/public.${tableName}/columns`, data, fetchOptions);
+  };
+
   const updateTableColumns = async (projectId: string, tableName: string, data: any) => {
     const fetchOptions: RequestInit = {
       headers: {
@@ -123,6 +135,7 @@ export function createTablesService(authToken: string) {
     getTableRows,
     createTable,
     deleteTable,
+    createTableColumns,
     updateTableColumns,
     updateTableRow,
   };

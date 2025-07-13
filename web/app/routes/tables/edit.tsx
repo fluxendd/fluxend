@@ -91,37 +91,73 @@ export default function EditTable() {
 
     setIsSubmitting(true);
     try {
-      // API expects only columns array
-      const requestBody = {
+      // Get current columns to compare
+      const currentResponse = await services.tables.getTableColumns(projectId, tableId);
+      if (!currentResponse.ok) {
+        throw new Error("Failed to fetch current table columns");
+      }
+      const currentColumnsData = await currentResponse.json();
+      const currentColumns = currentColumnsData.content;
+
+      // Extract current column names for comparison
+      const currentColumnNames = new Set(currentColumns.map((col: Column) => col.name));
+
+      // Separate new columns from existing ones
+      const newColumns = data.columns.filter(col => !currentColumnNames.has(col.name));
+
+      // Create new columns first if any exist
+      if (newColumns.length > 0) {
+        const createRequestBody = {
+          columns: newColumns.map(col => ({
+            name: col.name,
+            type: col.type,
+          })),
+        };
+
+        const createResponse = await services.tables.createTableColumns(
+            projectId,
+            tableId,
+            createRequestBody
+        );
+
+        if (!createResponse.ok) {
+          const errorData = await createResponse.json().catch(() => ({}));
+          throw new Error(errorData.message || "Failed to create new columns");
+        }
+      }
+
+      // Update with ALL columns (existing + new) - this will also handle deletions of columns not in the request
+      const updateRequestBody = {
         columns: data.columns.map(col => ({
           name: col.name,
           type: col.type,
         })),
       };
 
-      const response = await services.tables.updateTableColumns(
-        projectId,
-        tableId,
-        requestBody
+      const updateResponse = await services.tables.updateTableColumns(
+          projectId,
+          tableId,
+          updateRequestBody
       );
 
-      if (response.ok) {
-        toast.success("Table updated successfully");
-        
-        // Invalidate queries to refresh data
-        await queryClient.invalidateQueries({
-          queryKey: ["columns", projectId, tableId],
-        });
-        await queryClient.invalidateQueries({
-          queryKey: ["tables", projectId],
-        });
-
-        // Navigate back to the table view
-        navigate(`/projects/${projectId}/tables/${tableId}`);
-      } else {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || "Failed to update table");
+      if (!updateResponse.ok) {
+        const errorData = await updateResponse.json().catch(() => ({}));
+        throw new Error(errorData.message || "Failed to update table columns");
       }
+
+      toast.success("Table updated successfully");
+
+      // Invalidate queries to refresh data
+      await queryClient.invalidateQueries({
+        queryKey: ["columns", projectId, tableId],
+      });
+      await queryClient.invalidateQueries({
+        queryKey: ["tables", projectId],
+      });
+
+      // Navigate back to the table view
+      navigate(`/projects/${projectId}/tables/${tableId}`);
+
     } catch (error) {
       console.error("Error updating table:", error);
       toast.error("Failed to update table. Please try again.");
