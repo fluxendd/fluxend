@@ -26,23 +26,23 @@ type TableServiceImpl struct {
 	connectionService ConnectionService
 	fileImportService FileImportService
 	projectPolicy     *project.Policy
-	databaseRepo      shared.DatabaseService
+	postgrestService  shared.PostgrestService
 	projectRepo       project.Repository
 }
 
 func NewTableService(injector *do.Injector) (TableService, error) {
 	connectionService := do.MustInvoke[ConnectionService](injector)
 	policy := do.MustInvoke[*project.Policy](injector)
-	databaseRepo := do.MustInvoke[shared.DatabaseService](injector)
 	projectRepo := do.MustInvoke[project.Repository](injector)
 	fileImportService := do.MustInvoke[FileImportService](injector)
+	postgrestService := do.MustInvoke[shared.PostgrestService](injector)
 
 	return &TableServiceImpl{
 		connectionService: connectionService,
 		fileImportService: fileImportService,
 		projectPolicy:     policy,
-		databaseRepo:      databaseRepo,
 		projectRepo:       projectRepo,
+		postgrestService:  postgrestService,
 	}, nil
 }
 
@@ -118,6 +118,8 @@ func (s *TableServiceImpl) Create(request CreateTableInput, authUser auth.User) 
 		return Table{}, err
 	}
 
+	s.postgrestService.RefreshSchemaCache(fetchedProject.DBName)
+
 	return clientTableRepo.GetByNameInSchema(pkg.ParseTableName(request.Name))
 }
 
@@ -166,6 +168,8 @@ func (s *TableServiceImpl) Upload(request UploadTableInput, authUser auth.User) 
 		return Table{}, err
 	}
 
+	s.postgrestService.RefreshSchemaCache(fetchedProject.DBName)
+
 	return clientTableRepo.GetByNameInSchema(pkg.ParseTableName(request.Name))
 }
 
@@ -199,6 +203,7 @@ func (s *TableServiceImpl) Duplicate(fullTableName string, authUser auth.User, r
 	}
 
 	fetchedTable.Name = request.Name
+	s.postgrestService.RefreshSchemaCache(fetchedProject.DBName)
 
 	return &fetchedTable, nil
 }

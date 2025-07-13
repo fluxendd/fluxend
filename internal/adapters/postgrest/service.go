@@ -176,6 +176,24 @@ func (s *ServiceImpl) buildStartCommand(dbName string) []string {
 	return response
 }
 
+func (s *ServiceImpl) RefreshSchemaCache(dbName string) {
+	// Why we need this: https://postgrest.org/en/v10/schema_cache.html
+	// docker kill -s SIGUSR1 <container>
+
+	containerName := s.getContainerName(dbName)
+
+	cmd := []string{"docker", "kill", "-s", "SIGUSR1", containerName}
+	if err := pkg.ExecuteCommand(cmd); err != nil {
+		log.Error().
+			Str("action", constants.ActionPostgrest).
+			Str("db", dbName).
+			Str("error", err.Error()).
+			Msg("failed to refresh schema cache")
+
+		return
+	}
+}
+
 func (s *ServiceImpl) getContainerName(dbName string) string {
 	return fmt.Sprintf("postgrest_%s", dbName)
 }
