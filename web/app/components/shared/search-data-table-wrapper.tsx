@@ -6,6 +6,7 @@ import type {
   ColumnDef,
   OnChangeFn,
   PaginationState,
+  RowSelectionState,
 } from "@tanstack/react-table";
 
 interface SearchDataTableWrapperProps<TData, TValue> {
@@ -24,6 +25,9 @@ interface SearchDataTableWrapperProps<TData, TValue> {
   searchQuery?: string;
   onSearchQueryChange?: (query: string) => void;
   tableMeta?: any;
+  onRowSelectionChange?: (selectedRows: TData[]) => void;
+  rowSelection?: RowSelectionState;
+  onRowSelectionStateChange?: OnChangeFn<RowSelectionState>;
 }
 
 export function SearchDataTableWrapper<TData, TValue>({
@@ -42,6 +46,9 @@ export function SearchDataTableWrapper<TData, TValue>({
   searchQuery,
   onSearchQueryChange,
   tableMeta,
+  onRowSelectionChange,
+  rowSelection,
+  onRowSelectionStateChange,
 }: SearchDataTableWrapperProps<TData, TValue>) {
   return (
     <div className="flex flex-col h-full gap-4 px-4">
@@ -67,6 +74,9 @@ export function SearchDataTableWrapper<TData, TValue>({
           onPaginationChange={onPaginationChange}
           totalRows={totalRows}
           tableMeta={tableMeta}
+          onRowSelectionChange={onRowSelectionChange}
+          rowSelection={rowSelection}
+          onRowSelectionStateChange={onRowSelectionStateChange}
         />
       </div>
     </div>

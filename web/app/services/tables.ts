@@ -129,6 +129,45 @@ export function createTablesService(authToken: string) {
     return patch(tableId, data, fetchOptions);
   };
 
+  const deleteTableRows = async (
+    projectId: string,
+    tableId: string,
+    rowIds: string[],
+    options?: {
+      baseUrl?: string;
+    }
+  ) => {
+    // Validate input
+    if (!rowIds || rowIds.length === 0) {
+      throw new Error('No row IDs provided for deletion');
+    }
+
+    // Escape IDs to prevent injection
+    const escapedIds = rowIds.map(id => 
+      // Remove any special characters that could break the query
+      String(id).replace(/[^a-zA-Z0-9-_]/g, '')
+    ).filter(Boolean);
+
+    if (escapedIds.length === 0) {
+      throw new Error('No valid row IDs provided for deletion');
+    }
+
+    const fetchOptions: APIRequestOptions = {
+      headers: {
+        "X-Project": projectId,
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authToken}`,
+        "Prefer": "count=exact", // Return count of deleted rows
+      },
+      baseUrl: options?.baseUrl,
+      params: {
+        id: `in.(${escapedIds.join(",")})` // PostgREST filter syntax for multiple IDs
+      }
+    };
+
+    return del(tableId, fetchOptions);
+  };
+
   return {
     getAllTables,
     getTableColumns,
@@ -138,6 +177,7 @@ export function createTablesService(authToken: string) {
     createTableColumns,
     updateTableColumns,
     updateTableRow,
+    deleteTableRows,
   };
 }
 

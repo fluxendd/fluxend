@@ -1,12 +1,13 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import type { Route } from "./+types/page";
 import { columnsQuery, rowsQuery, prepareColumns } from "./columns";
-import { useState, useMemo, useCallback, useRef } from "react";
+import { useState, useMemo, useCallback, useRef, useEffect } from "react";
 import { RefreshButton } from "~/components/shared/refresh-button";
 import { SearchDataTableWrapper } from "~/components/shared/search-data-table-wrapper";
 import { DataTableSkeleton } from "~/components/shared/data-table-skeleton";
 import { useNavigate, useOutletContext } from "react-router";
 import type { ProjectLayoutOutletContext } from "~/components/shared/project-layout";
+import type { RowSelectionState } from "@tanstack/react-table";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -49,7 +50,10 @@ export default function TablePageContent({ params }: Route.ComponentProps) {
     pageIndex: DEFAULT_PAGE_INDEX,
     pageSize: DEFAULT_PAGE_SIZE,
   });
-  // Remove editing state as we're now handling it per cell
+  const [selectedRows, setSelectedRows] = useState<TableRow[]>([]);
+  const [rowSelectionState, setRowSelectionState] = useState<RowSelectionState>({});
+  const [isDeletingRows, setIsDeletingRows] = useState(false);
+  const [showBulkDeleteDialog, setShowBulkDeleteDialog] = useState(false);
 
   const {
     isLoading: isColumnsLoading,
@@ -226,22 +230,162 @@ export default function TablePageContent({ params }: Route.ComponentProps) {
     }
   }, [tableId, projectId, queryClient, navigate]);
 
+  const handleBulkDelete = useCallback(async () => {
+    if (!tableId || !projectId || !projectDetails?.dbName || selectedRows.length === 0) return;
+
+    const rowIds = selectedRows.map(row => row.id).filter(Boolean);
+    if (rowIds.length === 0) {
+      toast.error('No valid rows selected for deletion');
+      return;
+    }
+
+    setIsDeletingRows(true);
+    
+    try {
+      const baseDomain = import.meta.env.VITE_FLX_BASE_DOMAIN;
+      const httpScheme = import.meta.env.VITE_FLX_HTTP_SCHEME;
+      const baseUrl = `${httpScheme}://${projectDetails.dbName}.${baseDomain}/`;
+
+      const response = await services.tables.deleteTableRows(
+        projectId,
+        tableId,
+        rowIds,
+        {
+          baseUrl,
+        }
+      );
+
+      if (response.ok) {
+        // Invalidate rows query to refresh the table data
+        await queryClient.invalidateQueries({
+          queryKey: [
+            "rows",
+            projectId,
+            tableId,
+            pagination.pageSize,
+            pagination.pageIndex,
+            filterParams,
+          ],
+        });
+
+        toast.success(`Successfully deleted ${rowIds.length} row${rowIds.length > 1 ? 's' : ''}`);
+        setSelectedRows([]); // Clear selection after successful deletion
+        setRowSelectionState({}); // Clear the selection state
+        setShowBulkDeleteDialog(false);
+      } else {
+        // Try to extract error message from response
+        try {
+          const errorData = await response.json();
+          const errorMessage = errorData?.message || errorData?.error || errorData?.detail || 'Failed to delete rows';
+          toast.error(errorMessage);
+        } catch {
+          toast.error('Failed to delete rows');
+        }
+      }
+    } catch (error) {
+      // Handle network errors or other exceptions
+      const errorMessage = error instanceof Error ? error.message : 'Network error occurred';
+      toast.error(errorMessage);
+    } finally {
+      setIsDeletingRows(false);
+    }
+  }, [tableId, projectId, projectDetails?.dbName, queryClient, pagination, filterParams, services.tables, selectedRows]);
+
   const noTableSelected = !tableId;
 
   const tableMeta = useMemo(() => ({
     onCellUpdate: handleCellUpdate,
   }), [handleCellUpdate]);
 
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Cmd/Ctrl + A to select all
+      if ((e.metaKey || e.ctrlKey) && e.key === 'a' && !e.shiftKey) {
+        const allRowsSelection: RowSelectionState = {};
+        rows.forEach((_, index) => {
+          allRowsSelection[index] = true;
+        });
+        setRowSelectionState(allRowsSelection);
+        e.preventDefault();
+      }
+      
+      // Delete key to open delete dialog when rows are selected
+      if (e.key === 'Delete' && selectedRows.length > 0 && !isDeletingRows) {
+        setShowBulkDeleteDialog(true);
+        e.preventDefault();
+      }
+      
+      // Escape to clear selection
+      if (e.key === 'Escape' && selectedRows.length > 0) {
+        setRowSelectionState({});
+        setSelectedRows([]);
+        e.preventDefault();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [selectedRows.length, rows, isDeletingRows]);
+
   return (
     <div className="flex flex-col h-full overflow-hidden">
       <div className="border-b px-4 py-2 mb-2 flex-shrink-0">
         <div className="flex items-center justify-between">
-          <div className="text-base font-bold text-foreground h-[32px] flex flex-col justify-center">
-            Tables / {tableId && `${tableId}`}
+          <div className="flex items-center gap-3">
+            <div className="text-base font-bold text-foreground h-[32px] flex flex-col justify-center">
+              Tables / {tableId && `${tableId}`}
+            </div>
+            {selectedRows.length > 0 && (
+              <div className="text-sm text-muted-foreground">
+                ({selectedRows.length} selected)
+              </div>
+            )}
           </div>
           <div className="flex items-center gap-2">
             {!noTableSelected && (
               <>
+                {selectedRows.length > 0 && (
+                  <>
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="sm"
+                      className="cursor-pointer"
+                      onClick={() => setShowBulkDeleteDialog(true)}
+                      disabled={isDeletingRows}
+                      title={`Delete ${selectedRows.length} selected row${selectedRows.length > 1 ? 's' : ''}`}
+                      aria-label={`Delete ${selectedRows.length} selected row${selectedRows.length > 1 ? 's' : ''}`}
+                    >
+                      <Trash2 className="h-4 w-4 mr-2" aria-hidden="true" />
+                      Delete {selectedRows.length} row{selectedRows.length > 1 ? 's' : ''}
+                    </Button>
+                    <AlertDialog open={showBulkDeleteDialog} onOpenChange={setShowBulkDeleteDialog}>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>
+                            Delete {selectedRows.length} row{selectedRows.length > 1 ? 's' : ''}?
+                          </AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This action cannot be undone. This will permanently delete
+                            <strong className="text-destructive"> {selectedRows.length} </strong>
+                            selected row{selectedRows.length > 1 ? 's' : ''} from the table.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel disabled={isDeletingRows}>Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={handleBulkDelete}
+                            className="cursor-pointer bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                            disabled={isDeletingRows}
+                          >
+                            {isDeletingRows ? "Deleting..." : "Delete"}
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </>
+                )}
                 <Button
                   type="button"
                   variant="ghost"
@@ -328,6 +472,9 @@ export default function TablePageContent({ params }: Route.ComponentProps) {
               onSearchQueryChange={setSearchQuery}
               onPaginationChange={onPaginationChange}
               tableMeta={tableMeta}
+              onRowSelectionChange={setSelectedRows}
+              rowSelection={rowSelectionState}
+              onRowSelectionStateChange={setRowSelectionState}
             />
           </div>
         )}
