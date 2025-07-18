@@ -28,7 +28,7 @@ export function meta({}: Route.MetaArgs) {
 import { Label } from "~/components/ui/label";
 import { Input } from "~/components/ui/input";
 import { useEffect, useState } from "react";
-import {Textarea} from "~/components/ui/textarea";
+import { Textarea } from "~/components/ui/textarea";
 
 export async function loader({ request }: Route.LoaderArgs) {
   const authToken = await getServerAuthToken(request.headers);
@@ -47,9 +47,13 @@ export async function loader({ request }: Route.LoaderArgs) {
 
   const services = initializeServices(authToken);
 
-  const { content: projects } = await services.user.getUserProjects(
+  const { content: projects, ok } = await services.user.getUserProjects(
     organizationId
   );
+
+  if (!ok) {
+    return redirect("/logout");
+  }
 
   return { title: "Projects", projects: projects || [] };
 }
@@ -89,7 +93,11 @@ const CreateProjectDialog = ({ children }: { children: React.ReactNode }) => {
           <div className="grid gap-4">
             <div className="grid gap-3">
               <Label htmlFor="description">Description</Label>
-              <Textarea id="description" name="description" placeholder="What is this project about?" />
+              <Textarea
+                id="description"
+                name="description"
+                placeholder="What is this project about?"
+              />
             </div>
           </div>
           <DialogFooter>
