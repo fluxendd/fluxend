@@ -62,27 +62,7 @@ export const LogFilters = memo(({ onFiltersChange, initialFilters }: LogFiltersP
     // Only access browser APIs after hydration
     const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
     setUserTimezone(tz);
-    
-    // Update initial filters with correct timezone if no filters were provided
-    if (!initialFilters || Object.keys(initialFilters).length === 0) {
-      const today = new Date();
-      const startOfDayLocal = new Date(today);
-      startOfDayLocal.setHours(0, 0, 0, 0);
-      const endOfDayLocal = new Date(today);
-      endOfDayLocal.setHours(23, 59, 59, 999);
-      
-      const startOfDayUTC = fromZonedTime(startOfDayLocal, tz);
-      const endOfDayUTC = fromZonedTime(endOfDayLocal, tz);
-      
-      const newFilters = {
-        startTime: Math.floor(startOfDayUTC.getTime() / 1000),
-        endTime: Math.floor(endOfDayUTC.getTime() / 1000)
-      };
-      
-      setFilters(newFilters);
-      onFiltersChange(newFilters);
-    }
-  }, [initialFilters, onFiltersChange]);
+  }, []);
   
   // Initialize with today's date range in user's timezone
   const today = new Date();
@@ -287,11 +267,6 @@ export const LogFilters = memo(({ onFiltersChange, initialFilters }: LogFiltersP
     setPendingEndTime("23:59:59");
     onFiltersChange(defaultFilters);
   }, [onFiltersChange, userTimezone]);
-
-  // Trigger initial filter change on mount
-  useEffect(() => {
-    onFiltersChange(filters);
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Helper function to apply preset date range
   const applyPreset = useCallback((fromDate: Date, toDate: Date) => {
