@@ -55,8 +55,34 @@ const STATUS_CODES = [
 ];
 
 export const LogFilters = memo(({ onFiltersChange, initialFilters }: LogFiltersProps) => {
-  // Get user's timezone
-  const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  // Get user's timezone - use effect to avoid hydration mismatch
+  const [userTimezone, setUserTimezone] = useState<string>('UTC');
+  
+  useEffect(() => {
+    // Only access browser APIs after hydration
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    setUserTimezone(tz);
+    
+    // Update initial filters with correct timezone if no filters were provided
+    if (!initialFilters || Object.keys(initialFilters).length === 0) {
+      const today = new Date();
+      const startOfDayLocal = new Date(today);
+      startOfDayLocal.setHours(0, 0, 0, 0);
+      const endOfDayLocal = new Date(today);
+      endOfDayLocal.setHours(23, 59, 59, 999);
+      
+      const startOfDayUTC = fromZonedTime(startOfDayLocal, tz);
+      const endOfDayUTC = fromZonedTime(endOfDayLocal, tz);
+      
+      const newFilters = {
+        startTime: Math.floor(startOfDayUTC.getTime() / 1000),
+        endTime: Math.floor(endOfDayUTC.getTime() / 1000)
+      };
+      
+      setFilters(newFilters);
+      onFiltersChange(newFilters);
+    }
+  }, [initialFilters, onFiltersChange]);
   
   // Initialize with today's date range in user's timezone
   const today = new Date();
@@ -66,15 +92,12 @@ export const LogFilters = memo(({ onFiltersChange, initialFilters }: LogFiltersP
     if (initialFilters && Object.keys(initialFilters).length > 0) {
       return initialFilters;
     }
-    // Calculate initial filters with today's date
-    // Calculate UTC timestamps for start and end of day in user's timezone
-    const startOfDayLocal = new Date(today);
-    startOfDayLocal.setHours(0, 0, 0, 0);
-    const endOfDayLocal = new Date(today);
-    endOfDayLocal.setHours(23, 59, 59, 999);
-    
-    const startOfDayUTC = fromZonedTime(startOfDayLocal, userTimezone);
-    const endOfDayUTC = fromZonedTime(endOfDayLocal, userTimezone);
+    // Use UTC for initial state to avoid hydration mismatch
+    // Will be updated with user timezone in useEffect
+    const startOfDayUTC = new Date(today);
+    startOfDayUTC.setUTCHours(0, 0, 0, 0);
+    const endOfDayUTC = new Date(today);
+    endOfDayUTC.setUTCHours(23, 59, 59, 999);
     
     return {
       startTime: Math.floor(startOfDayUTC.getTime() / 1000),
