@@ -35,6 +35,6 @@ func (f *Factory) CreateProvider(providerType string) (Provider, error) {
 	case constants.StorageDriverBackBlaze:
 		return NewBackblazeProvider(f.injector)
 	default:
-		return nil, fmt.Errorf("unsupported email provider: %s", providerType)
+		return nil, fmt.Errorf("unsupported storage provider: %s", providerType)
 	}
 }
