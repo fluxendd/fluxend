@@ -24,6 +24,18 @@ export function getOrganizationIdCookie(headers: Headers): Promise<string> {
   return organizationCookie.parse(cookies);
 }
 
+export function formatBytes(bytes: number, decimals = 2): string {
+  if (bytes === 0) return '0 Bytes';
+
+  const k = 1024;
+  const dm = decimals < 0 ? 0 : decimals;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+}
+
 // TODO: Validate Response with Types using zod
 export async function getTypedResponseData<T>(response: Response): Promise<T> {
   if (response.status === 204) {
