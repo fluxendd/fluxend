@@ -43,7 +43,7 @@ func NewContainerHandler(injector *do.Injector) (*ContainerHandler, error) {
 // @Failure 401 {object} response.UnauthorizedErrorResponse "Unauthorized response"
 // @Failure 500 {object} response.InternalServerErrorResponse "Internal server error response"
 //
-// @Router /storage [get]
+// @Router /containers [get]
 func (ch *ContainerHandler) List(c echo.Context) error {
 	var request dto.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {
@@ -81,7 +81,7 @@ func (ch *ContainerHandler) List(c echo.Context) error {
 // @Failure 401 {object} response.UnauthorizedErrorResponse "Unauthorized response"
 // @Failure 500 {object} response.InternalServerErrorResponse "Internal server error response"
 //
-// @Router /storage/containers/{containerUUID} [get]
+// @Router /containers/{containerUUID} [get]
 func (ch *ContainerHandler) Show(c echo.Context) error {
 	var request dto.DefaultRequestWithProjectHeader
 
@@ -119,7 +119,7 @@ func (ch *ContainerHandler) Show(c echo.Context) error {
 // @Failure 401 {object} response.UnauthorizedErrorResponse "Unauthorized response"
 // @Failure 500 {object} response.InternalServerErrorResponse "Internal server error response"
 //
-// @Router /storage [post]
+// @Router /containers [post]
 func (ch *ContainerHandler) Store(c echo.Context) error {
 	var request containerDto.CreateRequest
 	if err := request.BindAndValidate(c); err != nil {
@@ -157,7 +157,7 @@ func (ch *ContainerHandler) Store(c echo.Context) error {
 // @Failure 401 {object} response.UnauthorizedErrorResponse "Unauthorized response"
 // @Failure 500 {object} response.InternalServerErrorResponse "Internal server error response"
 //
-// @Router /storage/containers/{containerUUID} [put]
+// @Router /containers/{containerUUID} [put]
 func (ch *ContainerHandler) Update(c echo.Context) error {
 	var request containerDto.CreateRequest
 	if err := request.BindAndValidate(c); err != nil {
@@ -198,7 +198,7 @@ func (ch *ContainerHandler) Update(c echo.Context) error {
 // @Failure 401 {object} response.UnauthorizedErrorResponse "Unauthorized response"
 // @Failure 500 {object} response.InternalServerErrorResponse "Internal server error response"
 //
-// @Router /storage/containers/{containerUUID} [delete]
+// @Router /containers/{containerUUID} [delete]
 func (ch *ContainerHandler) Delete(c echo.Context) error {
 	var request dto.DefaultRequestWithProjectHeader
 	if err := request.BindAndValidate(c); err != nil {

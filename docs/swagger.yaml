@@ -1027,6 +1027,268 @@ paths:
       summary: Retrieve backup
       tags:
       - Backups
+  /containers:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a list of container in a specified project.
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Project UUID
+        in: header
+        name: X-Project
+        required: true
+        type: string
+      - description: Page number for pagination
+        in: query
+        name: page
+        type: string
+      - description: Number of items per page
+        in: query
+        name: limit
+        type: string
+      - description: Field to sort by
+        in: query
+        name: sort
+        type: string
+      - description: Sort order (asc or desc)
+        in: query
+        name: order
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of container
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                content:
+                  items:
+                    $ref: '#/definitions/container.Response'
+                  type: array
+              type: object
+        "400":
+          description: Invalid input response
+          schema:
+            $ref: '#/definitions/response.BadRequestErrorResponse'
+        "401":
+          description: Unauthorized response
+          schema:
+            $ref: '#/definitions/response.UnauthorizedErrorResponse'
+        "500":
+          description: Internal server error response
+          schema:
+            $ref: '#/definitions/response.InternalServerErrorResponse'
+      summary: List containers
+      tags:
+      - Containers
+    post:
+      consumes:
+      - application/json
+      description: Add a new container to a project
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Project UUID
+        in: header
+        name: X-Project
+        required: true
+        type: string
+      - description: Container details
+        in: body
+        name: container
+        required: true
+        schema:
+          $ref: '#/definitions/container.CreateRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Container created
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                content:
+                  $ref: '#/definitions/container.Response'
+              type: object
+        "400":
+          description: Bad request response
+          schema:
+            $ref: '#/definitions/response.BadRequestErrorResponse'
+        "401":
+          description: Unauthorized response
+          schema:
+            $ref: '#/definitions/response.UnauthorizedErrorResponse'
+        "422":
+          description: Invalid input response
+          schema:
+            $ref: '#/definitions/response.UnprocessableErrorResponse'
+        "500":
+          description: Internal server error response
+          schema:
+            $ref: '#/definitions/response.InternalServerErrorResponse'
+      summary: Create container
+      tags:
+      - Containers
+  /containers/{containerUUID}:
+    delete:
+      consumes:
+      - application/json
+      description: Remove a container from a project
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Project UUID
+        in: header
+        name: X-Project
+        required: true
+        type: string
+      - description: Container UUID
+        in: path
+        name: containerUUID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Container deleted
+        "400":
+          description: Bad request response
+          schema:
+            $ref: '#/definitions/response.BadRequestErrorResponse'
+        "401":
+          description: Unauthorized response
+          schema:
+            $ref: '#/definitions/response.UnauthorizedErrorResponse'
+        "500":
+          description: Internal server error response
+          schema:
+            $ref: '#/definitions/response.InternalServerErrorResponse'
+      summary: Delete container
+      tags:
+      - Containers
+    get:
+      consumes:
+      - application/json
+      description: Get details of a specific container
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Project UUID
+        in: header
+        name: X-Project
+        required: true
+        type: string
+      - description: Container UUID
+        in: path
+        name: containerUUID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Container details
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                content:
+                  $ref: '#/definitions/container.Response'
+              type: object
+        "400":
+          description: Bad request response
+          schema:
+            $ref: '#/definitions/response.BadRequestErrorResponse'
+        "401":
+          description: Unauthorized response
+          schema:
+            $ref: '#/definitions/response.UnauthorizedErrorResponse'
+        "422":
+          description: Invalid input response
+          schema:
+            $ref: '#/definitions/response.UnprocessableErrorResponse'
+        "500":
+          description: Internal server error response
+          schema:
+            $ref: '#/definitions/response.InternalServerErrorResponse'
+      summary: Retrieve container
+      tags:
+      - Containers
+    put:
+      consumes:
+      - application/json
+      description: Modify an existing container's details
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Project UUID
+        in: header
+        name: X-Project
+        required: true
+        type: string
+      - description: Container UUID
+        in: path
+        name: containerUUID
+        required: true
+        type: string
+      - description: Container details
+        in: body
+        name: container
+        required: true
+        schema:
+          $ref: '#/definitions/container.CreateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Container updated
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                content:
+                  $ref: '#/definitions/container.Response'
+              type: object
+        "400":
+          description: Bad request response
+          schema:
+            $ref: '#/definitions/response.BadRequestErrorResponse'
+        "401":
+          description: Unauthorized response
+          schema:
+            $ref: '#/definitions/response.UnauthorizedErrorResponse'
+        "422":
+          description: Unprocessable input response
+          schema:
+            $ref: '#/definitions/response.UnprocessableErrorResponse'
+        "500":
+          description: Internal server error response
+          schema:
+            $ref: '#/definitions/response.InternalServerErrorResponse'
+      summary: Update container
+      tags:
+      - Containers
   /containers/{containerUUID}/files:
     get:
       consumes:
@@ -3011,268 +3273,6 @@ paths:
       summary: Retrieve project statistics
       tags:
       - Projects
-  /storage:
-    get:
-      consumes:
-      - application/json
-      description: Retrieve a list of container in a specified project.
-      parameters:
-      - description: Bearer Token
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      - description: Project UUID
-        in: header
-        name: X-Project
-        required: true
-        type: string
-      - description: Page number for pagination
-        in: query
-        name: page
-        type: string
-      - description: Number of items per page
-        in: query
-        name: limit
-        type: string
-      - description: Field to sort by
-        in: query
-        name: sort
-        type: string
-      - description: Sort order (asc or desc)
-        in: query
-        name: order
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: List of container
-          schema:
-            allOf:
-            - $ref: '#/definitions/response.Response'
-            - properties:
-                content:
-                  items:
-                    $ref: '#/definitions/container.Response'
-                  type: array
-              type: object
-        "400":
-          description: Invalid input response
-          schema:
-            $ref: '#/definitions/response.BadRequestErrorResponse'
-        "401":
-          description: Unauthorized response
-          schema:
-            $ref: '#/definitions/response.UnauthorizedErrorResponse'
-        "500":
-          description: Internal server error response
-          schema:
-            $ref: '#/definitions/response.InternalServerErrorResponse'
-      summary: List containers
-      tags:
-      - Containers
-    post:
-      consumes:
-      - application/json
-      description: Add a new container to a project
-      parameters:
-      - description: Bearer Token
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      - description: Project UUID
-        in: header
-        name: X-Project
-        required: true
-        type: string
-      - description: Container details
-        in: body
-        name: container
-        required: true
-        schema:
-          $ref: '#/definitions/container.CreateRequest'
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Container created
-          schema:
-            allOf:
-            - $ref: '#/definitions/response.Response'
-            - properties:
-                content:
-                  $ref: '#/definitions/container.Response'
-              type: object
-        "400":
-          description: Bad request response
-          schema:
-            $ref: '#/definitions/response.BadRequestErrorResponse'
-        "401":
-          description: Unauthorized response
-          schema:
-            $ref: '#/definitions/response.UnauthorizedErrorResponse'
-        "422":
-          description: Invalid input response
-          schema:
-            $ref: '#/definitions/response.UnprocessableErrorResponse'
-        "500":
-          description: Internal server error response
-          schema:
-            $ref: '#/definitions/response.InternalServerErrorResponse'
-      summary: Create container
-      tags:
-      - Containers
-  /storage/containers/{containerUUID}:
-    delete:
-      consumes:
-      - application/json
-      description: Remove a container from a project
-      parameters:
-      - description: Bearer Token
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      - description: Project UUID
-        in: header
-        name: X-Project
-        required: true
-        type: string
-      - description: Container UUID
-        in: path
-        name: containerUUID
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "204":
-          description: Container deleted
-        "400":
-          description: Bad request response
-          schema:
-            $ref: '#/definitions/response.BadRequestErrorResponse'
-        "401":
-          description: Unauthorized response
-          schema:
-            $ref: '#/definitions/response.UnauthorizedErrorResponse'
-        "500":
-          description: Internal server error response
-          schema:
-            $ref: '#/definitions/response.InternalServerErrorResponse'
-      summary: Delete container
-      tags:
-      - Containers
-    get:
-      consumes:
-      - application/json
-      description: Get details of a specific container
-      parameters:
-      - description: Bearer Token
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      - description: Project UUID
-        in: header
-        name: X-Project
-        required: true
-        type: string
-      - description: Container UUID
-        in: path
-        name: containerUUID
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Container details
-          schema:
-            allOf:
-            - $ref: '#/definitions/response.Response'
-            - properties:
-                content:
-                  $ref: '#/definitions/container.Response'
-              type: object
-        "400":
-          description: Bad request response
-          schema:
-            $ref: '#/definitions/response.BadRequestErrorResponse'
-        "401":
-          description: Unauthorized response
-          schema:
-            $ref: '#/definitions/response.UnauthorizedErrorResponse'
-        "422":
-          description: Invalid input response
-          schema:
-            $ref: '#/definitions/response.UnprocessableErrorResponse'
-        "500":
-          description: Internal server error response
-          schema:
-            $ref: '#/definitions/response.InternalServerErrorResponse'
-      summary: Retrieve container
-      tags:
-      - Containers
-    put:
-      consumes:
-      - application/json
-      description: Modify an existing container's details
-      parameters:
-      - description: Bearer Token
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      - description: Project UUID
-        in: header
-        name: X-Project
-        required: true
-        type: string
-      - description: Container UUID
-        in: path
-        name: containerUUID
-        required: true
-        type: string
-      - description: Container details
-        in: body
-        name: container
-        required: true
-        schema:
-          $ref: '#/definitions/container.CreateRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Container updated
-          schema:
-            allOf:
-            - $ref: '#/definitions/response.Response'
-            - properties:
-                content:
-                  $ref: '#/definitions/container.Response'
-              type: object
-        "400":
-          description: Bad request response
-          schema:
-            $ref: '#/definitions/response.BadRequestErrorResponse'
-        "401":
-          description: Unauthorized response
-          schema:
-            $ref: '#/definitions/response.UnauthorizedErrorResponse'
-        "422":
-          description: Unprocessable input response
-          schema:
-            $ref: '#/definitions/response.UnprocessableErrorResponse'
-        "500":
-          description: Internal server error response
-          schema:
-            $ref: '#/definitions/response.InternalServerErrorResponse'
-      summary: Update container
-      tags:
-      - Containers
   /tables:
     get:
       consumes:
