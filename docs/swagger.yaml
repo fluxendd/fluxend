@@ -1085,7 +1085,7 @@ paths:
           description: Internal server error response
           schema:
             $ref: '#/definitions/response.InternalServerErrorResponse'
-      summary: List containers
+      summary: Lists containers
       tags:
       - Containers
     post:
@@ -1137,7 +1137,7 @@ paths:
           description: Internal server error response
           schema:
             $ref: '#/definitions/response.InternalServerErrorResponse'
-      summary: Create container
+      summary: Creates container
       tags:
       - Containers
   /containers/{containerUUID}:
@@ -1178,7 +1178,7 @@ paths:
           description: Internal server error response
           schema:
             $ref: '#/definitions/response.InternalServerErrorResponse'
-      summary: Delete container
+      summary: Deletes container
       tags:
       - Containers
     get:
@@ -1229,13 +1229,13 @@ paths:
           description: Internal server error response
           schema:
             $ref: '#/definitions/response.InternalServerErrorResponse'
-      summary: Retrieve container
+      summary: Retrieves container
       tags:
       - Containers
     put:
       consumes:
       - application/json
-      description: Modify an existing container's details
+      description: Modify an existing containers details
       parameters:
       - description: Bearer Token
         in: header
@@ -1286,7 +1286,7 @@ paths:
           description: Internal server error response
           schema:
             $ref: '#/definitions/response.InternalServerErrorResponse'
-      summary: Update container
+      summary: Updates container
       tags:
       - Containers
   /containers/{containerUUID}/files:

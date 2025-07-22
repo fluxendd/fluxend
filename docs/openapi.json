@@ -669,7 +669,7 @@
                 "tags": [
                     "Containers"
                 ],
-                "summary": "List containers",
+                "summary": "Lists containers",
                 "parameters": [
                     {
                         "description": "Bearer Token",
@@ -785,7 +785,7 @@
                 "tags": [
                     "Containers"
                 ],
-                "summary": "Create container",
+                "summary": "Creates container",
                 "parameters": [
                     {
                         "description": "Bearer Token",
@@ -881,7 +881,7 @@
                 "tags": [
                     "Containers"
                 ],
-                "summary": "Retrieve container",
+                "summary": "Retrieves container",
                 "parameters": [
                     {
                         "description": "Bearer Token",
@@ -977,11 +977,11 @@
                 }
             },
             "put": {
-                "description": "Modify an existing container's details",
+                "description": "Modify an existing containers details",
                 "tags": [
                     "Containers"
                 ],
-                "summary": "Update container",
+                "summary": "Updates container",
                 "parameters": [
                     {
                         "description": "Bearer Token",
@@ -1084,7 +1084,7 @@
                 "tags": [
                     "Containers"
                 ],
-                "summary": "Delete container",
+                "summary": "Deletes container",
                 "parameters": [
                     {
                         "description": "Bearer Token",

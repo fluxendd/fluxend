@@ -576,7 +576,7 @@
                 "tags": [
                     "Containers"
                 ],
-                "summary": "List containers",
+                "summary": "Lists containers",
                 "parameters": [
                     {
                         "type": "string",
@@ -670,7 +670,7 @@
                 "tags": [
                     "Containers"
                 ],
-                "summary": "Create container",
+                "summary": "Creates container",
                 "parameters": [
                     {
                         "type": "string",
@@ -754,7 +754,7 @@
                 "tags": [
                     "Containers"
                 ],
-                "summary": "Retrieve container",
+                "summary": "Retrieves container",
                 "parameters": [
                     {
                         "type": "string",
@@ -824,7 +824,7 @@
                 }
             },
             "put": {
-                "description": "Modify an existing container's details",
+                "description": "Modify an existing containers details",
                 "consumes": [
                     "application/json"
                 ],
@@ -834,7 +834,7 @@
                 "tags": [
                     "Containers"
                 ],
-                "summary": "Update container",
+                "summary": "Updates container",
                 "parameters": [
                     {
                         "type": "string",
@@ -923,7 +923,7 @@
                 "tags": [
                     "Containers"
                 ],
-                "summary": "Delete container",
+                "summary": "Deletes container",
                 "parameters": [
                     {
                         "type": "string",

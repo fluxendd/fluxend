@@ -23,7 +23,7 @@ func NewContainerHandler(injector *do.Injector) (*ContainerHandler, error) {
 
 // List retrieves all container
 //
-// @Summary List containers
+// @Summary Lists containers
 // @Description Retrieve a list of container in a specified project.
 // @Tags Containers
 //
@@ -63,7 +63,7 @@ func (ch *ContainerHandler) List(c echo.Context) error {
 
 // Show retrieves details of a specific container.
 //
-// @Summary Retrieve container
+// @Summary Retrieves container
 // @Description Get details of a specific container
 // @Tags Containers
 //
@@ -102,7 +102,7 @@ func (ch *ContainerHandler) Show(c echo.Context) error {
 
 // Store creates a new container
 //
-// @Summary Create container
+// @Summary Creates container
 // @Description Add a new container to a project
 // @Tags Containers
 //
@@ -138,8 +138,8 @@ func (ch *ContainerHandler) Store(c echo.Context) error {
 
 // Update a container
 //
-// @Summary Update container
-// @Description Modify an existing container's details
+// @Summary Updates container
+// @Description Modify an existing containers details
 // @Tags Containers
 //
 // @Accept json
@@ -181,7 +181,7 @@ func (ch *ContainerHandler) Update(c echo.Context) error {
 
 // Delete a container
 //
-// @Summary Delete container
+// @Summary Deletes container
 // @Description Remove a container from a project
 // @Tags Containers
 //
