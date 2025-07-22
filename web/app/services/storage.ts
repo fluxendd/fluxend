@@ -16,7 +16,7 @@ import type {
 export function createStorageService(authToken: string) {
   // Container operations
   const listContainers = async (projectId: string) => {
-    const fetchOptions: RequestInit = {
+    const fetchOptions: APIRequestOptions = {
       headers: {
         "X-Project": projectId,
         Authorization: `Bearer ${authToken}`,
@@ -30,23 +30,21 @@ export function createStorageService(authToken: string) {
   };
 
   const createContainer = async (projectId: string, container: CreateContainerRequest) => {
-    const fetchOptions: RequestInit = {
+    const fetchOptions: APIRequestOptions = {
       headers: {
         "X-Project": projectId,
-        "Content-Type": "application/json",
         Authorization: `Bearer ${authToken}`,
       },
-      body: JSON.stringify(container),
     };
 
-    const response = await post("/containers", fetchOptions);
+    const response = await post("/containers", container, fetchOptions);
     const data = await getTypedResponseData<StorageItemResponse<StorageContainer>>(response);
     
     return data;
   };
 
   const getContainer = async (projectId: string, containerUuid: string) => {
-    const fetchOptions: RequestInit = {
+    const fetchOptions: APIRequestOptions = {
       headers: {
         "X-Project": projectId,
         Authorization: `Bearer ${authToken}`,
@@ -64,23 +62,21 @@ export function createStorageService(authToken: string) {
     containerUuid: string,
     updates: UpdateContainerRequest
   ) => {
-    const fetchOptions: RequestInit = {
+    const fetchOptions: APIRequestOptions = {
       headers: {
         "X-Project": projectId,
-        "Content-Type": "application/json",
         Authorization: `Bearer ${authToken}`,
       },
-      body: JSON.stringify(updates),
     };
 
-    const response = await put(`/storage/containers/${containerUuid}`, fetchOptions);
+    const response = await put(`/storage/containers/${containerUuid}`, updates, fetchOptions);
     const data = await getTypedResponseData<StorageItemResponse<StorageContainer>>(response);
     
     return data;
   };
 
   const deleteContainer = async (projectId: string, containerUuid: string) => {
-    const fetchOptions: RequestInit = {
+    const fetchOptions: APIRequestOptions = {
       headers: {
         "X-Project": projectId,
         Authorization: `Bearer ${authToken}`,
@@ -116,16 +112,14 @@ export function createStorageService(authToken: string) {
     containerUuid: string,
     fileData: CreateFileRequest
   ) => {
-    const fetchOptions: RequestInit = {
+    const fetchOptions: APIRequestOptions = {
       headers: {
         "X-Project": projectId,
-        "Content-Type": "application/json",
         Authorization: `Bearer ${authToken}`,
       },
-      body: JSON.stringify(fileData),
     };
 
-    const response = await post(`/containers/${containerUuid}/files`, fetchOptions);
+    const response = await post(`/containers/${containerUuid}/files`, fileData, fetchOptions);
     const data = await getTypedResponseData<StorageItemResponse<StorageFile>>(response);
     
     return data;
@@ -136,7 +130,7 @@ export function createStorageService(authToken: string) {
     containerUuid: string,
     fileUuid: string
   ) => {
-    const fetchOptions: RequestInit = {
+    const fetchOptions: APIRequestOptions = {
       headers: {
         "X-Project": projectId,
         Authorization: `Bearer ${authToken}`,
@@ -157,7 +151,7 @@ export function createStorageService(authToken: string) {
     containerUuid: string,
     fileUuid: string
   ) => {
-    const fetchOptions: RequestInit = {
+    const fetchOptions: APIRequestOptions = {
       headers: {
         "X-Project": projectId,
         Authorization: `Bearer ${authToken}`,
@@ -177,17 +171,16 @@ export function createStorageService(authToken: string) {
     fileUuid: string,
     renameData: RenameFileRequest
   ) => {
-    const fetchOptions: RequestInit = {
+    const fetchOptions: APIRequestOptions = {
       headers: {
         "X-Project": projectId,
-        "Content-Type": "application/json",
         Authorization: `Bearer ${authToken}`,
       },
-      body: JSON.stringify(renameData),
     };
 
     const response = await put(
       `/containers/${containerUuid}/files/${fileUuid}/rename`,
+      renameData,
       fetchOptions
     );
     const data = await getTypedResponseData<StorageItemResponse<StorageFile>>(response);
