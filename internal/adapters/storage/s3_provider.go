@@ -26,15 +26,21 @@ func NewS3Provider(injector *do.Injector) (Provider, error) {
 	secretKey := os.Getenv("AWS_SECRET_ACCESS_KEY")
 	region := os.Getenv("AWS_REGION")
 
-	cfg, err := config.LoadDefaultConfig(context.TODO(),
+	// Default to us-east-1 if region is empty
+	if region == "" {
+		region = "us-east-1"
+	}
+
+	configOptions := []func(*config.LoadOptions) error{
 		config.WithRegion(region),
 		config.WithCredentialsProvider(aws.NewCredentialsCache(credentials.NewStaticCredentialsProvider(accessKey, secretKey, ""))),
-	)
+	}
+
+	cfg, err := config.LoadDefaultConfig(context.TODO(), configOptions...)
 	if err != nil {
 		return nil, fmt.Errorf("unable to load SDK config, %v", err)
 	}
 
-	// Create an S3 client with the loaded config
 	client := s3.NewFromConfig(cfg)
 
 	return &S3ServiceImpl{
@@ -47,8 +53,11 @@ func (s *S3ServiceImpl) CreateContainer(bucketName string) (string, error) {
 		Bucket: aws.String(bucketName),
 	}
 
-	input.CreateBucketConfiguration = &types.CreateBucketConfiguration{
-		LocationConstraint: types.BucketLocationConstraint(os.Getenv("AWS_REGION")),
+	region := os.Getenv("AWS_REGION")
+	if region != "" && region != "us-east-1" {
+		input.CreateBucketConfiguration = &types.CreateBucketConfiguration{
+			LocationConstraint: types.BucketLocationConstraint(region),
+		}
 	}
 
 	createdBucket, err := s.client.CreateBucket(context.Background(), input)
