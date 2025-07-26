@@ -42,10 +42,9 @@ services:
       timeout: 5s
 
   fluxend_api:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: fluxend/api:latest
     container_name: fluxend_api
+    restart: always
     environment:
       - APP_ENV=${APP_ENV}
       - DATABASE_HOST=fluxend_db
@@ -67,15 +66,9 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock # TODO: Figure out a better way to handle this
 
   fluxend_frontend:
-    build:
-      context: ./web
-      dockerfile: Dockerfile
-      args:
-        - VITE_FLX_INTERNAL_URL=${INTERNAL_URL}
-        - VITE_FLX_API_URL=${API_URL}
-        - VITE_FLX_BASE_DOMAIN=${BASE_DOMAIN}
-        - VITE_FLX_HTTP_SCHEME=${URL_SCHEME}
+    image: fluxend/frontend:latest
     container_name: fluxend_frontend
+    restart: always
     environment:
       - VITE_FLX_INTERNAL_URL=${INTERNAL_URL}
     depends_on:
