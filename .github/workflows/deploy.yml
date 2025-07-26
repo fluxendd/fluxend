@@ -1,7 +1,7 @@
 name: Build and Deploy Fluxend Application
 on:
   push:
-    branches: [ main ]
+    branches: [ "*" ] # remove after testing
     paths-ignore:
       - 'README.md'
       - 'docs/**'
