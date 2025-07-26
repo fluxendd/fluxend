@@ -112,12 +112,12 @@ func (s *ServiceImpl) getRepositories(dbName string) (*sqlx.DB, database.TableRe
 }
 
 func (s *ServiceImpl) filterTables(tables []database.Table, requestedTables string) []database.Table {
-	requestedTableNames := strings.Split(strings.ReplaceAll(requestedTables, " ", ""), ",")
-
-	if len(requestedTableNames) == 0 {
+	requestedTables = strings.ReplaceAll(requestedTables, " ", "")
+	if requestedTables == "" {
 		return tables
 	}
 
+	requestedTableNames := strings.Split(requestedTables, ",")
 	requestedSet := make(map[string]bool)
 	for _, name := range requestedTableNames {
 		requestedSet[name] = true
