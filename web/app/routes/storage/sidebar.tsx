@@ -1,126 +1,121 @@
-import { useState, useMemo } from "react";
-import { NavLink } from "react-router";
+import type { Route } from "./+types/sidebar";
 import {
-  Sidebar,
-  SidebarContent,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarHeader,
-  SidebarInput,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
+  Outlet,
+  redirect,
+  useNavigate,
+  useOutletContext,
+  useParams,
+} from "react-router";
+import { useState, useCallback, useEffect } from "react";
+import {
+  SidebarProvider,
+  SidebarInset,
 } from "~/components/ui/sidebar";
-import { Package2, Plus } from "lucide-react";
-import { TableListSkeleton } from "~/components/shared/collection-list-skeleton";
-import { Button } from "~/components/ui/button";
-import type { StorageContainer } from "~/types/storage";
-import { cn } from "~/lib/utils";
+import { StorageSidebar } from "~/components/storage/sidebar";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import type { ProjectLayoutOutletContext } from "~/components/shared/project-layout";
+import { CreateContainerDialog } from "~/components/storage/create-container-dialog";
+import { toast } from "sonner";
 
-interface StorageSidebarProps {
-  containers: StorageContainer[];
-  activeContainerId?: string;
-  isLoading: boolean;
-  projectId: string;
-  onCreateContainer: () => void;
-}
+export default function StorageLayout() {
+  const { projectDetails, services } = useOutletContext<ProjectLayoutOutletContext>();
+  const projectId = projectDetails?.uuid;
+  const { containerId } = useParams();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
-export function StorageSidebar({
-  containers,
-  activeContainerId,
-  isLoading,
-  projectId,
-  onCreateContainer,
-}: StorageSidebarProps) {
-  const [searchValue, setSearchValue] = useState("");
+  const [createContainerOpen, setCreateContainerOpen] = useState(false);
 
-  const filteredContainers = useMemo(() => {
-    if (!searchValue) return containers;
-    
-    const searchLower = searchValue.toLowerCase();
-    return containers.filter(
-      (container) =>
-        container.name.toLowerCase().includes(searchLower) ||
-        container.description?.toLowerCase().includes(searchLower)
+  // Fetch containers
+  const {
+    isLoading: isContainersLoading,
+    data: containersData,
+    error: containersError,
+  } = useQuery({
+    queryKey: ["storage-containers", projectId],
+    queryFn: () => services.storage.listContainers(projectId!),
+    enabled: !!projectId,
+  });
+
+  const containers = containersData?.content || [];
+
+  // Auto-navigate to the first container if none is selected
+  useEffect(() => {
+    if (!containerId && containers.length > 0 && projectId && !isContainersLoading) {
+      navigate(`/projects/${projectId}/storage/${containers[0].uuid}`, { replace: true });
+    }
+  }, [containerId, containers, projectId, navigate, isContainersLoading]);
+
+  const handleCreateContainer = useCallback(async (container: {
+    name: string;
+    description?: string;
+    is_public: boolean;
+    max_file_size: number;
+  }) => {
+    if (!projectId) return;
+
+    try {
+      const response = await services.storage.createContainer(projectId, {
+        projectUUID: projectId,
+        name: container.name,
+        description: container.description || "",
+        is_public: container.is_public,
+        max_file_size: container.max_file_size,
+      });
+
+      if (response.success) {
+        await queryClient.invalidateQueries({
+          queryKey: ["storage-containers", projectId],
+        });
+        toast.success("Container created successfully");
+        setCreateContainerOpen(false);
+        
+        // Navigate to the new container
+        if (response.content?.uuid) {
+          navigate(`/projects/${projectId}/storage/${response.content.uuid}`);
+        }
+      } else {
+        toast.error(response.errors?.[0] || "Failed to create container");
+      }
+    } catch (error) {
+      toast.error("Failed to create container");
+    }
+  }, [projectId, services.storage, queryClient, navigate]);
+
+  if (containersError) {
+    return (
+      <div className="flex flex-col h-full">
+        <div className="flex-1 flex items-center justify-center">
+          <div className="text-destructive">
+            Error loading containers: {containersError.message}
+          </div>
+        </div>
+      </div>
     );
-  }, [containers, searchValue]);
+  }
 
   return (
-    <Sidebar
-      collapsible="none"
-      className="hidden md:flex h-full flex-shrink-0 border-r"
-      variant="inset"
-    >
-      <SidebarHeader className="gap-3 border-b p-2 mb-2 flex-shrink-0">
-        <div className="flex items-center gap-2">
-          <SidebarInput
-            placeholder="Search containers..."
-            value={searchValue}
-            onChange={(e) => setSearchValue(e.target.value)}
-            className="flex-1 rounded-lg"
-          />
-        </div>
-      </SidebarHeader>
-      <SidebarContent className="flex-1 min-h-0 flex flex-col">
-        <SidebarGroup className="p-0 flex-1 overflow-hidden">
-          <SidebarGroupContent className="h-full overflow-y-auto">
-            {isLoading ? (
-              <TableListSkeleton count={5} />
-            ) : filteredContainers.length === 0 ? (
-              <div className="px-4 py-8 text-center text-muted-foreground text-sm">
-                {searchValue
-                  ? "No containers found matching your search"
-                  : "No containers yet"}
-              </div>
-            ) : (
-              <SidebarMenu>
-                {filteredContainers.map((container) => (
-                  <SidebarMenuItem key={container.uuid}>
-                    <NavLink
-                      to={`/projects/${projectId}/storage/${container.uuid}`}
-                      className={({ isActive }) =>
-                        cn(
-                          "block w-full",
-                          isActive && "bg-accent"
-                        )
-                      }
-                    >
-                      <SidebarMenuButton
-                        isActive={activeContainerId === container.uuid}
-                        className="w-full justify-start"
-                      >
-                        <Package2 className="h-4 w-4 mr-2" />
-                        <div className="flex-1 text-left">
-                          <div className="font-medium">{container.name}</div>
-                          {container.description && (
-                            <div className="text-xs text-muted-foreground truncate">
-                              {container.description}
-                            </div>
-                          )}
-                          <div className="text-xs text-muted-foreground">
-                            {container.totalFiles} file{container.totalFiles !== 1 ? 's' : ''}
-                            {container.isPublic && ' • Public'}
-                          </div>
-                        </div>
-                      </SidebarMenuButton>
-                    </NavLink>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
-            )}
-          </SidebarGroupContent>
-        </SidebarGroup>
-        <div className="p-4 border-t flex-shrink-0">
-          <Button
-            className="w-full"
-            size="sm"
-            onClick={onCreateContainer}
-          >
-            <Plus className="mr-1 size-4" />
-            Create Container
-          </Button>
-        </div>
-      </SidebarContent>
-    </Sidebar>
+    <SidebarProvider>
+      <div className="flex h-screen w-full overflow-hidden">
+        <StorageSidebar
+          containers={containers}
+          activeContainerId={containerId}
+          isLoading={isContainersLoading}
+          projectId={projectId!}
+          onCreateContainer={() => setCreateContainerOpen(true)}
+        />
+        <SidebarInset className="flex-1 overflow-hidden">
+          <div className="h-full overflow-auto">
+            <Outlet context={{ projectDetails, services, containers }} />
+          </div>
+        </SidebarInset>
+
+        <CreateContainerDialog
+          open={createContainerOpen}
+          onOpenChange={setCreateContainerOpen}
+          onSubmit={handleCreateContainer}
+        />
+      </div>
+    </SidebarProvider>
   );
 }

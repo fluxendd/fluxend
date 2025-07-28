@@ -43,6 +43,7 @@ export interface UpdateContainerRequest {
 
 export interface CreateFileRequest {
   projectUUID: string;
+  full_file_name?: string;
 }
 
 export interface RenameFileRequest {

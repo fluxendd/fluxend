@@ -45,13 +45,15 @@ import { toast } from "sonner";
 import type { StorageContainer, StorageFile } from "~/types/storage";
 import type { Services } from "~/services";
 import { formatBytes } from "~/lib/utils";
-import { RenameFileDialog } from "./rename-file-dialog";
-import { FileUploadDialog } from "./file-upload-dialog";
+import { RenameFileDialog } from "~/components/storage/rename-file-dialog";
+import { FileUploadDialog } from "~/components/storage/file-upload-dialog";
 
 interface FileListProps {
   projectId: string;
   container: StorageContainer;
   services: Services;
+  uploadDialogOpen: boolean;
+  setUploadDialogOpen: (open: boolean) => void;
 }
 
 const getFileIcon = (mimeType: string) => {
@@ -70,11 +72,10 @@ const getFileIcon = (mimeType: string) => {
   return FileIcon;
 };
 
-export function FileList({ projectId, container, services }: FileListProps) {
+export function FileList({ projectId, container, services, uploadDialogOpen, setUploadDialogOpen }: FileListProps) {
   const queryClient = useQueryClient();
   const [deleteFileId, setDeleteFileId] = useState<string | null>(null);
   const [renameFile, setRenameFile] = useState<StorageFile | null>(null);
-  const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
 
   // Fetch files
   const {
@@ -158,7 +159,8 @@ export function FileList({ projectId, container, services }: FileListProps) {
           container.uuid,
           {
             projectUUID: projectId,
-          }
+            full_file_name: file.name,
+          } as any
         );
 
         if (response.success) {
@@ -174,7 +176,7 @@ export function FileList({ projectId, container, services }: FileListProps) {
         toast.error("Failed to create file");
       }
     },
-    [projectId, container.uuid, services.storage, queryClient]
+    [projectId, container.uuid, services.storage, queryClient, setUploadDialogOpen]
   );
 
   if (error) {
@@ -190,21 +192,6 @@ export function FileList({ projectId, container, services }: FileListProps) {
   return (
     <>
       <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h3 className="text-lg font-semibold">{container.name}</h3>
-            {container.description && (
-              <p className="text-sm text-muted-foreground">
-                {container.description}
-              </p>
-            )}
-          </div>
-          <Button onClick={() => setUploadDialogOpen(true)}>
-            <Upload className="h-4 w-4 mr-2" />
-            Upload File
-          </Button>
-        </div>
-
         {isLoading ? (
           <div className="rounded-lg border">
             <DataTableSkeleton columns={5} rows={10} />

@@ -32,7 +32,7 @@ import { toast } from "sonner";
 import type { StorageContainer } from "~/types/storage";
 import type { Services } from "~/services";
 import { formatBytes } from "~/lib/utils";
-import { UpdateContainerDialog } from "./update-container-dialog";
+import { UpdateContainerDialog } from "~/components/storage/update-container-dialog";
 
 interface ContainerListProps {
   containers: StorageContainer[];
