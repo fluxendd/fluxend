@@ -27,7 +27,7 @@ export function meta({}: Route.MetaArgs) {
   ];
 }
 import { Button } from "~/components/ui/button";
-import { Trash2, Pencil } from "lucide-react";
+import { Trash2, Pencil, FileText } from "lucide-react";
 import { toast } from "sonner";
 import type { TableRow, CellValue } from "~/types/table";
 
@@ -386,6 +386,16 @@ export default function TablePageContent({ params }: Route.ComponentProps) {
                     </AlertDialog>
                   </>
                 )}
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="cursor-pointer"
+                  onClick={() => navigate(`/projects/${projectId}/docs?table=${tableId}`)}
+                  title="View API Docs"
+                >
+                  <FileText />
+                </Button>
                 <Button
                   type="button"
                   variant="ghost"

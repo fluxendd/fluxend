@@ -1,12 +1,13 @@
-import { Calendar, ChevronRight, Link, View } from "lucide-react";
+import { Calendar, ChevronRight, FileText, Link, View } from "lucide-react";
 import type { Project } from "~/services/user";
 
 type ProjectCardProps = {
   project: Project;
   onClick?: () => void;
+  onDocsClick?: () => void;
 };
 
-const ProjectCard = ({ project, onClick }: ProjectCardProps) => {
+const ProjectCard = ({ project, onClick, onDocsClick }: ProjectCardProps) => {
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString("en-US", {
@@ -55,26 +56,18 @@ const ProjectCard = ({ project, onClick }: ProjectCardProps) => {
         <p className="text-xs text-gray-400 dark:text-gray-500 font-mono truncate max-w-[200px]" title={project.uuid}>
           {project.uuid}
         </p>
-        {/* <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+        <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
           <button
-            className="text-xs text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+            className="text-xs text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 flex items-center gap-1"
             onClick={(e) => {
               e.stopPropagation();
-              // Handle view action
+              onDocsClick?.();
             }}
           >
-            <View />
+            <FileText className="h-3 w-3" />
+            <span>Docs</span>
           </button>
-          <button
-            className="text-xs text-gray-600 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
-            onClick={(e) => {
-              e.stopPropagation();
-              // Handle edit action
-            }}
-          >
-            Edit
-          </button>
-        </div> */}
+        </div>
       </div>
 
       <div className="absolute inset-0 bg-gradient-to-r from-transparent via-gray-100/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 dark:via-white/5" />
