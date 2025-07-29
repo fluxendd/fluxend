@@ -3,7 +3,7 @@ import { useSearchParams, useNavigate, useOutletContext } from "react-router";
 import type { Route } from "./+types/page";
 import type { ProjectLayoutOutletContext } from "~/components/shared/project-layout";
 import { ChevronRight, FileText, ExternalLink } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import type { OpenAPIResponse } from "~/services/openapi";
 import { Button } from "~/components/ui/button";
 import { ScrollArea } from "~/components/ui/scroll-area";
@@ -164,7 +164,9 @@ export default function DocsPage({ params }: Route.ComponentProps) {
     },
   });
 
-  const openApiSpec = data?.content ? (() => {
+  const openApiSpec = useMemo(() => {
+    if (!data?.content) return null;
+    
     try {
       if (typeof data.content === 'object') {
         return data.content as OpenAPISpec;
@@ -173,7 +175,7 @@ export default function DocsPage({ params }: Route.ComponentProps) {
     } catch {
       return null;
     }
-  })() : null;
+  }, [data?.content]);
 
   // Extract available tables from paths
   useEffect(() => {
