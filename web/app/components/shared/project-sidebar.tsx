@@ -8,6 +8,7 @@ import {
   EllipsisIcon,
   EllipsisVertical,
   Files,
+  FileText,
   LayoutDashboard,
   LogOut,
   LogOutIcon,
@@ -64,6 +65,7 @@ type AppSidebarItem = {
 const items = [
   { title: "Dashboard", url: "dashboard", Icon: LayoutDashboard },
   { title: "Tables", url: "tables", Icon: Database, isActive: true },
+  { title: "API Docs", url: "docs", Icon: FileText },
   { title: "Logs", url: "logs", Icon: ChartSpline },
   { title: "Storage", url: "storage", Icon: CloudUpload },
   { title: "Forms", url: "forms", Icon: MessageCircleCodeIcon },

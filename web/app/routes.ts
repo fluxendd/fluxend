@@ -19,6 +19,10 @@ export default [
   ...prefix("projects/:projectId", [
     layout("./components/shared/project-layout.tsx", [
       route("dashboard", "./routes/dashboard/page.tsx"),
+      route("docs", "./routes/docs/sidebar.tsx", [
+        index("./routes/docs/overview.tsx"),
+        route(":table", "./routes/docs/table-docs.tsx"),
+      ]),
       route("tables/create", "./routes/tables/create.tsx"),
       route("tables/:tableId/edit", "./routes/tables/edit.tsx"),
       route("tables", "./routes/tables/sidebar.tsx", [
