@@ -45,8 +45,9 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.API_IMAGE_NAME }}
           tags: |
             type=ref,event=branch
-            type=ref,event=pr
-            type=sha,prefix={{branch}}-
+            type=ref,event=pr,prefix=pr-
+            type=sha,prefix={{branch}}-,enable={{is_default_branch}}
+            type=sha,prefix=commit-,enable={{is_pr}}
             type=raw,value=latest,enable={{is_default_branch}}
 
       - name: Extract metadata for Frontend
@@ -56,8 +57,9 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.FRONTEND_IMAGE_NAME }}
           tags: |
             type=ref,event=branch
-            type=ref,event=pr
-            type=sha,prefix={{branch}}-
+            type=ref,event=pr,prefix=pr-
+            type=sha,prefix={{branch}}-,enable={{is_default_branch}}
+            type=sha,prefix=commit-,enable={{is_pr}}
             type=raw,value=latest,enable={{is_default_branch}}
 
       - name: Build and push API image
