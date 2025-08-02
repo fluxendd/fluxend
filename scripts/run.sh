@@ -16,17 +16,17 @@ echo "✅ Database is ready!"
 echo "📊 Running database migrations..."
 if goose postgres "user=${DATABASE_USER} password=${DATABASE_PASSWORD} dbname=${DATABASE_NAME} host=${DATABASE_HOST} sslmode=${DATABASE_SSL_MODE}" -dir /app/internal/database/migrations up; then
     echo "✅ Migrations applied successfully"
+
+    echo "Starting database seeding..."
+    if ./bin/fluxend seed settings; then
+        echo "✅ Seeding completed successfully"
+    else
+        echo "⚠️  Seeding failed, but continuing to start server..."
+    fi
 else
     echo "⚠️  Migrations failed, but continuing to start server..."
 fi
 
 # Start the application
-echo "Starting database seeding..."
-if ./bin/fluxend seed settings; then
-    echo "✅ Seeding completed successfully"
-else
-    echo "⚠️  Seeding failed, but continuing to start server..."
-fi
-
 echo "Starting server..."
 exec ./bin/fluxend server
