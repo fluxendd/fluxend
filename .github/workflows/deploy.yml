@@ -46,8 +46,7 @@ jobs:
           tags: |
             type=ref,event=branch
             type=ref,event=pr,prefix=pr-
-            type=sha,prefix={{branch}}-,enable={{is_default_branch}}
-            type=sha,prefix=commit-,enable={{is_pr}}
+            type=sha,prefix=commit-
             type=raw,value=latest,enable={{is_default_branch}}
 
       - name: Extract metadata for Frontend
@@ -58,8 +57,7 @@ jobs:
           tags: |
             type=ref,event=branch
             type=ref,event=pr,prefix=pr-
-            type=sha,prefix={{branch}}-,enable={{is_default_branch}}
-            type=sha,prefix=commit-,enable={{is_pr}}
+            type=sha,prefix=commit-
             type=raw,value=latest,enable={{is_default_branch}}
 
       - name: Build and push API image
