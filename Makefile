@@ -47,7 +47,7 @@ verify-setup:
 
 build: ## Build the project with all containers
 	@make down
-	@$(DOCKER_COMPOSE) up -d --build
+	@$(DOCKER_COMPOSE) up -d --build --force-recreate
 
 build.api: ## Rebuild the api container only
 	@$(DOCKER_COMPOSE) stop $${API_CONTAINER_NAME}
