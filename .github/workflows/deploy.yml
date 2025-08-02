@@ -92,7 +92,9 @@ jobs:
           ssh ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} "\
             cd ${{ secrets.REMOTE_PATH }} && \
             docker compose pull && \
-            make build"
+            make pgr.destroy && \
+            make build && \
+            docker-compose exec fluxend_api ./bin/fluxend udb.restart"
 
       - name: Deployment complete
         run: echo "✅ Deployment complete to ${{ secrets.REMOTE_HOST }}"
