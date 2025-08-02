@@ -64,6 +64,7 @@ services:
       - "traefik.http.services.fluxend_api.loadbalancer.server.port=8080"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock # TODO: Figure out a better way to handle this
+      - ./.env:/app/.env:ro # Already reads host .env file
 
   fluxend_frontend:
     image: fluxend/frontend:latest
