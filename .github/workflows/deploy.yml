@@ -1,4 +1,4 @@
-name: Build and Deploy Fluxend Application
+name: Build and Deploy
 on:
   push:
     branches: [ "main" ] # Only deploy on main branch pushes
