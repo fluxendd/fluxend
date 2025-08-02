@@ -20,8 +20,11 @@ echo "✅ Migrations completed successfully!"
 
 # Start the application
 echo "Starting database seeding..."
-./bin/fluxend seed settings
-echo "Seeding completed successfully"
+if ./bin/fluxend seed settings; then
+    echo "✅ Seeding completed successfully"
+else
+    echo "⚠️  Seeding failed, but continuing to start server..."
+fi
 
 echo "Starting server..."
 exec ./bin/fluxend server
