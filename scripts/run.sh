@@ -14,9 +14,11 @@ echo "✅ Database is ready!"
 
 # Run migrations
 echo "📊 Running database migrations..."
-goose postgres "user=${DATABASE_USER} password=${DATABASE_PASSWORD} dbname=${DATABASE_NAME} host=${DATABASE_HOST} sslmode=${DATABASE_SSL_MODE}" -dir /app/internal/database/migrations up
-
-echo "✅ Migrations completed successfully!"
+if goose postgres "user=${DATABASE_USER} password=${DATABASE_PASSWORD} dbname=${DATABASE_NAME} host=${DATABASE_HOST} sslmode=${DATABASE_SSL_MODE}" -dir /app/internal/database/migrations up; then
+    echo "✅ Migrations applied successfully"
+else
+    echo "⚠️  Migrations failed, but continuing to start server..."
+fi
 
 # Start the application
 echo "Starting database seeding..."
