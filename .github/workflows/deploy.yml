@@ -1,7 +1,15 @@
 name: Build and Deploy Fluxend Application
 on:
   push:
-    branches: [ "*" ] # remove after testing
+    branches: [ "main" ] # Only deploy on main branch pushes
+    paths-ignore:
+      - 'README.md'
+      - 'docs/**'
+      - '*.md'
+      - '.gitignore'
+      - 'LICENSE'
+  pull_request:
+    branches: [ "main" ] # Build and test on PRs to main
     paths-ignore:
       - 'README.md'
       - 'docs/**'
@@ -37,6 +45,7 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.API_IMAGE_NAME }}
           tags: |
             type=ref,event=branch
+            type=ref,event=pr
             type=sha,prefix={{branch}}-
             type=raw,value=latest,enable={{is_default_branch}}
 
@@ -47,6 +56,7 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.FRONTEND_IMAGE_NAME }}
           tags: |
             type=ref,event=branch
+            type=ref,event=pr
             type=sha,prefix={{branch}}-
             type=raw,value=latest,enable={{is_default_branch}}
 
