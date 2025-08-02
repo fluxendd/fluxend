@@ -1,13 +1,21 @@
-name: Build and Deploy Fluxend Application
+name: Build and Deploy
 on:
   push:
-    branches: [ "*" ] # remove after testing
+    branches: [ "main" ] # Only deploy on main branch pushes
     paths-ignore:
       - 'README.md'
       - 'docs/**'
       - '*.md'
       - '.gitignore'
       - 'LICENSE'
+  #pull_request:
+  #  branches: [ "main" ] # Build and test on PRs to main
+  #  paths-ignore:
+  #    - 'README.md'
+  #    - 'docs/**'
+  #    - '*.md'
+  #    - '.gitignore'
+  #    - 'LICENSE'
 
 env:
   REGISTRY: docker.io
@@ -30,34 +38,20 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Extract metadata for API
-        id: meta-api
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.API_IMAGE_NAME }}
-          tags: |
-            type=ref,event=branch
-            type=sha,prefix={{branch}}-
-            type=raw,value=latest,enable={{is_default_branch}}
-
-      - name: Extract metadata for Frontend
-        id: meta-frontend
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.FRONTEND_IMAGE_NAME }}
-          tags: |
-            type=ref,event=branch
-            type=sha,prefix={{branch}}-
-            type=raw,value=latest,enable={{is_default_branch}}
-
       - name: Build and push API image
         uses: docker/build-push-action@v5
         with:
           context: .
           file: ./Dockerfile
+          platforms: linux/amd64
           push: true
-          tags: ${{ steps.meta-api.outputs.tags }}
-          labels: ${{ steps.meta-api.outputs.labels }}
+          tags: ${{ env.REGISTRY }}/${{ env.API_IMAGE_NAME }}:latest
+          labels: |
+            org.opencontainers.image.title=${{ env.API_IMAGE_NAME }}
+            org.opencontainers.image.description=Fluxend API Backend
+            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.created=${{ github.event.head_commit.timestamp }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -66,9 +60,15 @@ jobs:
         with:
           context: ./web
           file: ./web/Dockerfile
+          platforms: linux/amd64
           push: true
-          tags: ${{ steps.meta-frontend.outputs.tags }}
-          labels: ${{ steps.meta-frontend.outputs.labels }}
+          tags: ${{ env.REGISTRY }}/${{ env.FRONTEND_IMAGE_NAME }}:latest
+          labels: |
+            org.opencontainers.image.title=${{ env.FRONTEND_IMAGE_NAME }}
+            org.opencontainers.image.description=Fluxend Frontend
+            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.created=${{ github.event.head_commit.timestamp }}
           build-args: |
             VITE_FLX_INTERNAL_URL=${{ secrets.VITE_FLX_INTERNAL_URL }}
             VITE_FLX_API_URL=${{ secrets.VITE_FLX_API_URL }}
@@ -92,7 +92,9 @@ jobs:
           ssh ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} "\
             cd ${{ secrets.REMOTE_PATH }} && \
             docker compose pull && \
-            docker compose up -d --force-recreate"
+            make pgr.destroy && \
+            make build && \
+            docker-compose exec -T fluxend_api ./bin/fluxend udb.restart"
 
       - name: Deployment complete
         run: echo "✅ Deployment complete to ${{ secrets.REMOTE_HOST }}"

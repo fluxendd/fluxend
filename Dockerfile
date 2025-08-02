@@ -29,7 +29,6 @@ COPY --from=builder /tmp/goose /usr/local/bin/goose
 COPY --from=builder /app/bin/fluxend ./bin/fluxend
 COPY --from=builder /app/internal/database/migrations ./internal/database/migrations
 COPY --from=builder /app/internal/database/seeders/client ./internal/database/seeders/client
-COPY --from=builder /app/.env ./.env
 COPY --from=builder /app/scripts/run.sh ./run.sh
 
 # Make entrypoint executable
