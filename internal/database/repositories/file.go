@@ -89,11 +89,16 @@ func (r *FileRepository) Create(file *file.File) (*file.File, error) {
 
 func (r *FileRepository) Rename(inputFile *file.File) (*file.File, error) {
 	query := `
-		UPDATE storage.files 
-		SET full_file_name = :full_file_name, updated_at = :updated_at, updated_by = :updated_by
-		WHERE uuid = :uuid`
+       UPDATE storage.files 
+       SET full_file_name = $1, updated_at = $2, updated_by = $3
+       WHERE uuid = $4`
 
-	err := r.db.ExecWithErr(query, inputFile)
+	err := r.db.ExecWithErr(query,
+		inputFile.FullFileName,
+		inputFile.UpdatedAt,
+		inputFile.UpdatedBy,
+		inputFile.Uuid,
+	)
 
 	return inputFile, err
 }

@@ -1508,7 +1508,6 @@ paths:
       summary: Retrieve file
       tags:
       - Files
-  /containers/{containerUUID}/files/{fileUUID}/rename:
     put:
       consumes:
       - application/json

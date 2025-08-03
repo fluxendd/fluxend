@@ -1243,74 +1243,6 @@
                     }
                 }
             },
-            "delete": {
-                "description": "Permanently remove a specific file from a container",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Files"
-                ],
-                "summary": "Delete file",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer Token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Project UUID",
-                        "name": "X-Project",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Container UUID",
-                        "name": "containerUUID",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "File UUID",
-                        "name": "fileUUID",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "File deleted"
-                    },
-                    "400": {
-                        "description": "Bad request response",
-                        "schema": {
-                            "$ref": "#/definitions/response.BadRequestErrorResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized response",
-                        "schema": {
-                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error response",
-                        "schema": {
-                            "$ref": "#/definitions/response.InternalServerErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/containers/{containerUUID}/files/{fileUUID}/rename": {
             "put": {
                 "description": "Update the name of a specific file. In other words, moves the file to a new location.",
                 "consumes": [
@@ -1380,6 +1312,72 @@
                                 }
                             ]
                         }
+                    },
+                    "400": {
+                        "description": "Bad request response",
+                        "schema": {
+                            "$ref": "#/definitions/response.BadRequestErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized response",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnauthorizedErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error response",
+                        "schema": {
+                            "$ref": "#/definitions/response.InternalServerErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Permanently remove a specific file from a container",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Files"
+                ],
+                "summary": "Delete file",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Project UUID",
+                        "name": "X-Project",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Container UUID",
+                        "name": "containerUUID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "File UUID",
+                        "name": "fileUUID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "File deleted"
                     },
                     "400": {
                         "description": "Bad request response",
