@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   FileIcon,
@@ -13,6 +13,8 @@ import {
   FileAudio,
   FileArchive,
   FileCode,
+  Grid3X3,
+  List,
 } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import {
@@ -44,9 +46,10 @@ import { DataTableSkeleton } from "~/components/shared/data-table-skeleton";
 import { toast } from "sonner";
 import type { StorageContainer, StorageFile } from "~/types/storage";
 import type { Services } from "~/services";
-import { formatBytes } from "~/lib/utils";
+import { formatBytes, cn } from "~/lib/utils";
 import { RenameFileDialog } from "~/components/storage/rename-file-dialog";
 import { FileUploadDialog } from "~/components/storage/file-upload-dialog";
+import { FileGrid } from "~/components/storage/file-grid";
 
 interface FileListProps {
   projectId: string;
@@ -54,6 +57,7 @@ interface FileListProps {
   services: Services;
   uploadDialogOpen: boolean;
   setUploadDialogOpen: (open: boolean) => void;
+  viewMode: "grid" | "table";
 }
 
 const getFileIcon = (mimeType: string) => {
@@ -72,7 +76,7 @@ const getFileIcon = (mimeType: string) => {
   return FileIcon;
 };
 
-export function FileList({ projectId, container, services, uploadDialogOpen, setUploadDialogOpen }: FileListProps) {
+export function FileList({ projectId, container, services, uploadDialogOpen, setUploadDialogOpen, viewMode }: FileListProps) {
   const queryClient = useQueryClient();
   const [deleteFileId, setDeleteFileId] = useState<string | null>(null);
   const [renameFile, setRenameFile] = useState<StorageFile | null>(null);
@@ -150,30 +154,24 @@ export function FileList({ projectId, container, services, uploadDialogOpen, set
 
   const handleUpload = useCallback(
     async (file: File) => {
-      // Note: The actual file upload implementation would require
-      // a different endpoint that accepts multipart/form-data
-      // For now, we'll just create the file record
       try {
-        const response = await services.storage.createFile(
+        const response = await services.storage.uploadFile(
           projectId,
           container.uuid,
-          {
-            projectUUID: projectId,
-            full_file_name: file.name,
-          } as any
+          file
         );
 
         if (response.success) {
-          toast.success("File created successfully");
+          toast.success("File uploaded successfully");
           await queryClient.invalidateQueries({
             queryKey: ["storage-files", projectId, container.uuid],
           });
           setUploadDialogOpen(false);
         } else {
-          toast.error(response.errors?.[0] || "Failed to create file");
+          toast.error(response.errors?.[0] || "Failed to upload file");
         }
       } catch (error) {
-        toast.error("Failed to create file");
+        toast.error("Failed to upload file");
       }
     },
     [projectId, container.uuid, services.storage, queryClient, setUploadDialogOpen]
@@ -191,13 +189,13 @@ export function FileList({ projectId, container, services, uploadDialogOpen, set
 
   return (
     <>
-      <div className="space-y-4">
+      <div className="h-full flex flex-col">
         {isLoading ? (
-          <div className="rounded-lg border">
+          <div className="rounded-lg border overflow-hidden">
             <DataTableSkeleton columns={5} rows={10} />
           </div>
         ) : files.length === 0 ? (
-          <div className="rounded-lg border p-8">
+          <div className="rounded-lg border p-8 overflow-hidden">
             <div className="text-center">
               <FileIcon className="mx-auto h-12 w-12 text-muted-foreground" />
               <h3 className="mt-2 text-sm font-semibold">No files</h3>
@@ -212,9 +210,10 @@ export function FileList({ projectId, container, services, uploadDialogOpen, set
               </div>
             </div>
           </div>
-        ) : (
-          <div className="rounded-lg border">
-            <Table>
+        ) : viewMode === "table" ? (
+          <div className="rounded-lg border overflow-hidden">
+            <div className="overflow-auto">
+              <Table>
               <TableHeader>
                 <TableRow>
                   <TableHead>Name</TableHead>
@@ -279,7 +278,16 @@ export function FileList({ projectId, container, services, uploadDialogOpen, set
                   );
                 })}
               </TableBody>
-            </Table>
+              </Table>
+            </div>
+          </div>
+        ) : (
+          <div className="overflow-auto">
+            <FileGrid
+              files={files}
+              onRename={setRenameFile}
+              onDelete={setDeleteFileId}
+            />
           </div>
         )}
       </div>

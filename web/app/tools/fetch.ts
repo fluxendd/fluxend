@@ -64,7 +64,6 @@ const clientFetch = async (
   const fetchOptions: RequestInit = {
     method,
     headers: {
-      "Content-Type": "application/json",
       ...headers,
     },
     ...restOptions,
@@ -72,7 +71,17 @@ const clientFetch = async (
 
   // Add body for methods that support it
   if (data && ["POST", "PUT", "PATCH"].includes(method)) {
-    fetchOptions.body = JSON.stringify(data);
+    if (data instanceof FormData) {
+      // For FormData, let the browser set the Content-Type with boundary
+      fetchOptions.body = data;
+    } else {
+      // For JSON data, set Content-Type and stringify
+      fetchOptions.headers = {
+        "Content-Type": "application/json",
+        ...fetchOptions.headers,
+      };
+      fetchOptions.body = JSON.stringify(data);
+    }
   }
 
   return fetch(fullUrl, fetchOptions);
@@ -114,7 +123,6 @@ const serverFetch = async (
   const fetchOptions: RequestInit = {
     method,
     headers: {
-      "Content-Type": "application/json",
       ...headers,
     },
     signal: controller.signal,
@@ -123,7 +131,17 @@ const serverFetch = async (
 
   // Add body for methods that support it
   if (data && ["POST", "PUT", "PATCH"].includes(method)) {
-    fetchOptions.body = JSON.stringify(data);
+    if (data instanceof FormData) {
+      // For FormData, let the browser set the Content-Type with boundary
+      fetchOptions.body = data;
+    } else {
+      // For JSON data, set Content-Type and stringify
+      fetchOptions.headers = {
+        "Content-Type": "application/json",
+        ...fetchOptions.headers,
+      };
+      fetchOptions.body = JSON.stringify(data);
+    }
   }
 
   return fetch(fullUrl, fetchOptions);

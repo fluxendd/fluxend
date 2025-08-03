@@ -125,6 +125,29 @@ export function createStorageService(authToken: string) {
     return data;
   };
 
+  const uploadFile = async (
+    projectId: string,
+    containerUuid: string,
+    file: File
+  ) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('projectUUID', projectId);
+    formData.append('full_file_name', file.name);
+
+    const fetchOptions: APIRequestOptions = {
+      headers: {
+        "X-Project": projectId,
+        Authorization: `Bearer ${authToken}`,
+      },
+    };
+
+    const response = await post(`/containers/${containerUuid}/files`, formData, fetchOptions);
+    const data = await getTypedResponseData<StorageItemResponse<StorageFile>>(response);
+    
+    return data;
+  };
+
   const getFile = async (
     projectId: string,
     containerUuid: string,
@@ -198,6 +221,7 @@ export function createStorageService(authToken: string) {
     // File operations
     listFiles,
     createFile,
+    uploadFile,
     getFile,
     deleteFile,
     renameFile,
