@@ -17,3 +17,13 @@ func ToLogListInput(request *ListRequest, projectUUID uuid.NullUUID) *logging.Li
 		EndTime:     request.EndTime,
 	}
 }
+
+func ToLogStoreInput(request *StoreRequest, dbName string) *logging.StoreInput {
+	return &logging.StoreInput{
+		Endpoint:  request.Endpoint,
+		DbName:    dbName,
+		IPAddress: request.IPAddress,
+		Host:      request.Host,
+		Method:    request.Method,
+	}
+}

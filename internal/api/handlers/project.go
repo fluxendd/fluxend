@@ -13,6 +13,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/samber/do"
+	"net/http"
 )
 
 type ProjectHandler struct {
@@ -285,6 +286,23 @@ func (ph *ProjectHandler) ListLogs(c echo.Context) error {
 	}
 
 	return response.SuccessResponseWithPagination(c, mapper.ToLoggingResourceCollection(logs), paginationDetails)
+}
+
+func (ph *ProjectHandler) StoreLogs(c echo.Context) error {
+	var request loggingDto.StoreRequest
+	if err := request.BindAndValidate(c); err != nil {
+		return response.UnprocessableResponse(c, err)
+	}
+
+	dbName := c.Param("dbName")
+	if dbName == "" {
+		return response.BadRequestResponse(c, "Database name is required")
+	}
+
+	input := loggingDto.ToLogStoreInput(&request, dbName)
+	go ph.logService.Store(input)
+
+	return c.NoContent(http.StatusOK) // Return 200 to allow request to continue
 }
 
 // GenerateOpenAPI generate OpenAPI docs for project

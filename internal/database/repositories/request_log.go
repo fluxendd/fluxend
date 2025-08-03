@@ -151,3 +151,25 @@ func (r *RequestLogRepository) Create(requestLog *logging.RequestLog) (*logging.
 		).Scan(&requestLog.Uuid)
 	})
 }
+
+func (r *RequestLogRepository) CreatePostgrest(storeInput *logging.StoreInput) error {
+	query := `
+		INSERT INTO fluxend.api_logs (
+			project_uuid, method, endpoint, ip_address, status, user_agent
+		) VALUES (
+			$1, $2, $3, $4, $5, $6
+		)
+	`
+
+	_, err := r.db.Exec(
+		query,
+		storeInput.ProjectUUID,
+		storeInput.Method,
+		storeInput.Endpoint,
+		storeInput.IPAddress,
+		200,
+		"postgrest",
+	)
+
+	return err
+}

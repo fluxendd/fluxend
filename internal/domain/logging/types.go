@@ -16,3 +16,12 @@ type ListInput struct {
 	StartTime   time.Time     `query:"startTime"`
 	EndTime     time.Time     `query:"endTime"`
 }
+
+type StoreInput struct {
+	Endpoint    string    `json:"endpoint"`
+	DbName      string    `json:"DbName"`
+	ProjectUUID uuid.UUID `json:"projectUuid"`
+	IPAddress   string    `json:"ipAddress"`
+	Host        string    `json:"host"`
+	Method      string    `json:"method"`
+}
