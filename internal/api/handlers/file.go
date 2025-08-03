@@ -178,7 +178,7 @@ func (fh *FileHandler) Store(c echo.Context) error {
 // @Failure 401 {object} response.UnauthorizedErrorResponse "Unauthorized response"
 // @Failure 500 {object} response.InternalServerErrorResponse "Internal server error response"
 //
-// @Router /containers/{containerUUID}/files/{fileUUID}/rename [put]
+// @Router /containers/{containerUUID}/files/{fileUUID} [put]
 func (fh *FileHandler) Rename(c echo.Context) error {
 	var request fileDto.RenameRequest
 	if err := request.BindAndValidate(c); err != nil {
