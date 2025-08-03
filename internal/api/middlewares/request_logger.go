@@ -30,6 +30,12 @@ func RequestLogger(requestLogRepo logging.Repository) echo.MiddlewareFunc {
 				}
 			}
 
+			if strings.Contains(c.Request().URL.Path, "logs/capture") {
+				// Skip logging for the PostgREST capture endpoint
+				// This is used to capture logs from PostgREST requests
+				return next(c)
+			}
+
 			request := c.Request()
 			requestBody := readBody(request)
 

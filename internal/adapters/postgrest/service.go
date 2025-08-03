@@ -159,6 +159,10 @@ func (s *ServiceImpl) buildStartCommand(dbName string) []string {
 		"--label", "traefik.enable=true",
 		"--label", fmt.Sprintf("traefik.http.routers.%s.rule=Host(`%s.%s`)", dbName, dbName, s.config.BaseDomain),
 		"--label", fmt.Sprintf("traefik.http.services.%s.loadbalancer.server.port=3000", dbName),
+
+		// Add tracking middleware
+		"--label", fmt.Sprintf("traefik.http.routers.%s.middlewares=track-%s", dbName, dbName),
+		"--label", fmt.Sprintf("traefik.http.middlewares.track-%s.forwardauth.address=%s://api.%s/projects/%s/logs/capture", dbName, s.config.URLScheme, s.config.BaseDomain, dbName),
 	}
 
 	if s.config.URLScheme == "https" {
@@ -172,7 +176,6 @@ func (s *ServiceImpl) buildStartCommand(dbName string) []string {
 	}
 
 	response = append(response, ImageName)
-
 	return response
 }
 
