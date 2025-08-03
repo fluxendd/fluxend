@@ -155,20 +155,24 @@ func (r *RequestLogRepository) Create(requestLog *logging.RequestLog) (*logging.
 func (r *RequestLogRepository) CreatePostgrest(storeInput *logging.StoreInput) error {
 	query := `
 		INSERT INTO fluxend.api_logs (
-			project_uuid, method, endpoint, ip_address, status, user_agent
+			project_uuid, user_uuid, api_key, method, endpoint, ip_address, status, user_agent, params, body
 		) VALUES (
-			$1, $2, $3, $4, $5, $6
+			$1, $2, $3, $4, $5, $6, $7, $8, $9, $10
 		)
 	`
 
 	_, err := r.db.Exec(
 		query,
 		storeInput.ProjectUUID,
+		nil, // user_uuid
+		"",  // api_key
 		storeInput.Method,
 		storeInput.Endpoint,
 		storeInput.IPAddress,
 		200,
 		"postgrest",
+		"", // params
+		"", // body
 	)
 
 	return err
