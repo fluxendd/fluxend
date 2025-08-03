@@ -202,7 +202,7 @@ export function createStorageService(authToken: string) {
     };
 
     const response = await put(
-      `/containers/${containerUuid}/files/${fileUuid}/rename`,
+      `/containers/${containerUuid}/files/${fileUuid}`,
       renameData,
       fetchOptions
     );
