@@ -99,9 +99,6 @@ func (r *FileRepository) Rename(inputFile *file.File) (*file.File, error) {
 		inputFile.UpdatedBy,
 		inputFile.Uuid,
 	)
-	if err != nil {
-		fmt.Println("Error updating file name:", err)
-	}
 
 	return inputFile, err
 }
