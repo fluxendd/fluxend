@@ -43,7 +43,7 @@ jobs:
         with:
           context: .
           file: ./Dockerfile
-          platforms: linux/amd64
+          platforms: linux/amd64, linux/arm64
           push: true
           tags: ${{ env.REGISTRY }}/${{ env.API_IMAGE_NAME }}:latest
           labels: |
@@ -60,7 +60,7 @@ jobs:
         with:
           context: ./web
           file: ./web/Dockerfile
-          platforms: linux/amd64
+          platforms: linux/amd64, linux/arm64
           push: true
           tags: ${{ env.REGISTRY }}/${{ env.FRONTEND_IMAGE_NAME }}:latest
           labels: |
