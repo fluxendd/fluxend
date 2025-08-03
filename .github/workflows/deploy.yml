@@ -8,14 +8,14 @@ on:
       - '*.md'
       - '.gitignore'
       - 'LICENSE'
-  pull_request:
-    branches: [ "main" ] # Build and test on PRs to main
-    paths-ignore:
-      - 'README.md'
-      - 'docs/**'
-      - '*.md'
-      - '.gitignore'
-      - 'LICENSE'
+  #pull_request:
+  #  branches: [ "main" ] # Build and test on PRs to main
+  #  paths-ignore:
+  #    - 'README.md'
+  #    - 'docs/**'
+  #    - '*.md'
+  #    - '.gitignore'
+  #    - 'LICENSE'
 
 env:
   REGISTRY: docker.io
