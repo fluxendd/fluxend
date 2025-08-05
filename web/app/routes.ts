@@ -27,7 +27,6 @@ export default [
       routeFolder("functions", "./routes/functions/"),
       routeFolder("logs", "./routes/logs/"),
       route("storage", "./routes/storage/sidebar.tsx", [
-        index("./routes/storage/index.tsx"),
         route(":containerId", "./routes/storage/$containerId.tsx"),
       ]),
       routeFolder("forms", "./routes/forms/"),

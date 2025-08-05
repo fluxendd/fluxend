@@ -16,6 +16,8 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import type { ProjectLayoutOutletContext } from "~/components/shared/project-layout";
 import { CreateContainerDialog } from "~/components/storage/create-container-dialog";
 import { toast } from "sonner";
+import { Button } from "~/components/ui/button";
+import { Plus } from "lucide-react";
 
 export default function StorageLayout() {
   const { projectDetails, services } = useOutletContext<ProjectLayoutOutletContext>();
@@ -105,9 +107,23 @@ export default function StorageLayout() {
           onCreateContainer={() => setCreateContainerOpen(true)}
         />
         <SidebarInset className="flex-1 overflow-hidden">
-          <div className="h-full overflow-auto">
-            <Outlet context={{ projectDetails, services, containers, isContainersLoading, setCreateContainerOpen }} />
-          </div>
+          {containers.length === 0 && !isContainersLoading ? (
+            <div className="h-full flex items-center justify-center">
+              <div className="text-center">
+                <p className="text-muted-foreground mb-4">
+                  No containers yet. Create your first container to get started.
+                </p>
+                <Button onClick={() => setCreateContainerOpen(true)}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Create Container
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <div className="h-full overflow-auto">
+              <Outlet context={{ projectDetails, services, containers, isContainersLoading, setCreateContainerOpen }} />
+            </div>
+          )}
         </SidebarInset>
 
         <CreateContainerDialog
