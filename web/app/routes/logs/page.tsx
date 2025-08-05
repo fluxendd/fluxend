@@ -183,7 +183,7 @@ export default function Logs() {
 
       <LogFilters onFiltersChange={handleFilterChange} initialFilters={getFiltersFromSearchParams()} />
 
-      <div className="flex-1 overflow-hidden p-4">
+      <div className="flex-1 overflow-y-auto p-4">
         {isLoading && allLogs.length === 0 ? (
           <div className="rounded-lg border h-full overflow-hidden">
             <DataTableSkeleton columns={7} rows={10} />
