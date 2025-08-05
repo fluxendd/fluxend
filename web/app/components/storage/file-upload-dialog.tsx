@@ -96,11 +96,10 @@ export function FileUploadDialog({
       clearInterval(progressInterval);
       setUploadProgress(100);
       
-      setTimeout(() => {
-        setSelectedFile(null);
-        setUploadProgress(0);
-        onOpenChange(false);
-      }, 500);
+      // Reset state immediately after successful upload
+      setSelectedFile(null);
+      setIsUploading(false);
+      setUploadProgress(0);
     } catch (error) {
       setIsUploading(false);
       setUploadProgress(0);
@@ -114,8 +113,17 @@ export function FileUploadDialog({
     }
   };
 
+  // Reset state when dialog closes
+  const handleOpenChange = (newOpen: boolean) => {
+    if (!isUploading && !newOpen) {
+      setSelectedFile(null);
+      setUploadProgress(0);
+    }
+    onOpenChange(newOpen);
+  };
+
   return (
-    <Dialog open={open} onOpenChange={(open) => !isUploading && onOpenChange(open)}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-xl">
         <DialogHeader>
           <DialogTitle>Upload File</DialogTitle>

@@ -41,6 +41,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
+  AlertDialogTrigger,
 } from "~/components/ui/alert-dialog";
 import { DataTableSkeleton } from "~/components/shared/data-table-skeleton";
 import { toast } from "sonner";
@@ -78,7 +79,6 @@ const getFileIcon = (mimeType: string) => {
 
 export function FileList({ projectId, container, services, uploadDialogOpen, setUploadDialogOpen, viewMode }: FileListProps) {
   const queryClient = useQueryClient();
-  const [deleteFileId, setDeleteFileId] = useState<string | null>(null);
   const [renameFile, setRenameFile] = useState<StorageFile | null>(null);
 
   // Fetch files
@@ -96,30 +96,32 @@ export function FileList({ projectId, container, services, uploadDialogOpen, set
     return filesData?.content || [];
   }, [filesData]);
 
-  const handleDelete = useCallback(async () => {
-    if (!deleteFileId) return;
-
+  const handleDelete = useCallback(async (fileId: string) => {
     try {
       const response = await services.storage.deleteFile(
         projectId,
         container.uuid,
-        deleteFileId
+        fileId
       );
 
       if (response.ok) {
         toast.success("File deleted successfully");
-        await queryClient.invalidateQueries({
-          queryKey: ["storage-files", projectId, container.uuid],
-        });
+        // Invalidate both files and containers to update file count
+        await Promise.all([
+          queryClient.invalidateQueries({
+            queryKey: ["storage-files", projectId, container.uuid],
+          }),
+          queryClient.invalidateQueries({
+            queryKey: ["storage-containers", projectId],
+          }),
+        ]);
       } else {
         toast.error("Failed to delete file");
       }
     } catch (error) {
       toast.error("Failed to delete file");
-    } finally {
-      setDeleteFileId(null);
     }
-  }, [deleteFileId, projectId, container.uuid, services.storage, queryClient]);
+  }, [projectId, container.uuid, services.storage, queryClient]);
 
   const handleRename = useCallback(
     async (newName: string) => {
@@ -163,9 +165,15 @@ export function FileList({ projectId, container, services, uploadDialogOpen, set
 
         if (response.success) {
           toast.success("File uploaded successfully");
-          await queryClient.invalidateQueries({
-            queryKey: ["storage-files", projectId, container.uuid],
-          });
+          // Invalidate both files and containers to update file count
+          await Promise.all([
+            queryClient.invalidateQueries({
+              queryKey: ["storage-files", projectId, container.uuid],
+            }),
+            queryClient.invalidateQueries({
+              queryKey: ["storage-containers", projectId],
+            }),
+          ]);
           setUploadDialogOpen(false);
         } else {
           toast.error(response.errors?.[0] || "Failed to upload file");
@@ -264,13 +272,34 @@ export function FileList({ projectId, container, services, uploadDialogOpen, set
                               Rename
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem
-                              className="text-destructive"
-                              onClick={() => setDeleteFileId(file.uuid)}
-                            >
-                              <Trash2 className="h-4 w-4 mr-2" />
-                              Delete
-                            </DropdownMenuItem>
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <DropdownMenuItem
+                                  className="text-destructive"
+                                  onSelect={(e) => e.preventDefault()}
+                                >
+                                  <Trash2 className="h-4 w-4 mr-2" />
+                                  Delete
+                                </DropdownMenuItem>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>Delete File</AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    Are you sure you want to delete "{file.fullFileName}"? This action cannot be undone.
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                  <AlertDialogAction
+                                    onClick={() => handleDelete(file.uuid)}
+                                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                  >
+                                    Delete
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </TableCell>
@@ -286,41 +315,17 @@ export function FileList({ projectId, container, services, uploadDialogOpen, set
             <FileGrid
               files={files}
               onRename={setRenameFile}
-              onDelete={setDeleteFileId}
+              onDelete={handleDelete}
             />
           </div>
         )}
       </div>
 
-      {/* Delete Confirmation Dialog */}
-      <AlertDialog
-        open={!!deleteFileId}
-        onOpenChange={(open) => !open && setDeleteFileId(null)}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete File</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to delete this file? This action cannot be
-              undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDelete}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
 
       {/* Rename File Dialog */}
       {renameFile && (
         <RenameFileDialog
-          open={!!renameFile}
+          open={true}
           onOpenChange={(open) => !open && setRenameFile(null)}
           file={renameFile}
           onSubmit={handleRename}
@@ -328,12 +333,14 @@ export function FileList({ projectId, container, services, uploadDialogOpen, set
       )}
 
       {/* Upload File Dialog */}
-      <FileUploadDialog
-        open={uploadDialogOpen}
-        onOpenChange={setUploadDialogOpen}
-        container={container}
-        onUpload={handleUpload}
-      />
+      {uploadDialogOpen && (
+        <FileUploadDialog
+          open={true}
+          onOpenChange={setUploadDialogOpen}
+          container={container}
+          onUpload={handleUpload}
+        />
+      )}
     </>
   );
 }
