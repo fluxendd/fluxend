@@ -106,7 +106,7 @@ export default function StorageLayout() {
         />
         <SidebarInset className="flex-1 overflow-hidden">
           <div className="h-full overflow-auto">
-            <Outlet context={{ projectDetails, services, containers }} />
+            <Outlet context={{ projectDetails, services, containers, isContainersLoading, setCreateContainerOpen }} />
           </div>
         </SidebarInset>
 

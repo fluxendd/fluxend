@@ -12,6 +12,8 @@ import { ContainerList } from "~/components/storage/container-list";
 
 interface StorageLayoutContext extends ProjectLayoutOutletContext {
   containers: StorageContainer[];
+  isContainersLoading?: boolean;
+  setCreateContainerOpen?: (open: boolean) => void;
 }
 
 export function meta({}: Route.MetaArgs) {
@@ -22,7 +24,7 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export default function StorageIndex() {
-  const { projectDetails, services, containers } = useOutletContext<StorageLayoutContext>();
+  const { projectDetails, services, containers, isContainersLoading, setCreateContainerOpen } = useOutletContext<StorageLayoutContext>();
   const projectId = projectDetails?.uuid;
   const queryClient = useQueryClient();
 
@@ -51,7 +53,7 @@ export default function StorageIndex() {
 
       {/* Content */}
       <div className="flex-1 overflow-hidden p-4">
-        {!containers.length ? (
+        {isContainersLoading ? (
           <div className="rounded-lg border h-full overflow-hidden">
             <DataTableSkeleton columns={5} rows={8} />
           </div>
@@ -68,7 +70,7 @@ export default function StorageIndex() {
               <p className="text-muted-foreground mb-4">
                 No containers yet. Create your first container to get started.
               </p>
-              <Button onClick={() => {}}>
+              <Button onClick={() => setCreateContainerOpen?.(true)}>
                 <Plus className="h-4 w-4 mr-2" />
                 Create Container
               </Button>
