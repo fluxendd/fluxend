@@ -30,7 +30,6 @@ import {
   Info,
 } from "lucide-react";
 import { format, subDays, startOfDay, endOfDay } from "date-fns";
-import { fromZonedTime } from "date-fns-tz";
 import type { DateRange } from "react-day-picker";
 import { cn } from "~/lib/utils";
 import type { LogsFilters } from "~/services/logs";
@@ -54,39 +53,29 @@ const STATUS_CODES = [
   { value: "503", label: "503 Service Unavailable" },
 ];
 
+// Helper functions for timezone conversion
+const localToUTCTimestamp = (localDate: Date, hours: number, minutes: number, seconds: number): number => {
+  const dateTime = new Date(localDate);
+  dateTime.setHours(hours, minutes, seconds, 0);
+  return Math.floor(dateTime.getTime() / 1000);
+};
+
+const utcTimestampToLocalTime = (timestamp: number): string => {
+  const date = new Date(timestamp * 1000);
+  return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}:${date.getSeconds().toString().padStart(2, '0')}`;
+};
+
+const utcTimestampToLocalDate = (timestamp: number): Date => {
+  return new Date(timestamp * 1000);
+};
+
 export const LogFilters = memo(({ onFiltersChange, initialFilters }: LogFiltersProps) => {
-  // Get user's timezone - use effect to avoid hydration mismatch
-  const [userTimezone, setUserTimezone] = useState<string>('UTC');
+  // Always use UTC for data operations to avoid hydration issues
+  // Display will automatically convert to local time
   
-  useEffect(() => {
-    // Only access browser APIs after hydration
-    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    setUserTimezone(tz);
-    
-    // Update initial filters with correct timezone if no filters were provided
-    if (!initialFilters || Object.keys(initialFilters).length === 0) {
-      const today = new Date();
-      const startOfDayLocal = new Date(today);
-      startOfDayLocal.setHours(0, 0, 0, 0);
-      const endOfDayLocal = new Date(today);
-      endOfDayLocal.setHours(23, 59, 59, 999);
-      
-      const startOfDayUTC = fromZonedTime(startOfDayLocal, tz);
-      const endOfDayUTC = fromZonedTime(endOfDayLocal, tz);
-      
-      const newFilters = {
-        startTime: Math.floor(startOfDayUTC.getTime() / 1000),
-        endTime: Math.floor(endOfDayUTC.getTime() / 1000)
-      };
-      
-      setFilters(newFilters);
-      onFiltersChange(newFilters);
-    }
-  }, [initialFilters, onFiltersChange]);
-  
-  // Initialize with today's date range in user's timezone
+  // Get today's date at start of day in UTC
   const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  today.setUTCHours(0, 0, 0, 0);
   
   const [filters, setFilters] = useState<LogsFilters>(() => {
     if (initialFilters && Object.keys(initialFilters).length > 0) {
@@ -108,8 +97,8 @@ export const LogFilters = memo(({ onFiltersChange, initialFilters }: LogFiltersP
   // Initialize states from filters
   const getInitialDateRange = (): DateRange | undefined => {
     if (filters.startTime && filters.endTime) {
-      const fromDate = new Date(filters.startTime * 1000);
-      const toDate = new Date(filters.endTime * 1000);
+      const fromDate = utcTimestampToLocalDate(filters.startTime);
+      const toDate = utcTimestampToLocalDate(filters.endTime);
       // Set to start of day for date comparison
       fromDate.setHours(0, 0, 0, 0);
       toDate.setHours(0, 0, 0, 0);
@@ -120,10 +109,7 @@ export const LogFilters = memo(({ onFiltersChange, initialFilters }: LogFiltersP
   
   const getTimeFromTimestamp = (timestamp: number | undefined, defaultTime: string): string => {
     if (!timestamp) return defaultTime;
-    // Convert Unix timestamp to local date
-    // The timestamp is already in UTC, so creating a Date object will automatically convert to local timezone
-    const date = new Date(timestamp * 1000);
-    return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}:${date.getSeconds().toString().padStart(2, '0')}`;
+    return utcTimestampToLocalTime(timestamp);
   };
   
   const [endpointSearch, setEndpointSearch] = useState(filters.endpoint || "");
@@ -211,29 +197,17 @@ export const LogFilters = memo(({ onFiltersChange, initialFilters }: LogFiltersP
           const newFilters = { ...filters };
 
           if (pendingDateRange?.from) {
-            // Calculate Unix timestamp for startTime
-            // Create date in user's timezone then convert to UTC
+            // Convert local time to UTC timestamp
             const [hours, minutes, seconds] = pendingStartTime.split(":").map(Number);
-            const startDateTime = new Date(pendingDateRange.from);
-            startDateTime.setHours(hours, minutes, seconds, 0);
-            
-            // Convert to UTC timestamp
-            const utcStartTime = fromZonedTime(startDateTime, userTimezone);
-            newFilters.startTime = Math.floor(utcStartTime.getTime() / 1000);
+            newFilters.startTime = localToUTCTimestamp(pendingDateRange.from, hours, minutes, seconds);
           } else {
             delete newFilters.startTime;
           }
 
           if (pendingDateRange?.to) {
-            // Calculate Unix timestamp for endTime
-            // Create date in user's timezone then convert to UTC
+            // Convert local time to UTC timestamp
             const [hours, minutes, seconds] = pendingEndTime.split(":").map(Number);
-            const endDateTime = new Date(pendingDateRange.to);
-            endDateTime.setHours(hours, minutes, seconds, 0);
-            
-            // Convert to UTC timestamp
-            const utcEndTime = fromZonedTime(endDateTime, userTimezone);
-            newFilters.endTime = Math.floor(utcEndTime.getTime() / 1000);
+            newFilters.endTime = localToUTCTimestamp(pendingDateRange.to, hours, minutes, seconds);
           } else {
             delete newFilters.endTime;
           }
@@ -243,7 +217,7 @@ export const LogFilters = memo(({ onFiltersChange, initialFilters }: LogFiltersP
         }
       }
     },
-    [pendingDateRange, pendingStartTime, pendingEndTime, dateRange, startTime, endTime, filters, onFiltersChange, userTimezone]
+    [pendingDateRange, pendingStartTime, pendingEndTime, dateRange, startTime, endTime, filters, onFiltersChange]
   );
 
   const handleTimeChange = useCallback(
@@ -263,18 +237,10 @@ export const LogFilters = memo(({ onFiltersChange, initialFilters }: LogFiltersP
     today.setHours(0, 0, 0, 0);
     const todayRange: DateRange = { from: today, to: today };
     
-    // Calculate UTC timestamps for start and end of day in user's timezone
-    const startOfDayLocal = new Date(today);
-    startOfDayLocal.setHours(0, 0, 0, 0);
-    const endOfDayLocal = new Date(today);
-    endOfDayLocal.setHours(23, 59, 59, 999);
-    
-    const startOfDayUTC = fromZonedTime(startOfDayLocal, userTimezone);
-    const endOfDayUTC = fromZonedTime(endOfDayLocal, userTimezone);
-    
+    // Calculate UTC timestamps for today
     const defaultFilters = {
-      startTime: Math.floor(startOfDayUTC.getTime() / 1000),
-      endTime: Math.floor(endOfDayUTC.getTime() / 1000)
+      startTime: localToUTCTimestamp(today, 0, 0, 0),
+      endTime: localToUTCTimestamp(today, 23, 59, 59)
     };
     
     setFilters(defaultFilters);
@@ -286,7 +252,7 @@ export const LogFilters = memo(({ onFiltersChange, initialFilters }: LogFiltersP
     setPendingStartTime("00:00:00");
     setPendingEndTime("23:59:59");
     onFiltersChange(defaultFilters);
-  }, [onFiltersChange, userTimezone]);
+  }, [onFiltersChange]);
 
   // Trigger initial filter change on mount
   useEffect(() => {
@@ -304,24 +270,16 @@ export const LogFilters = memo(({ onFiltersChange, initialFilters }: LogFiltersP
     setStartTime("00:00:00");
     setEndTime("23:59:59");
     
-    const startDateTime = new Date(fromDate);
-    startDateTime.setHours(0, 0, 0, 0);
-    const endDateTime = new Date(toDate);
-    endDateTime.setHours(23, 59, 59, 999);
-    
-    const utcStartTime = fromZonedTime(startDateTime, userTimezone);
-    const utcEndTime = fromZonedTime(endDateTime, userTimezone);
-    
     const newFilters = {
       ...filters,
-      startTime: Math.floor(utcStartTime.getTime() / 1000),
-      endTime: Math.floor(utcEndTime.getTime() / 1000)
+      startTime: localToUTCTimestamp(fromDate, 0, 0, 0),
+      endTime: localToUTCTimestamp(toDate, 23, 59, 59)
     };
     
     setFilters(newFilters);
     onFiltersChange(newFilters);
     setPopoverOpen(false);
-  }, [filters, onFiltersChange, userTimezone]);
+  }, [filters, onFiltersChange]);
 
   // Check which preset is currently active
   const activePreset = useMemo(() => {
@@ -369,16 +327,8 @@ export const LogFilters = memo(({ onFiltersChange, initialFilters }: LogFiltersP
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     
-    const startOfDayLocal = new Date(today);
-    startOfDayLocal.setHours(0, 0, 0, 0);
-    const endOfDayLocal = new Date(today);
-    endOfDayLocal.setHours(23, 59, 59, 999);
-    
-    const startOfDayUTC = fromZonedTime(startOfDayLocal, userTimezone);
-    const endOfDayUTC = fromZonedTime(endOfDayLocal, userTimezone);
-    
-    const defaultStartTime = Math.floor(startOfDayUTC.getTime() / 1000);
-    const defaultEndTime = Math.floor(endOfDayUTC.getTime() / 1000);
+    const defaultStartTime = localToUTCTimestamp(today, 0, 0, 0);
+    const defaultEndTime = localToUTCTimestamp(today, 23, 59, 59);
     
     // Check if current filters differ from defaults
     const hasNonDefaultTimeFilter = filters.startTime !== defaultStartTime || filters.endTime !== defaultEndTime;
@@ -387,7 +337,7 @@ export const LogFilters = memo(({ onFiltersChange, initialFilters }: LogFiltersP
     const hasOtherFilters = !!(filters.method || filters.status || filters.ipAddress || filters.endpoint || filters.userUuid);
     
     return hasNonDefaultTimeFilter || hasOtherFilters;
-  }, [filters, userTimezone]);
+  }, [filters]);
 
 
   return (
@@ -531,7 +481,7 @@ export const LogFilters = memo(({ onFiltersChange, initialFilters }: LogFiltersP
                     <TooltipTrigger asChild>
                       <div className="flex items-center gap-1 cursor-help">
                         <Info className="h-3 w-3" />
-                        <span>Times in {userTimezone}</span>
+                        <span>Times in your local timezone</span>
                       </div>
                     </TooltipTrigger>
                     <TooltipContent className="max-w-xs">
@@ -551,22 +501,14 @@ export const LogFilters = memo(({ onFiltersChange, initialFilters }: LogFiltersP
 
                     if (pendingDateRange?.from) {
                       const [hours, minutes, seconds] = pendingStartTime.split(":").map(Number);
-                      const startDateTime = new Date(pendingDateRange.from);
-                      startDateTime.setHours(hours, minutes, seconds, 0);
-                      
-                      const utcStartTime = fromZonedTime(startDateTime, userTimezone);
-                      newFilters.startTime = Math.floor(utcStartTime.getTime() / 1000);
+                      newFilters.startTime = localToUTCTimestamp(pendingDateRange.from, hours, minutes, seconds);
                     } else {
                       delete newFilters.startTime;
                     }
 
                     if (pendingDateRange?.to) {
                       const [hours, minutes, seconds] = pendingEndTime.split(":").map(Number);
-                      const endDateTime = new Date(pendingDateRange.to);
-                      endDateTime.setHours(hours, minutes, seconds, 0);
-                      
-                      const utcEndTime = fromZonedTime(endDateTime, userTimezone);
-                      newFilters.endTime = Math.floor(utcEndTime.getTime() / 1000);
+                      newFilters.endTime = localToUTCTimestamp(pendingDateRange.to, hours, minutes, seconds);
                     } else {
                       delete newFilters.endTime;
                     }
