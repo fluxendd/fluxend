@@ -115,8 +115,8 @@ export function LogsTable({
   }
 
   return (
-    <div className="h-full rounded-lg border">
-      <div className="h-full overflow-y-auto rounded-lg">
+    <div className="h-full rounded-lg border overflow-hidden">
+      <div className="h-full overflow-auto">
         <Table>
           <TableHeader className="sticky top-0 z-10 bg-background border-b">
             {table.getHeaderGroups().map((headerGroup) => (
