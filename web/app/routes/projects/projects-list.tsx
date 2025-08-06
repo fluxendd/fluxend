@@ -1,6 +1,6 @@
 import type { Project } from "~/services/user";
 import ProjectCard from "./components/project-card";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 
 type ProjectsListProps = {
   projects: Project[];
@@ -8,6 +8,7 @@ type ProjectsListProps = {
 };
 
 const ProjectsList = ({ projects, isLoading = false }: ProjectsListProps) => {
+  const navigate = useNavigate();
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -35,8 +36,11 @@ const ProjectsList = ({ projects, isLoading = false }: ProjectsListProps) => {
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 p-4">
       {projects.map((project) => (
-        <Link to={`/projects/${project.uuid}/dashboard`}>
-          <ProjectCard key={project.uuid} project={project} />
+        <Link key={project.uuid} to={`/projects/${project.uuid}/dashboard`}>
+          <ProjectCard 
+            project={project} 
+            onDocsClick={() => navigate(`/projects/${project.uuid}/docs`)}
+          />
         </Link>
       ))}
     </div>
