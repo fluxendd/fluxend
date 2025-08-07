@@ -73,24 +73,20 @@ export const LogFilters = memo(({ onFiltersChange, initialFilters }: LogFiltersP
   // Always use UTC for data operations to avoid hydration issues
   // Display will automatically convert to local time
   
-  // Get today's date at start of day in UTC
+  // Get today's date and 3 days ago at start of day
   const today = new Date();
-  today.setUTCHours(0, 0, 0, 0);
+  today.setHours(0, 0, 0, 0);
+  const threeDaysAgo = subDays(today, 2);
+  threeDaysAgo.setHours(0, 0, 0, 0);
   
   const [filters, setFilters] = useState<LogsFilters>(() => {
     if (initialFilters && Object.keys(initialFilters).length > 0) {
       return initialFilters;
     }
-    // Use UTC for initial state to avoid hydration mismatch
-    // Will be updated with user timezone in useEffect
-    const startOfDayUTC = new Date(today);
-    startOfDayUTC.setUTCHours(0, 0, 0, 0);
-    const endOfDayUTC = new Date(today);
-    endOfDayUTC.setUTCHours(23, 59, 59, 999);
-    
+    // Default to last 3 days
     return {
-      startTime: Math.floor(startOfDayUTC.getTime() / 1000),
-      endTime: Math.floor(endOfDayUTC.getTime() / 1000)
+      startTime: localToUTCTimestamp(threeDaysAgo, 0, 0, 0),
+      endTime: localToUTCTimestamp(today, 23, 59, 59)
     };
   });
 
@@ -104,7 +100,7 @@ export const LogFilters = memo(({ onFiltersChange, initialFilters }: LogFiltersP
       toDate.setHours(0, 0, 0, 0);
       return { from: fromDate, to: toDate };
     }
-    return { from: today, to: today };
+    return { from: threeDaysAgo, to: today };
   };
   
   const getTimeFromTimestamp = (timestamp: number | undefined, defaultTime: string): string => {
@@ -232,31 +228,46 @@ export const LogFilters = memo(({ onFiltersChange, initialFilters }: LogFiltersP
   );
 
   const clearFilters = useCallback(() => {
-    // Reset to today's date
+    // Reset to last 3 days
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    const todayRange: DateRange = { from: today, to: today };
+    const threeDaysAgo = subDays(today, 2);
+    threeDaysAgo.setHours(0, 0, 0, 0);
+    const defaultRange: DateRange = { from: threeDaysAgo, to: today };
     
-    // Calculate UTC timestamps for today
+    // Calculate UTC timestamps for last 3 days
     const defaultFilters = {
-      startTime: localToUTCTimestamp(today, 0, 0, 0),
+      startTime: localToUTCTimestamp(threeDaysAgo, 0, 0, 0),
       endTime: localToUTCTimestamp(today, 23, 59, 59)
     };
     
     setFilters(defaultFilters);
     setEndpointSearch("");
-    setDateRange(todayRange);
+    setDateRange(defaultRange);
     setStartTime("00:00:00");
     setEndTime("23:59:59");
-    setPendingDateRange(todayRange);
+    setPendingDateRange(defaultRange);
     setPendingStartTime("00:00:00");
     setPendingEndTime("23:59:59");
     onFiltersChange(defaultFilters);
   }, [onFiltersChange]);
 
-  // Trigger initial filter change on mount
+  // Update initial filters if none provided
   useEffect(() => {
-    onFiltersChange(filters);
+    if (!initialFilters || Object.keys(initialFilters).length === 0) {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const threeDaysAgo = subDays(today, 2);
+      threeDaysAgo.setHours(0, 0, 0, 0);
+      
+      const newFilters = {
+        startTime: localToUTCTimestamp(threeDaysAgo, 0, 0, 0),
+        endTime: localToUTCTimestamp(today, 23, 59, 59)
+      };
+      
+      setFilters(newFilters);
+      onFiltersChange(newFilters);
+    }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Helper function to apply preset date range
@@ -323,11 +334,13 @@ export const LogFilters = memo(({ onFiltersChange, initialFilters }: LogFiltersP
   }, [dateRange, startTime, endTime]);
 
   const hasActiveFilters = useMemo(() => {
-    // Calculate today's default time range for comparison
+    // Calculate last 3 days default time range for comparison
     const today = new Date();
     today.setHours(0, 0, 0, 0);
+    const threeDaysAgo = subDays(today, 2);
+    threeDaysAgo.setHours(0, 0, 0, 0);
     
-    const defaultStartTime = localToUTCTimestamp(today, 0, 0, 0);
+    const defaultStartTime = localToUTCTimestamp(threeDaysAgo, 0, 0, 0);
     const defaultEndTime = localToUTCTimestamp(today, 23, 59, 59);
     
     // Check if current filters differ from defaults
