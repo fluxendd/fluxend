@@ -35,10 +35,13 @@ check-deps: ## Check if required dependencies are installed
 setup-env:
 	@if [ ! -f .env ]; then \
 		cp .env.example .env; \
-		cp web/.env.example web/.env; \
 		echo "📝 Created .env file from template"; \
 		echo "⚠️  Please edit .env with your configuration before continuing"; \
 		read -p "Press enter when you've configured .env..."; \
+	fi
+	@if [ ! -f ./web/.env ]; then \
+			cp ./web/.env.sample ./web/.env; \
+			echo "📝 Created web/.env file from template"; \
 	fi
 
 verify-setup:
