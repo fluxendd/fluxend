@@ -13,6 +13,7 @@ import { cn } from "~/lib/utils";
 
 interface StorageLayoutContext extends ProjectLayoutOutletContext {
   containers: StorageContainer[];
+  isContainersLoading: boolean;
 }
 
 export function meta({}: Route.MetaArgs) {
@@ -26,7 +27,7 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export default function StorageContainer() {
-  const { projectDetails, services, containers } =
+  const { projectDetails, services, containers, isContainersLoading } =
     useOutletContext<StorageLayoutContext>();
   const projectId = projectDetails?.uuid;
   const { containerId } = useParams();
@@ -65,6 +66,28 @@ export default function StorageContainer() {
   const currentContainer = containers.find((c) => c.uuid === containerId);
   const containerName = currentContainer?.name || "";
 
+  // Show loading skeleton while containers are being loaded
+  if (isContainersLoading) {
+    return (
+      <div className="flex flex-col h-full">
+        <div className="border-b px-4 py-2 flex-shrink-0">
+          <div className="flex items-center justify-between">
+            <div className="h-8 w-48 bg-muted animate-pulse rounded" />
+            <div className="flex items-center gap-2">
+              <div className="h-8 w-20 bg-muted animate-pulse rounded" />
+              <div className="h-8 w-24 bg-muted animate-pulse rounded" />
+              <div className="h-8 w-8 bg-muted animate-pulse rounded" />
+            </div>
+          </div>
+        </div>
+        <div className="flex-1 p-4">
+          <DataTableSkeleton columns={4} rows={5} />
+        </div>
+      </div>
+    );
+  }
+
+  // Only show "Container not found" after loading is complete
   if (!containerId || !currentContainer) {
     return (
       <div className="flex flex-col h-full">

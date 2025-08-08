@@ -128,8 +128,7 @@ export function FileUploadDialog({
         <DialogHeader>
           <DialogTitle>Upload File</DialogTitle>
           <DialogDescription>
-            Upload a file to {container.name}. Maximum file size:{" "}
-            {formatBytes(container.maxFileSize)}
+            Upload a file to <span className="font-semibold text-foreground">{container.name}</span> (Max: {formatBytes(container.maxFileSize)})
           </DialogDescription>
         </DialogHeader>
 
@@ -167,11 +166,11 @@ export function FileUploadDialog({
               </Button>
             </div>
           ) : (
-            <div className="space-y-4">
-              <div className="flex items-center gap-3 p-4 border rounded-lg">
-                <FileIcon className="h-8 w-8 text-muted-foreground" />
-                <div className="flex-1 min-w-0">
-                  <p className="font-medium truncate">{selectedFile.name}</p>
+            <div className="space-y-4 w-full">
+              <div className="flex items-center gap-3 p-4 border rounded-lg overflow-hidden w-full">
+                <FileIcon className="h-8 w-8 text-muted-foreground flex-shrink-0" />
+                <div className="min-w-0 flex-1">
+                  <p className="font-medium break-all" title={selectedFile.name}>{selectedFile.name}</p>
                   <p className="text-sm text-muted-foreground">
                     {formatBytes(selectedFile.size)}
                   </p>
@@ -181,6 +180,7 @@ export function FileUploadDialog({
                     variant="ghost"
                     size="sm"
                     onClick={() => setSelectedFile(null)}
+                    className="flex-shrink-0 ml-2"
                   >
                     Remove
                   </Button>

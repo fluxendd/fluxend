@@ -23,12 +23,13 @@ import { Input } from "~/components/ui/input";
 import { Textarea } from "~/components/ui/textarea";
 import { Button } from "~/components/ui/button";
 import { Switch } from "~/components/ui/switch";
+import { bytesToMB, mbToBytes } from "~/lib/utils";
 
 const createContainerSchema = z.object({
   name: z.string().min(1, "Container name is required"),
   description: z.string().optional(),
   is_public: z.boolean(),
-  max_file_size: z.number().min(1, "Max file size must be at least 1 byte"),
+  max_file_size: z.number().min(0.001, "Max file size must be at least 0.001 MB"),
 });
 
 type CreateContainerFormData = z.infer<typeof createContainerSchema>;
@@ -52,15 +53,23 @@ export function CreateContainerDialog({
       name: "",
       description: "",
       is_public: false,
-      max_file_size: 10485760, // 10MB default
+      max_file_size: 10, // 10MB default
     },
   });
 
   const handleSubmit = async (data: CreateContainerFormData) => {
     setIsSubmitting(true);
     try {
-      await onSubmit(data);
+      // Convert MB to bytes before submitting
+      await onSubmit({
+        ...data,
+        max_file_size: mbToBytes(data.max_file_size),
+      });
+      // Only reset form on successful submission
       form.reset();
+    } catch (error) {
+      // Keep form data on error to allow user to modify
+      console.error("Failed to create container:", error);
     } finally {
       setIsSubmitting(false);
     }
@@ -141,17 +150,18 @@ export function CreateContainerDialog({
               name="max_file_size"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Max File Size (bytes)</FormLabel>
+                  <FormLabel>Max File Size (MB)</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
+                      step="0.1"
                       {...field}
-                      onChange={(e) => field.onChange(parseInt(e.target.value))}
+                      onChange={(e) => field.onChange(parseFloat(e.target.value))}
                       disabled={isSubmitting}
                     />
                   </FormControl>
                   <FormDescription>
-                    Maximum size allowed for individual files
+                    Maximum size allowed for individual files in megabytes
                   </FormDescription>
                   <FormMessage />
                 </FormItem>

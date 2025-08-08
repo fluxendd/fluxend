@@ -24,12 +24,13 @@ import { Textarea } from "~/components/ui/textarea";
 import { Button } from "~/components/ui/button";
 import { Switch } from "~/components/ui/switch";
 import type { StorageContainer } from "~/types/storage";
+import { bytesToMB, mbToBytes } from "~/lib/utils";
 
 const updateContainerSchema = z.object({
   name: z.string().min(1, "Container name is required"),
   description: z.string().optional(),
   is_public: z.boolean(),
-  max_file_size: z.number().min(1, "Max file size must be at least 1 byte"),
+  max_file_size: z.number().min(0.001, "Max file size must be at least 0.001 MB"),
 });
 
 type UpdateContainerFormData = z.infer<typeof updateContainerSchema>;
@@ -55,7 +56,7 @@ export function UpdateContainerDialog({
       name: container.name,
       description: container.description || "",
       is_public: container.isPublic,
-      max_file_size: container.maxFileSize,
+      max_file_size: bytesToMB(container.maxFileSize),
     },
   });
 
@@ -65,14 +66,18 @@ export function UpdateContainerDialog({
       name: container.name,
       description: container.description || "",
       is_public: container.isPublic,
-      max_file_size: container.maxFileSize,
+      max_file_size: bytesToMB(container.maxFileSize),
     });
   }, [container, form]);
 
   const handleSubmit = async (data: UpdateContainerFormData) => {
     setIsSubmitting(true);
     try {
-      await onSubmit(data);
+      // Convert MB to bytes before submitting
+      await onSubmit({
+        ...data,
+        max_file_size: mbToBytes(data.max_file_size),
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -153,17 +158,18 @@ export function UpdateContainerDialog({
               name="max_file_size"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Max File Size (bytes)</FormLabel>
+                  <FormLabel>Max File Size (MB)</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
+                      step="0.1"
                       {...field}
-                      onChange={(e) => field.onChange(parseInt(e.target.value))}
+                      onChange={(e) => field.onChange(parseFloat(e.target.value))}
                       disabled={isSubmitting}
                     />
                   </FormControl>
                   <FormDescription>
-                    Maximum size allowed for individual files
+                    Maximum size allowed for individual files in megabytes
                   </FormDescription>
                   <FormMessage />
                 </FormItem>

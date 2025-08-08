@@ -7,10 +7,7 @@ import {
   useParams,
 } from "react-router";
 import { useState, useCallback, useEffect } from "react";
-import {
-  SidebarProvider,
-  SidebarInset,
-} from "~/components/ui/sidebar";
+import { SidebarProvider, SidebarInset } from "~/components/ui/sidebar";
 import { StorageSidebar } from "~/components/storage/sidebar";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import type { ProjectLayoutOutletContext } from "~/components/shared/project-layout";
@@ -20,7 +17,8 @@ import { Button } from "~/components/ui/button";
 import { Plus } from "lucide-react";
 
 export default function StorageLayout() {
-  const { projectDetails, services } = useOutletContext<ProjectLayoutOutletContext>();
+  const { projectDetails, services } =
+    useOutletContext<ProjectLayoutOutletContext>();
   const projectId = projectDetails?.uuid;
   const { containerId } = useParams();
   const navigate = useNavigate();
@@ -43,46 +41,60 @@ export default function StorageLayout() {
 
   // Auto-navigate to the first container if none is selected
   useEffect(() => {
-    if (!containerId && containers.length > 0 && projectId && !isContainersLoading) {
-      navigate(`/projects/${projectId}/storage/${containers[0].uuid}`, { replace: true });
+    if (
+      !containerId &&
+      containers.length > 0 &&
+      projectId &&
+      !isContainersLoading
+    ) {
+      navigate(`/projects/${projectId}/storage/${containers[0].uuid}`, {
+        replace: true,
+      });
     }
   }, [containerId, containers, projectId, navigate, isContainersLoading]);
 
-  const handleCreateContainer = useCallback(async (container: {
-    name: string;
-    description?: string;
-    is_public: boolean;
-    max_file_size: number;
-  }) => {
-    if (!projectId) return;
+  const handleCreateContainer = useCallback(
+    async (container: {
+      name: string;
+      description?: string;
+      is_public: boolean;
+      max_file_size: number;
+    }) => {
+      if (!projectId) return;
 
-    try {
-      const response = await services.storage.createContainer(projectId, {
-        projectUUID: projectId,
-        name: container.name,
-        description: container.description || "",
-        is_public: container.is_public,
-        max_file_size: container.max_file_size,
-      });
-
-      if (response.success) {
-        await queryClient.invalidateQueries({
-          queryKey: ["storage-containers", projectId],
+      try {
+        const response = await services.storage.createContainer(projectId, {
+          projectUUID: projectId,
+          name: container.name,
+          description: container.description || "",
+          is_public: container.is_public,
+          max_file_size: container.max_file_size,
         });
-        toast.success("Container created successfully");
-        setCreateContainerOpen(false);
-        
-        // Navigate to the new container
-        if (response.content?.uuid) {
-          navigate(`/projects/${projectId}/storage/${response.content.uuid}`);
+
+        if (response.success) {
+          await queryClient.invalidateQueries({
+            queryKey: ["storage-containers", projectId],
+          });
+          toast.success("Container created successfully");
+          setCreateContainerOpen(false);
+
+          // Navigate to the new container
+          if (response.content?.uuid) {
+            navigate(`/projects/${projectId}/storage/${response.content.uuid}`);
+          }
+        } else {
+          toast.error(response.errors?.[0] || "Failed to create container");
+          // Throw error to prevent form reset in the dialog
+          throw new Error(response.errors?.[0] || "Failed to create container");
         }
-      } else {
-        toast.error(response.errors?.[0] || "Failed to create container");
+      } catch (error) {
+        toast.error("Failed to create container");
+        // Re-throw to prevent form reset in the dialog
+        throw error;
       }
-    } catch (error) {
-      toast.error("Failed to create container");
-    }
-  }, [projectId, services.storage, queryClient, navigate]);
+    },
+    [projectId, services.storage, queryClient, navigate]
+  );
 
   if (containersError) {
     return (
@@ -121,7 +133,15 @@ export default function StorageLayout() {
             </div>
           ) : (
             <div className="h-full overflow-auto">
-              <Outlet context={{ projectDetails, services, containers, isContainersLoading, setCreateContainerOpen }} />
+              <Outlet
+                context={{
+                  projectDetails,
+                  services,
+                  containers,
+                  isContainersLoading,
+                  setCreateContainerOpen,
+                }}
+              />
             </div>
           )}
         </SidebarInset>
@@ -135,3 +155,4 @@ export default function StorageLayout() {
     </SidebarProvider>
   );
 }
+
