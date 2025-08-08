@@ -36,6 +36,14 @@ export function formatBytes(bytes: number, decimals = 2): string {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
 }
 
+export function bytesToMB(bytes: number): number {
+  return bytes / (1024 * 1024);
+}
+
+export function mbToBytes(mb: number): number {
+  return mb * 1024 * 1024;
+}
+
 // TODO: Validate Response with Types using zod
 export async function getTypedResponseData<T>(response: Response): Promise<T> {
   if (response.status === 204) {
