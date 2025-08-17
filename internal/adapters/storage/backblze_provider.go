@@ -336,6 +336,11 @@ func (b *BackblazeServiceImpl) RenameFile(input RenameFileInput) error {
 	return nil
 }
 
+func (d *BackblazeServiceImpl) CreatePresignedURL(input FileInput, expiration time.Duration) (string, error) {
+	// TODO: Implement presigned URL generation for Backblaze
+	return "", nil
+}
+
 func (b *BackblazeServiceImpl) DownloadFile(input FileInput) ([]byte, error) {
 	// Get the file info
 	containerMetadata, err := b.ShowContainer(input.ContainerName)
