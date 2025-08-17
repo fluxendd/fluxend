@@ -38,6 +38,7 @@ interface FileGridProps {
   files: StorageFile[];
   onRename: (file: StorageFile) => void;
   onDelete: (fileId: string) => Promise<void>;
+  onDownload: (file: StorageFile) => Promise<void>;
 }
 
 const getFileIcon = (mimeType: string) => {
@@ -56,7 +57,7 @@ const getFileIcon = (mimeType: string) => {
   return FileIcon;
 };
 
-export function FileGrid({ files, onRename, onDelete }: FileGridProps) {
+export function FileGrid({ files, onRename, onDelete, onDownload }: FileGridProps) {
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
       {files.map((file) => {
@@ -95,7 +96,9 @@ export function FileGrid({ files, onRename, onDelete }: FileGridProps) {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => onDownload(file)}
+                  >
                     <Download className="h-4 w-4 mr-2" />
                     Download
                   </DropdownMenuItem>
