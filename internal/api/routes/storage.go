@@ -24,5 +24,6 @@ func RegisterStorageRoutes(e *echo.Echo, container *do.Injector, authMiddleware 
 	filesGroup.GET("", fileController.List)
 	filesGroup.GET("/:fileUUID", fileController.Show)
 	filesGroup.PUT("/:fileUUID", fileController.Rename)
+	filesGroup.GET("/:fileUUID/download", fileController.Download)
 	filesGroup.DELETE("/:fileUUID", fileController.Delete)
 }

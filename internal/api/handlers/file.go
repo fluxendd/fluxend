@@ -205,6 +205,32 @@ func (fh *FileHandler) Rename(c echo.Context) error {
 	return response.SuccessResponse(c, mapper.ToFileResource(updatedFile))
 }
 
+func (fh *FileHandler) Download(c echo.Context) error {
+	var request dto.DefaultRequest
+	if err := request.BindAndValidate(c); err != nil {
+		return response.UnprocessableResponse(c, err)
+	}
+
+	authUser, _ := auth.NewAuth(c).User()
+
+	fileUUID, err := request.GetUUIDPathParam(c, "fileUUID", true)
+	if err != nil {
+		return response.BadRequestResponse(c, err.Error())
+	}
+
+	containerUUID, err := request.GetUUIDPathParam(c, "containerUUID", true)
+	if err != nil {
+		return response.BadRequestResponse(c, err.Error())
+	}
+
+	url, err := fh.fileService.CreatePresignedURL(fileUUID, containerUUID, authUser)
+	if err != nil {
+		return response.ErrorResponse(c, err)
+	}
+
+	return response.SuccessResponse(c, mapper.ToDownloadResource(url, 3600))
+}
+
 // Delete removes a file from a container
 //
 // @Summary Delete file
