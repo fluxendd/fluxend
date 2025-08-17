@@ -171,6 +171,14 @@ definitions:
       projectUUID:
         type: string
     type: object
+  file.DownloadResponse:
+    properties:
+      expiresIn:
+        description: in seconds
+        type: integer
+      url:
+        type: string
+    type: object
   file.RenameRequest:
     properties:
       full_file_name:
@@ -1565,6 +1573,59 @@ paths:
           schema:
             $ref: '#/definitions/response.InternalServerErrorResponse'
       summary: Rename file
+      tags:
+      - Files
+  /containers/{containerUUID}/files/{fileUUID}/download:
+    get:
+      consumes:
+      - application/json
+      description: Get a presigned URL to download a specific file
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Project UUID
+        in: header
+        name: X-Project
+        required: true
+        type: string
+      - description: Container UUID
+        in: path
+        name: containerUUID
+        required: true
+        type: string
+      - description: File UUID
+        in: path
+        name: fileUUID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: File details
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                content:
+                  $ref: '#/definitions/file.DownloadResponse'
+              type: object
+        "400":
+          description: Bad request response
+          schema:
+            $ref: '#/definitions/response.BadRequestErrorResponse'
+        "401":
+          description: Unauthorized response
+          schema:
+            $ref: '#/definitions/response.UnauthorizedErrorResponse'
+        "500":
+          description: Internal server error response
+          schema:
+            $ref: '#/definitions/response.InternalServerErrorResponse'
+      summary: Download file
       tags:
       - Files
   /forms:

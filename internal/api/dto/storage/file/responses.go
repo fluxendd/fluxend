@@ -15,3 +15,8 @@ type Response struct {
 	CreatedAt     string    `json:"createdAt"`
 	UpdatedAt     string    `json:"updatedAt"`
 }
+
+type DownloadResponse struct {
+	Url       string `json:"url"`
+	ExpiresIn int64  `json:"expiresIn"` // in seconds
+}

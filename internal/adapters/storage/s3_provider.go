@@ -15,6 +15,7 @@ import (
 	"io"
 	"os"
 	"strings"
+	"time"
 )
 
 type S3ServiceImpl struct {
@@ -185,6 +186,23 @@ func (s *S3ServiceImpl) DownloadFile(input FileInput) ([]byte, error) {
 	}
 
 	return fileBytes, nil
+}
+
+func (s *S3ServiceImpl) CreatePresignedURL(input FileInput, expiration time.Duration) (string, error) {
+	presignClient := s3.NewPresignClient(s.client)
+
+	pkg.DumpJSON(input)
+	request, err := presignClient.PresignGetObject(context.Background(), &s3.GetObjectInput{
+		Bucket: aws.String(input.ContainerName),
+		Key:    aws.String(input.FileName),
+	}, func(opts *s3.PresignOptions) {
+		opts.Expires = expiration
+	})
+	if err != nil {
+		return "", fmt.Errorf("unable to create presigned URL for file %q, %v", input.FileName, err)
+	}
+
+	return request.URL, nil
 }
 
 func (s *S3ServiceImpl) DeleteFile(input FileInput) error {

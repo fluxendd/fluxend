@@ -19,6 +19,13 @@ func ToFileResource(file *fileDomain.File) fileDto.Response {
 	}
 }
 
+func ToDownloadResource(url string, expiresIn int64) fileDto.DownloadResponse {
+	return fileDto.DownloadResponse{
+		Url:       url,
+		ExpiresIn: expiresIn,
+	}
+}
+
 func ToFileResourceCollection(files []fileDomain.File) []fileDto.Response {
 	resourceContainers := make([]fileDto.Response, len(files))
 	for i, currentFile := range files {

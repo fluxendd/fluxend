@@ -4,6 +4,7 @@ import (
 	"fluxend/internal/config/constants"
 	"fmt"
 	"github.com/samber/do"
+	"time"
 )
 
 type Provider interface {
@@ -15,6 +16,7 @@ type Provider interface {
 	UploadFile(input UploadFileInput) error
 	RenameFile(input RenameFileInput) error
 	DownloadFile(input FileInput) ([]byte, error)
+	CreatePresignedURL(input FileInput, expiration time.Duration) (string, error)
 	DeleteFile(input FileInput) error
 }
 

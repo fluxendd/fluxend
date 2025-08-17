@@ -21,6 +21,7 @@ type Service interface {
 	GetByUUID(fileUUID, containerUUID uuid.UUID, authUser auth.User) (File, error)
 	Create(containerUUID uuid.UUID, request *CreateFileInput, authUser auth.User) (File, error)
 	Rename(fileUUID, containerUUID uuid.UUID, authUser auth.User, request *RenameFileInput) (*File, error)
+	CreatePresignedURL(fileUUID, containerUUID uuid.UUID, authUser auth.User) (string, error)
 	Delete(fileUUID, containerUUID uuid.UUID, authUser auth.User) (bool, error)
 }
 
@@ -200,6 +201,40 @@ func (s *ServiceImpl) Rename(fileUUID, containerUUID uuid.UUID, authUser auth.Us
 	fetchedFile.UpdatedBy = authUser.Uuid
 
 	return s.fileRepo.Rename(&fetchedFile)
+}
+
+func (s *ServiceImpl) CreatePresignedURL(fileUUID, containerUUID uuid.UUID, authUser auth.User) (string, error) {
+	fetchedContainer, err := s.containerRepo.GetByUUID(containerUUID)
+	if err != nil {
+		return "", err
+	}
+
+	fetchedFile, err := s.fileRepo.GetByUUID(fileUUID)
+	if err != nil {
+		return "", err
+	}
+
+	organizationUUID, err := s.projectRepo.GetOrganizationUUIDByProjectUUID(fetchedContainer.ProjectUuid)
+	if err != nil {
+		return "", err
+	}
+
+	if !s.projectPolicy.CanAccess(organizationUUID, authUser) {
+		return "", errors.NewForbiddenError("file.error.updateForbidden")
+	}
+
+	storageService, err := s.storageFactory.CreateProvider(s.settingService.GetStorageDriver())
+	if err != nil {
+		return "", err
+	}
+
+	fileInput := storage.FileInput{ContainerName: fetchedContainer.NameKey, FileName: fetchedFile.FullFileName}
+	downloadURL, err := storageService.CreatePresignedURL(fileInput, time.Hour*1)
+	if err != nil {
+		return "", fmt.Errorf("failed to create presigned URL: %w", err)
+	}
+
+	return downloadURL, nil
 }
 
 func (s *ServiceImpl) Delete(fileUUID, containerUUID uuid.UUID, authUser auth.User) (bool, error) {

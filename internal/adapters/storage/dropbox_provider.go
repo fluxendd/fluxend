@@ -241,6 +241,11 @@ func (d *DropboxServiceImpl) RenameFile(input RenameFileInput) error {
 	return d.handleAPIError(resp, dropboxActionRenameFile)
 }
 
+func (d *DropboxServiceImpl) CreatePresignedURL(input FileInput, expiration time.Duration) (string, error) {
+	// TODO: Handle file sharing for DropBox
+	return "", nil
+}
+
 func (d *DropboxServiceImpl) DownloadFile(input FileInput) ([]byte, error) {
 	apiArg := map[string]string{
 		"path": normalizePath(input.FileName),
