@@ -205,6 +205,27 @@ func (fh *FileHandler) Rename(c echo.Context) error {
 	return response.SuccessResponse(c, mapper.ToFileResource(updatedFile))
 }
 
+// Download Retrieves a presigned URL for downloading a file
+//
+// @Summary Download file
+// @Description Get a presigned URL to download a specific file
+// @Tags Files
+//
+// @Accept json
+// @Produce json
+//
+// @Param Authorization header string true "Bearer Token"
+// @Param X-Project header string true "Project UUID"
+//
+// @Param containerUUID path string true "Container UUID"
+// @Param fileUUID path string true "File UUID"
+//
+// @Success 200 {object} response.Response{content=file.DownloadResponse} "File details"
+// @Failure 400 {object} response.BadRequestErrorResponse "Bad request response"
+// @Failure 401 {object} response.UnauthorizedErrorResponse "Unauthorized response"
+// @Failure 500 {object} response.InternalServerErrorResponse "Internal server error response"
+//
+// @Router /containers/{containerUUID}/files/{fileUUID}/download [get]
 func (fh *FileHandler) Download(c echo.Context) error {
 	var request dto.DefaultRequest
 	if err := request.BindAndValidate(c); err != nil {

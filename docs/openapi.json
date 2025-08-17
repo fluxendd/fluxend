@@ -1673,6 +1673,107 @@
                 }
             }
         },
+        "/containers/{containerUUID}/files/{fileUUID}/download": {
+            "get": {
+                "description": "Get a presigned URL to download a specific file",
+                "tags": [
+                    "Files"
+                ],
+                "summary": "Download file",
+                "parameters": [
+                    {
+                        "description": "Bearer Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "Project UUID",
+                        "name": "X-Project",
+                        "in": "header",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "Container UUID",
+                        "name": "containerUUID",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "File UUID",
+                        "name": "fileUUID",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "File details",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/response.Response"
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "content": {
+                                                    "$ref": "#/components/schemas/file.DownloadResponse"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/response.BadRequestErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/response.UnauthorizedErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/response.InternalServerErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/forms": {
             "get": {
                 "description": "Retrieve a list of all forms for the specified project",
@@ -7049,6 +7150,18 @@
                 "type": "object",
                 "properties": {
                     "projectUUID": {
+                        "type": "string"
+                    }
+                }
+            },
+            "file.DownloadResponse": {
+                "type": "object",
+                "properties": {
+                    "expiresIn": {
+                        "description": "in seconds",
+                        "type": "integer"
+                    },
+                    "url": {
                         "type": "string"
                     }
                 }
