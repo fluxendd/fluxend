@@ -185,6 +185,26 @@ export function FileList({ projectId, container, services, uploadDialogOpen, set
     [projectId, container.uuid, services.storage, queryClient, setUploadDialogOpen]
   );
 
+  const handleDownload = useCallback(
+    async (file: StorageFile) => {
+      try {
+        const response = await services.storage.downloadFile(
+          projectId,
+          container.uuid,
+          file.uuid,
+          file.fullFileName
+        );
+
+        if (!response.success) {
+          toast.error(response.errors?.[0] || "Failed to download file");
+        }
+      } catch (error) {
+        toast.error("Failed to download file");
+      }
+    },
+    [projectId, container.uuid, services.storage]
+  );
+
   if (error) {
     return (
       <div className="flex items-center justify-center h-full">
@@ -261,7 +281,9 @@ export function FileList({ projectId, container, services, uploadDialogOpen, set
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                            <DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => handleDownload(file)}
+                            >
                               <Download className="h-4 w-4 mr-2" />
                               Download
                             </DropdownMenuItem>
@@ -316,6 +338,7 @@ export function FileList({ projectId, container, services, uploadDialogOpen, set
               files={files}
               onRename={setRenameFile}
               onDelete={handleDelete}
+              onDownload={handleDownload}
             />
           </div>
         )}

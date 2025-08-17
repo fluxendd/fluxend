@@ -224,19 +224,22 @@ export function createStorageService(authToken: string) {
       fetchOptions
     );
 
-    if (response.ok) {
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
+    const data = await getTypedResponseData<
+      StorageItemResponse<{ url: string; expiresIn: number }>
+    >(response);
+
+    if (data.success && data.content?.url) {
+      // Use the presigned URL to download the file
       const a = document.createElement("a");
-      a.href = url;
+      a.href = data.content.url;
       a.download = fileName;
+      a.style.display = "none";
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
-      window.URL.revokeObjectURL(url);
     }
 
-    return response;
+    return data;
   };
 
   const deleteFile = async (
