@@ -274,7 +274,7 @@ export function FileList({ projectId, container, services, uploadDialogOpen, set
                         {new Date(file.updatedAt).toLocaleString()}
                       </TableCell>
                       <TableCell>
-                        <DropdownMenu>
+                        <DropdownMenu modal={false}>
                           <DropdownMenuTrigger asChild>
                             <Button variant="ghost" size="icon" className="h-8 w-8">
                               <MoreVertical className="h-4 w-4" />
@@ -346,14 +346,12 @@ export function FileList({ projectId, container, services, uploadDialogOpen, set
 
 
       {/* Rename File Dialog */}
-      {renameFile && (
-        <RenameFileDialog
-          open={true}
-          onOpenChange={(open) => !open && setRenameFile(null)}
-          file={renameFile}
-          onSubmit={handleRename}
-        />
-      )}
+      <RenameFileDialog
+        open={!!renameFile}
+        onOpenChange={(open) => !open && setRenameFile(null)}
+        file={renameFile || { fullFileName: "", uuid: "" } as StorageFile}
+        onSubmit={handleRename}
+      />
 
       {/* Upload File Dialog */}
       {uploadDialogOpen && (
