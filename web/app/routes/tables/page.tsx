@@ -297,6 +297,12 @@ export default function TablePageContent({ params }: Route.ComponentProps) {
     onCellUpdate: handleCellUpdate,
   }), [handleCellUpdate]);
 
+  // Clear selection when tableId changes
+  useEffect(() => {
+    setSelectedRows([]);
+    setRowSelectionState({});
+  }, [tableId]);
+
   // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
