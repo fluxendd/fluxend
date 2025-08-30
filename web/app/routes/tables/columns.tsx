@@ -13,6 +13,8 @@ import {
   Save,
   X,
   Edit2,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 import type { ColumnDef, PaginationState, Row } from "@tanstack/react-table";
 import { Button } from "~/components/ui/button";
@@ -177,9 +179,22 @@ export const prepareColumns = (
   };
 
   // // Create the actions column with column visibility controls
-  const ActionsColumnHeader = React.memo(({ table }: { table: any }) => {
+  const ActionsColumnHeader = ({ table }: { table: any }) => {
     // State to control dropdown open/close
     const [dropdownOpen, setDropdownOpen] = useState(false);
+    
+    // Get column visibility state to trigger re-renders
+    const columnVisibility = table?.getState?.().columnVisibility;
+    
+    // Calculate hidden columns count
+    const hiddenColumnsCount = React.useMemo(() => {
+      if (!table || !table.getAllColumns) return 0;
+      return table.getAllColumns().filter((column: any) => 
+        column && column.getCanHide && column.getCanHide() && !column.getIsVisible()
+      ).length;
+    }, [table, columnVisibility]);
+
+    const hasHiddenColumns = hiddenColumnsCount > 0;
 
     return (
       <div className="flex items-center justify-end pr-6">
@@ -188,16 +203,38 @@ export const prepareColumns = (
           onOpenChange={setDropdownOpen}
           modal={false}
         >
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-8 w-8 p-0 rounded-full hover:bg-muted data-[state=open]:bg-muted hover:shadow-sm"
-            >
-              <MoreVertical className="h-4 w-4" />
-              <span className="sr-only">Column options</span>
-            </Button>
-          </DropdownMenuTrigger>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 w-8 p-0 rounded-full hover:bg-muted data-[state=open]:bg-muted hover:shadow-sm relative"
+                >
+                  {hasHiddenColumns ? (
+                    <>
+                      <EyeOff className="h-4 w-4" />
+                      <span className="absolute -top-1 -right-1 h-2 w-2 bg-primary rounded-full" />
+                    </>
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                  <span className="sr-only">
+                    {hasHiddenColumns 
+                      ? `Column visibility options (${hiddenColumnsCount} hidden)` 
+                      : "Column visibility options"}
+                  </span>
+                </Button>
+              </DropdownMenuTrigger>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>
+                {hasHiddenColumns 
+                  ? `${hiddenColumnsCount} column${hiddenColumnsCount > 1 ? 's' : ''} hidden` 
+                  : "Show/hide columns"}
+              </p>
+            </TooltipContent>
+          </Tooltip>
           <DropdownMenuContent
             align="end"
             className="w-[220px]"
@@ -228,35 +265,35 @@ export const prepareColumns = (
             </div>
             <DropdownMenuSeparator />
             {Array.isArray(table.getAllColumns())
-              ? table.getAllColumns().map((column: any) => {
-                  if (!column) return null;
-
-                  return (
-                    <DropdownMenuItem
-                      key={column.id}
-                      className="flex items-center justify-between py-2 px-2"
-                      onSelect={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                      }}
-                    >
-                      <div className="flex items-center gap-2">
-                        <span>{column.id}</span>
-                      </div>
-                      <Switch
-                        defaultChecked={column.getIsVisible()}
-                        disabled={!column.getCanHide()}
-                        onCheckedChange={column.toggleVisibility}
-                      />
-                    </DropdownMenuItem>
-                  );
-                })
+              ? table.getAllColumns()
+                  .filter((column: any) => column && column.getCanHide && column.getCanHide())
+                  .map((column: any) => {
+                    return (
+                      <DropdownMenuItem
+                        key={column.id}
+                        className="flex items-center justify-between py-2 px-2"
+                        onSelect={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                        }}
+                      >
+                        <div className="flex items-center gap-2">
+                          <span>{column.id}</span>
+                        </div>
+                        <Switch
+                          checked={column.getIsVisible()}
+                          disabled={!column.getCanHide()}
+                          onCheckedChange={column.toggleVisibility}
+                        />
+                      </DropdownMenuItem>
+                    );
+                  })
               : null}
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
     );
-  });
+  };
 
   const actionsColumn: ColumnDef<any, unknown> = {
     id: "actions",
