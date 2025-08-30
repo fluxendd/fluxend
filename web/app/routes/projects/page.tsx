@@ -79,7 +79,7 @@ const CreateProjectDialog = ({ children }: { children: React.ReactNode }) => {
           className="grid gap-4"
         >
           <DialogHeader>
-            <DialogTitle>Create Project</DialogTitle>
+            <DialogTitle>Create Projects</DialogTitle>
             <DialogDescription>
               Describe your project and its purpose
             </DialogDescription>
